@@ -2,3 +2,5 @@
 *.a
 *test*
 ircserv
+bircd
+*.swp
