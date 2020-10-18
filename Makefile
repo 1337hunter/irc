@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/06 13:19:39 by salec            ###   ########.fr        #
+#    Updated: 2020/10/18 13:28:38 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,10 +29,13 @@ EXECFLAGS = $(CFLAGS)
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) -o $@ $^ $(EXECFLAGS)
+	@echo "linking"
+	@$(CC) -o $@ $^ $(EXECFLAGS)
+	@echo "\e[36mexecutable is ready"
 
 %.o: %.cpp $(HEADERS)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "compiling" "\e[4m" $< "\e[24m"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	@/bin/rm -f $(OBJ)
