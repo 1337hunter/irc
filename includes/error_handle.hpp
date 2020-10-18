@@ -1,17 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   error_handle.hpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
+/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/06 13:13:54 by salec             #+#    #+#             */
-/*   Updated: 2020/10/18 18:17:27 by gbright          ###   ########.fr       */
+/*   Created: 2020/10/18 17:48:42 by gbright           #+#    #+#             */
+/*   Updated: 2020/10/18 18:04:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ircserv.hpp"
+#ifndef ERROR_HANDLE_HPP
+# define ERROR_HANDLE_HPP
 
-int		main(void)
-{
-}
+#include <iostream>
+
+void	error_exit(std::string s1);
+
+#endif
