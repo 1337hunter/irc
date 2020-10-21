@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/18 20:52:14 by salec            ###   ########.fr        #
+#    Updated: 2020/10/21 21:00:42 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRCDIR = ./srcs/
 SRC := $(addprefix $(SRCDIR), $(SRC))
 OBJ = $(SRC:.cpp=.o)
 INCLUDEDIR = ./includes/
-HEADERS = ircserv.hpp error_handle.hpp
+HEADERS = ircserv.hpp error_codes.hpp error_handle.hpp
 HEADERS := $(addprefix $(INCLUDEDIR), $(HEADERS))
 
 CC = clang++
