@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 20:20:10 by salec             #+#    #+#             */
-/*   Updated: 2020/10/18 20:20:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/22 17:33:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 void	error_exit(std::string s1)
 {
-	std::cerr << s1;
-	std::cerr << std::endl;
+	std::cerr << s1 << std::endl;
 	exit(1);
 }

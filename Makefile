@@ -6,13 +6,13 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/21 21:00:42 by salec            ###   ########.fr        #
+#    Updated: 2020/10/22 17:05:08 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircserv
 
-SRC = main.cpp error_handle.cpp
+SRC = main.cpp ircserv.cpp error_handle.cpp
 
 SRCDIR = ./srcs/
 SRC := $(addprefix $(SRCDIR), $(SRC))
