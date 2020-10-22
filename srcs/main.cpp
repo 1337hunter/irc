@@ -23,7 +23,7 @@ int		main(int ac, char **av)
 	else if (ac == 4)
 		irc = new IRCserv(av[1], av[2], av[3]);
 	else
-		std::cout << "Usage: ./ircserv [host:port_network:" <<
+		std::cerr << "Usage: " << av[0] << " [host:port_network:" <<
 			"password_network] <port> <password>" << std::endl;
 	delete (irc);
 	return (0);
