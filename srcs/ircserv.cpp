@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/22 17:47:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/22 18:14:28 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,11 @@ IRCserv 	&IRCserv::operator=(IRCserv const &other)
 }
 
 void		IRCserv::RunServer(void)
+{
+	// run it lol
+}
+
+void		IRCserv::AddUser(/* placeholder	*/)
 {
 	// run it lol
 }
