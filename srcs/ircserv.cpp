@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/22 18:14:28 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/22 18:24:52 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,5 +111,6 @@ void		IRCserv::RunServer(void)
 
 void		IRCserv::AddUser(/* placeholder	*/)
 {
-	// run it lol
+	User	newuser("login", "nick", "real");
+	this->users.push_back(newuser);
 }
