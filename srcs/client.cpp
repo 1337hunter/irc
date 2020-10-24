@@ -1,39 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   User.cpp                                           :+:      :+:    :+:   */
+/*   client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/22 17:47:55 by salec             #+#    #+#             */
-/*   Updated: 2020/10/22 18:22:08 by salec            ###   ########.fr       */
+/*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
+/*   Updated: 2020/10/24 12:17:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "user.hpp"
+#include "client.hpp"
 
-User::User()
+Client::Client()
 {
 }
 
-User::User(std::string const &login, std::string const &nick,
-	std::string const &real) : login(login), nick(nick), real(real)
+Client::Client(std::string const &login, std::string const &nick,
+	std::string const &real) : login(login), nickname(nick), realname(real)
+{
+	// getting hostname maybe here
+}
+
+Client::~Client()
 {
 }
 
-User::~User()
-{
-}
-
-User::User(User const &other)
+Client::Client(Client const &other)
 {
 	*this = other;
 }
 
-User	&User::operator=(User const &other)
+Client	&Client::operator=(Client const &other)
 {
 	this->login = other.login;
-	this->nick = other.nick;
-	this->real = other.real;
+	this->nickname = other.nickname;
+	this->realname = other.realname;
+	this->hostname = other.hostname;
+	this->isOperator = other.isOperator;
 	return (*this);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/22 18:12:49 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/24 12:16:34 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "user.hpp"
+#include "client.hpp"
 
 class IRCserv {
 private:
-	int					port;
-	std::string			pass;
-	std::string			server;
-	std::vector<User>	users;
+	int						port;
+	std::string				pass;
+	std::string				server;
+	std::vector<Client>		clients;
 	IRCserv();
 public:
 	// handles <port>
@@ -38,7 +38,7 @@ public:
 	IRCserv &operator=(IRCserv const &other);
 
 	void				RunServer(void);
-	void				AddUser(/* placeholder */);
+	void				AddClient(/* ... */);
 };
 
 #endif
