@@ -22,7 +22,7 @@ HEADERS = ircserv.hpp client.hpp channel.hpp error_codes.hpp error_handle.hpp
 HEADERS := $(addprefix $(INCLUDEDIR), $(HEADERS))
 
 CC = clang++
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR)
+CFLAGS = -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
 EXECFLAGS = $(CFLAGS)
 
 SHELL = /bin/zsh
