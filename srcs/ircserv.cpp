@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/25 20:07:05 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/25 21:35:11 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,8 +143,11 @@ void		IRCserv::RunServer(void)
 		int lastfd = this->sock;
 		for (size_t i = 0; i < this->clients.size(); i++)
 		{
-			FD_SET(this->clients[i].getFD(), &(this->fdset_read));
-			lastfd = std::max(lastfd, this->clients[i].getFD());
+			if (this->clients[i].isConnected())
+			{
+				FD_SET(this->clients[i].getFD(), &(this->fdset_read));
+				lastfd = std::max(lastfd, this->clients[i].getFD());
+			}
 		}
 		int readyfds = select(lastfd + 1, &(this->fdset_read), NULL, NULL, NULL);
 		if (FD_ISSET(this->sock, &(this->fdset_read)))
