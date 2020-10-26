@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 01:50:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 02:05:10 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,19 +119,23 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 			reply += ERR_NICKNAMEINUSE;
 			reply += " " + split[1] + " :Nickname is already in use" + CLRF;
 			send(fd, reply.c_str(), reply.length(), 0);
+			/*	need to save the state in this case
+				cli will try to send another NICK after USER msg	*/
 		}
 	}
 	else if (split[0] == "USER")
 	{
 		it = ft_findclientfd(this->clients.begin(), this->clients.end(), fd);
 		if (it != this->clients.end())
+		{
 			it->Register(split[1], split[4]);
-		reply = ":localhost ";
-		reply += RPL_WELCOME;
-		reply += " " + it->getnickname() +
-			" :Welcome to the Internet Relay Network " + it->getnickname() +
-			"!" + it->getnickname() + "@" + "localhost" + CLRF;
-		send(fd, reply.c_str(), reply.length(), 0);
+			reply = ":localhost ";
+			reply += RPL_WELCOME;
+			reply += " " + it->getnickname() +
+				" :Welcome to the Internet Relay Network " + it->getnickname() +
+				"!" + it->getnickname() + "@" + "localhost" + CLRF;
+			send(fd, reply.c_str(), reply.length(), 0);
+		}
 	}
 	else if (split[0] == "PING")
 	{
