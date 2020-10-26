@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 12:16:04 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/26 20:27:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 void	server_init(IRCserv *_server, int ac, char **av)
 {
+	_server->fds = NULL;
 	if (ac == 2)
 	{
 		std::string	port(av[1]);
@@ -56,8 +57,6 @@ void	server_init(IRCserv *_server, int ac, char **av)
 					error_exit("Error: bad port number");
 			}
 		}
-
-
 	}
 	else if (ac == 4)
 	{
@@ -79,10 +78,13 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	}
 	else
 	{
-                std::cerr << "Usage: " << av[0] << " [host:port_network:" <<
-                        "password_network] <port> <password>" << std::endl;
+		std::cerr << "Usage: " << av[0] << " [host:port_network:" <<
+			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
+	_server->fds = new int[FD_MAX];
+	for (int i = 0; i < FD_MAX; i++)
+		_server->fds[i] = FD_FREE;
 }
 
 int		main(int ac, char **av)

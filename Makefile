@@ -6,17 +6,18 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/26 19:18:22 by salec            ###   ########.fr        #
+#    Updated: 2020/10/26 21:40:05 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
-SRC			= main.cpp ircserv.cpp client.cpp channel.cpp error_handle.cpp
+SRC			= main.cpp ircserv.cpp client.cpp channel.cpp tools.cpp \
+			error_handle.cpp
 SRCDIR		= ./srcs/
 SRC			:= $(addprefix $(SRCDIR), $(SRC))
 OBJ			= $(SRC:.cpp=.o)
 INCLUDEDIR	= ./includes/
-HEADERS		= ircserv.hpp client.hpp channel.hpp error_handle.hpp \
+HEADERS		= ircserv.hpp client.hpp channel.hpp tools.hpp error_handle.hpp \
 			reply_codes.hpp error_codes.hpp common_defines.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
