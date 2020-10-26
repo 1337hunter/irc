@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/26 17:37:43 by salec            ###   ########.fr        #
+#    Updated: 2020/10/26 19:18:22 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,8 +23,13 @@ HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 CC			= clang++
 CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
 EXECFLAGS	= $(CFLAGS)
-
 SHELL		= /bin/zsh
+
+UNAME		:= $(shell uname)
+ifeq ($(UNAME), Darwin)
+CFLAGS		+= -DDARWIN
+endif
+
 RED			= \e[31m
 GREEN		= \e[32m
 CYAN		= \e[36m
