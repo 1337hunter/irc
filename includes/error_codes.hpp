@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/10/22 14:44:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 10:42:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 //	"<channel name> :Cannot send to channel"
 #define ERR_CANNOTSENDTOCHAN	404
 //	"<channel name> :You have joined too many channels"
-#define ERR_TOOMANYCHANNELS	405
+#define ERR_TOOMANYCHANNELS		405
 //	"<nickname> :There was no such nickname"
 #define ERR_WASNOSUCHNICK		406
 //	"<target> :Duplicate recipients. No message delivered"
@@ -30,7 +30,7 @@
 //	":No origin specified"
 #define ERR_NOORIGIN			409
 //	":No recipient given (<command>)"
-#define ERR_NORECIPIENT		411
+#define ERR_NORECIPIENT			411
 //	":No text to send"
 #define ERR_NOTEXTTOSEND		412
 //	"<mask> :No toplevel domain specified"
@@ -42,11 +42,11 @@
 //	":MOTD File is missing"
 #define ERR_NOMOTD				422
 //	"<server> :No administrative info available"
-#define ERR_NOADMININFO		423
+#define ERR_NOADMININFO			423
 //	":File error doing <file op> on <file>"
 #define ERR_FILEERROR			424
 //	":No nickname given"
-#define ERR_NONICKNAMEGIVEN	431
+#define ERR_NONICKNAMEGIVEN		431
 //	"<nick> :Erroneus nickname"
 #define ERR_ERRONEUSNICKNAME	432
 //	"<nick> :Nickname is already in use"
@@ -60,7 +60,7 @@
 //	"<user> <channel> :is already on channel"
 #define ERR_USERONCHANNEL		443
 //	"<user> :User not logged in"
-#define ERR_NOLOGIN			444
+#define ERR_NOLOGIN				444
 //	":SUMMON has been disabled"
 #define ERR_SUMMONDISABLED		445
 //	":USERS has been disabled"
@@ -82,7 +82,7 @@
 //	"<channel> :Cannot join channel (+l)"
 #define ERR_CHANNELISFULL		471
 //	"<char> :is unknown mode char to me"
-#define ERR_UNKNOWNMODE		472
+#define ERR_UNKNOWNMODE			472
 //	"<channel> :Cannot join channel (+i)"
 #define ERR_INVITEONLYCHAN		473
 //	"<channel> :Cannot join channel (+b)"
