@@ -6,17 +6,18 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 23:28:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 00:05:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
+typedef	std::vector<Client>::iterator	t_citer;
+
 // does nothing (can open config maybe later???)
 IRCserv::IRCserv() : sock(-1)
 {
 }
-
 
 IRCserv::~IRCserv()
 {
@@ -41,6 +42,22 @@ IRCserv 	&IRCserv::operator=(IRCserv const &other)
 	this->clients = other.clients;
 	this->fdset_read = other.fdset_read;
 	return (*this);
+}
+
+t_citer		ft_findclientfd(std::vector<Client> vector, int fd)
+{
+	for (t_citer it = vector.begin(); it != vector.end(); it++)
+		if (it->getFD() == fd)
+			return (it);
+	return (vector.end());
+}
+
+t_citer		ft_findnick(std::vector<Client> vector, std::string const &nick)
+{
+	for (t_citer it = vector.begin(); it != vector.end(); it++)
+		if (it->getnickname() == nick)
+			return (it);
+	return (vector.end());
 }
 
 void		IRCserv::CreateSock(void)
@@ -87,27 +104,23 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 {
 	std::vector<std::string>		split = ft_splitstring(msg, " ");
 	std::string						reply;
-	std::vector<Client>::iterator	it;
+	t_citer	it;
 
 	if (split[0] == "NICK")
 	{
-		std::string	nick = split[1];
-		if (std::find_if(this->clients.begin(), this->clients.end(),
-			[&nick](Client c){ return (c.getnickname() == nick); })
-			== this->clients.end())
+		if (ft_findnick(this->clients, split[1]) == this->clients.end())
 			this->clients.push_back(Client(split[1], fd));
 		else
 		{
 			reply = ":localhost ";
 			reply += ERR_NICKNAMEINUSE;
-			reply += " " + nick + " :Nickname is already in use" + CLRF;
+			reply += " " + split[1] + " :Nickname is already in use" + CLRF;
 			send(fd, reply.c_str(), reply.length(), 0);
 		}
 	}
 	else if (split[0] == "USER")
 	{
-		it = std::find_if(this->clients.begin(), this->clients.end(),
-			[&fd](Client c){ return (c.getFD() == fd); });
+		it = ft_findclientfd(this->clients, fd);
 		if (it != this->clients.end())
 			it->Register(split[1], split[4]);
 		reply = ":localhost ";
@@ -168,9 +181,7 @@ void		IRCserv::RecieveMessage(int const &fd)
 	{
 		close(fd);
 		this->fds[fd] = FD_FREE;
-		std::vector<Client>::iterator it =
-			std::find_if(this->clients.begin(), this->clients.end(),
-			[&fd](Client s){ return (s.getFD() == fd); });	// lambda expr
+		t_citer it = ft_findclientfd(this->clients, fd);
 		if (it != this->clients.end())
 			it->Disconnect();
 		std::cout << "Client " << fd << " disconnected" << std::endl;
