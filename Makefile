@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/26 21:40:05 by salec            ###   ########.fr        #
+#    Updated: 2020/10/26 23:26:53 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,7 @@ SHELL		= /bin/zsh
 
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
-CFLAGS		+= -DDARWIN
+CFLAGS		+= -DDARWIN -std=c++11
 endif
 
 RED			= \e[31m

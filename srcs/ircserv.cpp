@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 22:42:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 23:28:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 	{
 		std::string	nick = split[1];
 		if (std::find_if(this->clients.begin(), this->clients.end(),
-			[nick](Client c){ return (c.getnickname() == nick); })
+			[&nick](Client c){ return (c.getnickname() == nick); })
 			== this->clients.end())
 			this->clients.push_back(Client(split[1], fd));
 		else
@@ -107,7 +107,7 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 	else if (split[0] == "USER")
 	{
 		it = std::find_if(this->clients.begin(), this->clients.end(),
-			[fd](Client c){ return (c.getFD() == fd); });
+			[&fd](Client c){ return (c.getFD() == fd); });
 		if (it != this->clients.end())
 			it->Register(split[1], split[4]);
 		reply = ":localhost ";
@@ -170,7 +170,7 @@ void		IRCserv::RecieveMessage(int const &fd)
 		this->fds[fd] = FD_FREE;
 		std::vector<Client>::iterator it =
 			std::find_if(this->clients.begin(), this->clients.end(),
-			[fd](Client s){ return (s.getFD() == fd); });	// lambda expr
+			[&fd](Client s){ return (s.getFD() == fd); });	// lambda expr
 		if (it != this->clients.end())
 			it->Disconnect();
 		std::cout << "Client " << fd << " disconnected" << std::endl;
