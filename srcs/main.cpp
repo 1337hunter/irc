@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 20:27:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 23:06:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,8 +83,6 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		exit(1);
 	}
 	_server->fds = new int[FD_MAX];
-	for (int i = 0; i < FD_MAX; i++)
-		_server->fds[i] = FD_FREE;
 }
 
 int		main(int ac, char **av)

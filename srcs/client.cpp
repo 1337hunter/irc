@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 22:23:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 23:07:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ Client::Client() : fd(-1), _isConnected(false), _isOperator(false)
 {
 }
 
-Client::Client(std::string const &nickname, int const &fd) :
+Client::Client(std::string const &nickname, int fd) :
 	nickname(nickname), fd(fd), _isConnected(true), _isOperator(false)
 {
 }
