@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 13:15:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/26 17:32:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,16 +93,13 @@ void		Client::processMessage(std::string msg)
 	{
 		this->username = split[1];
 		this->realname = split[4].substr(1, split[4].size());
-		reply = ":localhost 001 ";
-		reply += this->nickname;
-		reply += " :Welcome to localhost!\n";
+		reply = ":localhost 001 " + this->nickname +
+			" :Welcome to localhost!" + CLRF;
 		send(this->fd, reply.c_str(), reply.length(), 0);
 	}
 	else if (split[0] == "PING")
 	{
-		reply = "PONG ";
-		reply += split[1];
-		reply += "\n";
+		reply = "PONG " + split[1] + CLRF;
 		send(this->fd, reply.c_str(), reply.length(), 0);
 	}
 	else if (split[0] == "WHO")
@@ -147,7 +144,7 @@ void		Client::Recieve(void)
 		std::cout << "Client " << this->fd << " sent " << buf_read;
 		if (buf_read[r - 1] != '\n')
 			std::cout << std::endl;
-		std::vector<std::string>	split = ft_splitstring(buf_read, "\n");
+		std::vector<std::string>	split = ft_splitstring(buf_read, CLRF);
 		for (int i = 0; !split[i].empty(); i++)
 			this->processMessage(split[i]);
 	}

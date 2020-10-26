@@ -6,32 +6,31 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/24 12:53:34 by salec            ###   ########.fr        #
+#    Updated: 2020/10/26 17:37:43 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = ircserv
+NAME		= ircserv
+SRC			= main.cpp ircserv.cpp client.cpp channel.cpp error_handle.cpp
+SRCDIR		= ./srcs/
+SRC			:= $(addprefix $(SRCDIR), $(SRC))
+OBJ			= $(SRC:.cpp=.o)
+INCLUDEDIR	= ./includes/
+HEADERS		= ircserv.hpp client.hpp channel.hpp error_handle.hpp \
+			reply_codes.hpp error_codes.hpp common_defines.hpp
+HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
-SRC = main.cpp ircserv.cpp client.cpp channel.cpp error_handle.cpp
+CC			= clang++
+CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
+EXECFLAGS	= $(CFLAGS)
 
-SRCDIR = ./srcs/
-SRC := $(addprefix $(SRCDIR), $(SRC))
-OBJ = $(SRC:.cpp=.o)
-INCLUDEDIR = ./includes/
-HEADERS = ircserv.hpp client.hpp channel.hpp error_codes.hpp error_handle.hpp
-HEADERS := $(addprefix $(INCLUDEDIR), $(HEADERS))
-
-CC = clang++
-CFLAGS = -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
-EXECFLAGS = $(CFLAGS)
-
-SHELL = /bin/zsh
-RED = \e[31m
-GREEN = \e[32m
-CYAN = \e[36m
-NC = \e[0m
-ULINE = "\e[4m"
-ULINEF = "\e[24m"
+SHELL		= /bin/zsh
+RED			= \e[31m
+GREEN		= \e[32m
+CYAN		= \e[36m
+NC			= \e[0m
+ULINE		= "\e[4m"
+ULINEF		= "\e[24m"
 
 .PHONY: all bonus clean fclean re
 
