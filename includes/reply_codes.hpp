@@ -6,27 +6,79 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 11:48:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 12:59:10 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef REPLY_CODES_HPP
 #define REPLY_CODES_HPP
 
+//	"Welcome to the Internet Relay Network <nick>!<user>@<host>"
+#define RPL_WELCOME			001
+//	"Your host is <servername>, running version <ver>"
+#define RPL_YOURHOST		002
+//	"This server was created <date>"
+#define RPL_CREATED			003
+//	"<servername> <version> <available user modes> <available channel modes>"
+#define RPL_MYINFO			004
+/*	- The server sends Replies 001 to 004 to a user upon
+	successful registration.	*/
+
+//	"Try server <server name>, port <port number>"
+#define RPL_BOUNCE			005
+/*	- Sent by the server to a user to suggest an alternative
+	server.  This is often used when the connection is
+	refused because the server is already full.		*/
+
+//	"<channel> <nickname>"
+#define RPL_UNIQOPIS		325
+
+//	"<channel> <invitemask>"
+#define RPL_INVITELIST		346
+//	"<channel> :End of channel invite list"
+#define RPL_ENDOFINVITELIST	347
+/*	- When listing the 'invitations masks' for a given channel,
+	a server is required to send the list back using the
+	RPL_INVITELIST and RPL_ENDOFINVITELIST messages.  A
+	separate RPL_INVITELIST is sent for each active mask.
+	After the masks have been listed (or if none present) a
+	RPL_ENDOFINVITELIST MUST be sent.	*/
+
+//	"<channel> <exceptionmask>"
+#define RPL_EXCEPTLIST		348
+//	"<channel> :End of channel exception list"
+#define RPL_ENDOFEXCEPTLIST	349
+/*	- When listing the 'exception masks' for a given channel,
+	a server is required to send the list back using the
+	RPL_EXCEPTLIST and RPL_ENDOFEXCEPTLIST messages.  A
+	separate RPL_EXCEPTLIST is sent for each active mask.
+	After the masks have been listed (or if none present)
+	a RPL_ENDOFEXCEPTLIST MUST be sent.		*/
+
+//	"You are service <servicename>"
+#define RPL_YOURESERVICE	383
+/*	- Sent by the server to a service upon successful
+	registration.	*/
+
 //	Dummy reply number. Not used.
 #define RPL_NONE			300
-//	":[<reply>{<space><reply>}]"
+/*	":[<reply>{<space><reply>}]"
+	or
+	":*1<reply> *( " " <reply> )"	*/
 #define RPL_USERHOST		302
 /*	- Reply format used by USERHOST to list replies to
 	the query list.  The reply string is composed as
 	follows:
 	<reply> ::= <nick>['*'] '=' <'+'|'-'><hostname>
+	or
+	reply = nickname [ "*" ] "=" ( "+" / "-" ) hostname
 	The '*' indicates whether the client has registered
 	as an Operator.  The '-' or '+' characters represent
 	whether the client has set an AWAY message or not
 	respectively.	*/
 
-//	":[<nick> {<space><nick>}]"
+/*	":[<nick> {<space><nick>}]" or
+	":*1<nick> *( " " <nick> )"		*/
 #define RPL_ISON			303
 /*	- Reply format used by ISON to list replies to the query list.	*/
 
@@ -53,7 +105,9 @@
 #define RPL_WHOISIDLE		317
 //	"<nick> :End of /WHOIS list"
 #define RPL_ENDOFWHOIS		318
-//	"<nick> :{[@|+]<channel><space>}"
+/*	"<nick> :{[@|+]<channel><space>}"
+	or
+	"<nick> :*( ( "@" / "+" ) <channel> " " )"	*/
 #define RPL_WHOISCHANNELS	319
 /*	Replies 311 - 313, 317 - 319 are all replies
 	generated in response to a WHOIS message.  Given that
@@ -85,7 +139,7 @@
 #define RPL_LISTSTART		321
 //	"<channel> <# visible> :<topic>"
 #define RPL_LIST			322
-//	":End of /LIST"
+//	":End of /LIST" or ":End of LIST"
 #define RPL_LISTEND			323
 /*	- Replies RPL_LISTSTART, RPL_LIST, RPL_LISTEND mark
 	the start, actual replies with data and end of the
@@ -125,10 +179,14 @@
 	The "comments" field may contain any comments about
 	the version or further version details.		*/
 
-//	"<channel> <user> <host> <server> <nick> \
-	<H|G>[*][@|+] :<hopcount> <real name>"
+/*	"<channel> <user> <host> <server> <nick>
+	<H|G>[*][@|+] :<hopcount> <real name>" or
+ 	"<channel> <user> <host> <server> <nick>
+	( "H" / "G" > ["*"] [ ( "@" / "+" ) ]
+	:<hopcount> <real name>"	*/
 #define RPL_WHOREPLY		352
-//	"<name> :End of /WHO list"
+/*	"<name> :End of /WHO list" or
+	"<name> :End of WHO list"	*/
 #define RPL_ENDOFWHO		315
 /*	- The RPL_WHOREPLY and RPL_ENDOFWHO pair are used
 	to answer a WHO message.  The RPL_WHOREPLY is only
@@ -138,9 +196,14 @@
 	after processing each list item with <name> being
 	the item.	*/
 
-//	"<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
+/*	"<channel> :[[@|+]<nick> [[@|+]<nick> [...]]]"
+	or
+	"( "=" / "*" / "@" ) <channel>
+	:[ "@" / "+" ] <nick> *( " " [ "@" / "+" ] <nick> )
+	- "@" is used for secret channels, "*" for private
+	channels, and "=" for others (public channels).	*/
 #define RPL_NAMREPLY		353
-//	"<channel> :End of /NAMES list"
+//	"<channel> :End of /NAMES list" or "<channel> :End of NAMES list"
 #define RPL_ENDOFNAMES		366
 /*	- To reply to a NAMES message, a reply pair consisting
 	of RPL_NAMREPLY and RPL_ENDOFNAMES is sent by the
@@ -154,7 +217,7 @@
 
 //	"<mask> <server> :<hopcount> <server info>"
 #define RPL_LINKS			364
-//	"<mask> :End of /LINKS list"
+//	"<mask> :End of /LINKS list" or "<mask> :End of LINKS list"
 #define RPL_ENDOFLINKS		365
 /*	- In replying to the LINKS message, a server must send
 	replies back using the RPL_LINKS numeric and mark the
@@ -185,7 +248,7 @@
 #define RPL_MOTDSTART		375
 //	":- <text>"
 #define RPL_MOTD			372
-//	":End of /MOTD command"
+//	":End of /MOTD command" or ":End of MOTD command"
 #define RPL_ENDOFMOTD		376
 /*	- When responding to the MOTD message and the MOTD file
 	is found, the file is displayed line by line, with
@@ -216,7 +279,7 @@
 
 //	":UserID   Terminal  Host"
 #define RPL_USERSSTART		392
-//	":%-8s %-9s %-8s"
+//	":<username> <ttyline> <hostname>" -> ":%-8s %-9s %-8s"
 #define RPL_USERS			393
 //	":End of users"
 #define RPL_ENDOFUSERS		394
@@ -230,7 +293,12 @@
 	RPL_ENDOFUSERS.		*/
 
 
-//	"Link <version & debug level> <destination> <next server>"
+/*	"Link <version & debug level> <destination> <next server>"
+	or
+	"Link <version & debug level> <destination>
+	<next server> V<protocol version>
+	<link uptime in seconds> <backstream sendq>
+	<upstream sendq>"	*/
 #define RPL_TRACELINK		200
 //	"Try. <class> <server>"
 #define RPL_TRACECONNECTING	201
@@ -242,12 +310,23 @@
 #define RPL_TRACEOPERATOR	204
 //	"User <class> <nick>"
 #define RPL_TRACEUSER		205
-//	"Serv <class> <int>S <int>C <server> <nick!user|*!*>@<host|server>"
+/*	"Serv <class> <int>S <int>C <server> <nick!user|*!*>@<host|server>"
+	or
+	"Serv <class> <int>S <int>C <server> <nick!user|*!*>@<host|server>
+	V<protocol version>"	*/
 #define RPL_TRACESERVER		206
+//	"Service <class> <name> <type> <active type>"
+#define RPL_TRACESERVICE	207
 //	"<newtype> 0 <client name>"
 #define RPL_TRACENEWTYPE	208
+//	"Class <class> <count>"
+#define RPL_TRACECLASS		209
+//	Unused.
+#define RPL_TRACERECONNECT	210
 //	"File <logfile> <debug level>"
 #define RPL_TRACELOG		261
+//	"<server name> <version & debug level> :End of TRACE"
+#define RPL_TRACEEND		262
 /*	- The RPL_TRACE* are all returned by the server in
 		response to the TRACE message.  How many are
 		returned is dependent on the the TRACE message and
@@ -268,11 +347,28 @@
 		which does not fit in the other categories but is
 		being displayed anyway.		*/
 
-//	"<linkname> <sendq> <sent messages> <sent bytes> <received messages> \
+/*	"<linkname> <sendq> <sent messages> <sent bytes> <received messages>
 	<received bytes> <time open>"
+	or
+	"<linkname> <sendq> <sent messages>
+	<sent Kbytes> <received messages>
+	<received Kbytes> <time open>"	*/
 #define RPL_STATSLINKINFO	211
+/*	- reports statistics on a connection.  <linkname>
+	identifies the particular connection, <sendq> is
+	the amount of data that is queued and waiting to be
+	sent <sent messages> the number of messages sent,
+	and <sent Kbytes> the amount of data sent, in
+	Kbytes. <received messages> and <received Kbytes>
+	are the equivalent of <sent messages> and <sent
+	Kbytes> for received data, respectively.  <time
+	open> indicates how long ago the connection was
+	opened, in seconds.		*/
+
 //	"<command> <count>"
 #define RPL_STATSCOMMANDS	212
+/*	- reports statistics on commands usage.	*/
+
 //	"C <host> * <name> <port> <class>"
 #define RPL_STATSCLINE		213
 //	"N <host> * <name> <port> <class>"
@@ -283,22 +379,29 @@
 #define RPL_STATSKLINE		216
 //	"Y <class> <ping frequency> <connect frequency> <max sendq>"
 #define RPL_STATSYLINE		218
-//	"<stats letter> :End of /STATS report"
+/*	"<stats letter> :End of /STATS report"
+	or
+	"<stats letter> :End of STATS report"	*/
 #define RPL_ENDOFSTATS		219
 //	"L <hostmask> * <servername> <maxdepth>"
 #define RPL_STATSLLINE		241
 //	":Server Up %d days %d:%02d:%02d"
 #define RPL_STATSUPTIME		242
+/*	- reports the server uptime.	*/
+
 //	"O <hostmask> * <name>"
 #define RPL_STATSOLINE		243
+/*	- reports the allowed hosts from where user may become IRC operators.	*/
+
 //	"H <hostmask> * <servername>"
 #define RPL_STATSHLINE		244
 //	"<user mode string>"
 #define RPL_UMODEIS			221
-/*	- To answer a query about a client's own mode,
-	RPL_UMODEIS is sent back.	*/
+/*	- To answer a query about a client's own mode, RPL_UMODEIS is sent back. */
 
-//	":There are <integer> users and <integer> invisible on <integer> servers"
+/*	":There are <integer> users and <integer> invisible on <integer> servers"
+	or
+	":There are <integer> users and <integer> services on <integer> servers" */
 #define RPL_LUSERCLIENT		251
 //	"<integer> :operator(s) online"
 #define RPL_LUSEROP			252
@@ -336,8 +439,23 @@
 		contact for the server (an email address here
 		is required) in RPL_ADMINEMAIL.		*/
 
-//	reserved
-#define RPL_TRACECLASS		209
+//	"<name> <server> <mask> <type> <hopcount> <info>"
+#define RPL_SERVLIST		234
+//	"<mask> <type> :End of service listing"
+#define RPL_SERVLISTEND		235
+/*	- When listing services in reply to a SERVLIST message,
+	a server is required to send the list back using the
+	RPL_SERVLIST and RPL_SERVLISTEND messages.  A separate
+	RPL_SERVLIST is sent for each service.  After the
+	services have been listed (or if none present) a
+	RPL_SERVLISTEND MUST be sent.	*/
+
+//	"<command> :Please wait a while and try again."
+#define RPL_TRYAGAIN		263
+/*	- When a server drops a command without processing it,
+	it MUST use the reply RPL_TRYAGAIN to inform the
+	originating client.		*/
+
 //	reserved
 #define RPL_STATSQLINE		217
 //	reserved
@@ -346,10 +464,6 @@
 #define RPL_ENDOFSERVICES	232
 //	reserved
 #define RPL_SERVICE			233
-//	reserved
-#define RPL_SERVLIST		234
-//	reserved
-#define RPL_SERVLISTEND		235
 //	reserved
 #define RPL_WHOISCHANOP		316
 //	reserved
@@ -363,10 +477,28 @@
 //	reserved
 #define RPL_MYPORTIS		384
 //	reserved
-#define ERR_YOUWILLBEBANNED	466
+#define RPL_STATSCLINE		213
 //	reserved
-#define ERR_BADCHANMASK		476
+#define RPL_STATSNLINE		214
 //	reserved
-#define ERR_NOSERVICEHOST	492
+#define RPL_STATSILINE		215
+//	reserved
+#define RPL_STATSKLINE		216
+//	reserved
+#define RPL_STATSQLINE		217
+//	reserved
+#define RPL_STATSYLINE		218
+//	reserved
+#define RPL_STATSVLINE		240
+//	reserved
+#define RPL_STATSLLINE		241
+//	reserved
+#define RPL_STATSSLINE		244
+//	reserved
+#define RPL_STATSPING		246
+//	reserved
+#define RPL_STATSBLINE		247
+//	reserved
+#define RPL_STATSDLINE		250
 
 #endif
