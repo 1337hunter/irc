@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 21:45:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 00:54:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,16 @@
 #include "tools.hpp"
 #include "client.hpp"
 
+typedef struct			s_fd
+{
+	int					type;
+	std::string			rdbuf;
+}						t_fd;
+
 struct IRCserv {
 	int					port;
 	int					sock;
-	int					*fds;
+	t_fd				*fds;
 	std::string			pass;
 	std::string			server;		// placeholder for some other server
 	std::vector<Client>	clients;

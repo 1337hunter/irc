@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 23:06:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 00:28:37 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
-	_server->fds = new int[FD_MAX];
+	_server->fds = new t_fd[FD_MAX];
 }
 
 int		main(int ac, char **av)

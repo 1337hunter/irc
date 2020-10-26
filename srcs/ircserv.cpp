@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 00:05:31 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 00:59:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
 typedef	std::vector<Client>::iterator	t_citer;
+typedef	std::vector<std::string>		t_strvect;
 
 // does nothing (can open config maybe later???)
 IRCserv::IRCserv() : sock(-1)
@@ -79,7 +80,7 @@ void		IRCserv::CreateSock(void)
 		error_exit("bind error (probably already binded)");
 	if (listen(this->sock, 42) < 0)
 		error_exit("listen error");
-	this->fds[this->sock] = FD_SERVER;
+	this->fds[this->sock].type = FD_SERVER;
 	std::cout << "Server created on sock " << this->sock << std::endl;
 }
 
@@ -97,14 +98,15 @@ void		IRCserv::AcceptConnect(void)
 	std::cout << "Client " << fd << " from " <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) <<
 		" accepted" << std::endl;
-	this->fds[fd] = FD_CLIENT;
+	this->fds[fd].type = FD_CLIENT;
+	this->fds[fd].rdbuf.erase();
 }
 
 void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 {
-	std::vector<std::string>		split = ft_splitstring(msg, " ");
-	std::string						reply;
-	t_citer	it;
+	t_strvect		split = ft_splitstring(msg, " ");
+	t_citer			it;
+	std::string		reply;
 
 	if (split[0] == "NICK")
 	{
@@ -164,24 +166,30 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 
 void		IRCserv::RecieveMessage(int const &fd)
 {
-	ssize_t						r;
-	char						buf_read[BUF_SIZE + 1];
-	std::vector<std::string>	split;
+	ssize_t		r;
+	char		buf_read[BUF_SIZE + 1];
 
 	if ((r = recv(fd, buf_read, BUF_SIZE, 0)) >= 0)
 		buf_read[r] = 0;
 	if (r > 0)
 	{
-		std::cout << "Client " << fd << " sent " << buf_read;
-		split = ft_splitstring(buf_read, CLRF);
-		for (size_t i = 0; i < split.size() && !split[i].empty(); i++)
-			this->ProcessMessage(fd, split[i]);
+		this->fds[fd].rdbuf += buf_read;
+		if (this->fds[fd].rdbuf.rfind(CLRF) + std::string(CLRF).length() ==
+			this->fds[fd].rdbuf.length())
+		{
+			std::cout << "Client " << fd << " sent " << fds[fd].rdbuf;
+			t_strvect	split = ft_splitstring(buf_read, CLRF);
+			for (size_t i = 0; i < split.size() && !split[i].empty(); i++)
+				this->ProcessMessage(fd, split[i]);
+			fds[fd].rdbuf.erase();
+		}
 	}
 	else
 	{
 		close(fd);
-		this->fds[fd] = FD_FREE;
-		t_citer it = ft_findclientfd(this->clients, fd);
+		this->fds[fd].type = FD_FREE;
+		this->fds[fd].rdbuf.erase();
+		t_citer	it = ft_findclientfd(this->clients, fd);
 		if (it != this->clients.end())
 			it->Disconnect();
 		std::cout << "Client " << fd << " disconnected" << std::endl;
@@ -197,7 +205,7 @@ void		IRCserv::RunServer(void)
 		FD_ZERO(&(this->fdset_read));
 		for (int i = 0; i < FD_MAX; i++)
 		{
-			if (this->fds[i] != FD_FREE)
+			if (this->fds[i].type != FD_FREE)
 			{
 				FD_SET(i, &(this->fdset_read));
 				lastfd = std::max(lastfd, i);
@@ -206,11 +214,11 @@ void		IRCserv::RunServer(void)
 		int readyfds = select(lastfd + 1, &(this->fdset_read), NULL, NULL, NULL);
 		for (int i = 0; readyfds > 0 && i < FD_MAX; i++)
 		{
-			if (this->fds[i] != FD_FREE && FD_ISSET(i, &(this->fdset_read)))
+			if (this->fds[i].type != FD_FREE && FD_ISSET(i, &(this->fdset_read)))
 			{
-				if (this->fds[i] == FD_SERVER)
+				if (this->fds[i].type == FD_SERVER)
 					this->AcceptConnect();
-				else if (this->fds[i] == FD_CLIENT)
+				else if (this->fds[i].type == FD_CLIENT)
 					this->RecieveMessage(i);
 				readyfds--;
 			}

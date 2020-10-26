@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/27 00:07:38 by salec            ###   ########.fr        #
+#    Updated: 2020/10/27 01:01:25 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
 EXECFLAGS	= $(CFLAGS)
 SHELL		= /bin/zsh
 
-# -std=c++11 on darwin for lambda expressions to work
+# -std=c++11 is required on darwin for lambda expressions to work
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
 CFLAGS		+= -DDARWIN
