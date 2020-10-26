@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 17:32:16 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 17:59:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,10 +142,8 @@ void		Client::Recieve(void)
 		if (!std::string(buf_read).compare("exit\n"))
 			exit(0);
 		std::cout << "Client " << this->fd << " sent " << buf_read;
-		if (buf_read[r - 1] != '\n')
-			std::cout << std::endl;
 		std::vector<std::string>	split = ft_splitstring(buf_read, CLRF);
-		for (int i = 0; !split[i].empty(); i++)
+		for (size_t i = 0; !split[i].empty() && i < split.size(); i++)
 			this->processMessage(split[i]);
 	}
 	else
