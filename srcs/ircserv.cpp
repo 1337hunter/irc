@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 22:29:40 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/26 22:42:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ IRCserv::~IRCserv()
 	int	var = 1;
 	setsockopt(this->sock, SOL_SOCKET, SO_REUSEADDR, &var, sizeof(int));
 	close(this->sock);
-	// delete and close everything
+	delete[] (this->fds);
+	this->fds = NULL;
 }
 
 IRCserv::IRCserv(IRCserv const &other)
