@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 00:59:00 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 01:21:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,20 +45,20 @@ IRCserv 	&IRCserv::operator=(IRCserv const &other)
 	return (*this);
 }
 
-t_citer		ft_findclientfd(std::vector<Client> vector, int fd)
+t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
-	for (t_citer it = vector.begin(); it != vector.end(); it++)
+	for (t_citer it = begin; it != end; it++)
 		if (it->getFD() == fd)
 			return (it);
-	return (vector.end());
+	return (end);
 }
 
-t_citer		ft_findnick(std::vector<Client> vector, std::string const &nick)
+t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick)
 {
-	for (t_citer it = vector.begin(); it != vector.end(); it++)
+	for (t_citer it = begin; it != end; it++)
 		if (it->getnickname() == nick)
 			return (it);
-	return (vector.end());
+	return (end);
 }
 
 void		IRCserv::CreateSock(void)
@@ -110,7 +110,8 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 
 	if (split[0] == "NICK")
 	{
-		if (ft_findnick(this->clients, split[1]) == this->clients.end())
+		if (ft_findnick(this->clients.begin(), this->clients.end(), split[1]) ==
+			this->clients.end())
 			this->clients.push_back(Client(split[1], fd));
 		else
 		{
@@ -122,7 +123,7 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 	}
 	else if (split[0] == "USER")
 	{
-		it = ft_findclientfd(this->clients, fd);
+		it = ft_findclientfd(this->clients.begin(), this->clients.end(), fd);
 		if (it != this->clients.end())
 			it->Register(split[1], split[4]);
 		reply = ":localhost ";
@@ -178,7 +179,7 @@ void		IRCserv::RecieveMessage(int const &fd)
 			this->fds[fd].rdbuf.length())
 		{
 			std::cout << "Client " << fd << " sent " << fds[fd].rdbuf;
-			t_strvect	split = ft_splitstring(buf_read, CLRF);
+			t_strvect	split = ft_splitstring(this->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size() && !split[i].empty(); i++)
 				this->ProcessMessage(fd, split[i]);
 			fds[fd].rdbuf.erase();
@@ -189,7 +190,7 @@ void		IRCserv::RecieveMessage(int const &fd)
 		close(fd);
 		this->fds[fd].type = FD_FREE;
 		this->fds[fd].rdbuf.erase();
-		t_citer	it = ft_findclientfd(this->clients, fd);
+		t_citer	it = ft_findclientfd(this->clients.begin(), this->clients.end(), fd);
 		if (it != this->clients.end())
 			it->Disconnect();
 		std::cout << "Client " << fd << " disconnected" << std::endl;
