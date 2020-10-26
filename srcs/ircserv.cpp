@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 01:21:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 01:50:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ IRCserv 	&IRCserv::operator=(IRCserv const &other)
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
 	for (t_citer it = begin; it != end; it++)
-		if (it->getFD() == fd)
+		if (it->isConnected() && it->getFD() == fd)
 			return (it);
 	return (end);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 23:07:49 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 01:50:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ void				Client::Register(std::string const &user,
 
 void				Client::Disconnect(void)
 {
+	this->fd = -1;
 	this->hostname = "";
 	this->_isConnected = false;
 }
