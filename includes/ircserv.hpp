@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 20:12:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 22:28:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,12 @@ struct IRCserv {
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
 	std::string					pass;
-	std::string					server;	// placeholder for some other server
+	std::vector<std::string>	connected_to;
+	std::vector<std::string>	connected_tome;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	static std::string const	clrf;
 };
-
-//typedef void (*commands_t)(int fd, const std::string &split, IRCserv *_server);
 
 void		CreateSock(IRCserv *_server);
 void		AcceptConnect(IRCserv *_server);
