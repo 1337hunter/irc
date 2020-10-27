@@ -6,15 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:23:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 14:37:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
-#include <cstring>
 
 typedef	std::vector<Client>::iterator	t_citer;
-typedef	std::vector<std::string>		t_strvect;
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
@@ -150,7 +148,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 	if (r > 0)
 	{
 		_server->fds[fd].rdbuf += buf_read;
-		if (_server->fds[fd].rdbuf.rfind(CLRF) + strlen(CLRF) ==
+		if (_server->fds[fd].rdbuf.rfind(CLRF) + _server->clrf.length() ==
 			_server->fds[fd].rdbuf.length())
 		{
 			std::cout << "Client " << fd << " sent " << _server->fds[fd].rdbuf;

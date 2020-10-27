@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:13:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 14:36:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ struct IRCserv {
 	std::string			pass;
 	std::string			server;		// placeholder for some other server
 	std::vector<Client>	clients;
+	std::string	const	clrf = CLRF;
 	fd_set				fdset_read;
 };
 
