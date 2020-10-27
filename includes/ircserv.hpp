@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 00:54:48 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 09:44:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ struct IRCserv {
 	IRCserv &operator=(IRCserv const &other);
 	void				CreateSock(void);
 	void				AcceptConnect(void);
-	void				RecieveMessage(int const &fd);
-	void				ProcessMessage(int const &fd, std::string const &msg);
+	void				RecieveMessage(int fd);
+	void				ProcessMessage(int fd, std::string const &msg);
 	void				RunServer(void);
 };
 

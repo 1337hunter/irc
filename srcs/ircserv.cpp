@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 09:31:31 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 09:43:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void		IRCserv::AcceptConnect(void)
 	this->fds[fd].rdbuf.erase();
 }
 
-void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
+void		IRCserv::ProcessMessage(int fd, std::string const &msg)
 {
 	t_strvect		split = ft_splitstring(msg, " ");
 	t_citer			it;
@@ -170,7 +170,7 @@ void		IRCserv::ProcessMessage(int const &fd, std::string const &msg)
 	}
 }
 
-void		IRCserv::RecieveMessage(int const &fd)
+void		IRCserv::RecieveMessage(int fd)
 {
 	ssize_t		r;
 	char		buf_read[BUF_SIZE + 1];
