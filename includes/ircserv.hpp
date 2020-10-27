@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:52:52 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 17:33:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,10 @@
 #include "error_codes.hpp"
 #include "tools.hpp"
 #include "client.hpp"
+#include <unordered_map>
+
+typedef std::vector<Client>::iterator	t_citer;
+typedef std::vector<std::string>	t_strvect;
 
 typedef struct					s_fd
 {
@@ -42,9 +46,11 @@ typedef struct					s_fd
 }								t_fd;
 
 struct IRCserv {
+	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
 	int							port;
 	int							sock;
 	std::map<int, t_fd>			fds;
+	std::map<std::string, t_command>	command;
 	std::string					pass;
 	std::string					server;		// placeholder for some other server
 	std::vector<Client>			clients;
@@ -52,10 +58,13 @@ struct IRCserv {
 	static std::string const	clrf;
 };
 
+//typedef void (*commands_t)(int fd, const std::string &split, IRCserv *_server);
+
 void	CreateSock(IRCserv *_server);
 void	AcceptConnect(IRCserv *_server);
 void	RecieveMessage(int fd, IRCserv *_server);
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
 void	RunServer(IRCserv *_server);
-
+t_citer         ft_findclientfd(t_citer const &begin, t_citer const &end, int fd);
+t_citer         ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick);
 #endif

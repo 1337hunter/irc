@@ -6,30 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:50:48 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 17:46:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
+#include <stdexcept>
 
-typedef	std::vector<Client>::iterator	t_citer;
 std::string const	IRCserv::clrf = CLRF;
-
-t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
-{
-	for (t_citer it = begin; it != end; it++)
-		if (it->isConnected() && it->getFD() == fd)
-			return (it);
-	return (end);
-}
-
-t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick)
-{
-	for (t_citer it = begin; it != end; it++)
-		if (it->getnickname() == nick)
-			return (it);
-	return (end);
-}
 
 void		CreateSock(IRCserv *_server)
 {
@@ -75,44 +59,15 @@ void		AcceptConnect(IRCserv *_server)
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 {
 	t_strvect		split = ft_splitstring(msg, " ");
-	t_citer			it;
-	std::string		reply;
+	std::map<std::string, IRCserv::t_command>::iterator it;
 
-	if (split[0] == "NICK")
+	it = _server->command.find(split[0]);
+	if (it != _server->command.end())
 	{
-		if (ft_findnick(_server->clients.begin(), _server->clients.end(), split[1]) ==
-			_server->clients.end())
-			_server->clients.push_back(Client(split[1], fd));
-		else
-		{
-			reply = ":localhost ";
-			reply += ERR_NICKNAMEINUSE;
-			reply += " " + split[1] + " :Nickname is already in use" + CLRF;
-			send(fd, reply.c_str(), reply.length(), 0);
-			/*	need to save the state in this case
-				cli will try to send another NICK after USER msg	*/
-		}
+		std::cout << "\nCommand found: " << "|" << split[0] << "|" << '\n';
+		_server->command[split[0]](fd, split, _server);
 	}
-	else if (split[0] == "USER")
-	{
-		it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
-		if (it != _server->clients.end())
-		{
-			it->Register(split[1], split[4]);
-			reply = ":localhost ";
-			reply += RPL_WELCOME;
-			reply += " " + it->getnickname() +
-				" :Welcome to the Internet Relay Network " + it->getnickname() +
-				"!" + it->getnickname() + "@" + "localhost" + CLRF;
-			send(fd, reply.c_str(), reply.length(), 0);
-		}
-	}
-	else if (split[0] == "PING")
-	{
-		reply = "PONG " + split[1] + CLRF;
-		send(fd, reply.c_str(), reply.length(), 0);
-	}
-	else if (split[0] == "WHO")
+	if (split[0] == "WHO")
 	{
 		/*
 			352	RPL_WHOREPLY
@@ -138,7 +93,6 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 		*/
 	}
 }
-
 void		RecieveMessage(int fd, IRCserv *_server)
 {
 	ssize_t		r;

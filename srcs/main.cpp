@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:16:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 17:42:57 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "error_handle.hpp"
+#include "commands.hpp"
 
 void	server_init(IRCserv *_server, int ac, char **av)
 {
@@ -81,6 +82,9 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
+	_server->command["USER"] = cmd_user;
+	_server->command["NICK"] = cmd_nick;
+	_server->command["PING"] = cmd_ping;
 }
 
 int		main(int ac, char **av)

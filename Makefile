@@ -6,13 +6,13 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/27 01:01:25 by salec            ###   ########.fr        #
+#    Updated: 2020/10/27 15:49:04 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 SRC			= main.cpp ircserv.cpp client.cpp channel.cpp tools.cpp \
-			error_handle.cpp
+			error_handle.cpp commands.cpp
 SRCDIR		= ./srcs/
 SRC			:= $(addprefix $(SRCDIR), $(SRC))
 OBJ			= $(SRC:.cpp=.o)
