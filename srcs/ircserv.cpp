@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 17:46:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 18:32:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,41 +58,17 @@ void		AcceptConnect(IRCserv *_server)
 
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 {
-	t_strvect		split = ft_splitstring(msg, " ");
-	std::map<std::string, IRCserv::t_command>::iterator it;
+	t_strvect					split = ft_splitstring(msg, " ");
+	IRCserv::t_cmdmap::iterator	it;
 
 	it = _server->command.find(split[0]);
 	if (it != _server->command.end())
 	{
-		std::cout << "\nCommand found: " << "|" << split[0] << "|" << '\n';
+		std::cout << "Command found: " << "|" << split[0] << "|" << "\n\n";
 		_server->command[split[0]](fd, split, _server);
 	}
-	if (split[0] == "WHO")
-	{
-		/*
-			352	RPL_WHOREPLY
-				"<channel> <user> <host> <server> <nick>
-				<H|G>[*][@|+] :<hopcount> <real name>"
-		*/
-	}
-	else if (split[0] == "USERHOST")
-	{
-		/*
-			302	RPL_USERHOST
-			":[<reply>{<space><reply>}]"
-			- Reply format used by USERHOST to list replies to
-				the query list.  The reply string is composed as
-				follows:
-
-				<reply> ::= <nick>['*'] '=' <'+'|'-'><hostname>
-
-				The '*' indicates whether the client has registered
-				as an Operator.  The '-' or '+' characters represent
-				whether the client has set an AWAY message or not
-				respectively.
-		*/
-	}
 }
+
 void		RecieveMessage(int fd, IRCserv *_server)
 {
 	ssize_t		r;

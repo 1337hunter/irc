@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 17:33:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 18:31:07 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,25 +34,25 @@
 #include "error_codes.hpp"
 #include "tools.hpp"
 #include "client.hpp"
-#include <unordered_map>
+// #include <unordered_map>
 
-typedef std::vector<Client>::iterator	t_citer;
-typedef std::vector<std::string>	t_strvect;
+typedef std::vector<Client>::iterator		t_citer;
 
-typedef struct					s_fd
+typedef struct		s_fd
 {
-	int							type;
-	std::string					rdbuf;
-}								t_fd;
+	int				type;
+	std::string		rdbuf;
+}					t_fd;
 
 struct IRCserv {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
+	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
 	std::map<int, t_fd>			fds;
-	std::map<std::string, t_command>	command;
+	t_cmdmap					command;
 	std::string					pass;
-	std::string					server;		// placeholder for some other server
+	std::string					server;	// placeholder for some other server
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	static std::string const	clrf;
@@ -60,11 +60,12 @@ struct IRCserv {
 
 //typedef void (*commands_t)(int fd, const std::string &split, IRCserv *_server);
 
-void	CreateSock(IRCserv *_server);
-void	AcceptConnect(IRCserv *_server);
-void	RecieveMessage(int fd, IRCserv *_server);
-void	ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
-void	RunServer(IRCserv *_server);
-t_citer         ft_findclientfd(t_citer const &begin, t_citer const &end, int fd);
-t_citer         ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick);
+void		CreateSock(IRCserv *_server);
+void		AcceptConnect(IRCserv *_server);
+void		RecieveMessage(int fd, IRCserv *_server);
+void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
+void		RunServer(IRCserv *_server);
+t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd);
+t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick);
+
 #endif
