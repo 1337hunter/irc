@@ -6,12 +6,11 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 18:32:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 21:04:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
-#include <stdexcept>
 
 std::string const	IRCserv::clrf = CLRF;
 
@@ -58,14 +57,16 @@ void		AcceptConnect(IRCserv *_server)
 
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 {
-	t_strvect					split = ft_splitstring(msg, " ");
-	IRCserv::t_cmdmap::iterator	it;
+	t_strvect	split = ft_splitstring(msg, " ");
 
-	it = _server->command.find(split[0]);
-	if (it != _server->command.end())
+	try
 	{
-		std::cout << "Command found: " << "|" << split[0] << "|" << "\n\n";
-		_server->command[split[0]](fd, split, _server);
+		_server->command.at(split[0])(fd, split, _server);
+		std::cout << "Command found: " << "|" << split[0] << "|" << std::endl;
+	}
+	catch (std::out_of_range &e)
+	{
+		(void)e;
 	}
 }
 
@@ -84,7 +85,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 		{
 			std::cout << "Client " << fd << " sent " << _server->fds[fd].rdbuf;
 			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
-			for (size_t i = 0; i < split.size() && !split[i].empty(); i++)
+			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], _server);
 			_server->fds[fd].rdbuf.erase();
 		}

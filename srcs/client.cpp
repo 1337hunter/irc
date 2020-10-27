@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 01:50:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 20:43:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,11 +67,15 @@ std::string const	&Client::getrealname(void)
 	return (this->realname);
 }
 
-void				Client::Register(std::string const &user,
+bool				Client::Register(std::string const &user,
 							std::string const &real)
 {
+	if (real[0] != ':' || real.size() < 2 || real.size() > 10 ||
+		this->username == user || this->realname == real.substr(1))
+		return (false);
 	this->username = user;
-	this->realname = real;
+	this->realname = real.substr(1);
+	return (true);
 }
 
 void				Client::Disconnect(void)

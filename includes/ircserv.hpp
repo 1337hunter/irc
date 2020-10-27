@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 18:31:07 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 20:12:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define IRCSERV_HPP
 
 #include <iostream>
+#include <exception>
 #include <string>
 #include <vector>
 #include <map>

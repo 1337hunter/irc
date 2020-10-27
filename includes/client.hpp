@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/10/26 23:07:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 20:28:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ public:
 	std::string const	&getusername(void);
 	std::string const	&getrealname(void);
 
-	void				Register(std::string const &user,
+	bool				Register(std::string const &user,
 							std::string const &real);
 	void				Disconnect(void);
 };
