@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 11:54:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 14:13:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include <algorithm>
 // fcntl, select, socket, inet structs, inet
 #include <fcntl.h>
@@ -43,7 +44,7 @@ typedef struct			s_fd
 struct IRCserv {
 	int					port;
 	int					sock;
-	t_fd				*fds;
+	std::map<int, t_fd>	fds;
 	std::string			pass;
 	std::string			server;		// placeholder for some other server
 	std::vector<Client>	clients;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 11:49:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 14:23:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,8 +163,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 	else
 	{
 		close(fd);
-		_server->fds[fd].type = FD_FREE;
-		_server->fds[fd].rdbuf.erase();
+		_server->fds.erase(fd);
 		t_citer	it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
 		if (it != _server->clients.end())
 			it->Disconnect();
@@ -179,23 +178,22 @@ void		RunServer(IRCserv *_server)
 	{
 		int	lastfd = 0;
 		FD_ZERO(&(_server->fdset_read));
-		for (int i = 0; i < FD_MAX; i++)
+		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
+			it != _server->fds.end(); it++)
 		{
-			if (_server->fds[i].type != FD_FREE)
-			{
-				FD_SET(i, &(_server->fdset_read));
-				lastfd = std::max(lastfd, i);
-			}
+			FD_SET(it->first, &(_server->fdset_read));
+			lastfd = std::max(lastfd, it->first);
 		}
 		int readyfds = select(lastfd + 1, &(_server->fdset_read), NULL, NULL, NULL);
-		for (int i = 0; readyfds > 0 && i < FD_MAX; i++)
+		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
+			readyfds > 0 && it != _server->fds.end(); it++)
 		{
-			if (_server->fds[i].type != FD_FREE && FD_ISSET(i, &(_server->fdset_read)))
+			if (FD_ISSET(it->first, &(_server->fdset_read)))
 			{
-				if (_server->fds[i].type == FD_SERVER)
+				if (_server->fds[it->first].type == FD_SERVER)
 					AcceptConnect(_server);
-				else if (_server->fds[i].type == FD_CLIENT)
-					RecieveMessage(i, _server);
+				else if (_server->fds[it->first].type == FD_CLIENT)
+					RecieveMessage(it->first, _server);
 				readyfds--;
 			}
 		}
