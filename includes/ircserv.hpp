@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 09:44:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 11:54:22 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,16 +48,12 @@ struct IRCserv {
 	std::string			server;		// placeholder for some other server
 	std::vector<Client>	clients;
 	fd_set				fdset_read;
-
-	IRCserv();
-	~IRCserv();
-	IRCserv(IRCserv const &other);
-	IRCserv &operator=(IRCserv const &other);
-	void				CreateSock(void);
-	void				AcceptConnect(void);
-	void				RecieveMessage(int fd);
-	void				ProcessMessage(int fd, std::string const &msg);
-	void				RunServer(void);
 };
+
+void	CreateSock(IRCserv *_server);
+void	AcceptConnect(IRCserv *_server);
+void	RecieveMessage(int fd, IRCserv *_server);
+void	ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
+void	RunServer(IRCserv *_server);
 
 #endif

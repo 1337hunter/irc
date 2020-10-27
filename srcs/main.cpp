@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 00:28:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 11:51:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ void	server_init(IRCserv *_server, int ac, char **av)
 
 int		main(int ac, char **av)
 {
-	IRCserv	server;
+	IRCserv	_server;
 
-	server_init(&server, ac, av);
-	server.RunServer();
+	server_init(&_server, ac, av);
+	RunServer(&_server);
 	return (0);
 }

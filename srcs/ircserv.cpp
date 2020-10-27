@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 09:43:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/27 11:49:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,36 +15,6 @@
 
 typedef	std::vector<Client>::iterator	t_citer;
 typedef	std::vector<std::string>		t_strvect;
-
-// does nothing (can open config maybe later???)
-IRCserv::IRCserv() : sock(-1)
-{
-}
-
-IRCserv::~IRCserv()
-{
-	int	var = 1;
-	setsockopt(this->sock, SOL_SOCKET, SO_REUSEADDR, &var, sizeof(int));
-	close(this->sock);
-	delete[] (this->fds);
-	this->fds = NULL;
-}
-
-IRCserv::IRCserv(IRCserv const &other)
-{
-	*this = other;
-}
-
-IRCserv 	&IRCserv::operator=(IRCserv const &other)
-{
-	this->port = other.port;
-	this->sock = other.sock;
-	this->pass = other.pass;
-	this->server = other.server;
-	this->clients = other.clients;
-	this->fdset_read = other.fdset_read;
-	return (*this);
-}
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
@@ -62,48 +32,48 @@ t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const
 	return (end);
 }
 
-void		IRCserv::CreateSock(void)
+void		CreateSock(IRCserv *_server)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe;
 
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
-	if ((this->sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
+	if ((_server->sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
 		error_exit("socket error");
-	if (fcntl(this->sock, F_SETFL, O_NONBLOCK) < 0)
+	if (fcntl(_server->sock, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	sockin.sin_family = AF_INET;
 	sockin.sin_addr.s_addr = INADDR_ANY; //inet_addr("127.0.0.1"); can changee ip
 	// to create another local server without the b8s or containers just with ip variable seted in config file
-	sockin.sin_port = htons(this->port);
-	if (bind(this->sock, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
+	sockin.sin_port = htons(_server->port);
+	if (bind(_server->sock, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
-	if (listen(this->sock, 42) < 0)
+	if (listen(_server->sock, 42) < 0)
 		error_exit("listen error");
-	this->fds[this->sock].type = FD_SERVER;
-	std::cout << "Server created on sock " << this->sock << std::endl;
+	_server->fds[_server->sock].type = FD_SERVER;
+	std::cout << "Server created on sock " << _server->sock << std::endl;
 }
 
-void		IRCserv::AcceptConnect(void)
+void		AcceptConnect(IRCserv *_server)
 {
 	int				fd;
 	t_sockaddr_in	csin;
 	socklen_t		csin_len;
 
 	csin_len = sizeof(csin);
-	if ((fd = accept(sock, (t_sockaddr*)&csin, &csin_len)) < 0)
+	if ((fd = accept(_server->sock, (t_sockaddr*)&csin, &csin_len)) < 0)
 		error_exit("accept error");
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	std::cout << "Client " << fd << " from " <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) <<
 		" accepted" << std::endl;
-	this->fds[fd].type = FD_CLIENT;
-	this->fds[fd].rdbuf.erase();
+	_server->fds[fd].type = FD_CLIENT;
+	_server->fds[fd].rdbuf.erase();
 }
 
-void		IRCserv::ProcessMessage(int fd, std::string const &msg)
+void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 {
 	t_strvect		split = ft_splitstring(msg, " ");
 	t_citer			it;
@@ -111,9 +81,9 @@ void		IRCserv::ProcessMessage(int fd, std::string const &msg)
 
 	if (split[0] == "NICK")
 	{
-		if (ft_findnick(this->clients.begin(), this->clients.end(), split[1]) ==
-			this->clients.end())
-			this->clients.push_back(Client(split[1], fd));
+		if (ft_findnick(_server->clients.begin(), _server->clients.end(), split[1]) ==
+			_server->clients.end())
+			_server->clients.push_back(Client(split[1], fd));
 		else
 		{
 			reply = ":localhost ";
@@ -126,8 +96,8 @@ void		IRCserv::ProcessMessage(int fd, std::string const &msg)
 	}
 	else if (split[0] == "USER")
 	{
-		it = ft_findclientfd(this->clients.begin(), this->clients.end(), fd);
-		if (it != this->clients.end())
+		it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+		if (it != _server->clients.end())
 		{
 			it->Register(split[1], split[4]);
 			reply = ":localhost ";
@@ -170,7 +140,7 @@ void		IRCserv::ProcessMessage(int fd, std::string const &msg)
 	}
 }
 
-void		IRCserv::RecieveMessage(int fd)
+void		RecieveMessage(int fd, IRCserv *_server)
 {
 	ssize_t		r;
 	char		buf_read[BUF_SIZE + 1];
@@ -179,53 +149,53 @@ void		IRCserv::RecieveMessage(int fd)
 		buf_read[r] = 0;
 	if (r > 0)
 	{
-		this->fds[fd].rdbuf += buf_read;
-		if (this->fds[fd].rdbuf.rfind(CLRF) + strlen(CLRF) ==
-			this->fds[fd].rdbuf.length())
+		_server->fds[fd].rdbuf += buf_read;
+		if (_server->fds[fd].rdbuf.rfind(CLRF) + strlen(CLRF) ==
+			_server->fds[fd].rdbuf.length())
 		{
-			std::cout << "Client " << fd << " sent " << fds[fd].rdbuf;
-			t_strvect	split = ft_splitstring(this->fds[fd].rdbuf, CLRF);
+			std::cout << "Client " << fd << " sent " << _server->fds[fd].rdbuf;
+			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size() && !split[i].empty(); i++)
-				this->ProcessMessage(fd, split[i]);
-			fds[fd].rdbuf.erase();
+				ProcessMessage(fd, split[i], _server);
+			_server->fds[fd].rdbuf.erase();
 		}
 	}
 	else
 	{
 		close(fd);
-		this->fds[fd].type = FD_FREE;
-		this->fds[fd].rdbuf.erase();
-		t_citer	it = ft_findclientfd(this->clients.begin(), this->clients.end(), fd);
-		if (it != this->clients.end())
+		_server->fds[fd].type = FD_FREE;
+		_server->fds[fd].rdbuf.erase();
+		t_citer	it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+		if (it != _server->clients.end())
 			it->Disconnect();
 		std::cout << "Client " << fd << " disconnected" << std::endl;
 	}
 }
 
-void		IRCserv::RunServer(void)
+void		RunServer(IRCserv *_server)
 {
-	CreateSock();
+	CreateSock(_server);
 	while (1)
 	{
 		int	lastfd = 0;
-		FD_ZERO(&(this->fdset_read));
+		FD_ZERO(&(_server->fdset_read));
 		for (int i = 0; i < FD_MAX; i++)
 		{
-			if (this->fds[i].type != FD_FREE)
+			if (_server->fds[i].type != FD_FREE)
 			{
-				FD_SET(i, &(this->fdset_read));
+				FD_SET(i, &(_server->fdset_read));
 				lastfd = std::max(lastfd, i);
 			}
 		}
-		int readyfds = select(lastfd + 1, &(this->fdset_read), NULL, NULL, NULL);
+		int readyfds = select(lastfd + 1, &(_server->fdset_read), NULL, NULL, NULL);
 		for (int i = 0; readyfds > 0 && i < FD_MAX; i++)
 		{
-			if (this->fds[i].type != FD_FREE && FD_ISSET(i, &(this->fdset_read)))
+			if (_server->fds[i].type != FD_FREE && FD_ISSET(i, &(_server->fdset_read)))
 			{
-				if (this->fds[i].type == FD_SERVER)
-					this->AcceptConnect();
-				else if (this->fds[i].type == FD_CLIENT)
-					this->RecieveMessage(i);
+				if (_server->fds[i].type == FD_SERVER)
+					AcceptConnect(_server);
+				else if (_server->fds[i].type == FD_CLIENT)
+					RecieveMessage(i, _server);
 				readyfds--;
 			}
 		}
