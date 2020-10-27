@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:36:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 14:49:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,14 @@ typedef struct			s_fd
 }						t_fd;
 
 struct IRCserv {
-	int					port;
-	int					sock;
-	std::map<int, t_fd>	fds;
-	std::string			pass;
-	std::string			server;		// placeholder for some other server
-	std::vector<Client>	clients;
-	std::string	const	clrf = CLRF;
-	fd_set				fdset_read;
+	int							port;
+	int							sock;
+	std::map<int, t_fd>			fds;
+	std::string					pass;
+	std::string					server;		// placeholder for some other server
+	std::vector<Client>			clients;
+	fd_set						fdset_read;
+	static std::string const	clrf;
 };
 
 void	CreateSock(IRCserv *_server);

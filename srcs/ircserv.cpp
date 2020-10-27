@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 14:37:39 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/27 14:50:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
 typedef	std::vector<Client>::iterator	t_citer;
+std::string const	IRCserv::clrf = CLRF;
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
