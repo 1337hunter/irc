@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 13:23:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/28 13:32:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,8 @@ void		RunServer(IRCserv *_server)
 			lastfd = std::max(lastfd, it->first);
 		}
 		int readyfds = select(lastfd + 1, &(_server->fdset_read), NULL, NULL, NULL);
+		if (readyfds < 0)
+			error_exit("select error");
 		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
 			readyfds > 0 && it != _server->fds.end(); it++)
 		{
