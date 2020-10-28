@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 18:27:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/28 18:35:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,9 +116,12 @@ void	print_server_info(IRCserv *_server)
 	std::cout << "server starts with parameters:\n";
 	std::cout << "server port:      \t" << _server->port << '\n';
 	std::cout << "server pass:      \t" << _server->pass << '\n';
-	std::cout << "connected_to_host:\t" << _server->connected_to_host[0] << '\n';
-	std::cout << "connected_to_port:\t" << _server->connected_to_port[0] << '\n';
-	std::cout << "connected_to_pass:\t" << _server->connected_to_pass[0] << '\n';
+	if (_server->connected_to_host.size() > 0)
+	{
+		std::cout << "connected_to_host:\t" << _server->connected_to_host[0] << '\n';
+		std::cout << "connected_to_port:\t" << _server->connected_to_port[0] << '\n';
+		std::cout << "connected_to_pass:\t" << _server->connected_to_pass[0] << '\n';
+	}
 }
 
 int		main(int ac, char **av)
