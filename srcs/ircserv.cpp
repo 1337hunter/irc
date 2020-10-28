@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 12:53:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/28 13:23:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void		CreateSock(IRCserv *_server)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe;
-	int     optval = 1;
+	int				optval = 1;
 
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
