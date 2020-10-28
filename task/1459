@@ -2,24 +2,6 @@ Internet Relay Chat Protocol
 
 Status of This Memo
 
-   This memo defines an Experimental Protocol for the Internet
-   community.  Discussion and suggestions for improvement are requested.
-   Please refer to the current edition of the "IAB Official Protocol
-   Standards" for the standardization state and status of this protocol.
-   Distribution of this memo is unlimited.
-
-Abstract
-
-   The IRC protocol was developed over the last 4 years since it was
-   first implemented as a means for users on a BBS to chat amongst
-   themselves.  Now it supports a world-wide network of servers and
-   clients, and is stringing to cope with growth. Over the past 2 years,
-   the average number of users connected to the main IRC network has
-   grown by a factor of 10.
-
-   The IRC protocol is a text-based protocol, with the simplest client
-   being any socket program capable of connecting to the server.
-
 Table of Contents
 
    1.  INTRODUCTION ...............................................    4
@@ -41,14 +23,6 @@ Table of Contents
          3.2.2 To a group (channel) ...............................   11
          3.2.3 To a host/server mask ..............................   12
       3.3 One to all ..............................................   12
-
-
-
-Oikarinen & Reed                                                [Page 1]
- 
-RFC 1459              Internet Relay Chat Protocol              May 1993
-
-
          3.3.1 Client to Client ...................................   12
          3.3.2 Clients to Server ..................................   12
          3.3.3 Server to Server ...................................   12
@@ -97,14 +71,6 @@ RFC 1459              Internet Relay Chat Protocol              May 1993
       5.1 Away message ............................................   38
       5.2 Rehash command ..........................................   39
       5.3 Restart command .........................................   39
-
-
-
-Oikarinen & Reed                                                [Page 2]
- 
-RFC 1459              Internet Relay Chat Protocol              May 1993
-
-
       5.4 Summon message ..........................................   40
       5.5 Users message ...........................................   40
       5.6 Operwall command ........................................   41
@@ -149,18 +115,8 @@ RFC 1459              Internet Relay Chat Protocol              May 1993
    12. Authors' Addresses .........................................   65
 
 
-
-
-
-
-
-
-
 Oikarinen & Reed                                                [Page 3]
  
-RFC 1459              Internet Relay Chat Protocol              May 1993
-
-
 1.  INTRODUCTION
 
    The IRC (Internet Relay Chat) protocol has been designed over a
@@ -3554,47 +3510,3 @@ RFC 1459              Internet Relay Chat Protocol              May 1993
    conditions generally arise from the problem of it taking time for
    messages to traverse and effect the IRC network.  Even by changing to
    unique labels, there are problems with channel-related commands being
-   disrupted.
-
-10. Current support and availability
-
-           Mailing lists for IRC related discussion:
-                Future protocol: ircd-three-request@eff.org
-                General discussion: operlist-request@eff.org
-
-           Software implemenations
-                cs.bu.edu:/irc
-                nic.funet.fi:/pub/irc
-                coombs.anu.edu.au:/pub/irc
-
-           Newsgroup: alt.irc
-
-
-
-
-Oikarinen & Reed                                               [Page 64]
- 
-RFC 1459              Internet Relay Chat Protocol              May 1993
-
-
-Security Considerations
-
-   Security issues are discussed in sections 4.1, 4.1.1, 4.1.3, 5.5, and
-   7.
-
-12. Authors' Addresses
-
-   Jarkko Oikarinen
-   Tuirantie 17 as 9
-   90500 OULU
-   FINLAND
-
-   Email: jto@tolsun.oulu.fi
-
-
-   Darren Reed
-   4 Pateman Street
-   Watsonia, Victoria 3087
-   Australia
-
-   Email: avalon@coombs.anu.edu.au

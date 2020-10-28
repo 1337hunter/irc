@@ -1,27 +1,5 @@
 Internet Relay Chat: Architecture
 
-Status of this Memo
-
-   This memo provides information for the Internet community.  It does
-   not specify an Internet standard of any kind.  Distribution of this
-   memo is unlimited.
-
-Copyright Notice
-
-   Copyright (C) The Internet Society (2000).  All Rights Reserved.
-
-Abstract
-
-   The IRC (Internet Relay Chat) protocol is for use with text based
-   conferencing. It has been developed since 1989 when it was originally
-   implemented as a mean for users on a BBS to chat amongst themselves.
-
-   First formally documented in May 1993 by RFC 1459 [IRC], the protocol
-   has kept evolving. This document is an update describing the
-   architecture of the current IRC protocol and the role of its
-   different components.  Other documents describe in detail the
-   protocol used between the various components defined here.
-
 Table of Contents
 
    1.  Introduction ...............................................   2
@@ -40,14 +18,6 @@ Table of Contents
       5.2  One-To-Many ............................................   5
          5.2.1  To A Channel ......................................   5
          5.2.2  To A Host/Server Mask .............................   6
-
-
-
-Kalt                         Informational                      [Page 1]
- 
-RFC 2810           Internet Relay Chat: Architecture          April 2000
-
-
          5.2.3  To A List .........................................   6
       5.3  One-To-All .............................................   6
          5.3.1  Client-to-Client ..................................   6
@@ -424,107 +394,3 @@ RFC 2810           Internet Relay Chat: Architecture          April 2000
 
    Matthew Green, Michael Neumayer, Volker Paulsen, Kurt Roeckx, Vesa
    Ruokonen, Magnus Tjernstrom, Stefan Zehl.
-
-
-
-
-
-
-
-
-
-
-
-Kalt                         Informational                      [Page 8]
- 
-RFC 2810           Internet Relay Chat: Architecture          April 2000
-
-
-10. References
-
-   [KEYWORDS]   Bradner, S., "Key words for use in RFCs to Indicate
-                Requirement Levels", BCP 14, RFC 2119, March 1997.
-
-   [IRC]        Oikarinen, J. and D. Reed, "Internet Relay Chat
-                Protocol", RFC 1459, May 1993.
-
-   [IRC-CLIENT] Kalt, C., "Internet Relay Chat: Client Protocol", RFC
-                2812, April 2000.
-
-   [IRC-SERVER] Kalt, C., "Internet Relay Chat: Server Protocol", RFC
-                2813, April 2000.
-
-   [IRC-CHAN]   Kalt, C., "Internet Relay Chat: Channel Management", RFC
-                2811, April 2000.
-
-11. Author's Address
-
-   Christophe Kalt
-   99 Teaneck Rd, Apt #117
-   Ridgefield Park, NJ 07660
-   USA
-
-   EMail: kalt@stealth.net
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Kalt                         Informational                      [Page 9]
- 
-RFC 2810           Internet Relay Chat: Architecture          April 2000
-
-
-12.  Full Copyright Statement
-
-   Copyright (C) The Internet Society (2000).  All Rights Reserved.
-
-   This document and translations of it may be copied and furnished to
-   others, and derivative works that comment on or otherwise explain it
-   or assist in its implementation may be prepared, copied, published
-   and distributed, in whole or in part, without restriction of any
-   kind, provided that the above copyright notice and this paragraph are
-   included on all such copies and derivative works.  However, this
-   document itself may not be modified in any way, such as by removing
-   the copyright notice or references to the Internet Society or other
-   Internet organizations, except as needed for the purpose of
-   developing Internet standards in which case the procedures for
-   copyrights defined in the Internet Standards process must be
-   followed, or as required to translate it into languages other than
-   English.
-
-   The limited permissions granted above are perpetual and will not be
-   revoked by the Internet Society or its successors or assigns.
-
-   This document and the information contained herein is provided on an
-   "AS IS" basis and THE INTERNET SOCIETY AND THE INTERNET ENGINEERING
-   TASK FORCE DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING
-   BUT NOT LIMITED TO ANY WARRANTY THAT THE USE OF THE INFORMATION
-   HEREIN WILL NOT INFRINGE ANY RIGHTS OR ANY IMPLIED WARRANTIES OF
-   MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
-
-Acknowledgement
-
-   Funding for the RFC Editor function is currently provided by the
-   Internet Society.
