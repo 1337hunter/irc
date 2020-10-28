@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 12:04:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/28 12:54:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,5 @@ int		main(int ac, char **av)
 
 	server_init(&_server, ac, av);
 	RunServer(&_server);
-	close(_server.sock);
-	for (int i = 0; i < FD_MAX; i++)
-		if (_server.fds[i].type != FD_FREE)
-			close(i);
 	return (0);
 }

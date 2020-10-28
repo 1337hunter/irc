@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 21:04:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/28 12:53:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void		CreateSock(IRCserv *_server)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe;
+	int     optval = 1;
 
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
@@ -29,6 +30,8 @@ void		CreateSock(IRCserv *_server)
 	sockin.sin_addr.s_addr = INADDR_ANY; //inet_addr("127.0.0.1"); can changee ip
 	// to create another local server without the b8s or containers just with ip variable seted in config file
 	sockin.sin_port = htons(_server->port);
+	if (setsockopt(_server->sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
+		error_exit("set socket option returned error");
 	if (bind(_server->sock, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
 	if (listen(_server->sock, 42) < 0)
