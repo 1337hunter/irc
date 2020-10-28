@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 17:42:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/28 12:04:52 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		}
 		else
 		{
-			_server->server = port;
+			_server->host = port;
 			if (pass.find_first_not_of("0123456789") != std::string::npos ||
 					pass.length() < 1 || pass.length() > 5)
 				error_exit("Error: bad port number");
@@ -64,7 +64,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		std::string	port(av[2]);
 		std::string	pass(av[3]);
 
-		_server->server = server;
+		_server->host = server;
 		_server->pass = pass;
 		if (port.find_first_not_of("0123456789") != std::string::npos ||
 				port.length() < 1 || port.length() > 5)
@@ -93,5 +93,9 @@ int		main(int ac, char **av)
 
 	server_init(&_server, ac, av);
 	RunServer(&_server);
+	close(_server.sock);
+	for (int i = 0; i < FD_MAX; i++)
+		if (_server.fds[i].type != FD_FREE)
+			close(i);
 	return (0);
 }

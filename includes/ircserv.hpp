@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 08:30:44 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/28 11:22:22 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ struct IRCserv {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
+	std::string					host;
 	int							sock;
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
