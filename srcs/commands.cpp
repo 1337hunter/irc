@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 23:07:03 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/29 23:26:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 				reply += " " + it->getnickname() +
 					" :Welcome to the Internet Relay Network " +
 					it->getnickname() + "!" +
-					it->getnickname() + "@" + "localhost" + CLRF;
+					it->getnickname() + "@" + _server->hostname + CLRF;
 			}
 			else
 			{
