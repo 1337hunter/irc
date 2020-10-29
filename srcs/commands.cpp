@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 21:27:20 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 22:23:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,27 @@ void		cmd_ping(int fd, const t_strvect &split, IRCserv *_server)
 	else
 		reply = "PONG " + split[1] + CLRF;
 	send(fd, reply.c_str(), reply.length(), 0);
+}
+
+void		cmd_quit(int fd, const t_strvect &split, IRCserv *_server)
+{
+	(void)split;
+	FD_CLR(fd, &(_server->fdset_read));
+	close(fd);
+	_server->fds.erase(fd);
+	t_citer it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+	if (it != _server->clients.end())
+		it->Disconnect();
+#if DEBUG_MODE
+                std::cout << "Client " << fd << " disconnected" << std::endl;
+#endif
+}
+
+void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
+{
+	fd = 0;
+	(void)split;
+	(void)(*_server);
 }
 
 /*
