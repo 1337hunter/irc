@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 20:28:24 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/29 21:05:50 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ public:
 	bool				Register(std::string const &user,
 							std::string const &real);
 	void				Disconnect(void);
+	void				ChangeNick(std::string what);
 };
 
 #endif

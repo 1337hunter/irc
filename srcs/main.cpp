@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 18:35:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 19:59:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	_server->command["PING"] = cmd_ping;
 }
 
+#if DEBUG_MODE
 void	print_server_info(IRCserv *_server)
 {
 	std::cout << "server starts with parameters:\n";
@@ -123,13 +124,16 @@ void	print_server_info(IRCserv *_server)
 		std::cout << "connected_to_pass:\t" << _server->connected_to_pass[0] << '\n';
 	}
 }
+#endif
 
 int		main(int ac, char **av)
 {
 	IRCserv	_server;
 
 	server_init(&_server, ac, av);
+#if DEBUG_MODE
 	print_server_info(&_server);
+#endif
 	RunServer(&_server);
 	return (0);
 }

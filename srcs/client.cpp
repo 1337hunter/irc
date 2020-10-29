@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/10/27 20:43:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/29 21:05:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,4 +83,9 @@ void				Client::Disconnect(void)
 	this->fd = -1;
 	this->hostname = "";
 	this->_isConnected = false;
+}
+
+void	Client::ChangeNick(std::string what)
+{
+	this->nickname = what;
 }

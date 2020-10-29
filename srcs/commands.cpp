@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/27 20:38:26 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/29 21:24:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,25 @@ t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const
 void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 {
 	std::string		reply;
+	t_citer			nick_entry;
+	t_citer			fd_entry;
+	t_citer			end;
 
-	if (ft_findnick(_server->clients.begin(), _server->clients.end(), split[1]) ==
-		_server->clients.end())
+	end = _server->clients.end();
+	fd_entry = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+	nick_entry = ft_findnick(_server->clients.begin(), _server->clients.end(), split[1]);
+	if (nick_entry == end && fd_entry == end)
 		_server->clients.push_back(Client(split[1], fd));
+	else if (fd_entry != end)
+	{
+		reply = ":";
+		reply += fd_entry->getnickname();
+		fd_entry->ChangeNick(split[1]);
+		reply += " NICK ";
+		reply += fd_entry->getnickname();
+		reply += CLRF;
+		send(fd, reply.c_str(), reply.length(), 0);
+	}
 	else
 	{
 		reply = ":localhost ";

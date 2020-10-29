@@ -6,35 +6,35 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/28 17:35:18 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 19:38:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRCSERV_HPP
-#define IRCSERV_HPP
+# define IRCSERV_HPP
 
-#include <iostream>
-#include <exception>
-#include <string>
-#include <vector>
-#include <map>
-#include <algorithm>
+# include <iostream>
+# include <exception>
+# include <string>
+# include <vector>
+# include <map>
+# include <algorithm>
 // fcntl, select, socket, inet structs, inet
-#include <fcntl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+# include <fcntl.h>
+# include <sys/select.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
 // read, write
-#include <unistd.h>
+# include <unistd.h>
 
-#include "error_handle.hpp"
-#include "common_defines.hpp"
-#include "reply_codes.hpp"
-#include "error_codes.hpp"
-#include "tools.hpp"
-#include "client.hpp"
+# include "error_handle.hpp"
+# include "common_defines.hpp"
+# include "reply_codes.hpp"
+# include "error_codes.hpp"
+# include "tools.hpp"
+# include "client.hpp"
 // #include <unordered_map>
 
 typedef std::vector<Client>::iterator		t_citer;
@@ -54,7 +54,7 @@ struct IRCserv {
 	t_cmdmap					command;
 	std::string					pass;
 	std::vector<std::string>	connected_to_host;
-	std::vector<int>		connected_to_port;
+	std::vector<int>			connected_to_port;
 	std::vector<std::string>	connected_to_pass;
 	std::vector<std::string>	connect_from;
 	std::vector<Client>			clients;
