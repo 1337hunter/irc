@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 22:23:18 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 22:57:36 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,10 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 {
 	fd = 0;
 	(void)split;
-	(void)(*_server);
+#if DEBUG_MODE
+	std::cout << "incoming connection from:\t" << split[1] << std::endl;
+#endif
+	_server->connect_from.push_back(split[1]);
 }
 
 /*
