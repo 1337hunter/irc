@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 23:17:49 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/30 01:01:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,9 +68,9 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 	t_strvect	split = ft_splitstring(msg, " ");
 
 #if DEBUG_MODE
-	std::cout << "command received:\t\t";
-	for (auto &x : split)
-		std::cout << x << ' ';
+	std::cout << "Command received:\t\t";
+	for (t_strvect::iterator it = split.begin(); it != split.end(); it++)
+		std::cout << *it << ' ';
 	std::cout << std::endl;
 #endif
 	try
