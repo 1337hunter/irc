@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 22:57:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 23:07:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 	}
 	else
 	{
-		reply = ":localhost ";
+		reply = ":" + _server->hostname + " ";
 		reply += ERR_NICKNAMEINUSE;
 		reply += " " + split[1] + " :Nickname is already in use";
 		reply += CLRF;
@@ -71,7 +71,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 
 	if (split.size() < 5)
 	{
-		reply = ":localhost ";
+		reply = ":" + _server->hostname + " ";
 		reply += ERR_NEEDMOREPARAMS;
 		reply += " " + split[0];
 		reply += " :Not enough parameters";
@@ -84,7 +84,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 		{
 			if (it->Register(split[1], split[4]))
 			{
-				reply = ":localhost ";
+				reply = ":" + _server->hostname + " ";
 				reply += RPL_WELCOME;
 				reply += " " + it->getnickname() +
 					" :Welcome to the Internet Relay Network " +
@@ -93,7 +93,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 			}
 			else
 			{
-				reply = ":localhost ";
+				reply = ":" + _server->hostname + " ";
 				reply += ERR_ALREADYREGISTRED;
 				reply += " :Unauthorized command (already registered)";
 				reply += CLRF;
@@ -110,7 +110,7 @@ void		cmd_ping(int fd, const t_strvect &split, IRCserv *_server)
 	_server = 0;
 	if (split.size() < 2)
 	{
-		reply = ":localhost ";
+		reply = ":" + _server->hostname + " ";
 		reply += ERR_NOORIGIN;
 		reply += " :No origin specified";
 		reply += CLRF;
@@ -130,7 +130,7 @@ void		cmd_quit(int fd, const t_strvect &split, IRCserv *_server)
 	if (it != _server->clients.end())
 		it->Disconnect();
 #if DEBUG_MODE
-                std::cout << "Client " << fd << " disconnected" << std::endl;
+	std::cout << "Client " << fd << " disconnected" << std::endl;
 #endif
 }
 

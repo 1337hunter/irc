@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 19:27:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 23:21:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define COMMON_DEFINES_HPP
 
 # define FD_MAX		1024
-# define FD_FREE		0
+# define FD_FREE	0
 # define FD_CLIENT	1
 # define FD_SERVER	2
 
@@ -22,10 +22,12 @@
 
 # define DEBUG_MODE	1
 
-# ifdef DARWIN
+// # define KONVERSATION
+
+# ifndef KONVERSATION
 #  define CLRF		"\r\n"
 # else
-#  define CLRF		"\n"
+#  define CLRF		"\n"	// konversation sends only \n for some reason
 # endif
 
 typedef struct sockaddr		t_sockaddr;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 22:58:16 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 23:17:49 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void		CreateSock(IRCserv *_server)
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
 #endif
+	_server->hostname = "localhost";	// need to get it properly later
 }
 
 void		AcceptConnect(IRCserv *_server)
@@ -104,7 +105,14 @@ void		RecieveMessage(int fd, IRCserv *_server)
 			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], _server);
-			_server->fds[fd].rdbuf.erase();
+			try
+			{
+				_server->fds.at(fd).rdbuf.erase();
+			}
+			catch (std::out_of_range const &e)
+			{
+				(void)e;
+			}
 		}
 	}
 	else

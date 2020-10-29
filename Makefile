@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/10/29 21:45:59 by gbright          ###   ########.fr        #
+#    Updated: 2020/10/29 22:39:24 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,8 +28,14 @@ SHELL		= /bin/zsh
 
 # -std=c++11 is required on darwin for lambda expressions to work
 UNAME		:= $(shell uname)
-ifeq ($(UNAME), Darwin)
-CFLAGS		+= -DDARWIN
+ifeq ($(UNAME), Darwin)			# CFLAGS += -DDARWIN
+OSNAME		= Darwin
+else
+	ifeq ($(UNAME), Linux)
+	OSNAME	= Linux
+	else
+	OSNAME	= Unknown OS
+	endif
 endif
 
 RED			= \e[31m
@@ -44,7 +50,7 @@ ULINEF		= "\e[24m"
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@echo "linking $(GREEN)$(NAME)$(NC)"
+	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
 	@$(CC) -o $@ $^ $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
 
