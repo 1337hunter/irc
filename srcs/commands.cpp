@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 21:24:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/29 21:27:20 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 		_server->clients.push_back(Client(split[1], fd));
 	else if (fd_entry != end)
 	{
+		// Here we also need to track nicknames
+		// for KICK, MODE and KILL commands.
 		reply = ":";
 		reply += fd_entry->getnickname();
 		fd_entry->ChangeNick(split[1]);
