@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/30 01:01:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/30 11:56:44 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void		AcceptConnect(IRCserv *_server)
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 #if DEBUG_MODE
-	std::cout << "Client " << fd << " from " <<
-		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) <<
+	std::cout << "client " << fd << " from " <<
+		inet_ntoa(csin.sin_addr) << ":\t" << ntohs(csin.sin_port) <<
 		" accepted" << std::endl;
 #endif
 	_server->fds[fd].type = FD_CLIENT; // we dont know either it's client or other server
@@ -68,7 +68,7 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 	t_strvect	split = ft_splitstring(msg, " ");
 
 #if DEBUG_MODE
-	std::cout << "Command received:\t\t";
+	std::cout << "command received:\t\t";
 	for (t_strvect::iterator it = split.begin(); it != split.end(); it++)
 		std::cout << *it << ' ';
 	std::cout << std::endl;
@@ -77,7 +77,7 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 	{
 		_server->command.at(split[0])(fd, split, _server);
 #if DEBUG_MODE
-		std::cout << "Command found: " << "|" << split[0] << "|" << std::endl;
+		std::cout << "command found:\t\t" << "|" << split[0] << "|" << std::endl;
 #endif
 	}
 	catch (std::out_of_range &e)
@@ -100,7 +100,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 			_server->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
-			std::cout << "Client " << fd << " sent " << _server->fds[fd].rdbuf;
+			std::cout << "client " << fd << " sent:\t\t\t" << _server->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size(); i++)
@@ -123,7 +123,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 		if (it != _server->clients.end())
 			it->Disconnect();
 #if DEBUG_MODE
-		std::cout << "Client " << fd << " disconnected" << std::endl;
+		std::cout << "client " << fd << ":\t\t\tdisconnected" << std::endl;
 #endif
 	}
 }

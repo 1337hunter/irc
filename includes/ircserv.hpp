@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 23:00:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/30 11:27:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,11 @@
 # include "client.hpp"
 // #include <unordered_map>
 
+/* For server-server connection type define TO and FROM,
+ * so if process ircserv wants to connect to some host type is TO*/
+# define TO	0
+# define FROM	1
+
 typedef std::vector<Client>::iterator		t_citer;
 
 typedef struct		s_fd
@@ -44,6 +49,18 @@ typedef struct		s_fd
 	int				type;
 	std::string		rdbuf;
 }					t_fd;
+
+struct server_server
+{
+	int		type; //TO or FROM
+	int		port;
+	int		hopcount;
+	unsigned short	token;
+	std::string	host;
+	std::string	pass;
+	std::string	info;
+
+};
 
 struct IRCserv {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
@@ -54,10 +71,7 @@ struct IRCserv {
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
 	std::string					pass;
-	std::vector<std::string>	connected_to_host;
-	std::vector<int>			connected_to_port;
-	std::vector<std::string>	connected_to_pass;
-	std::vector<std::string>	connect_from;
+	std::vector<server_server>		connect;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	static std::string const	clrf;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 22:17:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/30 11:47:48 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,18 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		else
 		{
 			t_strvect	temp;
+			server_server	connect;
 
 			temp = ft_splitstring(av[1], ":");
 			if (temp.size() < 2 || temp.size() > 3)
 				error_exit("Error: input parameters of server which you want to connect to is wrong!");
-			_server->connected_to_host.push_back(temp[0]);
+			connect.host = temp[0];
 			if (temp[1].find_first_not_of("0123456789") != std::string::npos ||
                                         temp.size() < 1 || temp.size() > 5)
                                 error_exit("Error: bad port number");
-			_server->connected_to_port.push_back(stoi(temp[1]));
+			connect.port = stoi(temp[1]);
 			if (temp.size() == 3)
-				_server->connected_to_pass.push_back(temp[2]);
-			else
-				_server->connected_to_pass.push_back("");
+				connect.pass = temp[2];
 			if (pass.find_first_not_of("0123456789") != std::string::npos ||
 					pass.length() < 1 || pass.length() > 5)
 				error_exit("Error: bad port number");
@@ -70,6 +69,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 				if (_server->port < 1 || _server->port > 65535)
 					error_exit("Error: bad port number");
 			}
+			_server->connect.push_back(connect);
 		}
 	}
 	else if (ac == 4)
@@ -77,11 +77,13 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		std::string	port(av[2]);
 		std::string	pass(av[3]);
 		t_strvect	connect_to;
+		server_server	temp;
 
 		connect_to = ft_splitstring(av[1], ":");
 		if (connect_to.size() < 2 || connect_to.size() > 3)
 			error_exit("Error: input parameters of server which you want to connect to is wrong!");
-		_server->connected_to_host.push_back(connect_to[0]);
+		temp.type = TO;
+		temp.host = connect_to[0];
 		_server->pass = pass;
 		if (port.find_first_not_of("0123456789") != std::string::npos ||
 		connect_to[1].find_first_not_of("0123456789") != std::string::npos ||
@@ -90,14 +92,13 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			error_exit("Error: bad port number");
 		else
 		{
-			_server->connected_to_port.push_back(stoi(connect_to[1]));
+			temp.port = stoi(connect_to[1]);
 			if (connect_to.size() == 3)
-				_server->connected_to_pass.push_back(connect_to[2]);
-			else
-				_server->connected_to_pass.push_back("");
+				temp.pass = connect_to[2];
 			_server->port = stoi(port);
 			if (_server->port < 1 || _server->port > 65535)
 				error_exit("Error: bad port number");
+			_server->connect.push_back(temp);
 		}
 	}
 	else
@@ -119,11 +120,11 @@ void	print_server_info(IRCserv *_server)
 	std::cout << "server starts with parameters:\n";
 	std::cout << "server port:      \t" << _server->port << '\n';
 	std::cout << "server pass:      \t" << _server->pass << '\n';
-	if (_server->connected_to_host.size() > 0)
+	if (_server->connect.size() > 0)
 	{
-		std::cout << "connected_to_host:\t" << _server->connected_to_host[0] << '\n';
-		std::cout << "connected_to_port:\t" << _server->connected_to_port[0] << '\n';
-		std::cout << "connected_to_pass:\t" << _server->connected_to_pass[0] << '\n';
+		std::cout << "connected to host:\t" << _server->connect[0].host << '\n';
+		std::cout << "connected to port:\t" << _server->connect[0].port << '\n';
+		std::cout << "connected to pass:\t" << _server->connect[0].pass << '\n';
 	}
 }
 #endif

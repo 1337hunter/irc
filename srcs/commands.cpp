@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/29 23:26:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/30 11:57:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,18 +130,31 @@ void		cmd_quit(int fd, const t_strvect &split, IRCserv *_server)
 	if (it != _server->clients.end())
 		it->Disconnect();
 #if DEBUG_MODE
-	std::cout << "Client " << fd << " disconnected" << std::endl;
+	std::cout << "client " << fd << ":\t\t\tdisconnected" << std::endl;
 #endif
 }
 
 void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 {
-	fd = 0;
-	(void)split;
+	server_server	temp;
 #if DEBUG_MODE
 	std::cout << "incoming connection from:\t" << split[1] << std::endl;
 #endif
-	_server->connect_from.push_back(split[1]);
+	_server->fds[fd].type = FD_SERVER;
+	temp.type = FROM;
+	temp.host = split[1];
+	temp.port = -1;
+	try { temp.hopcount = stoi(split[2]); temp.token = stoi(split[3]); }
+	catch (std::exception &e)
+	{
+#if DEBUG_MODE
+		std::cerr << "Error: bad cast hopcount or token. Connection is terminated.";
+		std::cerr << std::endl;
+		cmd_quit(fd, split, _server);
+#endif
+		return ;
+	}
+	temp.info = split[4];
 }
 
 /*
