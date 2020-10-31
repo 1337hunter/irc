@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/30 11:57:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/31 15:43:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,6 @@ void		cmd_ping(int fd, const t_strvect &split, IRCserv *_server)
 {
 	std::string		reply;
 
-	_server = 0;
 	if (split.size() < 2)
 	{
 		reply = ":" + _server->hostname + " ";

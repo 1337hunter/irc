@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/30 11:27:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/31 15:28:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <algorithm>
 // fcntl, select, socket, inet structs, inet
 # include <fcntl.h>
+# include <sys/types.h>
 # include <sys/select.h>
 # include <sys/socket.h>
 # include <netinet/in.h>

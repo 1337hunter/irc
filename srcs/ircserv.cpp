@@ -6,18 +6,20 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/30 11:56:44 by gbright          ###   ########.fr       */
+/*   Updated: 2020/10/31 16:01:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
-std::string const	IRCserv::clrf = CLRF;
+typedef struct addrinfo		t_addrinfo;
+std::string const			IRCserv::clrf = CLRF;
 
 void		CreateSock(IRCserv *_server)
 {
 	t_sockaddr_in	sockin;
-	t_protoent		*pe;
+	t_protoent		*pe = NULL;
+	t_addrinfo		*ai = NULL;
 	int				optval = 1;
 
 	if (!(pe = getprotobyname("tcp")))
@@ -39,6 +41,17 @@ void		CreateSock(IRCserv *_server)
 	_server->fds[_server->sock].type = FD_SERVER;
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
+	if (getaddrinfo("127.0.0.1", "6667", NULL, &ai) < 0)
+		error_exit("getaddrinfo error");
+	std::cout << "ai addr:\t" << ai->ai_addr << std::endl <<
+		"ai addrlen:\t" << ai->ai_addrlen << std::endl <<
+//		"ai canonname:\t" << ai->ai_canonname << std::endl <<
+		"ai family:\t" << ai->ai_family << std::endl <<
+		"ai flags:\t" << ai->ai_flags << std::endl <<
+		"ai next:\t" << ai->ai_next << std::endl <<
+		"ai protocol:\t" << ai->ai_protocol << std::endl <<
+		"ai socktype:\t" << ai->ai_socktype << std::endl;
+	freeaddrinfo(ai);
 #endif
 	_server->hostname = "localhost";	// need to get it properly later
 }
