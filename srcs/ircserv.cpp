@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/31 16:17:49 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/31 16:19:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ void		CreateSock(IRCserv *_server)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe = NULL;
-	t_addrinfo		*ai = NULL;
-	t_addrinfo		hints = {};
 	int				optval = 1;
 
 	if (!(pe = getprotobyname("tcp")))
@@ -42,6 +40,8 @@ void		CreateSock(IRCserv *_server)
 	_server->fds[_server->sock].type = FD_SERVER;
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
+	t_addrinfo		*ai = NULL;
+	t_addrinfo		hints = {};
 	hints.ai_family = AF_INET;			// AF_UNSPEC to get v4 and v6
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
