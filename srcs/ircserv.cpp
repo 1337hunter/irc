@@ -6,14 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/31 16:34:54 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/31 17:26:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
-typedef struct addrinfo		t_addrinfo;
-std::string const			IRCserv::clrf = CLRF;
+std::string const	IRCserv::clrf = CLRF;
 
 void		CreateSock(IRCserv *_server)
 {
@@ -40,24 +39,6 @@ void		CreateSock(IRCserv *_server)
 	_server->fds[_server->sock].type = FD_SERVER;
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
-	t_addrinfo		*ai = NULL;
-	t_addrinfo		hints = {};
-	hints.ai_family = AF_INET;			// AF_UNSPEC to get v4 and v6
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo("127.0.0.1", "6667", &hints, &ai) < 0)
-		error_exit("getaddrinfo error");
-	std::cout << "ai addr:\t" << ai->ai_addr << std::endl <<
-		"ai addrlen:\t" << ai->ai_addrlen << std::endl <<
-		"ai canonname:\t" <<
-		(ai->ai_canonname ? ai->ai_canonname : "(null)") << std::endl <<
-		"ai flags:\t" << ai->ai_flags << std::endl <<
-		"ai next:\t" << ai->ai_next << std::endl;
-	freeaddrinfo(ai);
-	t_sockaddr		sa;
-	socklen_t		salen = sizeof(t_sockaddr);
-	if (getsockname(_server->sock, &sa, &salen) < 0)
-		error_exit("getsockname error");
 #endif
 	_server->hostname = "localhost";	// need to get it properly later
 }
