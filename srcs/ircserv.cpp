@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/31 16:19:04 by salec            ###   ########.fr       */
+/*   Updated: 2020/10/31 16:34:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,10 @@ void		CreateSock(IRCserv *_server)
 		"ai flags:\t" << ai->ai_flags << std::endl <<
 		"ai next:\t" << ai->ai_next << std::endl;
 	freeaddrinfo(ai);
+	t_sockaddr		sa;
+	socklen_t		salen = sizeof(t_sockaddr);
+	if (getsockname(_server->sock, &sa, &salen) < 0)
+		error_exit("getsockname error");
 #endif
 	_server->hostname = "localhost";	// need to get it properly later
 }
