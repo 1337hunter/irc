@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/10/30 11:47:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/01 11:28:30 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,9 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	_server->command["NICK"] = cmd_nick;
 	_server->command["PING"] = cmd_ping;
 	_server->command["QUIT"] = cmd_quit;
+	_server->command["PASS"] = cmd_pass;
 	_server->command["SERVER"] = cmd_server;
+	_server->command["SQUIT"] = cmd_squit;
 }
 
 #if DEBUG_MODE

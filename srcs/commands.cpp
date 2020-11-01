@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/10/31 15:43:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/01 12:39:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
+#include "commands.hpp"
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
@@ -149,12 +150,56 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 #if DEBUG_MODE
 		std::cerr << "Error: bad cast hopcount or token. Connection is terminated.";
 		std::cerr << std::endl;
-		cmd_quit(fd, split, _server);
+		cmd_squit(fd, split, _server);
 #endif
 		return ;
 	}
 	temp.info = split[4];
 }
+
+void            cmd_pass(int fd, const t_strvect &split, IRCserv *_server)
+{
+	if (split.size() < 2)
+	{
+		std::string	reply;
+		reply = ":" + _server->hostname + " ";
+		reply += ERR_NEEDMOREPARAMS;
+		reply += " :not enough parameters";
+		reply += CLRF;
+		send(fd, reply.c_str(), reply.length(), 0);
+		return ;
+	}
+	_server->fds[fd].pass = split[1];
+	if (split.size() == 2)
+		return ;
+	_server->fds[fd].version = split[2];
+	if (split.size() == 3)
+		return ;
+	_server->fds[fd].flags = split[3];
+	if (split.size() == 4)
+		return ;
+	_server->fds[fd].options = split[4];
+}
+
+void            cmd_squit(int fd, const t_strvect &split, IRCserv *_server)
+{
+	std::vector<server_server>::iterator	begin;
+	std::vector<server_server>::iterator	end;
+
+	while (begin != end && begin->host != split[1])
+		begin++;
+	if (begin != end)
+	{
+		_server->connect.erase(begin);
+		FD_CLR(fd, &(_server->fdset_read));
+		close(fd);
+		_server->fds.erase(fd);
+#if DEBUG_MODE
+		std::cout << "server " << split[1] << ":\t\t\tdisconnected" << std::endl;
+#endif
+	}
+}
+
 
 /*
 	if (split[0] == "WHO")

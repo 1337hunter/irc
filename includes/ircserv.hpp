@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/10/31 15:28:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/01 12:17:57 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,10 @@ typedef struct		s_fd
 {
 	int				type;
 	std::string		rdbuf;
+	std::string		pass;   // this structer parameters required for
+	std::string		version;// message PASS that can be received either
+	std::string		flags;  // from client or server before SERVER or NICK
+	std::string		options;// <-
 }					t_fd;
 
 struct server_server
@@ -63,7 +67,8 @@ struct server_server
 
 };
 
-struct IRCserv {
+struct IRCserv
+{
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
