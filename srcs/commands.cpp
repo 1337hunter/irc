@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/01 12:39:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/01 16:50:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,13 @@ void            cmd_pass(int fd, const t_strvect &split, IRCserv *_server)
 		return ;
 	}
 	_server->fds[fd].pass = split[1];
+	if (!(_server->pass == "" || _server->pass == split[1]))
+	{
+#if DEBUG_MODE
+		std::cerr << "client " << fd << " wrong password\n";
+#endif
+		cmd_quit(fd, split, _server);
+	}
 	if (split.size() == 2)
 		return ;
 	_server->fds[fd].version = split[2];
