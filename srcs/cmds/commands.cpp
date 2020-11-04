@@ -6,28 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/04 12:11:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 16:16:10 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
-
-t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
-{
-	for (t_citer it = begin; it != end; it++)
-		if (it->isConnected() && it->getFD() == fd)
-			return (it);
-	return (end);
-}
-
-t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick)
-{
-	for (t_citer it = begin; it != end; it++)
-		if (it->getnickname() == nick)
-			return (it);
-	return (end);
-}
 
 void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 {

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 09:53:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 16:16:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@
 # define TO	0
 # define FROM	1
 //# define NET	2
-
-typedef std::vector<Client>::iterator		t_citer;
 
 typedef struct		s_fd
 {
