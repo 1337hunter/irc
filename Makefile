@@ -6,13 +6,17 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/04 16:28:31 by salec            ###   ########.fr        #
+#    Updated: 2020/11/04 16:44:41 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
-SRC			= main.cpp ircserv.cpp client.cpp channel.cpp tools.cpp \
-			error_handle.cpp cmds/commands.cpp
+# SRC		= common files, classes, commands
+SRC			= main.cpp ircserv.cpp tools.cpp error_handle.cpp \
+			client.cpp channel.cpp \
+			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
+			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
+			cmds/cmd_server.cpp cmds/cmd_squit.cpp
 SRCDIR		= ./srcs/
 SRC			:= $(addprefix $(SRCDIR), $(SRC))
 OBJ			= $(SRC:.cpp=.o)
