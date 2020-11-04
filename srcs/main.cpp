@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/11/03 20:46:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 18:18:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ int		main(int ac, char **av)
 	IRCserv	_server;
 
 	server_init(&_server, ac, av);
-	_server.hostname = "tototutu.ru";
+	_server.hostname = "irc.sparta.net";
 #if DEBUG_MODE
 	print_server_info(&_server);
 #endif
