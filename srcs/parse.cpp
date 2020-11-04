@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/04 23:53:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 00:05:15 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,9 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 	size_t	i;
 	t_listen	temp;
 
+	temp.ssl = false;
+	temp.tls = false;
+	temp.serveronly = false;
 	pos = 0;
 	while (line.c_str()[pos] && line.c_str()[pos] < ' ')
 		pos++;
@@ -60,7 +63,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 		if (config.eof())
 			return -1;
 		pos = 0;
-		while (line.c_str()[pos] && line.c_str()[pos] < ' ')
+		while (line.c_str()[pos] && line.c_str()[pos] <= ' ')
 			pos++;
 		if (line.compare(pos, 1, "{") == 0)
 			continue ;
@@ -145,7 +148,8 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 	}
 	_server->listen.push_back(temp);
 #if DEBUG_MODE
-	std::cout << "listen: ip " << _server->listen[0].ip << " port " << _server->listen[0].port << ' ';
+	std::vector<t_listen>::reverse_iterator	it = _server->listen.rbegin();
+	std::cout << "listen: ip " << it->ip << " port " << it->port << ' ';
 	if (temp.ssl)
 		std::cout << "ssl ";
 	if (temp.serveronly)
