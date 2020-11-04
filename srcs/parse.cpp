@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/04 19:11:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 19:38:50 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,20 @@
 typedef	void (*t_block)(std::fstream &config, std::string &line, IRCserv *_server);
 typedef std::map<int, t_block> t_blockmap;
 
-int	find_block(std::string line)
+void	block_listen(std::fstream &config, std::string &line, IRCserv *_server)
+{
+	(void)config;
+	line = "0";
+	_server = 0;
+}
+
+size_t	find_block(std::string line)
 {
 	size_t	pos;
 
 	if ((pos = line.find("listen")) != std::string::npos)
 		return LISTEN;
-	return -1;
+	return std::string::npos;
 }
 
 void	parse(int ac, char **av, IRCserv *_server)
@@ -55,7 +62,7 @@ void	parse(int ac, char **av, IRCserv *_server)
 			continue ;
 		if ((pos = line.find('{')) != std::string::npos) //find first block
 			i = find_block(line);
-		if (i != -1)
+		if (i != std::string::npos)
 			block[i](config, line, _server);
 	}
 	av = 0;
