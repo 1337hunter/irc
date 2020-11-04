@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/01 12:17:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 09:53:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@
  * so if process ircserv wants to connect to some host type is TO*/
 # define TO	0
 # define FROM	1
+//# define NET	2
 
 typedef std::vector<Client>::iterator		t_citer;
 
@@ -58,8 +59,8 @@ typedef struct		s_fd
 struct server_server
 {
 	int		type; //TO or FROM
-	int		port;
 	int		hopcount;
+	int		port;
 	unsigned short	token;
 	std::string	host;
 	std::string	pass;

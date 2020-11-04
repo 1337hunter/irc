@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/10/31 17:26:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/04 12:13:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ void		CreateSock(IRCserv *_server)
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
 #endif
-	_server->hostname = "localhost";	// need to get it properly later
 }
 
 void		AcceptConnect(IRCserv *_server)
@@ -67,23 +66,14 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
 {
 	t_strvect	split = ft_splitstring(msg, " ");
 
-#if DEBUG_MODE
-	std::cout << "command received:\t\t";
-	for (t_strvect::iterator it = split.begin(); it != split.end(); it++)
-		std::cout << *it << ' ';
-	std::cout << std::endl;
-#endif
 	try
 	{
 		_server->command.at(split[0])(fd, split, _server);
 #if DEBUG_MODE
-		std::cout << "command found:\t\t" << "|" << split[0] << "|" << std::endl;
+		std::cout << "command found:\t\t" << split[0] << std::endl;
 #endif
 	}
-	catch (std::out_of_range &e)
-	{
-		(void)e;
-	}
+	catch (std::out_of_range &e) { (void)e; }
 }
 
 void		RecieveMessage(int fd, IRCserv *_server)
@@ -105,14 +95,8 @@ void		RecieveMessage(int fd, IRCserv *_server)
 			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], _server);
-			try
-			{
-				_server->fds.at(fd).rdbuf.erase();
-			}
-			catch (std::out_of_range const &e)
-			{
-				(void)e;
-			}
+			try { _server->fds.at(fd).rdbuf.erase(); }
+			catch (std::out_of_range const &e) { (void)e; }
 		}
 	}
 	else

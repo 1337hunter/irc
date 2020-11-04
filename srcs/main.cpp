@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/11/01 11:28:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/03 20:46:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	_server->command["PASS"] = cmd_pass;
 	_server->command["SERVER"] = cmd_server;
 	_server->command["SQUIT"] = cmd_squit;
+	_server->command["CONNECT"] = cmd_connect;
 }
 
 #if DEBUG_MODE
@@ -136,6 +137,7 @@ int		main(int ac, char **av)
 	IRCserv	_server;
 
 	server_init(&_server, ac, av);
+	_server.hostname = "tototutu.ru";
 #if DEBUG_MODE
 	print_server_info(&_server);
 #endif
