@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 09:53:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 16:14:29 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,7 @@ struct IRCserv
 	static std::string const	clrf;
 };
 
+void		parse(int ac, char **av);
 void		CreateSock(IRCserv *_server);
 void		AcceptConnect(IRCserv *_server);
 void		RecieveMessage(int fd, IRCserv *_server);

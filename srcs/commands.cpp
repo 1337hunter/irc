@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:24:34 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/04 12:11:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 13:10:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,7 +184,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 #endif
 		return ;
 	}
-	temp.info = split[4];
+	temp.info = split[4]; //split has more info
 	std::string	broadcast;
 	std::vector<std::string>::const_iterator	itbegin = split.begin();
 	std::vector<std::string>::const_iterator	itend = split.end();
