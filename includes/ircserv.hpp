@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 16:14:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 18:06:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,6 @@
 # define TO	0
 # define FROM	1
 //# define NET	2
-
-typedef std::vector<Client>::iterator		t_citer;
 
 typedef struct		s_fd
 {
@@ -84,7 +82,7 @@ struct IRCserv
 	static std::string const	clrf;
 };
 
-void		parse(int ac, char **av);
+void		parse(int ac, char **av, IRCserv *_server);
 void		CreateSock(IRCserv *_server);
 void		AcceptConnect(IRCserv *_server);
 void		RecieveMessage(int fd, IRCserv *_server);
