@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 19:28:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 23:52:52 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,38 @@ typedef struct		s_fd
 	int				type;
 	std::string		rdbuf;
 	std::string		wrbuf;
-	std::string		pass;		// this structer parameters required for
-	std::string		version;	// message PASS that can be received either
-	std::string		flags;		// from client or server before SERVER or NICK
-	std::string		options;	// <-
+	std::string		pass;	// this structer parameters required for
+	std::string		version;// message PASS that can be received either
+	std::string		flags;	// from client or server before SERVER or NICK
+	std::string		options;// <-
 }					t_fd;
 
 struct server_server
 {
-	int				type;		// TO or FROM
+	int				type; // TO or FROM
 	int				hopcount;
 	int				port;
 	unsigned short	token;
 	std::string		host;
 	std::string		pass;
 	std::string		info;
+};
+
+struct	t_listen
+{
+	bool		serveronly;
+	bool		tls;
+	bool		ssl;
+	int		port;
+	std::string	ip;
+};
+
+struct	t_admin
+{
+	bool		set;
+	std::string	realname;
+	std::string	nick;
+	std::string	mail;
 };
 
 struct IRCserv
@@ -73,9 +90,12 @@ struct IRCserv
 	int							port;
 	int							sock;
 	std::string					hostname;
+	std::string					server_ip;
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
 	std::string					pass;
+	std::vector<t_listen>		listen;
+	t_admin						admin;
 	std::vector<server_server>	connect;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
