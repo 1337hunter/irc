@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 16:30:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/04 17:23:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,5 +49,6 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 			}
 		}
 	}
-	send(fd, reply.c_str(), reply.length(), 0);
+	_server->fds[fd].wrbuf += reply;
+//	send(fd, reply.c_str(), reply.length(), 0);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/10/29 21:57:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/04 18:24:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ private:
 	std::string		hostname;
 	int				fd;
 	bool			_isConnected;
+	bool			_isRegistred;
 	bool			_isOperator;
 	// Maybe server class object reference or pointer here
 	Client(void);
@@ -63,6 +64,7 @@ public:
 
 	bool				Register(std::string const &user,
 							std::string const &real);
+	void				Reconnect(int fd);
 	void				Disconnect(void);
 	void				ChangeNick(std::string const &what);
 };

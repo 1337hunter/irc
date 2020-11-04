@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:58 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 16:36:39 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/04 17:25:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@ void		cmd_pass(int fd, const t_strvect &split, IRCserv *_server)
 		reply += ERR_NEEDMOREPARAMS;
 		reply += " :not enough parameters";
 		reply += CLRF;
-		send(fd, reply.c_str(), reply.length(), 0);
+//		send(fd, reply.c_str(), reply.length(), 0);
+		_server->fds[fd].wrbuf += reply;
 		return ;
 	}
 	_server->fds[fd].pass = split[1];

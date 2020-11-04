@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 12:13:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/04 19:09:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,12 @@ void		AcceptConnect(IRCserv *_server)
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 #if DEBUG_MODE
-	std::cout << "client " << fd << " from " <<
-		inet_ntoa(csin.sin_addr) << ":\t" << ntohs(csin.sin_port) <<
-		" accepted" << std::endl;
+	std::cout << "client " << fd << " accepted from\t" <<
+		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 #endif
 	_server->fds[fd].type = FD_CLIENT; // we dont know either it's client or other server
 	_server->fds[fd].rdbuf.erase();
+	_server->fds[fd].wrbuf.erase();
 }
 
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server)
@@ -90,7 +90,7 @@ void		RecieveMessage(int fd, IRCserv *_server)
 			_server->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
-			std::cout << "client " << fd << " sent:\t\t\t" << _server->fds[fd].rdbuf;
+			std::cout << "client " << fd << " sent:\t\t" << _server->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstring(_server->fds[fd].rdbuf, CLRF);
 			for (size_t i = 0; i < split.size(); i++)
@@ -107,7 +107,38 @@ void		RecieveMessage(int fd, IRCserv *_server)
 		if (it != _server->clients.end())
 			it->Disconnect();
 #if DEBUG_MODE
-		std::cout << "client " << fd << ":\t\t\tdisconnected" << std::endl;
+		std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
+#endif
+	}
+}
+
+void		SendMessage(int fd, IRCserv *_server)
+{
+	std::string	reply;
+
+	if (_server->fds[fd].wrbuf.length() > BUF_SIZE)
+	{
+		reply = _server->fds[fd].wrbuf.substr(0, BUF_SIZE);
+		_server->fds[fd].wrbuf.substr(BUF_SIZE);
+	}
+	else
+	{
+		reply = _server->fds[fd].wrbuf;
+		_server->fds[fd].wrbuf.erase();
+	}
+#if DEBUG_MODE
+		std::cout << "sending client " << fd << "\t" << reply;
+#endif
+	ssize_t		r = send(fd, reply.c_str(), reply.length(), 0);
+	if (r <= 0)
+	{
+		close(fd);
+		_server->fds.erase(fd);
+		t_citer	it = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+		if (it != _server->clients.end())
+			it->Disconnect();
+#if DEBUG_MODE
+		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 #endif
 	}
 }
@@ -119,26 +150,44 @@ void		RunServer(IRCserv *_server)
 	{
 		int	lastfd = 0;
 		FD_ZERO(&(_server->fdset_read));
+		FD_ZERO(&(_server->fdset_write));
 		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
 			it != _server->fds.end(); it++)
 		{
 			FD_SET(it->first, &(_server->fdset_read));
+			if (!(it->second.wrbuf.empty()))
+				FD_SET(it->first, &(_server->fdset_write));
 			lastfd = std::max(lastfd, it->first);
 		}
-		int readyfds = select(lastfd + 1, &(_server->fdset_read), NULL, NULL, NULL);
+		int readyfds = select(lastfd + 1,
+			&(_server->fdset_read), &(_server->fdset_write), NULL, NULL);
 		if (readyfds < 0)
 			error_exit("select error");
+		size_t tmpits = 0;
+		// BUG: iterators become invalid after disconnect or erase
+		// possibly not good solution is to check how many fds we processed
+		// may segv if multiple clients disconnect at the same time
 		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
-			readyfds > 0 && it != _server->fds.end(); it++)
+			readyfds > 0 && tmpits < _server->fds.size() &&
+			it != _server->fds.end(); it++)
 		{
-			if (FD_ISSET(it->first, &(_server->fdset_read)))
+			int		tmpfd = it->first;
+			if (FD_ISSET(tmpfd, &(_server->fdset_read)))
 			{
-				if (_server->fds[it->first].type == FD_SERVER)
+				if (_server->fds[tmpfd].type == FD_SERVER)
 					AcceptConnect(_server);
-				else if (_server->fds[it->first].type == FD_CLIENT)
-					RecieveMessage(it->first, _server);
-				readyfds--;
+				else if (_server->fds[tmpfd].type == FD_CLIENT)
+					RecieveMessage(tmpfd, _server);
 			}
+			if (FD_ISSET(tmpfd, &(_server->fdset_write)))
+			{
+				if (_server->fds[tmpfd].type == FD_CLIENT)
+					SendMessage(tmpfd, _server);
+			}
+			if (FD_ISSET(tmpfd, &(_server->fdset_read)) ||
+				FD_ISSET(tmpfd, &(_server->fdset_write)))
+				readyfds--;
+			tmpits++;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 16:35:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/04 18:46:58 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,6 @@ void		cmd_quit(int fd, const t_strvect &split, IRCserv *_server)
 	if (it != _server->clients.end())
 		it->Disconnect();
 #if DEBUG_MODE
-	std::cout << "client " << fd << ":\t\t\tdisconnected" << std::endl;
+	std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 #endif
 }
