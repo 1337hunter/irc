@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/05 13:29:54 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 13:50:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 	temp.serveronly = false;
 	pos = line.find_first_not_of(" \t");
 	pos += ft_strlen("listen");
-	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos || line.c_str()[pos] == '#')
 	{
 		getline(config, line);
 		line_number++;
@@ -86,7 +86,8 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 			if (line.c_str()[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}')
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}'
+					&& line.compare(pos, 4, "port") && line.compare(pos, 7, "options"))
 				return -1;
 			std::string	ip(line, pos_copy_from, pos_copy_size);
 			temp.ip = ip;
@@ -105,7 +106,8 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 			if (line.c_str()[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}')
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' &&
+					line.compare(pos, 7, "options") && line.compare(pos, 2, "ip"))
 				return -1;
 			std::string	port(line, pos_copy_from, pos_copy_size);
 			temp.port = std::stoi(port);
