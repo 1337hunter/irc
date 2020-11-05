@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/05 13:50:03 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 19:31:34 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,8 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 						return -1;
 					pos++;
 				}
+				else
+					return -1;
 				pos = line.find_first_not_of(" \n\t", pos);
 			}
 			if (pos == std::string::npos || line.c_str()[pos] != '}')
@@ -183,27 +185,74 @@ int
 block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
 {
 	size_t	pos;
+	size_t	i;
+	size_t	endl = std::string::npos;
+	std::vector<std::string>	names;
 
-	pos = 0;
 	if (_server->admin.set)
 		return -1;
 	_server->admin.set = true;
-	while (line.find('{') == std::string::npos && !config.eof())
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("admin");
+	while ((pos = line.find("{", pos)) == std::string::npos)
 	{
 		getline(config, line);
 		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
 	}
-	if (config.eof())
+	if (line.c_str()[pos] != '{' || config.eof())
 		return -1;
-	while (line.c_str()[pos] != '}')
+	pos++;
+	int k = 3;
+	while (k)
 	{
-	//	while (pos = line.find_first_not_of(" \t\n", pos + 1))
-
+		if (line.c_str()[pos] != '"')
+			while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+			{
+				getline(config, line);
+				line_number++;
+				if (config.eof())
+					return -1;
+				pos = 0;
+			}
+		if (line.c_str()[pos] != '"')
+			return -1;
+		if ((i = line.find("\"", pos + 1)) == std::string::npos)
+			return -1;
+		std::string	realname(line, pos + 1, i - pos - 1);
+		names.push_back(realname);
+		pos = line.find_first_not_of(" \t\n", i + 1);
+		if (line.c_str()[pos] != ';')
+			return -1;
+		pos = line.find_first_not_of(" \t\n", pos + 1);
+		if (line.c_str()[pos] != '#' && line.c_str()[pos] != '"' && pos != endl &&
+				!(k == 1 && line.c_str()[pos] == '}'))
+			return -1;
+		k--;
 	}
-	(void)config;
-	(void)line;
-	_server = 0;
-	line_number++;
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line.c_str()[pos] != '}')
+		return -1;
+	pos = line.find_first_not_of(" \t\n", pos + 1);
+	if (line.c_str()[pos] != '#' && pos != endl)
+		return -1;
+	_server->admin.realname = names[0];
+	_server->admin.nick = names[1];
+	_server->admin.mail = names[2];
+#if DEBUG_MODE
+	std::cout << "admin.realname: " << _server->admin.realname;
+	std::cout << " admin.nick: " << _server->admin.nick;
+	std::cout << " admin.mail: " << _server->admin.mail << '\n';
+#endif
 	return 0;
 }
 
@@ -233,7 +282,6 @@ void	parse(int ac, char **av, IRCserv *_server)
 	line_number = 0;
 	while (!config.eof())
 	{
-
 		line_number++;
 		getline(config, line);
 		i = line.find_first_not_of(" \t\n");
