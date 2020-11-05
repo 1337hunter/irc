@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/05 00:05:15 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 13:29:54 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,30 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 	temp.ssl = false;
 	temp.tls = false;
 	temp.serveronly = false;
-	pos = 0;
-	while (line.c_str()[pos] && line.c_str()[pos] < ' ')
-		pos++;
-	if ((line.compare(pos, ft_strlen("listen"), "listen")) != 0)
-		return -1;
-	if (line.find_first_not_of(" \t\n{", pos + ft_strlen("listen")) != std::string::npos)
-		return -1;
-	while (line.find("}") == std::string::npos)
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("listen");
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
 	{
 		getline(config, line);
 		line_number++;
 		if (config.eof())
 			return -1;
 		pos = 0;
-		while (line.c_str()[pos] && line.c_str()[pos] <= ' ')
-			pos++;
-		if (line.compare(pos, 1, "{") == 0)
-			continue ;
-		else if (!line.compare(pos, 2, "ip"))
+	}
+	if (line.c_str()[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	while (line.c_str()[pos] != '}')
+	{
+		while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+		if (!line.compare(pos, 2, "ip"))
 		{
 			pos = line.find_first_not_of(" \n\t", pos + 2);
 			if (pos == std::string::npos)
@@ -81,7 +86,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 			if (line.c_str()[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != std::string::npos && line.c_str()[pos] != '#')
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}')
 				return -1;
 			std::string	ip(line, pos_copy_from, pos_copy_size);
 			temp.ip = ip;
@@ -100,7 +105,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 			if (line.c_str()[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != std::string::npos && line.c_str()[pos] != '#')
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}')
 				return -1;
 			std::string	port(line, pos_copy_from, pos_copy_size);
 			temp.port = std::stoi(port);
@@ -111,7 +116,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 			if (line.c_str()[pos] != '{')
 				return -1;
 			pos = line.find_first_not_of(" \n\t", pos + 1);
-			while (line.c_str()[pos] != '}')
+			while (line.c_str()[pos] != '}' && pos != std::string::npos)
 			{
 				if (!line.compare(pos, 3, "ssl"))
 				{
@@ -143,8 +148,19 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 				}
 				pos = line.find_first_not_of(" \n\t", pos);
 			}
+			if (pos == std::string::npos || line.c_str()[pos] != '}')
+				return -1;
+			pos++;
 		}
-
+		else if (!line.compare(pos, 1, "#"))
+		{
+			pos = std::string::npos;
+			continue ;
+		}
+		else if (!line.compare(pos, 1, "}"))
+			break ;
+		else
+			return -1;
 	}
 	_server->listen.push_back(temp);
 #if DEBUG_MODE
@@ -164,8 +180,24 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 int
 block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
 {
+	size_t	pos;
+
+	pos = 0;
 	if (_server->admin.set)
 		return -1;
+	_server->admin.set = true;
+	while (line.find('{') == std::string::npos && !config.eof())
+	{
+		getline(config, line);
+		line_number++;
+	}
+	if (config.eof())
+		return -1;
+	while (line.c_str()[pos] != '}')
+	{
+	//	while (pos = line.find_first_not_of(" \t\n", pos + 1))
+
+	}
 	(void)config;
 	(void)line;
 	_server = 0;
@@ -174,13 +206,8 @@ block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &l
 }
 
 
-size_t	find_block(std::string line)
+size_t	find_block(std::string line, size_t pos)
 {
-	size_t	pos;
-
-	pos = line.find_first_not_of(" \n\t");
-	if (pos == std::string::npos)
-		return pos;
 	if (!(line.compare(pos, ft_strlen("listen"), "listen")))
 		return LISTEN;
 	if (!(line.compare(pos, ft_strlen("admin"), "admin")))
@@ -204,15 +231,16 @@ void	parse(int ac, char **av, IRCserv *_server)
 	line_number = 0;
 	while (!config.eof())
 	{
+
 		line_number++;
 		getline(config, line);
-		i = 0;
-		while (line.c_str()[i] < ' ' && line.c_str() != 0) //escape comments
-			i++;
-		if (line.c_str()[i] == '#')
+		i = line.find_first_not_of(" \t\n");
+		if (line.c_str()[i] == '#' || i == std::string::npos)
 			continue ;
-		i = find_block(line);
-		if (i != std::string::npos)
+		i = find_block(line, i);
+		if (i == std::string::npos)
+			error_exit("Error: config error at line ", line, line_number);
+		else
 			if ((block[i](config, line, _server, line_number)) == -1)
 			error_exit("Error: config error at line ", line, line_number);
 
