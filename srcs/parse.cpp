@@ -6,9 +6,13 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/05 21:24:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 21:42:59 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+ * There is a lot of magic in this place!
+*/
 
 #include "error_handle.hpp"
 #include "ircserv.hpp"
@@ -437,6 +441,80 @@ block_link(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 	return 0;
 }
 
+int
+block_me(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+{
+	size_t  pos;
+        size_t  i;
+        size_t  endl = std::string::npos;
+        std::vector<std::string>        names;
+
+        pos = line.find_first_not_of(" \t");
+        pos += ft_strlen("me");
+        while ((pos = line.find("{", pos)) == std::string::npos)
+        {
+                getline(config, line);
+                line_number++;
+                if (config.eof())
+                        return -1;
+                pos = 0;
+        }
+        if (line.c_str()[pos] != '{' || config.eof())
+                return -1;
+        pos++;
+        int k = 2;
+	while (k)
+        {
+                if (line.c_str()[pos] != '"')
+                        while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+                        {
+                                getline(config, line);
+                                line_number++;
+                                if (config.eof())
+                                        return -1;
+                                pos = 0;
+                        }
+                if (line.c_str()[pos] == '#' && (pos = endl))
+                        continue ;
+                if (line.c_str()[pos] != '"')
+                        return -1;
+                if ((i = line.find("\"", pos + 1)) == std::string::npos)
+                        return -1;
+                std::string     realname(line, pos + 1, i - pos - 1);
+                names.push_back(realname);
+                pos = line.find_first_not_of(" \t\n", i + 1);
+                if (line.c_str()[pos] != ';')
+                        return -1;
+                pos = line.find_first_not_of(" \t\n", pos + 1);
+                if (line.c_str()[pos] != '#' && line.c_str()[pos] != '"' && pos != endl &&
+                                !(k == 1 && line.c_str()[pos] == '}'))
+                        return -1;
+                if (line.c_str()[pos] == '#')
+                        pos = endl;
+                k--;
+        }
+        while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+        {
+                getline(config, line);
+                line_number++;
+                if (config.eof())
+                        return -1;
+                pos = 0;
+        }
+        if (line.c_str()[pos] != '}')
+                return -1;
+        pos = line.find_first_not_of(" \t\n", pos + 1);
+        if (line.c_str()[pos] != '#' && pos != endl)
+                return -1;
+        _server->me.name = names[0];
+        _server->me.info = names[1];
+#if DEBUG_MODE
+        std::cout << "server name: \"" << _server->me.name << '"';
+        std::cout << " server info: \"" << _server->me.info << '"' << '\n';
+#endif
+	return 0;
+}
+
 size_t	find_block(std::string line, size_t pos)
 {
 	if (!line.compare(pos, ft_strlen("listen"), "listen"))
@@ -445,6 +523,8 @@ size_t	find_block(std::string line, size_t pos)
 		return ADMIN;
 	if (!line.compare(pos, ft_strlen("link"), "link"))
 		return LINK;
+	if (!line.compare(pos, ft_strlen("me"), "me"))
+		return ME;
 	return std::string::npos;
 }
 
@@ -459,6 +539,7 @@ void	parse(int ac, char **av, IRCserv *_server)
 	block[LISTEN] = block_listen;
 	block[ADMIN] = block_admin;
 	block[LINK] = block_link;
+	block[ME] = block_me;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())
 		error_exit("Error: can't open file \"./config/ircserv.conf\"");
