@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 23:52:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 19:57:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ struct	t_listen
 	bool		serveronly;
 	bool		tls;
 	bool		ssl;
-	int		port;
+	int			port;
 	std::string	ip;
 };
 
@@ -81,6 +81,17 @@ struct	t_admin
 	std::string	realname;
 	std::string	nick;
 	std::string	mail;
+};
+
+struct	t_link
+{
+	std::string	ip;	
+	std::string	hostname;
+	std::string	pass;
+	int			port;
+	bool		tls;
+	bool		ssl;
+	bool		autoconnect;
 };
 
 struct IRCserv
@@ -96,6 +107,7 @@ struct IRCserv
 	std::string					pass;
 	std::vector<t_listen>		listen;
 	t_admin						admin;
+	std::vector<t_link>			link;
 	std::vector<server_server>	connect;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;

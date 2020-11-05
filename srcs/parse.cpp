@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/05 19:31:34 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/05 21:24:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <fstream>
 
 #define LISTEN 0
-#define LINCK 1
+#define LINK 1
 #define ADMIN 2
 #define OPER 3
 #define ME 4
@@ -217,6 +217,8 @@ block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &l
 					return -1;
 				pos = 0;
 			}
+		if (line.c_str()[pos] == '#' && (pos = endl))
+			continue ;
 		if (line.c_str()[pos] != '"')
 			return -1;
 		if ((i = line.find("\"", pos + 1)) == std::string::npos)
@@ -230,6 +232,8 @@ block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &l
 		if (line.c_str()[pos] != '#' && line.c_str()[pos] != '"' && pos != endl &&
 				!(k == 1 && line.c_str()[pos] == '}'))
 			return -1;
+		if (line.c_str()[pos] == '#')
+			pos = endl;
 		k--;
 	}
 	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
@@ -249,20 +253,198 @@ block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &l
 	_server->admin.nick = names[1];
 	_server->admin.mail = names[2];
 #if DEBUG_MODE
-	std::cout << "admin.realname: " << _server->admin.realname;
-	std::cout << " admin.nick: " << _server->admin.nick;
-	std::cout << " admin.mail: " << _server->admin.mail << '\n';
+	std::cout << "admin.realname: \"" << _server->admin.realname << '"';
+	std::cout << " admin.nick: \"" << _server->admin.nick << '"';
+	std::cout << " admin.mail: \"" << _server->admin.mail << '"' << '\n';
 #endif
 	return 0;
 }
 
+int
+block_link(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+{
+	t_link	temp;
+	size_t	pos;
+	size_t	i;
+	size_t	pos_copy_from;
+	size_t	pos_copy_size;
+
+	temp.ssl = false;
+	temp.tls = false;
+	temp.autoconnect = false;
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("link");
+	while ((pos = line.find_first_not_of(" \t", pos)) == std::string::npos || line.c_str()[pos] == '#')
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line.c_str()[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	while (line.c_str()[pos] != '}')
+	{
+		while ((pos = line.find_first_not_of(" \t", pos)) == std::string::npos)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+		if (!line.compare(pos, 2, "ip"))
+		{
+			pos = line.find_first_not_of(" \t", pos + 2);
+			if (pos == std::string::npos)
+				return -1;
+			i = line.find_first_not_of("0123456789.", pos);
+			pos_copy_from = pos;
+			pos_copy_size = i - pos;
+			if (i == std::string::npos)
+				return -1;
+			pos = line.find_first_not_of(" \t", i);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t", pos + 1);
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 8, "hostname") && line.compare(pos, 4, "pass") && line.compare(pos, 7, "options") && line.compare(pos, 4, "port"))
+				return -1;
+			std::string	ip(line, pos_copy_from, pos_copy_size);
+			temp.ip = ip;
+		}
+		else if (!line.compare(pos, 8, "hostname"))
+		{
+			pos = line.find_first_not_of(" \t", pos + 8);
+			if (pos == std::string::npos)
+				return -1;
+			i = line.find_first_of(" \t;", pos);
+			pos_copy_from = pos;
+			pos_copy_size = i - pos;
+			if (i == std::string::npos)
+				return -1;
+			pos = line.find_first_not_of(" \t", i);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t", pos + 1);
+			 if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 2, "ip") && line.compare(pos, 4, "pass") && line.compare(pos, 7, "options") && line.compare(pos, 4, "port"))
+				 return -1;
+			 std::string     hostname(line, pos_copy_from, pos_copy_size);
+			 temp.hostname = hostname;
+		}
+		else if (!line.compare(pos, 4, "port"))
+		{
+			pos = line.find_first_not_of(" \n\t", pos + 4);
+			if (pos == std::string::npos)
+				return -1;
+			i = line.find_first_not_of("0123456789", pos);
+			pos_copy_from = pos;
+			pos_copy_size = i - pos;
+			if (i == std::string::npos)
+				return -1;
+			pos = line.find_first_not_of(" \n\t", i);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 2, "ip") && line.compare(pos, 4, "pass") && line.compare(pos, 7, "options") && line.compare(pos, 8, "hostname"))
+				return -1;
+			std::string     port(line, pos_copy_from, pos_copy_size);
+			temp.port = std::stoi(port);
+		}
+		else if (!line.compare(pos, 4, "pass"))
+		{
+			pos = line.find_first_not_of(" \t", pos + 4);
+			if (pos == std::string::npos || line.c_str()[pos] != '"')
+				return -1;
+			if ((i = line.find("\"", pos + 1)) == std::string::npos)
+				return -1;
+			std::string	pass(line, pos + 1, i - pos - 1);
+			temp.pass = pass;
+			pos = line.find_first_not_of(" \t", i + 1);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t", pos + 1);
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 2, "ip") && line.compare(pos, 4, "port") && line.compare(pos, 7, "options") && line.compare(pos, 8, "hostname"))
+				return -1;
+		}
+		else if (!line.compare(pos, 7, "options"))
+		{
+			pos = line.find_first_not_of(" \n\t", pos + 7);
+			if (line.c_str()[pos] != '{')
+				return -1;
+			pos = line.find_first_not_of(" \n\t", pos + 1);
+			while (line.c_str()[pos] != '}' && pos != std::string::npos)
+			{
+				if (!line.compare(pos, 3, "ssl"))
+				{
+					temp.ssl = true;
+					if (temp.tls)
+						return -1;
+					pos = line.find_first_not_of(" \t", pos + 3);
+					if (line.c_str()[pos] != ';')
+						return -1;
+					pos++;
+				}
+				else if (!line.compare(pos, 3, "tls"))
+				{
+					temp.tls = true;
+					if (temp.ssl)
+						return -1;
+					pos = line.find_first_not_of(" \t", pos + 3);
+					if (line.c_str()[pos] != ';')
+						return -1;
+					pos++;
+				}
+				else if (!line.compare(pos, 3, "tls"))
+				{
+					temp.tls = true;
+					if (temp.ssl)
+						return -1;
+					pos = line.find_first_not_of(" \n\t", pos + 3);
+					if (line.c_str()[pos] != ';')
+						return -1;
+					pos++;
+				}
+				else
+					return -1;
+				pos = line.find_first_not_of(" \n\t", pos);
+			}
+			if (pos == std::string::npos || line.c_str()[pos] != '}')
+				return -1;
+			pos++;
+		}
+		else if (!line.compare(pos, 1, "#"))
+			pos = std::string::npos;
+		else if (!line.compare(pos, 1, "}"))
+			break ;
+		else
+			return -1;
+	}
+	_server->link.push_back(temp);
+#if DEBUG_MODE
+	std::vector<t_link>::reverse_iterator it = _server->link.rbegin();
+	std::cout << "link: ip '" << it->ip << "' hostname '" << it->hostname << "'";
+	std::cout << " port '" << it->port << "'" << " pass '" << it->pass << "' ";
+	if (temp.ssl)
+                std::cout << "'ssl' ";
+        if (temp.autoconnect)
+                std::cout << "'autoconnect' ";
+        if (temp.tls)
+                std::cout << "'tls' ";
+        std::cout << std::endl;
+#endif
+	return 0;
+}
 
 size_t	find_block(std::string line, size_t pos)
 {
-	if (!(line.compare(pos, ft_strlen("listen"), "listen")))
+	if (!line.compare(pos, ft_strlen("listen"), "listen"))
 		return LISTEN;
-	if (!(line.compare(pos, ft_strlen("admin"), "admin")))
+	if (!line.compare(pos, ft_strlen("admin"), "admin"))
 		return ADMIN;
+	if (!line.compare(pos, ft_strlen("link"), "link"))
+		return LINK;
 	return std::string::npos;
 }
 
@@ -276,6 +458,7 @@ void	parse(int ac, char **av, IRCserv *_server)
 
 	block[LISTEN] = block_listen;
 	block[ADMIN] = block_admin;
+	block[LINK] = block_link;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())
 		error_exit("Error: can't open file \"./config/ircserv.conf\"");
@@ -298,6 +481,4 @@ void	parse(int ac, char **av, IRCserv *_server)
 	}
 	av = 0;
 	ac = 0;
-	line_number = 0;
-	_server = 0;
 }
