@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 23:26:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 23:46:28 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ typedef struct		s_fd
 	std::string		options;// register attemption
 }					t_fd;
 
-struct t_server
+typedef struct		s_server
 {
 	int				fd;
 	int				hopcount;
@@ -65,44 +65,44 @@ struct t_server
 	std::string		hostname;
 	std::string		pass;
 	std::string		info;
-};
+}					t_server;
 
-struct	t_listen
+typedef struct		s_listen
 {
-	bool		serveronly;
-	bool		tls;
-	bool		ssl;
-	int			port;
-	std::string	ip;
-};
+	bool			serveronly;
+	bool			tls;
+	bool			ssl;
+	int				port;
+	std::string		ip;
+}					t_listen;
 
-struct	t_admin
+typedef struct		s_admin
 {
-	bool		set;
-	std::string	realname;
-	std::string	nick;
-	std::string	mail;
-};
+	bool			set;
+	std::string		realname;
+	std::string		nick;
+	std::string		mail;
+}					t_admin;
 
-struct	t_link
+typedef struct		s_link
 {
-	std::string	ip;
-	std::string	hostname;
-	std::string	pass;
-	int			port;
-	bool		tls;
-	bool		ssl;
-	bool		autoconnect;
-};
+	std::string		ip;
+	std::string		hostname;
+	std::string		pass;
+	int				port;
+	bool			tls;
+	bool			ssl;
+	bool			autoconnect;
+}					t_link;
 
-struct	t_oper
+typedef struct		s_oper
 {
-	std::string	name;
-	std::string	pass;
-	std::string	swhois;
-};
+	std::string		name;
+	std::string		pass;
+	std::string		swhois;
+}					t_oper;
 
-struct IRCserv
+struct				IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
 	typedef std::map<std::string, t_command>	t_cmdmap;
@@ -132,7 +132,5 @@ void		AcceptConnect(IRCserv *_server);
 void		RecieveMessage(int fd, IRCserv *_server);
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
 void		RunServer(IRCserv *_server);
-t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd);
-t_citer		ft_findnick(t_citer const &begin, t_citer const &end, std::string const &nick);
 
 #endif
