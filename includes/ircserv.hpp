@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/05 21:39:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 16:59:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct		s_fd
 	std::string		pass;	// this structer parameters required for
 	std::string		version;// message PASS that can be received either
 	std::string		flags;	// from client or server before SERVER or NICK
-	std::string		options;// <-
+	std::string		options;// register attemption
 }					t_fd;
 
 struct server_server
@@ -60,8 +60,9 @@ struct server_server
 	int				type; // TO or FROM
 	int				hopcount;
 	int				port;
-	unsigned short	token;
-	std::string		host;
+	bool			autoconnect;
+	std::string		token; //
+	std::string		hostname; //
 	std::string		pass;
 	std::string		info;
 };
@@ -94,12 +95,6 @@ struct	t_link
 	bool		autoconnect;
 };
 
-struct	t_me
-{
-	std::string	name;
-	std::string	info;
-};
-
 struct IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
@@ -107,13 +102,14 @@ struct IRCserv
 	int							port;
 	int							sock;
 	std::string					hostname;
+	std::string					token;
+	std::string					info;
 	std::string					server_ip;
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
 	std::string					pass;
 	std::vector<t_listen>		listen;
 	t_admin						admin;
-	t_me				me;
 	std::vector<t_link>			link;
 	std::vector<server_server>	connect;
 	std::vector<Client>			clients;
