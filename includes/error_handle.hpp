@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 17:48:42 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/04 20:50:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 23:11:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,8 @@
 
 #include <iostream>
 
-void	error_exit(std::string s1);
-void	error_exit(std::string s1, std::string line, size_t line_number);
+void	error_exit(std::string const &s1);
+void	error_exit(std::string const &s1, std::string const &line,
+	size_t line_number);
 
 #endif

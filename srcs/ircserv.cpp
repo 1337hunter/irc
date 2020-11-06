@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:34:01 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 23:20:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ void		RunServer(IRCserv *_server)
 		int	lastfd = 0;
 		FD_ZERO(&(_server->fdset_read));
 		FD_ZERO(&(_server->fdset_write));
+		FD_ZERO(&(_server->fdset_error));
 		for (std::map<int, t_fd>::iterator it = _server->fds.begin();
 			it != _server->fds.end(); it++)
 		{
@@ -160,9 +161,40 @@ void		RunServer(IRCserv *_server)
 			lastfd = std::max(lastfd, it->first);
 		}
 		int readyfds = select(lastfd + 1,
-			&(_server->fdset_read), &(_server->fdset_write), NULL, NULL);
+			&(_server->fdset_read), &(_server->fdset_write),
+			&(_server->fdset_error), NULL);
 		if (readyfds < 0)
 			error_exit("select error");
+		for (int fd = 0; readyfds > 0 && fd <= lastfd; fd++)
+		{
+			bool	isread = FD_ISSET(fd, &(_server->fdset_read));
+			bool	iswrite = FD_ISSET(fd, &(_server->fdset_write));
+			bool	iserror = FD_ISSET(fd, &(_server->fdset_error));
+
+			if (isread || iswrite || iserror)
+				readyfds--;
+			if (iserror)
+			{
+				std::cerr << "some error happened on fd " << fd << std::endl;
+				continue ;
+			}
+			if (isread)
+			{
+				if (_server->fds[fd].type == FD_ME)
+					AcceptConnect(_server);
+				else if (_server->fds[fd].type == FD_CLIENT)
+					RecieveMessage(fd, _server);
+				else if (_server->fds[fd].type == FD_SERVER)
+					RecieveMessage(fd, _server);
+			}
+			if (iswrite)
+			{
+				if (_server->fds[fd].type == FD_CLIENT)
+					SendMessage(fd, _server);
+			}
+		}
+		// need to fix something about NICK command
+/*		// old buggy code to think about
 		size_t tmpits = 0;
 		// BUG: iterators become invalid after disconnect or erase
 		// possibly not good solution is to check how many fds we processed
@@ -191,5 +223,6 @@ void		RunServer(IRCserv *_server)
 				readyfds--;
 			tmpits++;
 		}
+*/
 	}
 }

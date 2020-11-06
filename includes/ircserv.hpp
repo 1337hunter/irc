@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:28:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 23:05:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ struct	t_admin
 
 struct	t_link
 {
-	std::string	ip;	
+	std::string	ip;
 	std::string	hostname;
 	std::string	pass;
 	int			port;
@@ -123,6 +123,7 @@ struct IRCserv
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
+	fd_set						fdset_error;
 	static std::string const	clrf;
 };
 
