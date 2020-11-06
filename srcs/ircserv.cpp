@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:34:01 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 21:22:20 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,7 +162,7 @@ void		RunServer(IRCserv *_server)
 		int readyfds = select(lastfd + 1,
 			&(_server->fdset_read), &(_server->fdset_write), NULL, NULL);
 		if (readyfds < 0)
-			error_exit("select error");
+			error_exit(SELECT);
 		size_t tmpits = 0;
 		// BUG: iterators become invalid after disconnect or erase
 		// possibly not good solution is to check how many fds we processed
