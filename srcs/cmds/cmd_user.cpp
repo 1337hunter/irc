@@ -60,6 +60,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 			{
 				reply = ":" + _server->hostname + " ";
 				reply += ERR_ALREADYREGISTRED;
+				reply += " " + it->getnickname();
 				reply += " :Unauthorized command (already registered)";
 				reply += CLRF;
 			}
