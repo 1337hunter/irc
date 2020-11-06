@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 18:22:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 19:55:30 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,10 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 	}
 	else
 	{
-		reply = ":" + _server->hostname + " ";
-		reply += ERR_NICKNAMEINUSE;
-		reply += " " + split[1] + " :Nickname is already in use";
-		reply += CLRF;
+		reply = ft_buildmsg(_server->hostname, ERR_NICKNAMEINUSE, split[1], "",
+			"Nickname is already in use");
 		/*	need to save the state in this case
 		 *	cli will try to send another NICK after USER msg */
 	}
 	_server->fds[fd].wrbuf += reply;
-//	send(fd, reply.c_str(), reply.length(), 0);
 }

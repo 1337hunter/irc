@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:58 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 17:25:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 19:44:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,8 @@ void		cmd_pass(int fd, const t_strvect &split, IRCserv *_server)
 {
 	if (split.size() < 2)
 	{
-		std::string	reply;
-		reply = ":" + _server->hostname + " ";
-		reply += ERR_NEEDMOREPARAMS;
-		reply += " :not enough parameters";
-		reply += CLRF;
-//		send(fd, reply.c_str(), reply.length(), 0);
-		_server->fds[fd].wrbuf += reply;
+		_server->fds[fd].wrbuf += ft_buildmsg(_server->hostname,
+			ERR_NEEDMOREPARAMS, "", split[0], "Not enough parameters");
 		return ;
 	}
 	_server->fds[fd].pass = split[1];

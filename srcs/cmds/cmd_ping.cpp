@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:05 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 17:25:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 19:54:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,9 @@
 
 void		cmd_ping(int fd, const t_strvect &split, IRCserv *_server)
 {
-	std::string		reply;
-
 	if (split.size() < 2)
-	{
-		reply = ":" + _server->hostname + " ";
-		reply += ERR_NOORIGIN;
-		reply += " :No origin specified";
-		reply += CLRF;
-	}
+		_server->fds[fd].wrbuf += ft_buildmsg(_server->hostname,
+			ERR_NEEDMOREPARAMS, "", "", "No origin specified");
 	else
-		reply = "PONG " + split[1] + CLRF;
-	_server->fds[fd].wrbuf += reply;
-//	send(fd, reply.c_str(), reply.length(), 0);
+		_server->fds[fd].wrbuf += "PONG " + split[1] + CLRF;
 }

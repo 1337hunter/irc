@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 16:17:57 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 19:53:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,21 @@ t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 	if (!msg.empty())
 		split.push_back(msg);
 	return (split);
+}
+
+std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
+	std::string const &target, std::string const &cmd, std::string const &msg)
+{
+	std::string	res;
+
+	res = ":" + srv + " " + msgcode + " ";
+	if (target.empty())
+		res += "*";
+	res += target;
+	if (!cmd.empty())
+		res += " " + cmd;
+	if (!msg.empty())
+		res += " :" + msg;
+	res += CLRF;
+	return (res);
 }
