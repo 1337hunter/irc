@@ -48,7 +48,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *_server)
 			}
 			else
 				reply = ft_buildmsg(_server->hostname, ERR_ALREADYREGISTRED,
-					it->getnickname(), "", ":You may not reregister");
+					it->getnickname(), "", "You may not reregister");
 		}
 	}
 	_server->fds[fd].wrbuf += reply;

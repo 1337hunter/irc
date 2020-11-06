@@ -19,6 +19,13 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *_server)
 	t_citer			nick_entry;
 	t_citer			fd_entry;
 
+	if (split.size() < 2)
+	{
+		// may be different
+		_server->fds[fd].wrbuf += ft_buildmsg(_server->hostname,
+			ERR_NONICKNAMEGIVEN, "", "NICK", "No nickname given");
+		return ;
+	}
 	fd_entry = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
 	nick_entry = ft_findnick(_server->clients.begin(), _server->clients.end(), split[1]);
 	if (nick_entry == _server->clients.end() && fd_entry == _server->clients.end())
