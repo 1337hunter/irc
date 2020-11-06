@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/10/30 19:28:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:29:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # define FD_FREE	0
 # define FD_CLIENT	1
 # define FD_SERVER	2
+# define FD_ME		3
 
 # define BUF_SIZE	512
 

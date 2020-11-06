@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/06 18:51:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:44:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -534,7 +534,9 @@ size_t	find_block(std::string line, size_t pos)
 
 void	server_init(IRCserv *_server, int ac, char **av)
 {
+	bool	flag_for_server_connection;
 
+	flag_for_server_connection = false;
 	if (ac == 2)
 	{
 
@@ -566,9 +568,10 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		}
 		else
 		{
-			t_strvect   temp;
-			server_server   connect;
+			t_strvect	temp;
+			t_server	connect;
 
+			flag_for_server_connection = true;
 			temp = ft_splitstring(av[1], ":");
 			if (temp.size() < 2 || temp.size() > 3)
 				error_exit("Error: input parameters of server which you want to connect to is wrong!");
@@ -595,9 +598,10 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	{
 		std::string port(av[2]);
 		std::string pass(av[3]);
-		t_strvect   connect_to;
-		server_server   temp;
+		t_strvect	connect_to;
+		t_server	temp;
 
+		flag_for_server_connection = true;
 		connect_to = ft_splitstring(av[1], ":");
 		if (connect_to.size() < 2 || connect_to.size() > 3)
 			error_exit("Error: input parameters of server which you want to connect to is wrong!");
@@ -626,7 +630,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
-	if (ac == 3 || ac == 4)
+	if (flag_for_server_connection)
 	{
 		std::vector<t_link>::iterator	b = _server->link.begin();
 		std::vector<t_link>::iterator	e = _server->link.end();
@@ -640,13 +644,14 @@ void	server_init(IRCserv *_server, int ac, char **av)
 					b->pass == _server->connect[0].pass)
 			{
 				b->autoconnect = true;
-				_server->connect[0].autoconnect = true;
 				flag = 1;
+				_server->connect.erase(_server->connect.begin());
+				break ;
 			}
 			b++;
 		}
 		if (!flag)
-			error_exit("Error: server you are trying to connect bad configured");
+			error_exit("Error: server you are trying to connect is bad configured");
 
 	}
 	_server->command["USER"] = cmd_user;
