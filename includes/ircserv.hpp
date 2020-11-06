@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 23:46:28 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/07 00:29:57 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ typedef struct		s_oper
 
 struct				IRCserv
 {
-	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
+	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
@@ -126,11 +126,11 @@ struct				IRCserv
 	static std::string const	clrf;
 };
 
-void		parse(int ac, char **av, IRCserv *_server);
-void		CreateSock(IRCserv *_server);
-void		AcceptConnect(IRCserv *_server);
-void		RecieveMessage(int fd, IRCserv *_server);
-void		ProcessMessage(int fd, std::string const &msg, IRCserv *_server);
-void		RunServer(IRCserv *_server);
+void		parse(int ac, char **av, IRCserv *serv);
+void		CreateSock(IRCserv *serv);
+void		AcceptConnect(IRCserv *serv);
+void		RecieveMessage(int fd, IRCserv *serv);
+void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
+void		RunServer(IRCserv *serv);
 
 #endif

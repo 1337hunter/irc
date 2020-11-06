@@ -6,29 +6,29 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:58 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:58:28 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/07 00:32:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 
-void		cmd_pass(int fd, const t_strvect &split, IRCserv *_server)
+void		cmd_pass(int fd, const t_strvect &split, IRCserv *serv)
 {
 	if (split.size() < 2)
 	{
-		_server->fds[fd].wrbuf += ft_buildmsg(_server->hostname,
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->hostname,
 			ERR_NEEDMOREPARAMS, "", split[0], "Not enough parameters");
 		return ;
 	}
-	_server->fds[fd].pass = split[1];
+	serv->fds[fd].pass = split[1];
 	if (split.size() == 2)
 		return ;
-	_server->fds[fd].version = split[2];
+	serv->fds[fd].version = split[2];
 	if (split.size() == 3)
 		return ;
-	_server->fds[fd].flags = split[3];
+	serv->fds[fd].flags = split[3];
 	if (split.size() == 4)
 		return ;
-	_server->fds[fd].options = split[4];
+	serv->fds[fd].options = split[4];
 }
