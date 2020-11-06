@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 23:05:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 23:26:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ typedef struct		s_fd
 
 struct t_server
 {
-	size_t			fd;
-	int				type; // TO or FROM
+	int				fd;
 	int				hopcount;
 	int				port;
 	bool			autoconnect;

@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/06 19:44:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 20:53:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -605,7 +605,6 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		connect_to = ft_splitstring(av[1], ":");
 		if (connect_to.size() < 2 || connect_to.size() > 3)
 			error_exit("Error: input parameters of server which you want to connect to is wrong!");
-		temp.type = TO;
 		temp.hostname = connect_to[0];
 		_server->pass = pass;
 		if (port.find_first_not_of("0123456789") != std::string::npos ||

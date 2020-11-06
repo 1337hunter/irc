@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 20:31:00 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 23:06:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,25 +15,18 @@
 
 void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 {
-	fd_set		fd_send;
-	int			n_ready;
 	t_server	temp;
 
-	FD_ZERO(&(fd_send));
-	FD_SET(fd, &(fd_send));
 #if DEBUG_MODE
 	if (split.size() > 2)
-		std::cout << "incoming connection from:\t" << split[1] << std::endl;
+		std::cout << "incoming connection:\t" << split[1] << std::endl;
 #endif
 	if (split.size() < 5) // is info parameter counts?
 	{
 		std::string	reply;
 		reply = "ERROR :Not enough SERVER parameters";
 		reply += CLRF;
-		n_ready = select(fd + 1, 0, &fd_send, 0, 0);
-		if (n_ready < 0)
-			error_exit("Error: select system call error");
-		send(fd, reply.c_str(), reply.length(), 0);
+		_server->fds[fd].wrbuf += reply;
 		return ;
 	}
 	std::vector<t_server>::iterator	begin = _server->connect.begin();
@@ -42,15 +35,14 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	{
 		if (begin->hostname == split[1])
 		{
-			std::string	reply;
-			reply = ":" + _server->hostname + " ";
-			reply += ERR_ALREADYREGISTRED;
-			reply += " " + split[1];
-			reply += " :server already registred";
-			reply += CLRF;
-			send(fd, reply.c_str(), reply.length(), 0);
-			cmd_squit(fd, split, _server);
-			break ;
+			_server->fds[fd].wrbuf += ":" + _server->hostname + " ";
+			_server->fds[fd].wrbuf += ERR_ALREADYREGISTRED;
+			_server->fds[fd].wrbuf += " " + split[1];
+			_server->fds[fd].wrbuf += " :server already registred";
+			_server->fds[fd].wrbuf += CLRF;
+/* del it*/	send(fd, _server->fds[fd].wrbuf.c_str(), _server->fds[fd].wrbuf.length(), 0);
+			cmd_quit(fd, split, _server); //DELETE THIS AFTER FIX DISCONNECT WTIH SELECT!
+			return ;
 
 		}
 		begin++;
@@ -63,6 +55,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		cmd_squit(fd, split, _server);
 		return ;
 	}
+	temp.fd = fd;
 	temp.hostname = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
@@ -75,6 +68,11 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		return ;
 	}
 	temp.info = split[4];
+	for (size_t i = 5; i < split.size(); i++)
+	{
+		temp.info += " ";
+		temp.info += split[i];
+	}
 	std::string	broadcast;
 	std::vector<std::string>::const_iterator	itbegin = split.begin();
 	std::vector<std::string>::const_iterator	itend = split.end();
@@ -90,13 +88,17 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		itbegin++;
 		i++;
 	}
-	std::map<int, t_fd>::iterator	mbegin = _server->fds.begin();
-	std::map<int, t_fd>::iterator	mend = _server->fds.end();
-	while (mbegin != mend)
+	broadcast += CLRF;
+	std::map<int, t_fd>::iterator	b = _server->fds.begin();
+	std::map<int, t_fd>::iterator	e = _server->fds.end();
+	while (b != e)
 	{
-		if (mbegin->second.type == FD_SERVER && mbegin->first != _server->sock)
-			send(mbegin->first, broadcast.c_str(), broadcast.length(), 0);
-		mbegin++;
+		if (b->second.type == FD_SERVER)
+		{
+			b->second.wrbuf += broadcast;
+			send(b->first, broadcast.c_str(), broadcast.length(), 0);
+		}
+		b++;
 	}
 	_server->fds[fd].type = FD_SERVER;
 	_server->connect.push_back(temp);
