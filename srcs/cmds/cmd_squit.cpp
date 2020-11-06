@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:06:49 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:53:56 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ void		cmd_squit(int fd, const t_strvect &split, IRCserv *_server)
 	if (begin != end)
 	{
 		_server->connect.erase(begin);
-		FD_CLR(fd, &(_server->fdset_read));
-		close(fd);
-		_server->fds.erase(fd);
 #if DEBUG_MODE
 		std::cout << "server " << split[1] << ":\t\t\tdisconnected" << std::endl;
 #endif
 	}
+	FD_CLR(fd, &(_server->fdset_read));
+	FD_CLR(fd, &(_server->fdset_write));
+	close(fd);
+	_server->fds.erase(fd);
 }

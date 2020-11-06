@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:27:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 20:31:00 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,14 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	if (split.size() > 2)
 		std::cout << "incoming connection from:\t" << split[1] << std::endl;
 #endif
-	if (split.size() < 4) // is info parameter counts?
+	if (split.size() < 5) // is info parameter counts?
 	{
 		std::string	reply;
 		reply = "ERROR :Not enough SERVER parameters";
 		reply += CLRF;
 		n_ready = select(fd + 1, 0, &fd_send, 0, 0);
+		if (n_ready < 0)
+			error_exit("Error: select system call error");
 		send(fd, reply.c_str(), reply.length(), 0);
 		return ;
 	}
@@ -59,6 +61,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		std::cout << "client " << fd << "\t\twrong server password" << std::endl;
 #endif
 		cmd_squit(fd, split, _server);
+		return ;
 	}
 	temp.hostname = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
