@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 23:26:31 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 23:28:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ void		RunServer(IRCserv *_server)
 			&(_server->fdset_read), &(_server->fdset_write),
 			&(_server->fdset_error), NULL);
 		if (readyfds < 0)
-			error_exit("select error");
+			error_exit(SELECT);
 		for (int fd = 0; readyfds > 0 && fd <= lastfd; fd++)
 		{
 			bool	isread = FD_ISSET(fd, &(_server->fdset_read));
