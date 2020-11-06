@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 18:49:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:27:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,27 @@
 
 void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 {
-	server_server	temp;
+	fd_set		fd_send;
+	int			n_ready;
+	t_server	temp;
+
+	FD_ZERO(&(fd_send));
+	FD_SET(fd, &(fd_send));
 #if DEBUG_MODE
-	std::cout << "incoming connection from:\t" << split[1] << std::endl;
+	if (split.size() > 2)
+		std::cout << "incoming connection from:\t" << split[1] << std::endl;
 #endif
 	if (split.size() < 4) // is info parameter counts?
 	{
 		std::string	reply;
 		reply = "ERROR :Not enough SERVER parameters";
 		reply += CLRF;
-//		send(fd, reply.c_str(), reply.length(), 0);
+		n_ready = select(fd + 1, 0, &fd_send, 0, 0);
+		send(fd, reply.c_str(), reply.length(), 0);
+		return ;
 	}
-	std::vector<server_server>::iterator	begin = _server->connect.begin();
-	std::vector<server_server>::iterator	end = _server->connect.end();
+	std::vector<t_server>::iterator	begin = _server->connect.begin();
+	std::vector<t_server>::iterator	end = _server->connect.end();
 	while (begin != end) //looking for servers with the same name
 	{
 		if (begin->hostname == split[1])
@@ -53,11 +61,11 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		cmd_squit(fd, split, _server);
 	}
 	temp.hostname = split[1];
-	try { temp.hopcount = stoi(split[2]); temp.token = stoi(split[3]); }
+	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
 	{
 #if DEBUG_MODE
-		std::cerr << "Error: bad cast hopcount or token. Connection is terminated.";
+		std::cerr << "Error: bad cast hopcount. Connection is terminated.";
 		std::cerr << std::endl;
 		cmd_squit(fd, split, _server);
 #endif

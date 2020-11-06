@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 18:49:50 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:06:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 void		cmd_squit(int fd, const t_strvect &split, IRCserv *_server)
 {
-	std::vector<server_server>::iterator	begin;
-	std::vector<server_server>::iterator	end;
+	std::vector<t_server>::iterator	begin;
+	std::vector<t_server>::iterator	end;
 
 	while (begin != end && begin->hostname != split[1])
 		begin++;

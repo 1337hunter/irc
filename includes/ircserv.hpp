@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 16:59:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/06 19:28:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,14 +55,15 @@ typedef struct		s_fd
 	std::string		options;// register attemption
 }					t_fd;
 
-struct server_server
+struct t_server
 {
+	size_t			fd;
 	int				type; // TO or FROM
 	int				hopcount;
 	int				port;
 	bool			autoconnect;
-	std::string		token; //
-	std::string		hostname; //
+	std::string		token;
+	std::string		hostname;
 	std::string		pass;
 	std::string		info;
 };
@@ -95,6 +96,13 @@ struct	t_link
 	bool		autoconnect;
 };
 
+struct	t_oper
+{
+	std::string	name;
+	std::string	pass;
+	std::string	swhois;
+};
+
 struct IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *_server);
@@ -111,7 +119,7 @@ struct IRCserv
 	std::vector<t_listen>		listen;
 	t_admin						admin;
 	std::vector<t_link>			link;
-	std::vector<server_server>	connect;
+	std::vector<t_server>		connect;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 19:09:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/06 19:34:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void		CreateSock(IRCserv *_server)
 		error_exit("bind error (probably already binded)");
 	if (listen(_server->sock, 42) < 0)
 		error_exit("listen error");
-	_server->fds[_server->sock].type = FD_SERVER;
+	_server->fds[_server->sock].type = FD_ME;
 #if DEBUG_MODE
 	std::cout << "Server created on sock " << _server->sock << std::endl;
 #endif
@@ -174,9 +174,11 @@ void		RunServer(IRCserv *_server)
 			int		tmpfd = it->first;
 			if (FD_ISSET(tmpfd, &(_server->fdset_read)))
 			{
-				if (_server->fds[tmpfd].type == FD_SERVER)
+				if (_server->fds[tmpfd].type == FD_ME)
 					AcceptConnect(_server);
 				else if (_server->fds[tmpfd].type == FD_CLIENT)
+					RecieveMessage(tmpfd, _server);
+				else if (_server->fds[tmpfd].type == FD_SERVER)
 					RecieveMessage(tmpfd, _server);
 			}
 			if (FD_ISSET(tmpfd, &(_server->fdset_write)))
