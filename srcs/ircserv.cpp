@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/07 00:29:58 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/07 13:47:43 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void		CreateSock(IRCserv *serv)
 		error_exit("listen error");
 	serv->fds[serv->sock].type = FD_ME;
 #if DEBUG_MODE
-	std::cout << "Server created on sock " << serv->sock << std::endl;
+	std::cout << "server created on socket " << serv->sock << std::endl;
 #endif
 }
 

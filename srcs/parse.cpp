@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/06 20:53:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/07 13:46:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #define ADMIN 2
 #define OPER 3
 #define ME 4
+#define ENDL std::string::npos
 
 typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number);
 typedef std::map<int, t_block> t_blockmap;
@@ -519,6 +520,84 @@ block_me(std::fstream &config, std::string &line, IRCserv *_server, size_t &line
 	return 0;
 }
 
+int
+block_oper(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+{
+	size_t	pos;
+	size_t	i;
+	t_oper	temp;
+
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("oper");
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos || line.c_str()[pos] == '#')
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line.c_str()[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	while (line.c_str()[pos] != '}')
+	{
+		while ((pos = line.find_first_not_of(" \t\n", pos)) == std::string::npos)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+		if (line.c_str()[pos] == '#' && (pos = ENDL))
+			continue ;
+		if (!line.compare(pos, 4, "name"))
+		{
+			pos = line.find_first_not_of(" \n\t", pos + ft_strlen("name"));
+			if (pos == std::string::npos || line.c_str()[pos] != '"')
+				return -1;
+			if ((i = line.find("\"", pos + 1)) == std::string::npos)
+				return -1;
+			std::string name(line, pos + 1, i - pos - 1);
+			temp.name = name;
+			pos = line.find_first_not_of(" \t\n", i + 1);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 4, "pass"))
+				return -1;
+		}
+		else if (!line.compare(pos, 4, "pass"))
+		{
+			pos = line.find_first_not_of(" \n\t", pos + ft_strlen("pass"));
+			if (pos == std::string::npos || line.c_str()[pos] != '"')
+				return -1;
+			if ((i = line.find("\"", pos + 1)) == std::string::npos)
+				return -1;
+			std::string pass(line, pos + 1, i - pos - 1);
+			temp.pass = pass;
+			pos = line.find_first_not_of(" \t\n", i + 1);
+			if (line.c_str()[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != std::string::npos && line.c_str()[pos] != '#' && line.c_str()[pos] != '}' && line.compare(pos, 4, "name"))
+				return -1;
+		}
+		else if (!line.compare(pos, 1, "#"))
+			pos = std::string::npos;
+		else if (!line.compare(pos, 1, "}"))
+			break ;
+		else
+			return -1;
+	}
+	_server->oper.push_back(temp);
+#if DEBUG_MODE
+	std::cout << "operator: name '" << temp.name << "' pass: '" << temp.pass << "'\n";
+#endif
+	return 0;
+}
+
 size_t	find_block(std::string line, size_t pos)
 {
 	if (!line.compare(pos, ft_strlen("listen"), "listen"))
@@ -529,6 +608,8 @@ size_t	find_block(std::string line, size_t pos)
 		return LINK;
 	if (!line.compare(pos, ft_strlen("me"), "me"))
 		return ME;
+	if (!line.compare(pos, ft_strlen("oper"), "oper"))
+		return OPER;
 	return std::string::npos;
 }
 
@@ -675,6 +756,7 @@ void	parse(int ac, char **av, IRCserv *_server)
 	block[LISTEN] = block_listen;
 	block[ADMIN] = block_admin;
 	block[LINK] = block_link;
+	block[OPER] = block_oper;
 	block[ME] = block_me;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())

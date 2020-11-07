@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/07 00:29:57 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/07 13:36:29 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,6 +118,7 @@ struct				IRCserv
 	std::vector<t_listen>		listen;
 	t_admin						admin;
 	std::vector<t_link>			link;
+	std::vector<t_oper>			oper;
 	std::vector<t_server>		connect;
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
