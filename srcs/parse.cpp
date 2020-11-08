@@ -22,12 +22,12 @@
 #include <iostream>
 #include <fstream>
 
-#define LISTEN 0
-#define LINK 1
-#define ADMIN 2
-#define OPER 3
-#define ME 4
-#define ENDL std::string::npos
+#define LISTEN	0
+#define LINK	1
+#define ADMIN	2
+#define OPER	3
+#define ME		4
+#define ENDL	std::string::npos
 
 typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number);
 typedef std::map<int, t_block> t_blockmap;
