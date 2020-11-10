@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/07 13:47:43 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/10 17:55:48 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void		AcceptConnect(IRCserv *serv)
 	serv->fds[fd].type = FD_CLIENT; // we dont know either it's client or other server
 	serv->fds[fd].rdbuf.erase();
 	serv->fds[fd].wrbuf.erase();
+	serv->fds[fd].status = true;
 }
 
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
@@ -130,7 +131,7 @@ void		SendMessage(int fd, IRCserv *serv)
 		std::cout << "sending client " << fd << "\t" << reply;
 #endif
 	ssize_t		r = send(fd, reply.c_str(), reply.length(), 0);
-	if (r <= 0)
+	if (r <= 0 || serv->fds[fd].status == false)
 	{
 		close(fd);
 		serv->fds.erase(fd);
@@ -182,14 +183,14 @@ void		RunServer(IRCserv *serv)
 			{
 				if (serv->fds[fd].type == FD_ME)
 					AcceptConnect(serv);
-				else if (serv->fds[fd].type == FD_CLIENT)
+				else //if (serv->fds[fd].type == FD_CLIENT)
 					RecieveMessage(fd, serv);
-				else if (serv->fds[fd].type == FD_SERVER)
-					RecieveMessage(fd, serv);
+				//else if (serv->fds[fd].type == FD_SERVER)
+				//	RecieveMessage(fd, serv);
 			}
 			if (iswrite)
 			{
-				if (serv->fds[fd].type == FD_CLIENT)
+//				if (serv->fds[fd].type == FD_CLIENT)
 					SendMessage(fd, serv);
 			}
 		}

@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/07 13:46:58 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/10 17:14:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -742,6 +742,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	_server->command["SERVER"] = cmd_server;
 	_server->command["SQUIT"] = cmd_squit;
 	_server->command["CONNECT"] = cmd_connect;
+	_server->command["OPER"] = cmd_oper;
 
 }
 

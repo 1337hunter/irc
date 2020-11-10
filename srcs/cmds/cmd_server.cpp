@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 23:06:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/10 17:27:23 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		reply = "ERROR :Not enough SERVER parameters";
 		reply += CLRF;
 		_server->fds[fd].wrbuf += reply;
+		_server->fds[fd].status = false;
 		return ;
 	}
 	std::vector<t_server>::iterator	begin = _server->connect.begin();
@@ -40,8 +41,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 			_server->fds[fd].wrbuf += " " + split[1];
 			_server->fds[fd].wrbuf += " :server already registred";
 			_server->fds[fd].wrbuf += CLRF;
-/* del it*/	send(fd, _server->fds[fd].wrbuf.c_str(), _server->fds[fd].wrbuf.length(), 0);
-			cmd_quit(fd, split, _server); //DELETE THIS AFTER FIX DISCONNECT WTIH SELECT!
+			_server->fds[fd].status = false;
 			return ;
 
 		}
@@ -94,10 +94,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	while (b != e)
 	{
 		if (b->second.type == FD_SERVER)
-		{
 			b->second.wrbuf += broadcast;
-			send(b->first, broadcast.c_str(), broadcast.length(), 0);
-		}
 		b++;
 	}
 	_server->fds[fd].type = FD_SERVER;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/07 13:36:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/10 21:06:40 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,15 +38,10 @@
 # include "client.hpp"
 // #include <unordered_map>
 
-/* For server-server connection type define TO and FROM,
- * so if process ircserv wants to connect to some host type is TO*/
-# define TO	0
-# define FROM	1
-//# define NET	2
-
 typedef struct		s_fd
 {
 	int				type;
+	bool			status;
 	std::string		rdbuf;
 	std::string		wrbuf;
 	std::string		pass;	// this structer parameters required for
@@ -108,10 +103,10 @@ struct				IRCserv
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
-	std::string					hostname;
-	std::string					token;
-	std::string					info;
-	std::string					server_ip;
+	std::string					hostname;	//me server name
+	std::string					token;		//me server token
+	std::string					info;		// me server info
+	std::string					server_ip;  //
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;
 	std::string					pass;
