@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 22:18:56 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/12 01:24:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void		SendMessage(int fd, IRCserv *serv)
 	if (serv->fds[fd].wrbuf.length() > BUF_SIZE)
 	{
 		reply = serv->fds[fd].wrbuf.substr(0, BUF_SIZE);
-		serv->fds[fd].wrbuf.substr(BUF_SIZE);
+		serv->fds[fd].wrbuf = serv->fds[fd].wrbuf.substr(BUF_SIZE);
 	}
 	else
 	{
