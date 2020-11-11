@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 21:13:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 23:30:52 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,24 +31,22 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end())
 		serv->clients.push_back(Client(split[1], fd));
 	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
-			!nick_entry->isRegistred())
+			!nick_entry->isRegistred() && fd_entry == serv->clients.end())
 	{
-		if (nick_entry->getFD() != fd)
-		{
-			serv->fds[nick_entry->getFD()].status = false;
-			//error reply here
-			nick_entry->setFD(fd);
-		}
-		else
-			nick_entry->ChangeNick(split[1]);
-
+		std::cout << "2\n";
+		serv->fds[nick_entry->getFD()].status = false;
+		serv->fds[nick_entry->getFD()].wrbuf = "Error :Closing Link: " + nick_entry->getnickname() + " (Overridden)";
+		serv->fds[nick_entry->getFD()].wrbuf += CLRF;
+		nick_entry->setFD(fd);
 	}
-	else if (nick_entry != serv->clients.end() && !fd_entry->isConnected())
+//	else if (nick_entry != serv->clients.end() && !(fd_entry->isConnected()))
+//	{
+//		std::cout << "3\n";
+//		nick_entry->Reconnect(fd);
+//	}
+	else if (fd_entry != serv->clients.end() && fd_entry->isRegistred())
 	{
-		nick_entry->Reconnect(fd);
-	}
-	else if (fd_entry != serv->clients.end())
-	{
+		std::cout << "4\n";
 		// Here we also need to track nicknames
 		// for KICK, MODE and KILL commands.
 		reply = ":";
@@ -58,8 +56,16 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		reply += fd_entry->getnickname();
 		reply += CLRF;
 	}
+	else if (fd_entry != serv->clients.end() && !fd_entry->isRegistred())
+	{
+		std::cout << "5\n";
+		if (fd_entry->getUSER())
+			reply = reply_welcome(serv, fd_entry);
+		fd_entry->Register(split[1]);
+	}
 	else
 	{
+		std::cout << "6\n";
 		reply = ft_buildmsg(serv->hostname, ERR_NICKNAMEINUSE, split[1], "",
 			"Nickname is already in use");
 		/*	need to save the state in this case

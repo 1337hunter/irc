@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 21:10:58 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 22:50:57 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,13 @@ private:
 	bool			_isConnected;
 	bool			_isRegistred;
 	bool			_isOperator;
+	bool			USER;
+	bool			NICK;
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
 	Client(std::string const &nickname, int fd);
+	Client(std::string const &username, std::string const &realname, int fd);
 	Client(int fd, std::string const &username);
 	~Client();
 	Client(Client const &other);
@@ -59,6 +62,8 @@ public:
 	// getters-setters here
 	bool				isConnected(void);
 	bool				isRegistred(void);
+	bool				getUSER(void);
+	bool				getNICK(void);
 	int const	 		&getFD(void);
 	void				setFD(int fd);
 	std::string const	&getnickname(void);
@@ -67,6 +72,7 @@ public:
 
 	bool				Register(std::string const &user,
 							std::string const &real);
+	bool				Register(std::string const &nick);
 	void				Reconnect(int fd);
 	void				Disconnect(void);
 	void				ChangeNick(std::string const &what);

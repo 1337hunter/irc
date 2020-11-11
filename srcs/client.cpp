@@ -6,26 +6,26 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 21:13:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 23:18:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
-	_isOperator(false)
+	_isOperator(false), USER(false), NICK(false)
 {
 }
 
 Client::Client(std::string const &nickname, int fd):
 	nickname(nickname), fd(fd), _isConnected(true), _isRegistred(false),
-	_isOperator(false)
+	_isOperator(false), USER(false), NICK(true)
 {
 }
 
-Client::Client(int fd, std::string const &username):
-    username(username), fd(fd), _isConnected(true), _isRegistred(false),
-    _isOperator(false)
+Client::Client(std::string const &username, std::string const &realname, int fd):
+username(username), realname(realname), fd(fd), _isConnected(true), _isRegistred(false),
+    _isOperator(false), USER(true), NICK(false)
 {
 }
 
@@ -48,6 +48,8 @@ Client				&Client::operator=(Client const &other)
 	this->_isConnected = other._isConnected;
 	this->_isRegistred = other._isRegistred;
 	this->_isOperator = other._isOperator;
+	this->USER = other.USER;
+	this->NICK = other.NICK;
 	return (*this);
 }
 
@@ -76,8 +78,7 @@ std::string const	&Client::getrealname(void)
 	return (this->realname);
 }
 
-bool				Client::Register(std::string const &user,
-							std::string const &real)
+bool	Client::Register(std::string const &user, std::string const &real)
 {
 	if (this->_isRegistred ||
 		user.length() < 1 || user.length() > 10 ||
@@ -85,8 +86,19 @@ bool				Client::Register(std::string const &user,
 		return (false);
 	this->username = user;
 	this->realname = real;
-	this->_isRegistred = true;
+	if (NICK)
+		this->_isRegistred = true;
+	USER = true;
 	return (true);
+}
+
+bool	Client::Register(std::string const &nick)
+{
+	nickname = nick;
+	if (USER)
+		_isRegistred = true;
+	NICK = true;
+	return true;
 }
 
 void				Client::Reconnect(int fd)
@@ -118,3 +130,12 @@ void	Client::setFD(int what)
 	fd = what;
 }
 
+bool	Client::getUSER(void)
+{
+	return USER;
+}
+
+bool	Client::getNICK(void)
+{
+	return NICK;
+}
