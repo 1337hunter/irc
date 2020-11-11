@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 22:13:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 21:13:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,20 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
 	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end())
 		serv->clients.push_back(Client(split[1], fd));
-	else if (nick_entry != serv->clients.end() && !(fd_entry->isConnected()))
+	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
+			!nick_entry->isRegistred())
+	{
+		if (nick_entry->getFD() != fd)
+		{
+			serv->fds[nick_entry->getFD()].status = false;
+			//error reply here
+			nick_entry->setFD(fd);
+		}
+		else
+			nick_entry->ChangeNick(split[1]);
+
+	}
+	else if (nick_entry != serv->clients.end() && !fd_entry->isConnected())
 	{
 		nick_entry->Reconnect(fd);
 	}

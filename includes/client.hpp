@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 22:05:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 21:10:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,15 +50,17 @@ private:
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
-	bool			do_reply;
 	Client(std::string const &nickname, int fd);
+	Client(int fd, std::string const &username);
 	~Client();
 	Client(Client const &other);
 	Client &operator=(Client const &other);
 
 	// getters-setters here
 	bool				isConnected(void);
+	bool				isRegistred(void);
 	int const	 		&getFD(void);
+	void				setFD(int fd);
 	std::string const	&getnickname(void);
 	std::string const	&getusername(void);
 	std::string const	&getrealname(void);

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/04 18:49:45 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/11 21:12:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,15 @@ Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 {
 }
 
-Client::Client(std::string const &nickname, int fd) :
+Client::Client(std::string const &nickname, int fd):
 	nickname(nickname), fd(fd), _isConnected(true), _isRegistred(false),
 	_isOperator(false)
+{
+}
+
+Client::Client(int fd, std::string const &username):
+    username(username), fd(fd), _isConnected(true), _isRegistred(false),
+    _isOperator(false)
 {
 }
 
@@ -100,3 +106,14 @@ void	Client::ChangeNick(std::string const &what)
 {
 	this->nickname = what;
 }
+
+bool	Client::isRegistred(void)
+{
+	return _isRegistred;
+}
+
+void	Client::setFD(int what)
+{
+	fd = what;
+}
+

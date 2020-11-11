@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/10 17:16:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/11 17:12:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,5 +22,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_pass(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_squit(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_connect(int fd, const t_strvect &split, IRCserv *serv);
+
+std::string	reply_welcome(IRCserv *serv, t_citer it);
 
 #endif
