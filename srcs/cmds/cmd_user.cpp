@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 22:52:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/12 14:53:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,17 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else
 	{
+		if (split[4][0] == ':')
+        {
+			std::string realname(split[4]);
+			size_t  i = 4;
+			while (++i < split.size())
+			{
+				realname += " ";
+				realname += split[i];
+			}
+         _realname = realname;
+		}
 		it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
 		{
@@ -52,6 +63,8 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 				reply = ft_buildmsg(serv->hostname, ERR_ALREADYREGISTRED,
 					it->getnickname(), "", "You may not reregister");
 		}
+		else
+			serv->clients.push_back(Client(split[1], _realname, fd));
 	}
 	serv->fds[fd].wrbuf += reply;
 }

@@ -6,7 +6,6 @@ get_reply(IRCserv *_server, std::string _error, int fd, std::string const &comma
 	std::string	reply;
 	std::string nickname;
 
-	nickname = "*";
 	if (fd > 0)
 	{
 		std::vector<Client>::iterator	b = _server->clients.begin();

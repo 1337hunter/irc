@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 21:08:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/12 14:10:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
 				break ;
 			b++;
 		}
-		if (b == e)
+		if (b == e || !b->isRegistred())
 		{
 			_server->fds[fd].wrbuf += get_reply(_server, ERR_NOTREGISTERED, -1, "", "You have not registered");
 			return ;

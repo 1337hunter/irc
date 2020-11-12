@@ -6,18 +6,33 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 14:09:05 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/10 17:56:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/12 14:55:53 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "message.hpp"
 
 void    cmd_oper(int fd, const t_strvect &split, IRCserv *_server)
 {
 	std::vector<t_oper>::iterator	b = _server->oper.begin();
 	std::vector<t_oper>::iterator	e = _server->oper.end();
-	std::string	reply = _server->fds[fd].wrbuf = ":" + _server->hostname + " ";
+	t_citer	fd_entry;
+
+	fd_entry = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
+	if (_server->fds[fd].type == FD_OPER)
+	{
+		_server->fds[fd].wrbuf += get_reply(_server, RPL_YOUREOPER, fd, "",
+				"You are now an IRC operator");
+		return ;
+	}
+	if (fd_entry == _server->clients.end() || !fd_entry->isRegistred())
+	{
+		_server->fds[fd].wrbuf += get_reply(_server, ERR_NOTREGISTERED, -1, "",
+				"You have not registered");
+		return ;
+	}
 	if (split.size() < 3)
 	{
 		_server->fds[fd].wrbuf = ":" + _server->hostname + " ";
@@ -49,9 +64,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *_server)
 		return ;
 	}
 	_server->fds[fd].type = FD_OPER;
-	_server->fds[fd].wrbuf = ":" + _server->hostname + " ";
-	_server->fds[fd].wrbuf += RPL_YOUREOPER;
-	_server->fds[fd].wrbuf += " :You are now an IRC operator";
-	_server->fds[fd].wrbuf += CLRF;
+	_server->fds[fd].wrbuf += get_reply(_server, RPL_YOUREOPER, fd, "",
+			"You are now an IRC operator");
 	return ;
 }
