@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/12 01:49:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/12 21:54:06 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ std::string		reply_motd(IRCserv *serv, t_citer const &it)
 {
 	std::string		reply;
 	std::string		motdstr;
-	std::ifstream	motd("./conf/motd.txt"); // we can unhardcode it using config file
+	std::ifstream	motd("./conf/motd.txt");
+	// we can unhardcode motd file by using config but for now it's hardcoded
 
 	if (motd.is_open())
 	{
