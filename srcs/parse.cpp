@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/13 17:00:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 20:31:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 #define ADMIN	2
 #define OPER	3
 #define ME		4
+#define MOTD	5
 #define ENDL	std::string::npos
 
 typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number);
@@ -85,11 +86,19 @@ block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &lin
 			if (pos == ENDL)
 				return -1;
 			i = line.find_first_not_of("0123456789.", pos);
-			pos_copy_from = pos;
-			pos_copy_size = i - pos;
 			if (i == ENDL)
 				return -1;
-			pos = line.find_first_not_of(" \n\t", i);
+			pos_copy_from = pos;
+			if (line[i] == '*')
+			{
+				pos = line.find_first_not_of(" \n\t", i + 1);
+				pos_copy_size = 1;
+			}
+			else
+			{
+				pos_copy_size = i - pos;
+				pos = line.find_first_not_of(" \n\t", i);
+			}
 			if (pos == ENDL || line[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
@@ -176,7 +185,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &lin
 	serv->listen.push_back(temp);
 #if DEBUG_MODE
 	std::vector<t_listen>::reverse_iterator	it = serv->listen.rbegin();
-	std::cout << "listen: ip " << it->ip << " port " << it->port << ' ';
+	std::cout << "listen: ip '" << it->ip << "' port '" << it->port << '\'' << ' ';
 	if (temp.ssl)
 		std::cout << "ssl ";
 	if (temp.serveronly)
@@ -615,6 +624,68 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	return 0;
 }
 
+int
+block_motd(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+{
+	size_t		pos;
+	size_t		i;
+	t_strvect	names;
+
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("motd");
+	while ((pos = line.find("{", pos)) == ENDL)
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	if (pos < line.length() && line[pos] != '"')	// hmmmmmmm
+		while ((pos = line.find_first_not_of(" \t\n", pos)) == ENDL)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+	if (line[pos] != '"')
+		return -1;
+	if ((i = line.find("\"", pos + 1)) == ENDL)
+		return -1;
+	std::string	real_deal(line, pos + 1, i - pos - 1);
+	serv->motd_path = real_deal;
+	pos = line.find_first_not_of(" \t\n", i + 1);
+	if (pos == ENDL || line[pos] != ';')
+		return -1;
+	pos = line.find_first_not_of(" \t\n", pos + 1);
+	if (pos != ENDL && line[pos] != '#' && line[pos] != '"' &&
+			!(line[pos] == '}'))
+		return -1;
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == ENDL)
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line[pos] != '}')
+		return -1;
+	pos = line.find_first_not_of(" \t\n", pos + 1);
+	if (pos != ENDL && line[pos] != '#')
+		return -1;
+#if DEBUG_MODE
+	std::cout << "MOTD: '" << serv->motd_path << '\'' << '\n';
+#endif
+	return 0;
+
+}
+
 size_t	find_block(std::string line, size_t pos)
 {
 	if (!line.compare(pos, ft_strlen("listen"), "listen"))
@@ -627,6 +698,8 @@ size_t	find_block(std::string line, size_t pos)
 		return ME;
 	if (!line.compare(pos, ft_strlen("oper"), "oper"))
 		return OPER;
+	if (!line.compare(pos, ft_strlen("motd"), "motd"))
+		return MOTD;
 	return ENDL;
 }
 
@@ -778,6 +851,7 @@ void	parse(int ac, char **av, IRCserv *serv)
 	block[LINK] = block_link;
 	block[OPER] = block_oper;
 	block[ME] = block_me;
+	block[MOTD] = block_motd;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())
 		error_exit("Error: can't open file \"./config/ircserv.conf\"");
