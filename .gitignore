@@ -5,3 +5,4 @@ ircserv
 bircd
 *.swp
 .vscode
+openssl-1.1.1h/
