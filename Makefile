@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/14 00:40:01 by salec            ###   ########.fr        #
+#    Updated: 2020/11/14 02:14:12 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -113,7 +113,7 @@ clean:
 fclean: clean
 	@echo "$(RED)Deleting $(NAME) executable$(NC)"
 	@/bin/rm -f $(NAME)
-	@/bin/rm -f $(TLSCERT)
+#	@/bin/rm -f $(TLSCERT)
 #	@/bin/rm -rf $(CRYPTODIR)
 # disabled openssl dir deletion so we don't have to wait for it after make re
 

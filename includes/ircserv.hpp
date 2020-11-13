@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 00:34:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 02:19:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ typedef struct		s_fd
 	std::string		version;// message PASS that can be received either
 	std::string		flags;	// from client or server before SERVER or NICK
 	std::string		options;// register attemption
+	SSL				*sslptr;
+	bool			handshaked;
 }					t_fd;
 
 typedef struct		s_server
@@ -108,8 +110,8 @@ struct				IRCserv
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
-	int							port_tls;
-	int							sock_tls;
+	int							tls_port;
+	int							tls_sock;
 	std::string					hostname;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info
@@ -144,6 +146,7 @@ void		SendMessage(int fd, IRCserv *serv);
 //	tls connection
 void		CreateSockTLS(IRCserv *serv);
 void		AcceptConnectTLS(IRCserv *serv);
+void		DoHandshakeTLS(int fd, IRCserv *serv);
 void		ReceiveMessageTLS(int fd, IRCserv *serv);
 void		SendMessageTLS(int fd, IRCserv *serv);
 

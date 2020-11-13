@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 00:40:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 00:58:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ void	AcceptConnect(IRCserv *serv)
 	serv->fds[fd].wrbuf.erase();
 	serv->fds[fd].status = true;
 	serv->fds[fd].tls = false;
+	serv->fds[fd].sslptr = NULL;
 }
 
 void	ReceiveMessage(int fd, IRCserv *serv)
@@ -126,7 +127,7 @@ void	SendMessage(int fd, IRCserv *serv)
 #if DEBUG_MODE
 	std::cout << "sending client " << fd << "\t" << reply;
 #endif
-	ssize_t		r = send(fd, reply.c_str(), reply.length(), 0);
+	ssize_t	r = send(fd, reply.c_str(), reply.length(), 0);
 	if (r <= 0 || serv->fds[fd].status == false)
 	{
 		close(fd);

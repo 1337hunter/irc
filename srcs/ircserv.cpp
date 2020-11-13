@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 00:13:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 01:38:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ std::string const	IRCserv::clrf = CRLF;
 void	RunServer(IRCserv *serv)
 {
 	CreateSock(serv);
-//	CreateSockTLS(serv);
+	CreateSockTLS(serv);
 	while (1)
 	{
 		int	lastfd = 0;
@@ -55,15 +55,17 @@ void	RunServer(IRCserv *serv)
 				if (serv->fds[fd].type == FD_ME && !(serv->fds[fd].tls))
 					AcceptConnect(serv);
 				else if (serv->fds[fd].type == FD_ME && serv->fds[fd].tls)
-					AcceptConnectTLS(serv);		// tls accepter
+					AcceptConnectTLS(serv);			// tls accepter
 				else if (!(serv->fds[fd].tls))
 					ReceiveMessage(fd, serv);
-				else if (serv->fds[fd].tls)
+				else if (serv->fds[fd].tls && serv->fds[fd].handshaked)
 					ReceiveMessageTLS(fd, serv);	// tls reciever
+				else if (serv->fds[fd].tls)
+					DoHandshakeTLS(fd, serv);
 			}
 			if (iswrite)
 			{
-				if (!serv->fds[fd].tls)
+				if (!(serv->fds[fd].tls))
 					SendMessage(fd, serv);
 				else
 					SendMessageTLS(fd, serv);		// tls sender

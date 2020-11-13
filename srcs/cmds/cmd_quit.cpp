@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 22:24:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/14 02:24:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,11 @@ void		cmd_quit(int fd, const t_strvect &split, IRCserv *serv)
 	FD_CLR(fd, &(serv->fdset_read));
 	FD_CLR(fd, &(serv->fdset_write));
 	close(fd);
+	if (serv->fds[fd].tls)
+	{
+		SSL_shutdown(serv->fds[fd].sslptr);
+		SSL_free(serv->fds[fd].sslptr);
+	}
 	serv->fds.erase(fd);
 	t_citer it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
