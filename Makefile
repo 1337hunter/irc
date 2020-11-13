@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/13 19:29:10 by salec            ###   ########.fr        #
+#    Updated: 2020/11/13 20:19:46 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,7 +33,8 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
 CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
-EXECFLAGS	= $(CFLAGS)
+LIBFLAGS	= -lssl -lcrypto
+EXECFLAGS	= $(CFLAGS) $(CFLAGS)
 SHELL		= /bin/zsh
 
 UNAME		:= $(shell uname)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 17:05:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 20:45:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@ void		CreateSock(IRCserv *serv)
 	if (fcntl(serv->sock, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	sockin.sin_family = AF_INET;
-	sockin.sin_addr.s_addr = /*INADDR_ANY;*/ inet_addr("127.0.0.1"); //can changee ip
-	// to create another local server without the b8s or containers just with ip variable seted in config file
+	sockin.sin_addr.s_addr = /*INADDR_ANY;*/ inet_addr("127.0.0.1");
+	//	can change ip to create another local server without the b8s or
+	//	containers just with ip variable seted in config file
 	sockin.sin_port = htons(serv->port);
 	if (setsockopt(serv->sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
 		error_exit("set socket option returned error");
@@ -37,9 +38,7 @@ void		CreateSock(IRCserv *serv)
 	if (listen(serv->sock, 42) < 0)
 		error_exit("listen error");
 	serv->fds[serv->sock].type = FD_ME;
-#if DEBUG_MODE
 	std::cout << "server created on socket " << serv->sock << std::endl;
-#endif
 }
 
 void		AcceptConnect(IRCserv *serv)
@@ -53,11 +52,10 @@ void		AcceptConnect(IRCserv *serv)
 		error_exit("accept error");
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
-#if DEBUG_MODE
 	std::cout << "client " << fd << " accepted from\t" <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
-#endif
-	serv->fds[fd].type = FD_CLIENT; // we dont know either it's client or other server
+	serv->fds[fd].type = FD_CLIENT;
+	// we dont know either it's client or other server
 	serv->fds[fd].rdbuf.erase();
 	serv->fds[fd].wrbuf.erase();
 	serv->fds[fd].status = true;
@@ -70,9 +68,9 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	try
 	{
 		serv->command.at(split[0])(fd, split, serv);
-#if DEBUG_MODE
+	#if DEBUG_MODE
 		std::cout << "command found:\t\t" << split[0] << std::endl;
-#endif
+	#endif
 	}
 	catch (std::out_of_range &e) { (void)e; }
 }
@@ -107,9 +105,7 @@ void		ReceiveMessage(int fd, IRCserv *serv)
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
 			it->Disconnect();
-#if DEBUG_MODE
 		std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
-#endif
 	}
 }
 
@@ -128,7 +124,7 @@ void		SendMessage(int fd, IRCserv *serv)
 		serv->fds[fd].wrbuf.erase();
 	}
 #if DEBUG_MODE
-		std::cout << "sending client " << fd << "\t" << reply;
+	std::cout << "sending client " << fd << "\t" << reply;
 #endif
 	ssize_t		r = send(fd, reply.c_str(), reply.length(), 0);
 	if (r <= 0 || serv->fds[fd].status == false)
@@ -138,9 +134,7 @@ void		SendMessage(int fd, IRCserv *serv)
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
 			it->Disconnect();
-#if DEBUG_MODE
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
-#endif
 	}
 }
 
@@ -181,49 +175,22 @@ void		RunServer(IRCserv *serv)
 			}
 			if (isread)
 			{
-				if (serv->fds[fd].type == FD_ME)
+				if (serv->fds[fd].type == FD_ME && !(serv->fds[fd].tls))
 					AcceptConnect(serv);
-				else //if (serv->fds[fd].type == FD_CLIENT)
+				else if (serv->fds[fd].type == FD_ME && serv->fds[fd].tls)
+					AcceptConnect(serv);		// tls accepter
+				else if (!(serv->fds[fd].tls))
 					ReceiveMessage(fd, serv);
-				//else if (serv->fds[fd].type == FD_SERVER)
-				//	ReceiveMessage(fd, serv);
+				else if (serv->fds[fd].tls)
+					ReceiveMessage(fd, serv);	// tls reciever	
 			}
 			if (iswrite)
 			{
-//				if (serv->fds[fd].type == FD_CLIENT)
+				if (!serv->fds[fd].tls)
 					SendMessage(fd, serv);
+				else
+					SendMessage(fd, serv);		// tls sender
 			}
 		}
-		// need to fix something about NICK command
-/*		// old buggy code to think about
-		size_t tmpits = 0;
-		// BUG: iterators become invalid after disconnect or erase
-		// possibly not good solution is to check how many fds we processed
-		// may segv if multiple clients disconnect at the same time
-		for (std::map<int, t_fd>::iterator it = serv->fds.begin();
-			readyfds > 0 && tmpits < serv->fds.size() &&
-			it != serv->fds.end(); it++)
-		{
-			int		tmpfd = it->first;
-			if (FD_ISSET(tmpfd, &(serv->fdset_read)))
-			{
-				if (serv->fds[tmpfd].type == FD_ME)
-					AcceptConnect(serv);
-				else if (serv->fds[tmpfd].type == FD_CLIENT)
-					ReceiveMessage(tmpfd, serv);
-				else if (serv->fds[tmpfd].type == FD_SERVER)
-					ReceiveMessage(tmpfd, serv);
-			}
-			if (FD_ISSET(tmpfd, &(serv->fdset_write)))
-			{
-				if (serv->fds[tmpfd].type == FD_CLIENT)
-					SendMessage(tmpfd, serv);
-			}
-			if (FD_ISSET(tmpfd, &(serv->fdset_read)) ||
-				FD_ISSET(tmpfd, &(serv->fdset_write)))
-				readyfds--;
-			tmpits++;
-		}
-*/
 	}
 }
