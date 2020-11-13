@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/12 15:57:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 12:19:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void		CreateSock(IRCserv *serv)
 	if (fcntl(serv->sock, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	sockin.sin_family = AF_INET;
-	sockin.sin_addr.s_addr = INADDR_ANY;// inet_addr("127.0.0.1"); //can changee ip
+	sockin.sin_addr.s_addr = /*INADDR_ANY;*/ inet_addr("127.0.0.1"); //can changee ip
 	// to create another local server without the b8s or containers just with ip variable seted in config file
 	sockin.sin_port = htons(serv->port);
 	if (setsockopt(serv->sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))

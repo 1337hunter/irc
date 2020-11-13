@@ -49,7 +49,7 @@ void	msg_error(std::string msg, IRCserv *_server)
 	_msg += CLRF;
 	while (b != e)
 	{
-		if (b->second.type == FD_SERVER || b->second.type == FD_OPER)
+		if (b->second.type == FD_OPER)
 			_server->fds[b->first].wrbuf += _msg;
 		b++;
 	}

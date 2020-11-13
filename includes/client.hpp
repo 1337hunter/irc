@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 22:50:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 14:09:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,15 +57,17 @@ public:
 	Client(int fd, std::string const &username);
 	~Client();
 	Client(Client const &other);
-	Client &operator=(Client const &other);
+	Client &operator=(Client const &other);// do I realy need this COMPLIEN???
 
 	// getters-setters here
 	bool				isConnected(void);
 	bool				isRegistred(void);
+	bool				isOperator(void); // stuped oop
 	bool				getUSER(void);
 	bool				getNICK(void);
 	int const	 		&getFD(void);
 	void				setFD(int fd);
+	void				setOPER(void);
 	std::string const	&getnickname(void);
 	std::string const	&getusername(void);
 	std::string const	&getrealname(void);

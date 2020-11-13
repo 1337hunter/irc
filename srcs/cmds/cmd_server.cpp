@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 17:27:23 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 14:04:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "message.hpp"
 
 void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 {
@@ -60,11 +61,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
 	{
-#if DEBUG_MODE
-		std::cerr << "Error: bad cast hopcount. Connection is terminated.";
-		std::cerr << std::endl;
+		msg_error("Error: bad cast hopcount. Connection is terminated.", _server);
 		cmd_squit(fd, split, _server);
-#endif
 		return ;
 	}
 	temp.info = split[4];

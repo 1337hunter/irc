@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/10 17:14:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 14:29:48 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -565,7 +565,7 @@ block_oper(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 			if (pos == ENDL || line[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "pass"))
+			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "pass") && line.compare(pos, 6, "swhois")) 
 				return -1;
 		}
 		else if (!line.compare(pos, 4, "pass"))
@@ -581,9 +581,26 @@ block_oper(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 			if (pos == ENDL || line[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name"))
+			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name") && line.compare(pos, 6, "swhois"))
 				return -1;
 		}
+		else if (!line.compare(pos, 6, "swhois"))
+		{
+			pos = line.find_first_not_of(" \n\t", pos + ft_strlen("swhois"));
+			if (pos == ENDL || line[pos] != '"')
+				return -1;
+			if ((i = line.find("\"", pos + 1)) == ENDL)
+				return -1;
+			std::string pass(line, pos + 1, i - pos - 1);
+			temp.swhois = pass;
+			pos = line.find_first_not_of(" \t\n", i + 1);
+			if (pos == ENDL || line[pos] != ';')
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name") && line.compare(pos, 4, "pass"))
+				return -1;
+		}
+
 		else if (!line.compare(pos, 1, "#"))
 			pos = ENDL;
 		else if (!line.compare(pos, 1, "}"))
@@ -743,6 +760,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 	_server->command["SQUIT"] = cmd_squit;
 	_server->command["CONNECT"] = cmd_connect;
 	_server->command["OPER"] = cmd_oper;
+	_server->command["ERROR"] = cmd_error;
 
 }
 

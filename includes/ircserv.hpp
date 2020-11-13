@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 21:06:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 14:37:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ typedef struct		s_link
 
 typedef struct		s_oper
 {
+	int				fd;
 	std::string		name;
 	std::string		pass;
 	std::string		swhois;
@@ -106,15 +107,14 @@ struct				IRCserv
 	std::string					hostname;	//me server name
 	std::string					token;		//me server token
 	std::string					info;		// me server info
-	std::string					server_ip;  //
 	std::map<int, t_fd>			fds;
-	t_cmdmap					command;
-	std::string					pass;
-	std::vector<t_listen>		listen;
-	t_admin						admin;
-	std::vector<t_link>			link;
-	std::vector<t_oper>			oper;
-	std::vector<t_server>		connect;
+	t_cmdmap					command; //map of commands
+	std::string					pass;    //this server password
+	std::vector<t_listen>		listen;  //vector of sockets amd ips to bind to listen
+	t_admin						admin;   //for ADMIN command
+	std::vector<t_link>			link;    //servers allowed to connect to
+	std::vector<t_oper>			oper;    //operators thac can connect to server
+	std::vector<t_server>		connect; //servers that connected to this server
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/12 22:29:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 13:13:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 #include <openssl/err.h>
 #include <netdb.h>
 #include <resolv.h>
+#include <cstring>
+
+
 
 /*SSL_CTX *InitSSL_CTX(void)
 {
@@ -30,8 +33,9 @@
 	return ctx;
 }*/
 
-void		do_connect(t_link &link, IRCserv *_server)
+void	do_connect(t_link &link, IRCserv *_server)
 {
+
 	int				socket_fd;
 	t_sockaddr_in	server_addres;
 	t_protoent		*protocol;
@@ -41,14 +45,11 @@ void		do_connect(t_link &link, IRCserv *_server)
 		msg_error("Can't resolve protocol by name while CONNECT", _server);
 		return ;
 	}
-	if ((socket_fd = socket(PF_INET, SOCK_STREAM, protocol->p_proto) < 0)) {
+	if ((socket_fd = socket(AF_INET, SOCK_STREAM, protocol->p_proto)) < 0) {
 		msg_error("Socket creating error while CONNECT", _server);
 		return ;
 	}
-	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		msg_error("fcntl error", _server);
-		return ;
-	}
+	bzero(&server_addres, sizeof(server_addres));
 	server_addres.sin_family = AF_INET;
 	server_addres.sin_port = htons(link.port);
 	if (!(server_addres.sin_addr.s_addr = inet_addr(link.ip.c_str()))) {
@@ -60,8 +61,18 @@ void		do_connect(t_link &link, IRCserv *_server)
 		return ;
 	}
 	_server->fds[socket_fd].type = FD_SERVER;
+	_server->fds[socket_fd].status = true;
+	if (link.pass != "")
+		_server->fds[socket_fd].wrbuf = "PASS " + link.pass + CLRF;
+	_server->fds[socket_fd].wrbuf += "SERVER " + _server->hostname + " 0 " +
+		_server->token + " " + _server->info + CLRF;
+	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
+		msg_error("fcntl error", _server);
+		return ;
+	}
 //	host = gethostbyname(link.hostname.c_str());
 //	std::cout << std::endl << ">" << *(long *)(host->h_addr_list[0]) << "<" << std::endl << std::endl;
+	return ;
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
@@ -71,7 +82,6 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
 //	SSL		*ssl;
 	size_t	i;
 
-	do_connect(_server->link[0], _server); // DEL IT!
 	if (fd != FD_ME)
 	{
 		std::vector<Client>::iterator	b = _server->clients.begin();
@@ -108,7 +118,6 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
 	}
 	if (!(_server->link[i].tls))
 		do_connect(_server->link[i], _server);
-	std::cout << "here\n";
 //	else
 //		do_tls_connect(_server->link[i], _server);
 	//ctx = InitSSL_CTX();

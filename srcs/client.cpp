@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/11 23:18:31 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 14:10:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,4 +138,14 @@ bool	Client::getUSER(void)
 bool	Client::getNICK(void)
 {
 	return NICK;
+}
+
+void	Client::setOPER(void)
+{
+	_isOperator = true;
+}
+
+bool Client::isOperator(void)
+{
+	return _isOperator;
 }
