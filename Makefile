@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/13 13:17:02 by gbright          ###   ########.fr        #
+#    Updated: 2020/11/13 18:27:13 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,9 @@ HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			commands.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
+CRYPTODIR	= ./openssl-1.1.1h/
+CRYPTOLIBS	= $(CRYPTODIR)libssl.a $(CRYPTODIR)libcrypto.a
+
 CC			= clang++
 CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
 EXECFLAGS	= $(CFLAGS)
@@ -38,7 +41,7 @@ ifeq ($(UNAME), Darwin)			# CFLAGS += -DDARWIN
 OSNAME		= Darwin
 else
 	ifeq ($(UNAME), Linux)
-	OSNAME	= Linux
+	SNAME	= Linux
 	else
 	OSNAME	= Unknown OS
 	endif
@@ -51,7 +54,7 @@ NC			= \e[0m
 ULINE		= "\e[4m"
 ULINEF		= "\e[24m"
 
-.PHONY: all bonus clean fclean re
+.PHONY: all bonus openssl clean fclean re
 
 all: $(NAME)
 
@@ -64,12 +67,29 @@ $(NAME): $(OBJ)
 	@echo "compiling" $(ULINE)$<$(ULINEF)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
+openssl: $(CRYPTOLIBS)
+
+$(CRYPTOLIBS):
+	@echo "OpenSSL v1.1.1h (this may take a while)"
+	@echo -n "extracting archive..."
+	@tar -xf openssl-1.1.1h.tar.gz
+	@echo "\tdone"
+	@echo -n "configuring makefile..."
+	@cd $(CRYPTODIR) && ./config > /dev/null && cd ..
+	@echo "\tdone"
+	@echo -n "building libraries..."
+	@make -C $(CRYPTODIR) > /dev/null 2> /dev/null
+	@echo "\tdone"
+
 clean:
+	@#@echo "$(RED)Cleaning crypto lib$(NC)"
+	@#@make -C $(CRYPTODIR) clean
 	@echo "$(RED)Cleaning object files$(NC)"
 	@/bin/rm -f $(OBJ)
 
 fclean: clean
 	@echo "$(RED)Deleting $(NAME) executable$(NC)"
 	@/bin/rm -f $(NAME)
+	@/bin/rm -rf $(CRYPTODIR)
 
 re: fclean all
