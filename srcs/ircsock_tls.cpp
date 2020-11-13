@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 02:26:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 02:41:47 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,12 @@ void	CreateSockTLS(IRCserv *serv)
 
 	if (InitSSLCTX(serv))
 		return ;
-	serv->tls_port = serv->port + 1;	// temp tls port = basic port + 1
+
+	if (serv->port + 30 > 65535)
+		serv->tls_port = serv->port - 30;
+	else
+		serv->tls_port = serv->port + 30;	// temp tls port = basic port + 30
+
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
 	if ((serv->tls_sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
@@ -71,7 +76,8 @@ void	CreateSockTLS(IRCserv *serv)
 
 	serv->fds[serv->tls_sock].type = FD_ME;
 	serv->fds[serv->tls_sock].tls = true;
-	std::cout << "server(tls) created on socket " << serv->tls_sock << std::endl;
+	std::cout << "server(tls) created on socket " << serv->tls_sock <<
+		" (port " << serv->tls_port << ")" << std::endl;
 }
 
 void	DoHandshakeTLS(int fd, IRCserv *serv)
