@@ -14,7 +14,7 @@
 #include "commands.hpp"
 
 #if 0
-void		cmd_quit(int fd, IRCserv *_server)
+void		cmd_quit(int fd, IRCserv *serv)
 {
 	FD_CLR(fd, &(serv->fdset_read));
 	FD_CLR(fd, &(serv->fdset_write));

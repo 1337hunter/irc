@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 14:04:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 17:02:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "commands.hpp"
 #include "message.hpp"
 
-void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
+void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server	temp;
 
@@ -26,34 +26,34 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	{
 		std::string	reply;
 		reply = "ERROR :Not enough SERVER parameters";
-		reply += CLRF;
-		_server->fds[fd].wrbuf += reply;
-		_server->fds[fd].status = false;
+		reply += CRLF;
+		serv->fds[fd].wrbuf += reply;
+		serv->fds[fd].status = false;
 		return ;
 	}
-	std::vector<t_server>::iterator	begin = _server->connect.begin();
-	std::vector<t_server>::iterator	end = _server->connect.end();
+	std::vector<t_server>::iterator	begin = serv->connect.begin();
+	std::vector<t_server>::iterator	end = serv->connect.end();
 	while (begin != end) //looking for servers with the same name
 	{
 		if (begin->hostname == split[1])
 		{
-			_server->fds[fd].wrbuf += ":" + _server->hostname + " ";
-			_server->fds[fd].wrbuf += ERR_ALREADYREGISTRED;
-			_server->fds[fd].wrbuf += " " + split[1];
-			_server->fds[fd].wrbuf += " :server already registred";
-			_server->fds[fd].wrbuf += CLRF;
-			_server->fds[fd].status = false;
+			serv->fds[fd].wrbuf += ":" + serv->hostname + " ";
+			serv->fds[fd].wrbuf += ERR_ALREADYREGISTRED;
+			serv->fds[fd].wrbuf += " " + split[1];
+			serv->fds[fd].wrbuf += " :server already registred";
+			serv->fds[fd].wrbuf += CRLF;
+			serv->fds[fd].status = false;
 			return ;
 
 		}
 		begin++;
 	}
-	if (!(_server->fds[fd].pass == _server->pass || _server->pass == ""))
+	if (!(serv->fds[fd].pass == serv->pass || serv->pass == ""))
 	{
 #if DEBUG_MODE
 		std::cout << "client " << fd << "\t\twrong server password" << std::endl;
 #endif
-		cmd_squit(fd, split, _server);
+		cmd_squit(fd, split, serv);
 		return ;
 	}
 	temp.fd = fd;
@@ -61,8 +61,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
 	{
-		msg_error("Error: bad cast hopcount. Connection is terminated.", _server);
-		cmd_squit(fd, split, _server);
+		msg_error("Error: bad cast hopcount. Connection is terminated.", serv);
+		cmd_squit(fd, split, serv);
 		return ;
 	}
 	temp.info = split[4];
@@ -86,15 +86,15 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *_server)
 		itbegin++;
 		i++;
 	}
-	broadcast += CLRF;
-	std::map<int, t_fd>::iterator	b = _server->fds.begin();
-	std::map<int, t_fd>::iterator	e = _server->fds.end();
+	broadcast += CRLF;
+	std::map<int, t_fd>::iterator	b = serv->fds.begin();
+	std::map<int, t_fd>::iterator	e = serv->fds.end();
 	while (b != e)
 	{
 		if (b->second.type == FD_SERVER)
 			b->second.wrbuf += broadcast;
 		b++;
 	}
-	_server->fds[fd].type = FD_SERVER;
-	_server->connect.push_back(temp);
+	serv->fds[fd].type = FD_SERVER;
+	serv->connect.push_back(temp);
 }

@@ -2,15 +2,15 @@
 #include "message.hpp"
 
 std::string
-get_reply(IRCserv *_server, std::string _error, int fd, std::string const &command, const std::string &message)
+get_reply(IRCserv *serv, std::string _error, int fd, std::string const &command, const std::string &message)
 {
 	std::string	reply;
 	std::string nickname;
 
 	if (fd > 0)
 	{
-		std::vector<Client>::iterator	b = _server->clients.begin();
-		std::vector<Client>::iterator   e = _server->clients.end();
+		std::vector<Client>::iterator	b = serv->clients.begin();
+		std::vector<Client>::iterator   e = serv->clients.end();
 
 		while (b != e)
 		{
@@ -23,34 +23,34 @@ get_reply(IRCserv *_server, std::string _error, int fd, std::string const &comma
 	}
 	else
 		nickname = "*";
-	reply = ":" + _server->hostname + " " + _error + " ";
+	reply = ":" + serv->hostname + " " + _error + " ";
 	reply += nickname;
 	if (!command.empty())
 		reply += " " + command;
 	if (!message.empty())
 		reply += " :" + message;
-	reply += CLRF;
+	reply += CRLF;
 	return reply;
 }
 
-void	msg_error(std::string msg, std::string msg1, IRCserv *_server)
+void	msg_error(std::string msg, std::string msg1, IRCserv *serv)
 {
 	msg += msg1;
-	msg_error(msg, _server);
+	msg_error(msg, serv);
 }
 
-void	msg_error(std::string msg, IRCserv *_server)
+void	msg_error(std::string msg, IRCserv *serv)
 {
-	std::map<int, t_fd>::iterator	b = _server->fds.begin();
-	std::map<int, t_fd>::iterator e = _server->fds.end();
+	std::map<int, t_fd>::iterator	b = serv->fds.begin();
+	std::map<int, t_fd>::iterator e = serv->fds.end();
 
 	std::string	_msg("ERROR :");
 	_msg += msg;
-	_msg += CLRF;
+	_msg += CRLF;
 	while (b != e)
 	{
 		if (b->second.type == FD_OPER)
-			_server->fds[b->first].wrbuf += _msg;
+			serv->fds[b->first].wrbuf += _msg;
 		b++;
 	}
 }

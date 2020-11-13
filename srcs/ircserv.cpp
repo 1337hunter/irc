@@ -6,13 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 12:19:01 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 17:05:25 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
-std::string const	IRCserv::clrf = CLRF;
+std::string const	IRCserv::clrf = CRLF;
 
 void		CreateSock(IRCserv *serv)
 {
@@ -77,7 +77,7 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	catch (std::out_of_range &e) { (void)e; }
 }
 
-void		RecieveMessage(int fd, IRCserv *serv)
+void		ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r;
 	char		buf_read[BUF_SIZE + 1];
@@ -87,13 +87,13 @@ void		RecieveMessage(int fd, IRCserv *serv)
 	if (r > 0)
 	{
 		serv->fds[fd].rdbuf += buf_read;
-		if (serv->fds[fd].rdbuf.rfind(CLRF) + serv->clrf.length() ==
+		if (serv->fds[fd].rdbuf.rfind(CRLF) + serv->clrf.length() ==
 			serv->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
 			std::cout << "client " << fd << " sent:\t\t" << serv->fds[fd].rdbuf;
 #endif
-			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CLRF);
+			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CRLF);
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], serv);
 			try { serv->fds.at(fd).rdbuf.erase(); }
@@ -184,9 +184,9 @@ void		RunServer(IRCserv *serv)
 				if (serv->fds[fd].type == FD_ME)
 					AcceptConnect(serv);
 				else //if (serv->fds[fd].type == FD_CLIENT)
-					RecieveMessage(fd, serv);
+					ReceiveMessage(fd, serv);
 				//else if (serv->fds[fd].type == FD_SERVER)
-				//	RecieveMessage(fd, serv);
+				//	ReceiveMessage(fd, serv);
 			}
 			if (iswrite)
 			{
@@ -210,9 +210,9 @@ void		RunServer(IRCserv *serv)
 				if (serv->fds[tmpfd].type == FD_ME)
 					AcceptConnect(serv);
 				else if (serv->fds[tmpfd].type == FD_CLIENT)
-					RecieveMessage(tmpfd, serv);
+					ReceiveMessage(tmpfd, serv);
 				else if (serv->fds[tmpfd].type == FD_SERVER)
-					RecieveMessage(tmpfd, serv);
+					ReceiveMessage(tmpfd, serv);
 			}
 			if (FD_ISSET(tmpfd, &(serv->fdset_write)))
 			{

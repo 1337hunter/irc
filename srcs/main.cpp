@@ -17,10 +17,10 @@
 
 int		main(int ac, char **av)
 {
-	IRCserv	_server;
+	IRCserv	serv;
 
-	parse(ac, av, &_server);
+	parse(ac, av, &serv);
 	std::cout << "starting server ..." << std::endl;
-	RunServer(&_server);
+	RunServer(&serv);
 	return (0);
 }

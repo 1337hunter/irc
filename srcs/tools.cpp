@@ -64,6 +64,6 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 		res += " " + cmd;
 	if (!msg.empty())
 		res += " :" + msg;
-	res += CLRF;
+	res += CRLF;
 	return (res);
 }

@@ -13,10 +13,10 @@
 #include "ircserv.hpp"
 #include "commands.hpp"
 
-void		cmd_squit(int fd, const t_strvect &split, IRCserv *_server)
+void		cmd_squit(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	begin = _server->connect.begin();
-	std::vector<t_server>::iterator	end = _server->connect.end();
+	std::vector<t_server>::iterator	begin = serv->connect.begin();
+	std::vector<t_server>::iterator	end = serv->connect.end();
 
 	fd = 0;
 	while (begin != end && begin->hostname != split[1])
@@ -24,10 +24,10 @@ void		cmd_squit(int fd, const t_strvect &split, IRCserv *_server)
 	if (begin != end)
 	{
 		close(begin->fd);
-		_server->fds.erase(begin->fd);
-		FD_CLR(begin->fd, &(_server->fdset_read));
-		FD_CLR(begin->fd, &(_server->fdset_write));
-		_server->connect.erase(begin);
+		serv->fds.erase(begin->fd);
+		FD_CLR(begin->fd, &(serv->fdset_read));
+		FD_CLR(begin->fd, &(serv->fdset_write));
+		serv->connect.erase(begin);
 
 #if DEBUG_MODE
 		std::cout << "server " << split[1] << ":\tdisconnected" << std::endl;

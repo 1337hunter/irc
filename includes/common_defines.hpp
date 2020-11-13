@@ -27,9 +27,9 @@
 // # define KONVERSATION
 
 # ifndef KONVERSATION
-#  define CLRF		"\r\n"
+#  define CRLF		"\r\n"
 # else
-#  define CLRF		"\n"	// konversation sends only \n for some reason
+#  define CRLF		"\n"	// konversation sends only \n for some reason
 # endif
 
 typedef struct sockaddr		t_sockaddr;

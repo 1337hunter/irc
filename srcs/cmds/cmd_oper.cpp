@@ -14,31 +14,31 @@
 #include "commands.hpp"
 #include "message.hpp"
 
-void    cmd_oper(int fd, const t_strvect &split, IRCserv *_server)
+void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::vector<t_oper>::iterator	b = _server->oper.begin();
-	std::vector<t_oper>::iterator	e = _server->oper.end();
+	std::vector<t_oper>::iterator	b = serv->oper.begin();
+	std::vector<t_oper>::iterator	e = serv->oper.end();
 	t_citer	fd_entry;
 
-	fd_entry = ft_findclientfd(_server->clients.begin(), _server->clients.end(), fd);
-	if (_server->fds[fd].type == FD_OPER)
+	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (serv->fds[fd].type == FD_OPER)
 	{
-		_server->fds[fd].wrbuf += get_reply(_server, RPL_YOUREOPER, fd, "",
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_YOUREOPER, fd, "",
 				"You are now an IRC operator");
 		return ;
 	}
-	if (fd_entry == _server->clients.end() || !fd_entry->isRegistred())
+	if (fd_entry == serv->clients.end() || !fd_entry->isRegistred())
 	{
-		_server->fds[fd].wrbuf += get_reply(_server, ERR_NOTREGISTERED, -1, "",
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
 				"You have not registered");
 		return ;
 	}
 	if (split.size() < 3)
 	{
-		_server->fds[fd].wrbuf = ":" + _server->hostname + " ";
-		_server->fds[fd].wrbuf += ERR_NEEDMOREPARAMS;
-		_server->fds[fd].wrbuf += " OPER :Not enough parameters";
-		_server->fds[fd].wrbuf += CLRF;
+		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf += ERR_NEEDMOREPARAMS;
+		serv->fds[fd].wrbuf += " OPER :Not enough parameters";
+		serv->fds[fd].wrbuf += CRLF;
 		return ;
 	}
 	while (b != e)
@@ -49,22 +49,22 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *_server)
 	}
 	if (b == e)
 	{
-		_server->fds[fd].wrbuf = ":" + _server->hostname + " ";
-		_server->fds[fd].wrbuf += ERR_NOOPERHOST;
-		_server->fds[fd].wrbuf += " :No O-lines for your host";
-		_server->fds[fd].wrbuf += CLRF;
+		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf += ERR_NOOPERHOST;
+		serv->fds[fd].wrbuf += " :No O-lines for your host";
+		serv->fds[fd].wrbuf += CRLF;
 		return ;
 	}
 	if (b->pass != split[2])
 	{
-		_server->fds[fd].wrbuf = ":" + _server->hostname + " ";
-		_server->fds[fd].wrbuf += ERR_PASSWDMISMATCH;
-		_server->fds[fd].wrbuf += " :Password incorrect";
-		_server->fds[fd].wrbuf += CLRF;
+		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf += ERR_PASSWDMISMATCH;
+		serv->fds[fd].wrbuf += " :Password incorrect";
+		serv->fds[fd].wrbuf += CRLF;
 		return ;
 	}
-	_server->fds[fd].type = FD_OPER;
-	_server->fds[fd].wrbuf += get_reply(_server, RPL_YOUREOPER, fd, "",
+	serv->fds[fd].type = FD_OPER;
+	serv->fds[fd].wrbuf += get_reply(serv, RPL_YOUREOPER, fd, "",
 			"You are now an IRC operator");
 	return ;
 }

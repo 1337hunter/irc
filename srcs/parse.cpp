@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/13 14:29:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/13 17:00:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 #define ME		4
 #define ENDL	std::string::npos
 
-typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number);
+typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number);
 typedef std::map<int, t_block> t_blockmap;
 
 size_t	ft_strlen(const char *s)
@@ -45,7 +45,7 @@ size_t	ft_strlen(const char *s)
 }
 
 int
-block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
 	size_t		pos_copy_from;
@@ -173,9 +173,9 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 		else
 			return -1;
 	}
-	_server->listen.push_back(temp);
+	serv->listen.push_back(temp);
 #if DEBUG_MODE
-	std::vector<t_listen>::reverse_iterator	it = _server->listen.rbegin();
+	std::vector<t_listen>::reverse_iterator	it = serv->listen.rbegin();
 	std::cout << "listen: ip " << it->ip << " port " << it->port << ' ';
 	if (temp.ssl)
 		std::cout << "ssl ";
@@ -189,16 +189,16 @@ block_listen(std::fstream &config, std::string &line, IRCserv *_server, size_t &
 }
 
 int
-block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+block_admin(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
 	size_t		i;
 	size_t		endl = ENDL;
 	t_strvect	names;
 
-	if (_server->admin.set)
+	if (serv->admin.set)
 		return -1;
-	_server->admin.set = true;
+	serv->admin.set = true;
 	pos = line.find_first_not_of(" \t");
 	pos += ft_strlen("admin");
 	while ((pos = line.find("{", pos)) == ENDL)
@@ -256,19 +256,19 @@ block_admin(std::fstream &config, std::string &line, IRCserv *_server, size_t &l
 	pos = line.find_first_not_of(" \t\n", pos + 1);
 	if (pos != endl && line[pos] != '#')
 		return -1;
-	_server->admin.realname = names[0];
-	_server->admin.nick = names[1];
-	_server->admin.mail = names[2];
+	serv->admin.realname = names[0];
+	serv->admin.nick = names[1];
+	serv->admin.mail = names[2];
 #if DEBUG_MODE
-	std::cout << "admin.realname: \"" << _server->admin.realname << '"';
-	std::cout << " admin.nick: \"" << _server->admin.nick << '"';
-	std::cout << " admin.mail: \"" << _server->admin.mail << '"' << '\n';
+	std::cout << "admin.realname: \"" << serv->admin.realname << '"';
+	std::cout << " admin.nick: \"" << serv->admin.nick << '"';
+	std::cout << " admin.mail: \"" << serv->admin.mail << '"' << '\n';
 #endif
 	return 0;
 }
 
 int
-block_link(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	t_link	temp;
 	size_t	pos;
@@ -428,9 +428,9 @@ block_link(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 		else
 			return -1;
 	}
-	_server->link.push_back(temp);
+	serv->link.push_back(temp);
 #if DEBUG_MODE
-	std::vector<t_link>::reverse_iterator it = _server->link.rbegin();
+	std::vector<t_link>::reverse_iterator it = serv->link.rbegin();
 	std::cout << "link: ip '" << it->ip << "' hostname '" << it->hostname << "'";
 	std::cout << " port '" << it->port << "'" << " pass '" << it->pass << "' ";
 	if (temp.ssl)
@@ -445,7 +445,7 @@ block_link(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 }
 
 int
-block_me(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+block_me(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t  pos;
 	size_t  i;
@@ -509,19 +509,19 @@ block_me(std::fstream &config, std::string &line, IRCserv *_server, size_t &line
 	pos = line.find_first_not_of(" \t\n", pos + 1);
 	if (pos != endl && line[pos] != '#')
 		return -1;
-	_server->hostname = names[0];
-	_server->token = names[1];
-	_server->info = names[2];
+	serv->hostname = names[0];
+	serv->token = names[1];
+	serv->info = names[2];
 #if DEBUG_MODE
-	std::cout << "server name: \"" << _server->hostname << '"';
-	std::cout << " server token: \"" << _server->token << '"';
-	std::cout << " server info: \"" << _server->info << '"' << '\n';
+	std::cout << "server name: \"" << serv->hostname << '"';
+	std::cout << " server token: \"" << serv->token << '"';
+	std::cout << " server info: \"" << serv->info << '"' << '\n';
 #endif
 	return 0;
 }
 
 int
-block_oper(std::fstream &config, std::string &line, IRCserv *_server, size_t &line_number)
+block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t	pos;
 	size_t	i;
@@ -608,7 +608,7 @@ block_oper(std::fstream &config, std::string &line, IRCserv *_server, size_t &li
 		else
 			return -1;
 	}
-	_server->oper.push_back(temp);
+	serv->oper.push_back(temp);
 #if DEBUG_MODE
 	std::cout << "operator: name '" << temp.name << "' pass: '" << temp.pass << "'\n";
 #endif
@@ -630,11 +630,11 @@ size_t	find_block(std::string line, size_t pos)
 	return ENDL;
 }
 
-void	server_init(IRCserv *_server, int ac, char **av)
+void	server_init(IRCserv *serv, int ac, char **av)
 {
-	bool	flag_for_server_connection;
+	bool	flag_forserv_connection;
 
-	flag_for_server_connection = false;
+	flag_forserv_connection = false;
 	if (ac == 2)
 	{
 
@@ -643,8 +643,8 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		if (port.find_first_not_of("0123456789") != ENDL ||
 				port.length() < 1 || port.length() > 5)
 			error_exit("Error: bad port number");
-		_server->port = stoi(port);
-		if (_server->port < 1 || _server->port > 65535)
+		serv->port = stoi(port);
+		if (serv->port < 1 || serv->port > 65535)
 			error_exit("Error: bad port number");
 	}
 	else if (ac == 3)
@@ -658,9 +658,9 @@ void	server_init(IRCserv *_server, int ac, char **av)
 				error_exit("Error: bad port number");
 			else
 			{
-				_server->pass = pass;
-				_server->port = stoi(port);
-				if (_server->port < 1 || _server->port > 65535)
+				serv->pass = pass;
+				serv->port = stoi(port);
+				if (serv->port < 1 || serv->port > 65535)
 					error_exit("Error: bad port number");
 			}
 		}
@@ -669,7 +669,7 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			t_strvect	temp;
 			t_server	connect;
 
-			flag_for_server_connection = true;
+			flag_forserv_connection = true;
 			temp = ft_splitstring(av[1], ":");
 			if (temp.size() < 2 || temp.size() > 3)
 				error_exit("Error: input parameters of server which you want to connect to is wrong!");
@@ -685,11 +685,11 @@ void	server_init(IRCserv *_server, int ac, char **av)
 				error_exit("Error: bad port number");
 			else
 			{
-				_server->port = stoi(pass);
-				if (_server->port < 1 || _server->port > 65535)
+				serv->port = stoi(pass);
+				if (serv->port < 1 || serv->port > 65535)
 					error_exit("Error: bad port number");
 			}
-			_server->connect.push_back(connect);
+			serv->connect.push_back(connect);
 		}
 	}
 	else if (ac == 4)
@@ -699,12 +699,12 @@ void	server_init(IRCserv *_server, int ac, char **av)
 		t_strvect	connect_to;
 		t_server	temp;
 
-		flag_for_server_connection = true;
+		flag_forserv_connection = true;
 		connect_to = ft_splitstring(av[1], ":");
 		if (connect_to.size() < 2 || connect_to.size() > 3)
 			error_exit("Error: input parameters of server which you want to connect to is wrong!");
 		temp.hostname = connect_to[0];
-		_server->pass = pass;
+		serv->pass = pass;
 		if (port.find_first_not_of("0123456789") != ENDL ||
 		connect_to[1].find_first_not_of("0123456789") != ENDL ||
 		connect_to[1].length() < 1 || connect_to[1].length() > 5 ||
@@ -715,10 +715,10 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			temp.port = stoi(connect_to[1]);
 			if (connect_to.size() == 3)
 				temp.pass = connect_to[2];
-			_server->port = stoi(port);
-			if (_server->port < 1 || _server->port > 65535)
+			serv->port = stoi(port);
+			if (serv->port < 1 || serv->port > 65535)
 				error_exit("Error: bad port number");
-			_server->connect.push_back(temp);
+			serv->connect.push_back(temp);
 		}
 	}
 	else
@@ -727,22 +727,22 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
-	if (flag_for_server_connection)
+	if (flag_forserv_connection)
 	{
-		std::vector<t_link>::iterator	b = _server->link.begin();
-		std::vector<t_link>::iterator	e = _server->link.end();
+		std::vector<t_link>::iterator	b = serv->link.begin();
+		std::vector<t_link>::iterator	e = serv->link.end();
 		int	flag;
 
 		flag = 0;
 		while (b != e)
 		{
-			if (b->hostname == _server->connect[0].hostname &&
-					b->port == _server->connect[0].port &&
-					b->pass == _server->connect[0].pass)
+			if (b->hostname == serv->connect[0].hostname &&
+					b->port == serv->connect[0].port &&
+					b->pass == serv->connect[0].pass)
 			{
 				b->autoconnect = true;
 				flag = 1;
-				_server->connect.erase(_server->connect.begin());
+				serv->connect.erase(serv->connect.begin());
 				break ;
 			}
 			b++;
@@ -751,20 +751,20 @@ void	server_init(IRCserv *_server, int ac, char **av)
 			error_exit("Error: server you are trying to connect is bad configured");
 
 	}
-	_server->command["USER"] = cmd_user;
-	_server->command["NICK"] = cmd_nick;
-	_server->command["PING"] = cmd_ping;
-	_server->command["QUIT"] = cmd_quit;
-	_server->command["PASS"] = cmd_pass;
-	_server->command["SERVER"] = cmd_server;
-	_server->command["SQUIT"] = cmd_squit;
-	_server->command["CONNECT"] = cmd_connect;
-	_server->command["OPER"] = cmd_oper;
-	_server->command["ERROR"] = cmd_error;
+	serv->command["USER"] = cmd_user;
+	serv->command["NICK"] = cmd_nick;
+	serv->command["PING"] = cmd_ping;
+	serv->command["QUIT"] = cmd_quit;
+	serv->command["PASS"] = cmd_pass;
+	serv->command["SERVER"] = cmd_server;
+	serv->command["SQUIT"] = cmd_squit;
+	serv->command["CONNECT"] = cmd_connect;
+	serv->command["OPER"] = cmd_oper;
+	serv->command["ERROR"] = cmd_error;
 
 }
 
-void	parse(int ac, char **av, IRCserv *_server)
+void	parse(int ac, char **av, IRCserv *serv)
 {
 	std::fstream	config;
 	std::string		line;
@@ -772,7 +772,7 @@ void	parse(int ac, char **av, IRCserv *_server)
 	size_t			i;
 	t_blockmap		block;
 
-	_server->admin.set = false;
+	serv->admin.set = false;
 	block[LISTEN] = block_listen;
 	block[ADMIN] = block_admin;
 	block[LINK] = block_link;
@@ -793,8 +793,8 @@ void	parse(int ac, char **av, IRCserv *_server)
 		if (i == ENDL)
 			error_exit("Error: config error at line ", line, line_number);
 		else
-			if ((block[i](config, line, _server, line_number)) == -1)
+			if ((block[i](config, line, serv, line_number)) == -1)
 				error_exit("Error: config error at line ", line, line_number);
 	}
-	server_init(_server, ac, av);
+	server_init(serv, ac, av);
 }

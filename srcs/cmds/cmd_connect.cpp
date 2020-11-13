@@ -33,7 +33,7 @@
 	return ctx;
 }*/
 
-void	do_connect(t_link &link, IRCserv *_server)
+void	do_connect(t_link &link, IRCserv *serv)
 {
 
 	int				socket_fd;
@@ -42,32 +42,32 @@ void	do_connect(t_link &link, IRCserv *_server)
 //	hostent			*host;
 
 	if (!(protocol = getprotobyname("tcp"))) {
-		msg_error("Can't resolve protocol by name while CONNECT", _server);
+		msg_error("Can't resolve protocol by name while CONNECT", serv);
 		return ;
 	}
 	if ((socket_fd = socket(AF_INET, SOCK_STREAM, protocol->p_proto)) < 0) {
-		msg_error("Socket creating error while CONNECT", _server);
+		msg_error("Socket creating error while CONNECT", serv);
 		return ;
 	}
 	bzero(&server_addres, sizeof(server_addres));
 	server_addres.sin_family = AF_INET;
 	server_addres.sin_port = htons(link.port);
 	if (!(server_addres.sin_addr.s_addr = inet_addr(link.ip.c_str()))) {
-		msg_error("inet_addr error", _server);
+		msg_error("inet_addr error", serv);
 		return ;
 	}
 	if (connect(socket_fd, (struct sockaddr*)&server_addres, sizeof(server_addres)) < 0) {
-		msg_error("error while connecting to ", link.hostname, _server);
+		msg_error("error while connecting to ", link.hostname, serv);
 		return ;
 	}
-	_server->fds[socket_fd].type = FD_SERVER;
-	_server->fds[socket_fd].status = true;
+	serv->fds[socket_fd].type = FD_SERVER;
+	serv->fds[socket_fd].status = true;
 	if (link.pass != "")
-		_server->fds[socket_fd].wrbuf = "PASS " + link.pass + CLRF;
-	_server->fds[socket_fd].wrbuf += "SERVER " + _server->hostname + " 0 " +
-		_server->token + " " + _server->info + CLRF;
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
+	serv->fds[socket_fd].wrbuf += "SERVER " + serv->hostname + " 0 " +
+		serv->token + " " + serv->info + CRLF;
 	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		msg_error("fcntl error", _server);
+		msg_error("fcntl error", serv);
 		return ;
 	}
 //	host = gethostbyname(link.hostname.c_str());
@@ -76,7 +76,7 @@ void	do_connect(t_link &link, IRCserv *_server)
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
-void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
+void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 {
 	//SSL_CTX	*ctx;
 //	SSL		*ssl;
@@ -84,8 +84,8 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
 
 	if (fd != FD_ME)
 	{
-		std::vector<Client>::iterator	b = _server->clients.begin();
-		std::vector<Client>::iterator	e = _server->clients.end();
+		std::vector<Client>::iterator	b = serv->clients.begin();
+		std::vector<Client>::iterator	e = serv->clients.end();
 		
 		while (b != e)
 		{
@@ -95,31 +95,31 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *_server)
 		}
 		if (b == e || !b->isRegistred())
 		{
-			_server->fds[fd].wrbuf += get_reply(_server, ERR_NOTREGISTERED, -1, "",
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
 					"You have not registered");
 			return ;
 		}
 	}
-	if (_server->fds[fd].type != FD_ME && _server->fds[fd].type != FD_OPER)
+	if (serv->fds[fd].type != FD_ME && serv->fds[fd].type != FD_OPER)
 	{
-		_server->fds[fd].wrbuf += get_reply(_server, ERR_NOPRIVILEGES, fd, "",
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOPRIVILEGES, fd, "",
 				"Permission Denied- You're not an IRC operator");
 		return ;
 	}
 	i = -1;
-	while (++i < _server->link.size())
-		if (_server->link[i].hostname == split[1])
+	while (++i < serv->link.size())
+		if (serv->link[i].hostname == split[1])
 			break ;
-	if (i == _server->link.size())
+	if (i == serv->link.size())
 	{
-		_server->fds[fd].wrbuf += get_reply(_server, ERR_NOSUCHSERVER, fd, split[1],
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, split[1],
 				"No such server");
 		return ;
 	}
-	if (!(_server->link[i].tls))
-		do_connect(_server->link[i], _server);
+	if (!(serv->link[i].tls))
+		do_connect(serv->link[i], serv);
 //	else
-//		do_tls_connect(_server->link[i], _server);
+//		do_tls_connect(serv->link[i], serv);
 	//ctx = InitSSL_CTX();
 //	if ((ssl = SSL_new(ctx)) == 0)
 //		error_exit("Error: SSL_new error");

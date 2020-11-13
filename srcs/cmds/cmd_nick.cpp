@@ -36,7 +36,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		std::cout << "2\n";
 		serv->fds[nick_entry->getFD()].status = false;
 		serv->fds[nick_entry->getFD()].wrbuf = "Error :Closing Link: " + nick_entry->getnickname() + " (Overridden)";
-		serv->fds[nick_entry->getFD()].wrbuf += CLRF;
+		serv->fds[nick_entry->getFD()].wrbuf += CRLF;
 		nick_entry->setFD(fd);
 	}
 	else if (nick_entry != serv->clients.end() && !(nick_entry->isConnected()))
@@ -54,7 +54,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		fd_entry->ChangeNick(split[1]);
 		reply += " NICK ";
 		reply += fd_entry->getnickname();
-		reply += CLRF;
+		reply += CRLF;
 	}
 	else if (fd_entry != serv->clients.end() && !fd_entry->isRegistred())
 	{
