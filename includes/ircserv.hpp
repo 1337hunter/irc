@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 20:48:07 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 00:34:37 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 # include <netdb.h>
 // read, write
 # include <unistd.h>
+
+// openssl
+# include <openssl/ssl.h>
 
 # include "error_handle.hpp"
 # include "common_defines.hpp"
@@ -105,30 +108,43 @@ struct				IRCserv
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
-	std::string					hostname;	//me server name
-	std::string					token;		//me server token
+	int							port_tls;
+	int							sock_tls;
+	std::string					hostname;	// me server name
+	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;
-	t_cmdmap					command; //map of commands
-	std::string					pass;    //this server password
-	std::vector<t_listen>		listen;  //vector of sockets amd ips to bind to listen
-	t_admin						admin;   //for ADMIN command
-	std::vector<t_link>			link;    //servers allowed to connect to
-	std::vector<t_oper>			oper;    //operators thac can connect to server
-	std::vector<t_server>		connect; //servers that connected to this server
+	t_cmdmap					command;	// map of commands
+	std::string					pass;		// this server password
+	std::vector<t_listen>		listen;		// vector of sockets amd ips to bind to listen
+	t_admin						admin;		// for ADMIN command
+	std::vector<t_link>			link;		// servers allowed to connect to
+	std::vector<t_oper>			oper;		// operators thac can connect to server
+	std::vector<t_server>		connect;	// servers that connected to this server
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
 	fd_set						fdset_error;
 	std::string					motd_path;
+	SSL_CTX						*sslctx;
 	static std::string const	clrf;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
+void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
+
+void		RunServer(IRCserv *serv);
+
+//	basic connection
 void		CreateSock(IRCserv *serv);
 void		AcceptConnect(IRCserv *serv);
-void		RecieveMessage(int fd, IRCserv *serv);
-void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
-void		RunServer(IRCserv *serv);
+void		ReceiveMessage(int fd, IRCserv *serv);
+void		SendMessage(int fd, IRCserv *serv);
+
+//	tls connection
+void		CreateSockTLS(IRCserv *serv);
+void		AcceptConnectTLS(IRCserv *serv);
+void		ReceiveMessageTLS(int fd, IRCserv *serv);
+void		SendMessageTLS(int fd, IRCserv *serv);
 
 #endif

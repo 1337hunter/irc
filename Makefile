@@ -6,13 +6,14 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/13 20:19:46 by salec            ###   ########.fr        #
+#    Updated: 2020/11/14 00:40:01 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
-SRC			= main.cpp ircserv.cpp tools.cpp error_handle.cpp \
-			client.cpp channel.cpp message.cpp parse.cpp \
+SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
+			tools.cpp error_handle.cpp message.cpp parse.cpp \
+			client.cpp channel.cpp \
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
@@ -34,7 +35,7 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
 LIBFLAGS	= -lssl -lcrypto
-EXECFLAGS	= $(CFLAGS) $(CFLAGS)
+EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
 SHELL		= /bin/zsh
 
 UNAME		:= $(shell uname)
@@ -42,7 +43,7 @@ ifeq ($(UNAME), Darwin)
 OSNAME		= Darwin
 else
 	ifeq ($(UNAME), Linux)
-	SNAME	= Linux
+	OSNAME	= Linux
 	else
 	OSNAME	= Unknown OS
 	endif
