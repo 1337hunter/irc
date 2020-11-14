@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 20:37:06 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 20:51:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,8 +123,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CRLF);
+			// ignore msgs with \n (maybe other symbols too)
 			for (size_t i = 0; i < split.size(); i++)
-				ProcessMessage(fd, split[i], serv);
+				if (split[i].find_first_of("\n") == std::string::npos)
+					ProcessMessage(fd, split[i], serv);
 			try { serv->fds.at(fd).rdbuf.erase(); }
 			catch (std::out_of_range const &e) { (void)e; }
 		}
