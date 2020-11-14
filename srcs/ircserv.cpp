@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 05:41:08 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 16:07:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	RunServer(IRCserv *serv)
 					AcceptConnect(serv, serv->fds[fd].tls);
 				else
 				{
+					// only allow non tls and handshaked tls data exchange
 					if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
 						SSL_is_init_finished(serv->fds[fd].sslptr)))
 						ReceiveMessage(fd, serv);

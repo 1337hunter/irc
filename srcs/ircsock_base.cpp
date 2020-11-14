@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 05:23:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 16:05:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,6 @@ void	AcceptConnect(IRCserv *serv, bool isTLS)
 	serv->fds[fd].status = true;
 	serv->fds[fd].tls = isTLS;
 	serv->fds[fd].sslptr = NULL;
-	serv->fds[fd].handshaked = false;
 
 	if (isTLS)
 	{

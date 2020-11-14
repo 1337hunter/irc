@@ -6,11 +6,32 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 05:19:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 17:18:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
+#include <openssl/err.h>
+
+int		SSLErrorCallback(const char *str, size_t len, void *u)
+{
+	(void)u;
+	if (len > 0)
+	{
+		t_strvect	errlines = ft_splitstring(str, "\n");
+		for (size_t i = 0; i < errlines.size(); i++)
+		{
+			t_strvect	err = ft_splitstring(errlines[i], ":");
+			std::cerr << "OpenSSL error";
+			if (err.size() > 4)
+				std::cerr << " in " << err[3] << ":" << err[4] << ".";
+			if (err.size() > 5)
+				std::cerr << " Reason: " << err[5];
+			std::cerr << std::endl;
+		}
+	}
+	return (1);
+}
 
 int		InitSSLCTX(IRCserv *serv)
 {
@@ -24,20 +45,34 @@ int		InitSSLCTX(IRCserv *serv)
 	}
 	close(fd);
 
-	/* init ssl lib */
+	/* init ssl lib and ctx */
 	SSL_library_init();
+	SSL_load_error_strings();
+	/* ERR_free_strings() may be needed if we want to cleanup memory */
 	if (!(serv->sslctx = SSL_CTX_new(TLS_server_method())))
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("Unable to create SSL context");
+	}
 	if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("SSL_CTX_set_ecdh_auto failed");
+	}
 
 	/* Set the key and cert */
 	if (SSL_CTX_use_certificate_file(serv->sslctx,
 		"./conf/ircserv.crt", SSL_FILETYPE_PEM) <= 0)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("Failed to load a certificate");
+	}
 	if (SSL_CTX_use_PrivateKey_file(serv->sslctx,
 		"./conf/ircserv.key", SSL_FILETYPE_PEM) <= 0)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("Failed to load a private key");
+	}
 	return (0);
 }
 
@@ -82,20 +117,19 @@ void	CreateSockTLS(IRCserv *serv)
 
 void	DoHandshakeTLS(int fd, IRCserv *serv)
 {
-	int		handshakeres = SSL_accept(serv->fds[fd].sslptr);
+	int	handshake = SSL_accept(serv->fds[fd].sslptr);
 
 	// continue if handshake need more actions (until it returns 1)
-	if (handshakeres == 1 && SSL_is_init_finished(serv->fds[fd].sslptr))
-		serv->fds[fd].handshaked = true;
-	else
+	if (handshake != 1)
 	{
 		// check if handshake need more actions or gone wrong by SSL_get_error
-		int	err = SSL_get_error(serv->fds[fd].sslptr, handshakeres);
+		int	err = SSL_get_error(serv->fds[fd].sslptr, handshake);
 		// SSL_ERROR_WANT_READ/WRITE in case handshake needs another round
 		if (err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE)
 		{
 			// drop the connection if handshake gone wrong
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			SSL_shutdown(serv->fds[fd].sslptr);
 			SSL_free(serv->fds[fd].sslptr);
 			close(fd);

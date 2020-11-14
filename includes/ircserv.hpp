@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 05:04:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 16:57:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,11 @@ typedef struct		s_fd
 	bool			status;
 	std::string		rdbuf;
 	std::string		wrbuf;
-	std::string		pass;	// this structer parameters required for
-	std::string		version;// message PASS that can be received either
-	std::string		flags;	// from client or server before SERVER or NICK
-	std::string		options;// register attemption
+	std::string		pass;		// this structer parameters required for
+	std::string		version;	// message PASS that can be received either
+	std::string		flags;		// from client or server before SERVER or NICK
+	std::string		options;	// register attempt
 	SSL				*sslptr;
-	bool			handshaked;
 }					t_fd;
 
 typedef struct		s_server
@@ -146,5 +145,6 @@ void		SendMessage(int fd, IRCserv *serv);
 //	tls connection
 void		CreateSockTLS(IRCserv *serv);
 void		DoHandshakeTLS(int fd, IRCserv *serv);
+int			SSLErrorCallback(const char *str, size_t len, void *u);
 
 #endif
