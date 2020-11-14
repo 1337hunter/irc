@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 16:05:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 20:37:06 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	AcceptConnect(IRCserv *serv, bool isTLS)
 		error_exit("fcntl error: failed to set nonblock fd");
 	if (isTLS)
 		std::cout << "tls";
-	std::cout << "client " << fd << " accepted from\t" <<
+	std::cout << "client " << fd << " accepted:\t" <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 	serv->fds[fd].type = FD_CLIENT;
 	// we dont know either it's client or other server
@@ -86,8 +86,15 @@ void	AcceptConnect(IRCserv *serv, bool isTLS)
 	if (isTLS)
 	{
 		if (!(serv->fds[fd].sslptr = SSL_new(serv->sslctx)))
+		{
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			error_exit("SSL_new failed");
-		SSL_set_fd(serv->fds[fd].sslptr, fd);
+		}
+		if (SSL_set_fd(serv->fds[fd].sslptr, fd) < 1)
+		{
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
+			error_exit("SSL_set_fd failed");
+		}
 	}
 }
 
@@ -124,13 +131,17 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	}
 	else
 	{
-		close(fd);
 		if (serv->fds[fd].tls)
 		{
-			SSL_shutdown(serv->fds[fd].sslptr);
+			/* for tls may be recoverable */
+			int	err = SSL_get_error(serv->fds[fd].sslptr, r);
+			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+				return ;
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			SSL_free(serv->fds[fd].sslptr);
 			std::cout << "tls";
 		}
+		close(fd);
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
@@ -167,13 +178,17 @@ void	SendMessage(int fd, IRCserv *serv)
 
 	if (r <= 0 || serv->fds[fd].status == false)
 	{
-		close(fd);
 		if (serv->fds[fd].tls)
 		{
-			SSL_shutdown(serv->fds[fd].sslptr);
+			/* for tls may be recoverable */
+			int	err = SSL_get_error(serv->fds[fd].sslptr, r);
+			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+				return ;
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			SSL_free(serv->fds[fd].sslptr);
 			std::cout << "tls";
 		}
+		close(fd);
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())

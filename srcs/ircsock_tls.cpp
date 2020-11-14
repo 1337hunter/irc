@@ -6,12 +6,11 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 17:50:44 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 20:14:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
-#include <openssl/err.h>
 
 int		InitSSLCTX(IRCserv *serv)
 {

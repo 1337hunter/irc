@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 16:57:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 20:14:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 
 // openssl
 # include <openssl/ssl.h>
+# include <openssl/err.h>
 
 # include "error_handle.hpp"
 # include "common_defines.hpp"
