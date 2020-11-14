@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 01:38:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 05:09:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,23 +52,17 @@ void	RunServer(IRCserv *serv)
 			}
 			if (isread)
 			{
-				if (serv->fds[fd].type == FD_ME && !(serv->fds[fd].tls))
-					AcceptConnect(serv);
-				else if (serv->fds[fd].type == FD_ME && serv->fds[fd].tls)
-					AcceptConnectTLS(serv);			// tls accepter
-				else if (!(serv->fds[fd].tls))
-					ReceiveMessage(fd, serv);
-				else if (serv->fds[fd].tls && serv->fds[fd].handshaked)
-					ReceiveMessageTLS(fd, serv);	// tls reciever
-				else if (serv->fds[fd].tls)
+				if (serv->fds[fd].type == FD_ME)
+					AcceptConnect(serv, serv->fds[fd].tls);
+				else if (serv->fds[fd].type != FD_ME &&
+					serv->fds[fd].tls && !(serv->fds[fd].handshaked))
 					DoHandshakeTLS(fd, serv);
+				else
+					ReceiveMessage(fd, serv);
 			}
 			if (iswrite)
 			{
-				if (!(serv->fds[fd].tls))
-					SendMessage(fd, serv);
-				else
-					SendMessageTLS(fd, serv);		// tls sender
+				SendMessage(fd, serv);
 			}
 		}
 	}

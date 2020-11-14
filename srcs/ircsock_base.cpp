@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 02:41:08 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 05:23:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,24 @@ void	CreateSock(IRCserv *serv)
 		" (port " << serv->port << ")" << std::endl;
 }
 
-void	AcceptConnect(IRCserv *serv)
+void	AcceptConnect(IRCserv *serv, bool isTLS)
 {
 	int				fd;
 	t_sockaddr_in	csin;
 	socklen_t		csin_len;
 
 	csin_len = sizeof(csin);
-	if ((fd = accept(serv->sock, (t_sockaddr*)&csin, &csin_len)) < 0)
+	if (isTLS)
+		fd = accept(serv->tls_sock, (t_sockaddr*)&csin, &csin_len);
+	else
+		fd = accept(serv->sock, (t_sockaddr*)&csin, &csin_len);
+
+	if (fd < 0)
 		error_exit("accept error");
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
+	if (isTLS)
+		std::cout << "tls";
 	std::cout << "client " << fd << " accepted from\t" <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 	serv->fds[fd].type = FD_CLIENT;
@@ -73,16 +80,29 @@ void	AcceptConnect(IRCserv *serv)
 	serv->fds[fd].rdbuf.erase();
 	serv->fds[fd].wrbuf.erase();
 	serv->fds[fd].status = true;
-	serv->fds[fd].tls = false;
+	serv->fds[fd].tls = isTLS;
 	serv->fds[fd].sslptr = NULL;
+	serv->fds[fd].handshaked = false;
+
+	if (isTLS)
+	{
+		if (!(serv->fds[fd].sslptr = SSL_new(serv->sslctx)))
+			error_exit("SSL_new failed");
+		SSL_set_fd(serv->fds[fd].sslptr, fd);
+	}
 }
 
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
-	ssize_t		r;
+	ssize_t		r = 0;
 	char		buf_read[BUF_SIZE + 1];
 
-	if ((r = recv(fd, buf_read, BUF_SIZE, 0)) >= 0)
+	if (serv->fds[fd].tls && serv->fds[fd].sslptr)
+		r = SSL_read(serv->fds[fd].sslptr, buf_read, BUF_SIZE);
+	else
+		r = recv(fd, buf_read, BUF_SIZE, 0);
+
+	if (r >= 0)
 		buf_read[r] = 0;
 	if (r > 0)
 	{
@@ -91,7 +111,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			serv->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
-			std::cout << "client " << fd << " sent:\t\t" << serv->fds[fd].rdbuf;
+			if (serv->fds[fd].tls)
+				std::cout << "tls";
+			std::cout << "client " << fd << " sent:\t" <<
+				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CRLF);
 			for (size_t i = 0; i < split.size(); i++)
@@ -103,6 +126,12 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	else
 	{
 		close(fd);
+		if (serv->fds[fd].tls)
+		{
+			SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(serv->fds[fd].sslptr);
+			std::cout << "tls";
+		}
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
@@ -113,6 +142,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 
 void	SendMessage(int fd, IRCserv *serv)
 {
+	ssize_t		r = 0;
 	std::string	reply;
 
 	if (serv->fds[fd].wrbuf.length() > BUF_SIZE)
@@ -126,12 +156,25 @@ void	SendMessage(int fd, IRCserv *serv)
 		serv->fds[fd].wrbuf.erase();
 	}
 #if DEBUG_MODE
+	if (serv->fds[fd].tls)
+		std::cout << "tls";
 	std::cout << "sending client " << fd << "\t" << reply;
 #endif
-	ssize_t	r = send(fd, reply.c_str(), reply.length(), 0);
+
+	if (serv->fds[fd].tls && serv->fds[fd].sslptr)
+		r = SSL_write(serv->fds[fd].sslptr, reply.c_str(), reply.length());
+	else
+		r = send(fd, reply.c_str(), reply.length(), 0);
+
 	if (r <= 0 || serv->fds[fd].status == false)
 	{
 		close(fd);
+		if (serv->fds[fd].tls)
+		{
+			SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(serv->fds[fd].sslptr);
+			std::cout << "tls";
+		}
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())

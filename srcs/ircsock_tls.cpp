@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 02:41:47 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 05:19:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	CreateSockTLS(IRCserv *serv)
 
 	serv->fds[serv->tls_sock].type = FD_ME;
 	serv->fds[serv->tls_sock].tls = true;
-	std::cout << "server(tls) created on socket " << serv->tls_sock <<
+	std::cout << "tlsserver created on socket " << serv->tls_sock <<
 		" (port " << serv->tls_port << ")" << std::endl;
 }
 
@@ -101,99 +101,5 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 			close(fd);
 			serv->fds.erase(fd);
 		}
-	}
-}
-
-void	AcceptConnectTLS(IRCserv *serv)
-{
-	int				fd;
-	t_sockaddr_in	csin;
-	socklen_t		csin_len;
-
-	csin_len = sizeof(csin);
-	if ((fd = accept(serv->tls_sock, (t_sockaddr*)&csin, &csin_len)) < 0)
-		error_exit("accept error");
-	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
-		error_exit("fcntl error: failed to set nonblock fd");
-	std::cout << "client(tls) " << fd << " accepted from\t" <<
-		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
-	serv->fds[fd].type = FD_CLIENT;
-	// we dont know either it's client or other server
-	serv->fds[fd].rdbuf.erase();
-	serv->fds[fd].wrbuf.erase();
-	serv->fds[fd].status = true;
-	serv->fds[fd].tls = true;
-	serv->fds[fd].handshaked = false;
-
-	if (!(serv->fds[fd].sslptr = SSL_new(serv->sslctx)))
-		error_exit("SSL_new failed");
-	SSL_set_fd(serv->fds[fd].sslptr, fd);
-
-}
-
-void	ReceiveMessageTLS(int fd, IRCserv *serv)
-{
-	ssize_t		r;
-	char		buf_read[BUF_SIZE + 1];
-
-	if ((r = SSL_read(serv->fds[fd].sslptr, buf_read, BUF_SIZE)) >= 0)
-		buf_read[r] = 0;
-	if (r > 0)
-	{
-		serv->fds[fd].rdbuf += buf_read;
-		if (serv->fds[fd].rdbuf.rfind(CRLF) + serv->clrf.length() ==
-			serv->fds[fd].rdbuf.length())
-		{
-#if DEBUG_MODE
-			std::cout << "client(tls) " << fd << " sent:\t\t" << serv->fds[fd].rdbuf;
-#endif
-			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CRLF);
-			for (size_t i = 0; i < split.size(); i++)
-				ProcessMessage(fd, split[i], serv);
-			try { serv->fds.at(fd).rdbuf.erase(); }
-			catch (std::out_of_range const &e) { (void)e; }
-		}
-	}
-	else
-	{
-		close(fd);
-		SSL_shutdown(serv->fds[fd].sslptr);
-		SSL_free(serv->fds[fd].sslptr);
-		serv->fds.erase(fd);
-		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-		if (it != serv->clients.end())
-			it->Disconnect();
-		std::cout << "client(tls) " << fd << "\t\tdisconnected" << std::endl;
-	}
-}
-
-void	SendMessageTLS(int fd, IRCserv *serv)
-{
-	std::string	reply;
-
-	if (serv->fds[fd].wrbuf.length() > BUF_SIZE)
-	{
-		reply = serv->fds[fd].wrbuf.substr(0, BUF_SIZE);
-		serv->fds[fd].wrbuf = serv->fds[fd].wrbuf.substr(BUF_SIZE);
-	}
-	else
-	{
-		reply = serv->fds[fd].wrbuf;
-		serv->fds[fd].wrbuf.erase();
-	}
-#if DEBUG_MODE
-	std::cout << "sending client(tls) " << fd << "\t" << reply;
-#endif
-	ssize_t	r = SSL_write(serv->fds[fd].sslptr, reply.c_str(), reply.length());
-	if (r <= 0 || serv->fds[fd].status == false)
-	{
-		close(fd);
-		SSL_shutdown(serv->fds[fd].sslptr);
-		SSL_free(serv->fds[fd].sslptr);
-		serv->fds.erase(fd);
-		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-		if (it != serv->clients.end())
-			it->Disconnect();
-		std::cout << "client(tls) " << fd << ":\t\tdisconnected" << std::endl;
 	}
 }

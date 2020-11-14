@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 02:19:24 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 05:04:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,15 +139,12 @@ void		RunServer(IRCserv *serv);
 
 //	basic connection
 void		CreateSock(IRCserv *serv);
-void		AcceptConnect(IRCserv *serv);
+void		AcceptConnect(IRCserv *serv, bool isTLS);
 void		ReceiveMessage(int fd, IRCserv *serv);
 void		SendMessage(int fd, IRCserv *serv);
 
 //	tls connection
 void		CreateSockTLS(IRCserv *serv);
-void		AcceptConnectTLS(IRCserv *serv);
 void		DoHandshakeTLS(int fd, IRCserv *serv);
-void		ReceiveMessageTLS(int fd, IRCserv *serv);
-void		SendMessageTLS(int fd, IRCserv *serv);
 
 #endif
