@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 05:09:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 05:34:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,15 @@ void	RunServer(IRCserv *serv)
 			{
 				if (serv->fds[fd].type == FD_ME)
 					AcceptConnect(serv, serv->fds[fd].tls);
-				else if (serv->fds[fd].type != FD_ME &&
-					serv->fds[fd].tls && !(serv->fds[fd].handshaked))
-					DoHandshakeTLS(fd, serv);
 				else
-					ReceiveMessage(fd, serv);
+				{
+					if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
+						SSL_is_init_finished(serv->fds[fd].sslptr)))
+						ReceiveMessage(fd, serv);
+					else
+						DoHandshakeTLS(fd, serv);
+				}
+
 			}
 			if (iswrite)
 			{
