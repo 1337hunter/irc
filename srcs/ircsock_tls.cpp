@@ -6,32 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 17:18:24 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 17:50:44 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include <openssl/err.h>
-
-int		SSLErrorCallback(const char *str, size_t len, void *u)
-{
-	(void)u;
-	if (len > 0)
-	{
-		t_strvect	errlines = ft_splitstring(str, "\n");
-		for (size_t i = 0; i < errlines.size(); i++)
-		{
-			t_strvect	err = ft_splitstring(errlines[i], ":");
-			std::cerr << "OpenSSL error";
-			if (err.size() > 4)
-				std::cerr << " in " << err[3] << ":" << err[4] << ".";
-			if (err.size() > 5)
-				std::cerr << " Reason: " << err[5];
-			std::cerr << std::endl;
-		}
-	}
-	return (1);
-}
 
 int		InitSSLCTX(IRCserv *serv)
 {
