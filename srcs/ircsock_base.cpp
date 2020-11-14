@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 20:51:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 20:59:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,7 +113,8 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	if (r > 0)
 	{
 		serv->fds[fd].rdbuf += buf_read;
-		if (serv->fds[fd].rdbuf.rfind(CRLF) + serv->clrf.length() ==
+		if (serv->fds[fd].rdbuf.rfind(CRLF) != std::string::npos &&
+			serv->fds[fd].rdbuf.rfind(CRLF) + serv->clrf.length() ==
 			serv->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
