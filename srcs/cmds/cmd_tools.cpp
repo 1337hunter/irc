@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/12 21:54:06 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/14 18:30:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ std::string		reply_motd(IRCserv *serv, t_citer const &it)
 			std::getline(motd, motdstr);
 			if (motd.eof() && motdstr.length() == 0)
 				break ;
-			reply += ft_buildmsg(serv->hostname, RPL_MOTDSTART, it->getnickname(),
+			reply += ft_buildmsg(serv->hostname, RPL_MOTD, it->getnickname(),
 				"", motdstr);
 		}
 		reply += ft_buildmsg(serv->hostname, RPL_ENDOFMOTD, it->getnickname(),
