@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 13:13:12 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/16 00:00:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 
 
 
-/*SSL_CTX *InitSSL_CTX(void)
+SSL_CTX *InitSSL_CTX(void)
 {
 	const SSL_METHOD	*method;TLS_client_method();
 	SSL_CTX				*ctx;
@@ -31,7 +31,21 @@
 	if ((ctx = SSL_CTX_new(method)) == 0)
 		error_exit("Error: ssl context creation error");
 	return ctx;
-}*/
+}
+
+void	do_tls_connect(t_link, IRCserv *serv)
+{
+	SSL_CTX	*ctx;
+	SSL		*ssl;
+//	X509	*cert;
+
+	SSL_load_error_strings();
+	OpenSSL_add_ssl_algorithms();
+	ctx = InitSSL_CTX();
+	if ((ssl = SSL_new(ctx)) == 0)
+		error_exit("Error: SSL_new error");
+	serv = 0;
+}
 
 void	do_connect(t_link &link, IRCserv *serv)
 {
@@ -78,8 +92,6 @@ void	do_connect(t_link &link, IRCserv *serv)
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
 void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 {
-	//SSL_CTX	*ctx;
-//	SSL		*ssl;
 	size_t	i;
 
 	if (fd != FD_ME)
@@ -118,9 +130,6 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (!(serv->link[i].tls))
 		do_connect(serv->link[i], serv);
-//	else
-//		do_tls_connect(serv->link[i], serv);
-	//ctx = InitSSL_CTX();
-//	if ((ssl = SSL_new(ctx)) == 0)
-//		error_exit("Error: SSL_new error");
+	else
+		do_tls_connect(serv->link[i], serv);
 }
