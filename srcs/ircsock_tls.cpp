@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 17:33:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 19:55:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int		InitSSLCTX(IRCserv *serv)
 	return (0);
 }
 
-void	CreateSockTLS(IRCserv *serv)
+void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe = NULL;
@@ -63,36 +63,30 @@ void	CreateSockTLS(IRCserv *serv)
 
 	if (InitSSLCTX(serv))
 		return ;
-
-	if (serv->port + 30 > 65535)
-		serv->tls_port = serv->port - 30;
-	else
-		serv->tls_port = serv->port + 30;	// temp tls port = basic port + 30
-
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
-	if ((serv->tls_sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
+	if ((_listen.socket_fd = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
 		error_exit("socket error");
-	if (fcntl(serv->tls_sock, F_SETFL, O_NONBLOCK) < 0)
+	if (fcntl(_listen.socket_fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	sockin.sin_family = AF_INET;
-	sockin.sin_addr.s_addr = /*INADDR_ANY;*/ inet_addr("127.0.0.1");
-	//	can change ip to create another local server without the b8s or
-	//	containers just with ip variable seted in config file
-	sockin.sin_port = htons(serv->tls_port);
-
-	if (setsockopt(serv->tls_sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
+	if (_listen.ip == "*")
+		sockin.sin_addr.s_addr = INADDR_ANY;
+	else
+		sockin.sin_addr.s_addr = inet_addr(_listen.ip.c_str());
+	sockin.sin_port = htons(_listen.port);
+	if (setsockopt(_listen.socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
 		error_exit("set socket option returned error");
-	if (bind(serv->tls_sock, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
+	if (bind(_listen.socket_fd, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
-	if (listen(serv->tls_sock, 42) < 0)
-		error_exit("listen error");
+	if (listen(_listen.socket_fd, 42) < 0)
+		error_exit("_listen error");
 
-	serv->fds[serv->tls_sock].type = FD_ME;
-	serv->fds[serv->tls_sock].tls = true;
-	serv->fds[serv->tls_sock].status = true;
-	std::cout << "tlsserver created on socket " << serv->tls_sock <<
-		" (port " << serv->tls_port << ")" << std::endl;
+	serv->fds[_listen.socket_fd].type = FD_ME;
+	serv->fds[_listen.socket_fd].tls = true;
+	serv->fds[_listen.socket_fd].status = true;
+	std::cout << "tlsserver created on socket " << _listen.socket_fd <<
+		" (port " << _listen.port << ")" << std::endl;
 }
 
 void	DoHandshakeTLS(int fd, IRCserv *serv)

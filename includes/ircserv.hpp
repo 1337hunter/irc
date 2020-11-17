@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 17:36:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 20:00:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct		s_server
 
 typedef struct		s_listen
 {
+	int				socket_fd; //I don't think its necessery
 	bool			serveronly;
 	bool			tls;
 	bool			ssl;
@@ -108,17 +109,12 @@ struct				IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	typedef std::map<std::string, t_command>	t_cmdmap;
-	int							port;
-	int							sock;
-	int							tls_port; // what? use listen block!
-	int							tls_sock; // what? use listen block! <<<<<<<<<<<<<<<<<<<
 	std::string					servername;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;
 	t_cmdmap					command;	// map of commands
-	std::string					pass;		// this server password
-	std::vector<t_listen>		listen;		// vector of sockets amd ips to bind to listen
+	std::vector<t_listen>		listen;		// vector of sockets and ips to bind to listen
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
@@ -129,6 +125,8 @@ struct				IRCserv
 	fd_set						fdset_error;
 	std::string					motd_path;
 	SSL_CTX						*sslctx;
+	std::string					pass;		//this server (ME) password
+	int							port;       //this is stuped port for stuped subject
 	static std::string const	clrf;
 };
 
@@ -138,13 +136,13 @@ void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
 void		RunServer(IRCserv *serv);
 
 //	basic connection
-void		CreateSock(IRCserv *serv);
-void		AcceptConnect(IRCserv *serv, bool isTLS);
+void		CreateSock(IRCserv *serv, t_listen &listen);
+void		AcceptConnect(int _socket, IRCserv *serv, bool isTLS);
 void		ReceiveMessage(int fd, IRCserv *serv);
 void		SendMessage(int fd, IRCserv *serv);
 
 //	tls connection
-void		CreateSockTLS(IRCserv *serv);
+void		CreateSockTLS(IRCserv *serv, t_listen &listen);
 void		DoHandshakeTLS(int fd, IRCserv *serv);
 int			SSLErrorCallback(const char *str, size_t len, void *u);
 

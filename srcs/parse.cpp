@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/17 17:08:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 20:01:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -708,6 +708,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	bool	flag_for_serv_connection;
 	t_link	link;
 
+	serv->port = -1;
 	flag_for_serv_connection = false;
 	if (ac == 2)
 	{

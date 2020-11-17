@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 18:07:27 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 19:53:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	catch (std::out_of_range &e) { (void)e; }
 }
 
-void	CreateSock(IRCserv *serv)
+void	CreateSock(IRCserv *serv, t_listen &_listen)
 {
 	t_sockaddr_in	sockin;
 	t_protoent		*pe = NULL;
@@ -34,28 +34,29 @@ void	CreateSock(IRCserv *serv)
 
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
-	if ((serv->sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
+	if ((_listen.socket_fd = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
 		error_exit("socket error");
-	if (fcntl(serv->sock, F_SETFL, O_NONBLOCK) < 0)
+	if (fcntl(_listen.socket_fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 	sockin.sin_family = AF_INET;
-	sockin.sin_addr.s_addr = /*INADDR_ANY;*/ inet_addr("127.0.0.1");
-	//	can change ip to create another local server without the b8s or
-	//	containers just with ip variable seted in config file
-	sockin.sin_port = htons(serv->port);
-	if (setsockopt(serv->sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
+	if (_listen.ip == "*")
+		sockin.sin_addr.s_addr = INADDR_ANY;
+	else
+		sockin.sin_addr.s_addr = inet_addr(_listen.ip.c_str());
+	sockin.sin_port = htons(_listen.port);
+	if (setsockopt(_listen.socket_fd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
 		error_exit("set socket option returned error");
-	if (bind(serv->sock, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
+	if (bind(_listen.socket_fd, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
-	if (listen(serv->sock, 42) < 0)
+	if (listen(_listen.socket_fd, 42) < 0) //42 can also be configured
 		error_exit("listen error");
-	serv->fds[serv->sock].type = FD_ME;
-	serv->fds[serv->sock].tls = false;
-	std::cout << "server created on socket " << serv->sock <<
-		" (port " << serv->port << ")" << std::endl;
+	serv->fds[_listen.socket_fd].type = FD_ME;
+	serv->fds[_listen.socket_fd].tls = false;
+	std::cout << "server created on socket " << _listen.socket_fd <<
+		" (port " << _listen.port << ")" << std::endl;
 }
 
-void	AcceptConnect(IRCserv *serv, bool isTLS)
+void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 {
 	int				fd;
 	t_sockaddr_in	csin;
@@ -63,9 +64,9 @@ void	AcceptConnect(IRCserv *serv, bool isTLS)
 
 	csin_len = sizeof(csin);
 	if (isTLS)
-		fd = accept(serv->tls_sock, (t_sockaddr*)&csin, &csin_len);
+		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
 	else
-		fd = accept(serv->sock, (t_sockaddr*)&csin, &csin_len);
+		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
 
 	if (fd < 0)
 		error_exit("accept error");

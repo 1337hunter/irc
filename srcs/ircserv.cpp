@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 18:13:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 20:03:55 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,33 @@
 
 std::string const	IRCserv::clrf = CRLF;
 
+void	do_socket(IRCserv *serv)
+{
+	std::vector<t_listen>::iterator lb = serv->listen.begin();
+	std::vector<t_listen>::iterator le = serv->listen.end();
+	t_listen	_listen;
+
+	 if (lb == le)
+		 error_exit("Config error. Block listen didn't specified");
+	 while (lb != le)
+	 {
+		if (lb->tls == false)
+			CreateSock(serv, *lb);
+		else
+			CreateSockTLS(serv, *lb);
+		lb++;
+	 }
+	 _listen.ip = "*";
+	 _listen.port = serv->port;
+	 _listen.tls = false;
+	 _listen.ssl = false;
+	 _listen.serveronly = false;
+	 CreateSock(serv, _listen);
+}
+
 void	RunServer(IRCserv *serv)
 {
-	CreateSock(serv);
-	CreateSockTLS(serv);
+	do_socket(serv);
 	while (1)
 	{
 		int	lastfd = 0;
@@ -53,7 +76,7 @@ void	RunServer(IRCserv *serv)
 			if (isread)
 			{
 				if (serv->fds[fd].type == FD_ME)
-					AcceptConnect(serv, serv->fds[fd].tls);
+					AcceptConnect(fd, serv, serv->fds[fd].tls);
 				else
 				{
 					// only allow non tls and handshaked tls data exchange

@@ -6,19 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 18:17:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 18:40:29 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "message.hpp"
 #include "commands.hpp"
-#include <sys/socket.h>
 #include "error_handle.hpp"
-#include <openssl/ssl.h>
-#include <openssl/err.h>
-#include <netdb.h>
-#include <resolv.h>
-#include <cstring>
 
 #define TYPE_TLS 1
 
