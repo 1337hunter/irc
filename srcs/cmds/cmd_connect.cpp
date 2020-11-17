@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 00:50:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 00:56:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,10 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 			when SSL_connect needs another call to finish the handshake:
 			SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE errors from
 			SSL_get_error(); should be done until it returns 1
-			SSL_is_init_finished is also used to check that it's correct
-			check my AcceptHandshake for details	*/
+			or until fatal ssl error (any other error code)
+			SSL_is_init_finished is also used to check
+			that it's correctly and securely connected to another server
+			check my AcceptHandshake for details and SSL_connect man	*/
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("SSL_connect error while server link", serv);
 		return ;
