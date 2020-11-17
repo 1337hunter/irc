@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/14 16:23:04 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 03:25:50 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,13 +28,14 @@ HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			commands.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
-CRYPTODIR	= ./openssl-1.1.1h/
-CRYPTOLIBS	= $(CRYPTODIR)libssl.a $(CRYPTODIR)libcrypto.a
+SSLLIBDIR	= ./openssl-1.1.1h/
+SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
+SSLINCLUDE	= $(SSLLIBDIR)include/
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
-CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR)
-LIBFLAGS	= -lssl -lcrypto
+CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
+LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
 SHELL		= /bin/zsh
 
@@ -51,7 +52,7 @@ endif
 
 # doesn't work for some reason
 ifeq (, $(shell which openssl))
-	OPENSSL = $(CRYPTODIR)apps/openssl
+	OPENSSL = $(SSLLIBDIR)apps/openssl
 else
 	OPENSSL	= openssl
 endif
@@ -76,25 +77,25 @@ $(NAME): $(OBJ)
 	@echo "compiling" $(ULINE)$<$(ULINEF)
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-openssl: $(CRYPTOLIBS) gencert
+openssl: $(SSLLIBS)
 
-$(CRYPTOLIBS):
+$(SSLLIBS):
 	@echo "OpenSSL v1.1.1h (this may take a while)"
 	@echo -n "extracting archive..."
-	@tar -xf openssl-1.1.1h.tar.gz
+	@tar -xf ./openssl-1.1.1h.tar.gz
 	@echo "\tdone"
 	@echo -n "configuring makefile..."
-	@cd $(CRYPTODIR) && ./config > /dev/null && cd ..
+	@cd $(SSLLIBDIR) && ./config > /dev/null && cd ..
 	@echo "\tdone"
 	@echo -n "building libraries..."
-	@make -C $(CRYPTODIR) > /dev/null 2> /dev/null
+	@make -C $(SSLLIBDIR) > /dev/null 2> /dev/null
 	@echo "\tdone"
 
 gencert: $(TLSCERT)
 
 $(TLSCERT):
 	@echo -n "generating tls cert..."
-	@$(CRYPTODIR)apps/openssl req \
+	@$(SSLLIBDIR)apps/openssl req \
 		-x509 -nodes -days 365 -newkey rsa:4096 \
 		-keyout $(word 2,$(TLSCERT)) \
 		-out $(word 1,$(TLSCERT)) \
@@ -106,7 +107,7 @@ $(TLSCERT):
 
 clean:
 	@#@echo "$(RED)Cleaning crypto lib$(NC)"
-	@#@make -C $(CRYPTODIR) clean
+	@#@make -C $(SSLLIBDIR) clean
 	@echo "$(RED)Cleaning object files$(NC)"
 	@/bin/rm -f $(OBJ)
 
@@ -114,7 +115,7 @@ fclean: clean
 	@echo "$(RED)Deleting $(NAME) executable$(NC)"
 	@/bin/rm -f $(NAME)
 #	@/bin/rm -f $(TLSCERT)
-#	@/bin/rm -rf $(CRYPTODIR)
+#	@/bin/rm -rf $(SSLLIBDIR)
 # disabled openssl dir deletion so we don't have to wait for it after make re
 
 re: fclean all
