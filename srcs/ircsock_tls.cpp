@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 23:20:59 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/17 23:41:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	if (bind(_listen.socket_fd, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
 	if (listen(_listen.socket_fd, 42) < 0)
-		error_exit("_listen error");
+		error_exit("listen error");
 
 	serv->fds[_listen.socket_fd].type = FD_ME;
 	serv->fds[_listen.socket_fd].tls = true;
