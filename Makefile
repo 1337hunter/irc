@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 14:28:56 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 14:52:42 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,13 +34,14 @@ SSLDIR		= ./openssl/
 SSLINCLUDE	= $(SSLDIR)include/
 SSLLIBDIR	= $(SSLDIR)lib/
 SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
-SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl
+SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl no-shared
 # to compile static only add no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
 CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
-LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto
+# linux openssl requires libdl and libpthread (for static lib)
+LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
 SHELL		= /bin/zsh
 
@@ -52,8 +53,6 @@ else
 	ifeq ($(UNAME), Linux)
 	OSNAME	= Linux
 	SSLFLAG	+= linux-x86_64-clang
-# linux openssl requires libdl and libpthread (in case we build static only)
-#	LIBFLAGS += -ldl -lpthread
 	else
 	OSNAME	= Unknown OS
 	endif
