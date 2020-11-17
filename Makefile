@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 05:40:27 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 14:00:51 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,11 +27,15 @@ HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			client.hpp channel.hpp message.hpp tools.hpp \
 			commands.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
+PWD			:= $(shell pwd)
 
-SSLLIBDIR	= ./openssl-1.1.1h/
+SSLSRCDIR	= ./openssl-1.1.1h/
+SSLDIR		= ./openssl/
+SSLINCLUDE	= $(SSLDIR)include/
+SSLLIBDIR	= $(SSLDIR)lib/
 SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
-SSLINCLUDE	= $(SSLLIBDIR)include/
-SSLFLAG		= no-shared
+SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl
+# to compile static only add no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
@@ -55,9 +59,9 @@ else
 	endif
 endif
 
-# doesn't work for some reason
+# just in case openssl is not installed on system somehow
 ifeq (, $(shell which openssl))
-	OPENSSL = $(SSLLIBDIR)apps/openssl
+	OPENSSL = $(SSLDIR)bin/openssl
 else
 	OPENSSL	= openssl
 endif
@@ -85,35 +89,38 @@ $(NAME): $(OBJ)
 openssl: $(SSLLIBS)
 
 $(SSLLIBS):
-	@echo "OpenSSL v1.1.1h (this may take a while)"
+	@echo "OpenSSL v1.1.1h (this will take a while)"
 	@echo -n "extracting archive..."
 	@tar -xf ./openssl-1.1.1h.tar.gz
-	@echo "\tdone"
+	@echo "\t\tdone"
 	@echo -n "configuring makefile..."
-	@cd $(SSLLIBDIR) && ./Configure $(SSLFLAG) > /dev/null && cd ..
-	@echo "\tdone"
+	@cd $(SSLSRCDIR) && ./Configure $(SSLFLAG) > /dev/null && cd ..
+	@echo "\t\tdone"
 	@echo "configured with $(SSLFLAG) params"
 	@echo -n "building libraries..."
-	@make -C $(SSLLIBDIR) > /dev/null 2> /dev/null
+	@make -C $(SSLSRCDIR) > /dev/null 2> /dev/null
+	@echo "\t\tdone"
+	@echo -n "installing to ./openssl/..."
+	@make -C $(SSLSRCDIR) install > /dev/null 2> /dev/null
 	@echo "\tdone"
 
 gencert: $(TLSCERT)
 
 $(TLSCERT):
-	@echo "generating tls cert..."
+	@echo "generating tls certificate..."
 	@$(OPENSSL) req \
 		-x509 -nodes -days 365 -newkey rsa:4096 \
 		-keyout $(word 2,$(TLSCERT)) \
 		-out $(word 1,$(TLSCERT)) \
 		-subj "/C=RU/ST=Moscow/L=Moscow/O=42/OU=21/CN=ircserv"
-	@echo "cert file\t$(word 1,$(TLSCERT))"
-	@echo "cert key\t$(word 2,$(TLSCERT))"
+	@echo "certificate file\t$(word 1,$(TLSCERT))"
+	@echo "certificate key\t\t$(word 2,$(TLSCERT))"
 
 clean:
-	@#@echo "$(RED)Cleaning crypto lib$(NC)"
-	@#@make -C $(SSLLIBDIR) clean
 	@echo "$(RED)Cleaning object files$(NC)"
 	@/bin/rm -f $(OBJ)
+	@echo "$(RED)Deleting $(SSLSRCDIR)$(NC)"
+	@/bin/rm -rf $(SSLSRCDIR)
 
 fclean: clean
 	@echo "$(RED)Deleting $(NAME) executable$(NC)"
