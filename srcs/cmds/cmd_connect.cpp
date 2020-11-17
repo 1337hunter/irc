@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/16 00:00:41 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 16:05:57 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,43 +50,52 @@ void	do_tls_connect(t_link, IRCserv *serv)
 void	do_connect(t_link &link, IRCserv *serv)
 {
 
-	int				socket_fd;
-	t_sockaddr_in	server_addres;
-	t_protoent		*protocol;
-//	hostent			*host;
+	int					socket_fd;
+	struct	addrinfo	hints;
+	struct	addrinfo	*addrs;
 
-	if (!(protocol = getprotobyname("tcp"))) {
-		msg_error("Can't resolve protocol by name while CONNECT", serv);
+	hints.ai_flags = 0;
+	hints.ai_family = AF_UNSPEC;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addrs))
+	{
+		msg_error("Can't get addres information with getaddrinfo", serv);
 		return ;
 	}
-	if ((socket_fd = socket(AF_INET, SOCK_STREAM, protocol->p_proto)) < 0) {
-		msg_error("Socket creating error while CONNECT", serv);
+	struct addrinfo *addr = addrs;
+	for (;addr != 0; addr = addr->ai_next)
+	{
+
+		if ((socket_fd = socket(addr->ai_family, SOCK_STREAM, addr->ai_protocol)) < 0)
+			continue ;
+		if (connect(socket_fd, addr->ai_addr, addr->ai_addrlen) == 0)
+			break ;
+	}
+	if (socket_fd < 0)
+	{
+		freeaddrinfo(addrs);
+		msg_error("Socket error while server link", serv);
 		return ;
 	}
-	bzero(&server_addres, sizeof(server_addres));
-	server_addres.sin_family = AF_INET;
-	server_addres.sin_port = htons(link.port);
-	if (!(server_addres.sin_addr.s_addr = inet_addr(link.ip.c_str()))) {
-		msg_error("inet_addr error", serv);
-		return ;
-	}
-	if (connect(socket_fd, (struct sockaddr*)&server_addres, sizeof(server_addres)) < 0) {
-		msg_error("error while connecting to ", link.hostname, serv);
+	if (addr == 0)
+	{
+		freeaddrinfo(addrs);
+		msg_error("Connection error while server link", serv);
 		return ;
 	}
 	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].status = true;
-	if (link.pass != "")
+	if (link.pass.size() != 0)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->hostname + " 0 " +
 		serv->token + " " + serv->info + CRLF;
 	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
+		freeaddrinfo(addrs);
 		msg_error("fcntl error", serv);
 		return ;
 	}
-//	host = gethostbyname(link.hostname.c_str());
-//	std::cout << std::endl << ">" << *(long *)(host->h_addr_list[0]) << "<" << std::endl << std::endl;
-	return ;
+	freeaddrinfo(addrs);
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
@@ -120,7 +129,7 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	i = -1;
 	while (++i < serv->link.size())
-		if (serv->link[i].hostname == split[1])
+		if (serv->link[i].servername == split[1])
 			break ;
 	if (i == serv->link.size())
 	{

@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/13 20:31:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 14:49:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &lin
 	if (pos >= line.length() || line[pos] != '{' || config.eof())
 		return -1;
 	pos++;
-	while (pos >= line.length() || line[pos] != '}')	// hmmmmmmmmm
+	while (pos >= line.length() || line[pos] != '}')
 	{
 		while ((pos = line.find_first_not_of(" \t\n", pos)) == ENDL)
 		{
@@ -301,7 +301,7 @@ block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	if (pos == ENDL || line[pos] != '{' || config.eof())
 		return -1;
 	pos++;
-	while (pos >= line.length() || line[pos] != '}')	// hmmmmmmmmm
+	while (pos >= line.length() || line[pos] != '}')
 	{
 		while ((pos = line.find_first_not_of(" \t", pos)) == ENDL)
 		{
@@ -311,12 +311,12 @@ block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 				return -1;
 			pos = 0;
 		}
-		if (!line.compare(pos, 2, "ip"))
+			if (!line.compare(pos, ft_strlen("servername"), "servername"))
 		{
-			pos = line.find_first_not_of(" \t", pos + 2);
+			pos = line.find_first_not_of(" \t", pos + ft_strlen("servername"));
 			if (pos == ENDL)
 				return -1;
-			i = line.find_first_not_of("0123456789.", pos);
+			i = line.find_first_of(" \t;", pos);
 			pos_copy_from = pos;
 			pos_copy_size = i - pos;
 			if (i == ENDL)
@@ -327,8 +327,8 @@ block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 			pos = line.find_first_not_of(" \t", pos + 1);
 			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 8, "hostname") && line.compare(pos, 4, "pass") && line.compare(pos, 7, "options") && line.compare(pos, 4, "port"))
 				return -1;
-			std::string	ip(line, pos_copy_from, pos_copy_size);
-			temp.ip = ip;
+			std::string	what(line, pos_copy_from, pos_copy_size);
+			temp.servername = what;
 		}
 		else if (!line.compare(pos, 8, "hostname"))
 		{
@@ -440,7 +440,7 @@ block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	serv->link.push_back(temp);
 #if DEBUG_MODE
 	std::vector<t_link>::reverse_iterator it = serv->link.rbegin();
-	std::cout << "link: ip '" << it->ip << "' hostname '" << it->hostname << "'";
+	std::cout << "link: servername '" << it->servername << "' hostname '" << it->hostname << "'";
 	std::cout << " port '" << it->port << "'" << " pass '" << it->pass << "' ";
 	if (temp.ssl)
                 std::cout << "'ssl' ";

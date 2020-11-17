@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/13 17:02:01 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 15:15:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 #if DEBUG_MODE
 		std::cout << "client " << fd << "\t\twrong server password" << std::endl;
 #endif
-		cmd_squit(fd, split, serv);
+		serv->fds[fd].wrbuf += "ERROR :Password incorrect";
+		serv->fds[fd].status = false;
 		return ;
 	}
 	temp.fd = fd;
