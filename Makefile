@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 14:17:00 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 14:28:56 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,7 +73,7 @@ NC			= \e[0m
 ULINE		= "\e[4m"
 ULINEF		= "\e[24m"
 
-.PHONY: all bonus openssl gencert clean fclean re
+.PHONY: all bonus openssl delssl gencert clean fclean re
 
 all: $(NAME)
 
@@ -116,6 +116,12 @@ $(TLSCERT):
 	@echo "certificate file\t$(word 1,$(TLSCERT))"
 	@echo "certificate key\t\t$(word 2,$(TLSCERT))"
 
+delssl:
+	@echo "$(RED)Deleting certificates $(TLSCERT)$(NC)"
+	@/bin/rm -f $(TLSCERT)
+	@echo "$(RED)Deleting $(SSLDIR)$(NC)"
+	@/bin/rm -rf $(SSLDIR)
+
 clean:
 	@echo "$(RED)Cleaning object files$(NC)"
 	@/bin/rm -f $(OBJ)
@@ -125,8 +131,5 @@ clean:
 fclean: clean
 	@echo "$(RED)Deleting $(NAME) executable$(NC)"
 	@/bin/rm -f $(NAME)
-#	@/bin/rm -f $(TLSCERT)
-#	@/bin/rm -rf $(SSLLIBDIR)
-# disabled openssl dir deletion so we don't have to wait for it after make re
 
 re: fclean all
