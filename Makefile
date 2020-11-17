@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 03:25:50 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 04:34:37 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 SSLLIBDIR	= ./openssl-1.1.1h/
 SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
 SSLINCLUDE	= $(SSLLIBDIR)include/
+SSLFLAG		= no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
@@ -42,9 +43,11 @@ SHELL		= /bin/zsh
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
 OSNAME		= Darwin
+SSLFLAG		+= darwin64-x86_64-cc
 else
 	ifeq ($(UNAME), Linux)
 	OSNAME	= Linux
+	SSLFLAG	+= linux-x86_64-clang
 	else
 	OSNAME	= Unknown OS
 	endif
@@ -85,8 +88,9 @@ $(SSLLIBS):
 	@tar -xf ./openssl-1.1.1h.tar.gz
 	@echo "\tdone"
 	@echo -n "configuring makefile..."
-	@cd $(SSLLIBDIR) && ./config > /dev/null && cd ..
+	@cd $(SSLLIBDIR) && ./Configure $(SSLFLAG) > /dev/null && cd ..
 	@echo "\tdone"
+	@echo "configured with $(SSLFLAG) params"
 	@echo -n "building libraries..."
 	@make -C $(SSLLIBDIR) > /dev/null 2> /dev/null
 	@echo "\tdone"
@@ -94,14 +98,12 @@ $(SSLLIBS):
 gencert: $(TLSCERT)
 
 $(TLSCERT):
-	@echo -n "generating tls cert..."
-	@$(SSLLIBDIR)apps/openssl req \
+	@echo "generating tls cert..."
+	@$(OPENSSL) req \
 		-x509 -nodes -days 365 -newkey rsa:4096 \
 		-keyout $(word 2,$(TLSCERT)) \
 		-out $(word 1,$(TLSCERT)) \
-		-subj "/C=RU/ST=Moscow/L=Moscow/O=42/OU=21/CN=ircserv" \
-		> /dev/null 2> /dev/null
-	@echo "\tdone"
+		-subj "/C=RU/ST=Moscow/L=Moscow/O=42/OU=21/CN=ircserv"
 	@echo "cert file\t$(word 1,$(TLSCERT))"
 	@echo "cert key\t$(word 2,$(TLSCERT))"
 
