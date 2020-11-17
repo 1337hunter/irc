@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 00:38:21 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 01:01:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,10 @@ void	RunServer(IRCserv *serv)
 				else
 					std::cout << "Need to handshake" << std::endl;
 				/*	^^^	change this to some ConnectHandshake(fd, serv);
-						similar to AcceptHandshake(fd, serv);	*/
+						similar to AcceptHandshake(fd, serv);
+						but for that to happen we probably need
+						to trigger FD_SET on fdset_write first
+						push something to wrbuf on server fd for example	*/
 			}
 		}
 	}
