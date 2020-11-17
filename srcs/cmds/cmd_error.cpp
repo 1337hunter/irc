@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 13:15:50 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/15 10:45:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 17:13:23 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	cmd_error(int fd, const t_strvect &split, IRCserv *serv)
 			if (b->isOperator())
 			{
 				serv->fds[b->getFD()].wrbuf += "NOTICE " + b->getnickname() +
-					" :ERROR from " + sb->hostname + " -- ";
+					" :ERROR from " + sb->servername + " -- ";
 				i = 1;
 				if (split.size() > 1)
 				{

@@ -23,22 +23,22 @@ std::string		reply_motd(IRCserv *serv, t_citer const &it)
 
 	if (motd.is_open())
 	{
-		reply = ft_buildmsg(serv->hostname, RPL_MOTDSTART, it->getnickname(),
-			"", serv->hostname + " Message of the day");
+		reply = ft_buildmsg(serv->servername, RPL_MOTDSTART, it->getnickname(),
+			"", serv->servername + " Message of the day");
 		while (!motd.eof())
 		{
 			std::getline(motd, motdstr);
 			if (motd.eof() && motdstr.length() == 0)
 				break ;
-			reply += ft_buildmsg(serv->hostname, RPL_MOTD, it->getnickname(),
+			reply += ft_buildmsg(serv->servername, RPL_MOTD, it->getnickname(),
 				"", motdstr);
 		}
-		reply += ft_buildmsg(serv->hostname, RPL_ENDOFMOTD, it->getnickname(),
+		reply += ft_buildmsg(serv->servername, RPL_ENDOFMOTD, it->getnickname(),
 			"", "End of MOTD command");
 		motd.close();
 	}
 	else
-		reply = ft_buildmsg(serv->hostname, ERR_NOMOTD, it->getnickname(),
+		reply = ft_buildmsg(serv->servername, ERR_NOMOTD, it->getnickname(),
 			"", "MOTD File is missing");
 	return (reply);
 }
@@ -47,18 +47,18 @@ std::string		reply_welcome(IRCserv *serv, t_citer const &it)
 {
 	std::string	reply;
 
-	reply += ft_buildmsg(serv->hostname, RPL_WELCOME,
+	reply += ft_buildmsg(serv->servername, RPL_WELCOME,
 		it->getnickname(), "",
 		"Welcome to the Internet Relay Network " +
 		it->getnickname() + "!" + it->getnickname() + "@" +
-		serv->hostname);
-	reply += ft_buildmsg(serv->hostname, RPL_YOURHOST,
-		it->getnickname(), "", "Your host is " + serv->hostname +
+		serv->servername);
+	reply += ft_buildmsg(serv->servername, RPL_YOURHOST,
+		it->getnickname(), "", "Your host is " + serv->servername +
 		", running version " + /*serv->version*/ "0.1");
-	reply += ft_buildmsg(serv->hostname, RPL_CREATED,
+	reply += ft_buildmsg(serv->servername, RPL_CREATED,
 		it->getnickname(), "", "This server was created <date>");
-	reply += ft_buildmsg(serv->hostname, RPL_MYINFO,
-		it->getnickname(), "", serv->hostname + " " +
+	reply += ft_buildmsg(serv->servername, RPL_MYINFO,
+		it->getnickname(), "", serv->servername + " " +
 		/*serv->version*/ "0.1" + " " +
 		"<available user modes>" + " " +
 		"<available channel modes>");

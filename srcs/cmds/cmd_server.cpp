@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 15:15:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 16:53:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "commands.hpp"
 #include "message.hpp"
 
+//Command: SERVER
+//Parameters: <servername> <hopcount> <info>
 void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server	temp;
@@ -35,9 +37,9 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	std::vector<t_server>::iterator	end = serv->connect.end();
 	while (begin != end) //looking for servers with the same name
 	{
-		if (begin->hostname == split[1])
+		if (begin->servername == split[1])
 		{
-			serv->fds[fd].wrbuf += ":" + serv->hostname + " ";
+			serv->fds[fd].wrbuf += ":" + serv->servername + " ";
 			serv->fds[fd].wrbuf += ERR_ALREADYREGISTRED;
 			serv->fds[fd].wrbuf += " " + split[1];
 			serv->fds[fd].wrbuf += " :server already registred";
@@ -58,7 +60,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	temp.fd = fd;
-	temp.hostname = split[1];
+	temp.servername = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
 	{

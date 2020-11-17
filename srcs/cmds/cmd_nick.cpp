@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/12 22:21:31 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/17 17:10:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	if (split.size() < 2)
 	{
 		// may be different
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->hostname,
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NONICKNAMEGIVEN, "", "NICK", "No nickname given");
 		return ;
 	}
@@ -66,7 +66,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	else
 	{
 		std::cout << "6\n";
-		reply = ft_buildmsg(serv->hostname, ERR_NICKNAMEINUSE, split[1], "",
+		reply = ft_buildmsg(serv->servername, ERR_NICKNAMEINUSE, split[1], "",
 			"Nickname is already in use");
 		/*	need to save the state in this case
 		 *	cli will try to send another NICK after USER msg */

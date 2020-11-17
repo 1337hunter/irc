@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 16:07:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/17 18:13:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,9 +66,12 @@ void	RunServer(IRCserv *serv)
 			}
 			if (iswrite)
 			{
+				std::cout << serv->fds[fd].sslptr << "\n\n" << std::endl;
 				if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
 					SSL_is_init_finished(serv->fds[fd].sslptr)))
+				{
 					SendMessage(fd, serv);
+				}
 			}
 		}
 	}

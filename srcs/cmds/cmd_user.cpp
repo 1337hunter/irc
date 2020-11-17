@@ -21,7 +21,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() < 5)
 	{
-		reply = ft_buildmsg(serv->hostname, ERR_NEEDMOREPARAMS, "*", split[0],
+		reply = ft_buildmsg(serv->servername, ERR_NEEDMOREPARAMS, "*", split[0],
 			"Not enough parameters");
 	}
 	else
@@ -47,7 +47,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 					reply = reply_welcome(serv, it);
 			}
 			else
-				reply = ft_buildmsg(serv->hostname, ERR_ALREADYREGISTRED,
+				reply = ft_buildmsg(serv->servername, ERR_ALREADYREGISTRED,
 					it->getnickname(), "", "You may not reregister");
 		}
 		else

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 16:05:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 18:17:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,34 +20,9 @@
 #include <resolv.h>
 #include <cstring>
 
+#define TYPE_TLS 1
 
-
-SSL_CTX *InitSSL_CTX(void)
-{
-	const SSL_METHOD	*method;TLS_client_method();
-	SSL_CTX				*ctx;
-	
-	method = TLS_client_method();
-	if ((ctx = SSL_CTX_new(method)) == 0)
-		error_exit("Error: ssl context creation error");
-	return ctx;
-}
-
-void	do_tls_connect(t_link, IRCserv *serv)
-{
-	SSL_CTX	*ctx;
-	SSL		*ssl;
-//	X509	*cert;
-
-	SSL_load_error_strings();
-	OpenSSL_add_ssl_algorithms();
-	ctx = InitSSL_CTX();
-	if ((ssl = SSL_new(ctx)) == 0)
-		error_exit("Error: SSL_new error");
-	serv = 0;
-}
-
-void	do_connect(t_link &link, IRCserv *serv)
+int	do_connect(t_link &link, IRCserv *serv, int	type = 0)
 {
 
 	int					socket_fd;
@@ -58,11 +33,8 @@ void	do_connect(t_link &link, IRCserv *serv)
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addrs))
-	{
-		msg_error("Can't get addres information with getaddrinfo", serv);
-		return ;
-	}
+	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addrs)) {
+		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
 	struct addrinfo *addr = addrs;
 	for (;addr != 0; addr = addr->ai_next)
 	{
@@ -72,30 +44,64 @@ void	do_connect(t_link &link, IRCserv *serv)
 		if (connect(socket_fd, addr->ai_addr, addr->ai_addrlen) == 0)
 			break ;
 	}
-	if (socket_fd < 0)
-	{
-		freeaddrinfo(addrs);
-		msg_error("Socket error while server link", serv);
-		return ;
-	}
-	if (addr == 0)
-	{
-		freeaddrinfo(addrs);
-		msg_error("Connection error while server link", serv);
-		return ;
-	}
+	freeaddrinfo(addrs);
+	if (socket_fd < 0) {
+		msg_error("Socket error while server link", serv); return socket_fd; }
+	if (addr == 0) {
+		msg_error("Connection error while server link", serv); return -1; }
+	if (type == TYPE_TLS)
+		return socket_fd;
 	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].status = true;
-	if (link.pass.size() != 0)
+	serv->fds[socket_fd].tls = false;
+	if (link.pass.length() != 0)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
-	serv->fds[socket_fd].wrbuf += "SERVER " + serv->hostname + " 0 " +
+	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
 	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		freeaddrinfo(addrs);
-		msg_error("fcntl error", serv);
-		return ;
-	}
-	freeaddrinfo(addrs);
+		msg_error("fcntl error", serv); return -1; }
+	return socket_fd;
+}
+
+
+SSL_CTX *InitSSL_CTX(void)
+{
+	const SSL_METHOD	*method;
+	SSL_CTX				*ctx;
+	
+	method = TLS_client_method();
+	ctx = SSL_CTX_new(method);
+	return ctx;
+}
+
+void	do_tls_connect(t_link &link, IRCserv *serv)
+{
+	SSL_CTX	*ctx;
+	SSL		*ssl;
+	int		socket_fd;
+
+	SSL_load_error_strings();
+	OpenSSL_add_ssl_algorithms();
+	if ((ctx = InitSSL_CTX()) == 0) {
+		msg_error("Error: SSL_CTX_new returned error", serv); return ; }
+	if ((ssl = SSL_new(ctx)) == 0) {
+		msg_error("Error: SSL_new returned error", serv); return ; }
+	if ((socket_fd = do_connect(link, serv, TYPE_TLS)) < 0) {
+		msg_error("Socket error while server link", serv); return ; }
+	if (!(SSL_set_fd(ssl, socket_fd))) {
+		msg_error("SSL_set_fd error while server link", serv); return ; }
+	if (!(SSL_connect(ssl))) {
+		msg_error("SSL_connect error while server link", serv); return ; }
+	serv->fds[socket_fd].status = true;
+	serv->fds[socket_fd].tls = true;
+	serv->fds[socket_fd].type = FD_SERVER;
+	serv->fds[socket_fd].sslptr = ssl;
+	if (link.pass.length() != 0)
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
+	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
+		serv->token + " " + serv->info + CRLF;
+	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
+		msg_error("fcntl error", serv); return ; }
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
@@ -131,12 +137,9 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 	while (++i < serv->link.size())
 		if (serv->link[i].servername == split[1])
 			break ;
-	if (i == serv->link.size())
-	{
+	if (i == serv->link.size()) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, split[1],
-				"No such server");
-		return ;
-	}
+				"No such server"); return ; }
 	if (!(serv->link[i].tls))
 		do_connect(serv->link[i], serv);
 	else

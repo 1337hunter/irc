@@ -16,10 +16,10 @@
 void		cmd_ping(int fd, const t_strvect &split, IRCserv *serv)
 {
 	if (split.size() < 2)
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->hostname,
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NEEDMOREPARAMS, "", "", "No origin specified");
 	else
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->hostname, "PONG",
-			serv->hostname, "", split[1]);
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, "PONG",
+			serv->servername, "", split[1]);
 	/*	:<hostname> PONG <hostname> :<second ping parameter>	*/
 }

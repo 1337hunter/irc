@@ -17,7 +17,7 @@ void		cmd_pass(int fd, const t_strvect &split, IRCserv *serv)
 {
 	if (split.size() < 2)
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->hostname,
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NEEDMOREPARAMS, "", split[0], "Not enough parameters");
 		return ;
 	}

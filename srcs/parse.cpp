@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/17 14:49:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 17:08:52 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -518,11 +518,11 @@ block_me(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_nu
 	pos = line.find_first_not_of(" \t\n", pos + 1);
 	if (pos != endl && line[pos] != '#')
 		return -1;
-	serv->hostname = names[0];
+	serv->servername = names[0];
 	serv->token = names[1];
 	serv->info = names[2];
 #if DEBUG_MODE
-	std::cout << "server name: \"" << serv->hostname << '"';
+	std::cout << "server name: \"" << serv->servername << '"';
 	std::cout << " server token: \"" << serv->token << '"';
 	std::cout << " server info: \"" << serv->info << '"' << '\n';
 #endif
@@ -705,9 +705,10 @@ size_t	find_block(std::string line, size_t pos)
 
 void	server_init(IRCserv *serv, int ac, char **av)
 {
-	bool	flag_forserv_connection;
+	bool	flag_for_serv_connection;
+	t_link	link;
 
-	flag_forserv_connection = false;
+	flag_for_serv_connection = false;
 	if (ac == 2)
 	{
 
@@ -740,19 +741,18 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		else
 		{
 			t_strvect	temp;
-			t_server	connect;
 
-			flag_forserv_connection = true;
+			flag_for_serv_connection = true;
 			temp = ft_splitstring(av[1], ":");
 			if (temp.size() < 2 || temp.size() > 3)
 				error_exit("Error: input parameters of server which you want to connect to is wrong!");
-			connect.hostname = temp[0];
+			link.hostname = temp[0];
 			if (temp[1].find_first_not_of("0123456789") != ENDL ||
 										temp.size() < 1 || temp.size() > 5)
 								error_exit("Error: bad port number");
-			connect.port = stoi(temp[1]);
+			link.port = stoi(temp[1]);
 			if (temp.size() == 3)
-				connect.pass = temp[2];
+				link.pass = temp[2];
 			if (pass.find_first_not_of("0123456789") != ENDL ||
 					pass.length() < 1 || pass.length() > 5)
 				error_exit("Error: bad port number");
@@ -762,7 +762,6 @@ void	server_init(IRCserv *serv, int ac, char **av)
 				if (serv->port < 1 || serv->port > 65535)
 					error_exit("Error: bad port number");
 			}
-			serv->connect.push_back(connect);
 		}
 	}
 	else if (ac == 4)
@@ -770,13 +769,12 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		std::string port(av[2]);
 		std::string pass(av[3]);
 		t_strvect	connect_to;
-		t_server	temp;
 
-		flag_forserv_connection = true;
+		flag_for_serv_connection = true;
 		connect_to = ft_splitstring(av[1], ":");
 		if (connect_to.size() < 2 || connect_to.size() > 3)
 			error_exit("Error: input parameters of server which you want to connect to is wrong!");
-		temp.hostname = connect_to[0];
+		link.hostname = connect_to[0];
 		serv->pass = pass;
 		if (port.find_first_not_of("0123456789") != ENDL ||
 		connect_to[1].find_first_not_of("0123456789") != ENDL ||
@@ -785,13 +783,12 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			error_exit("Error: bad port number");
 		else
 		{
-			temp.port = stoi(connect_to[1]);
+			link.port = stoi(connect_to[1]);
 			if (connect_to.size() == 3)
-				temp.pass = connect_to[2];
+				link.pass = connect_to[2];
 			serv->port = stoi(port);
 			if (serv->port < 1 || serv->port > 65535)
 				error_exit("Error: bad port number");
-			serv->connect.push_back(temp);
 		}
 	}
 	else
@@ -800,7 +797,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			"password_network] <port> <password>" << std::endl;
 		exit(1);
 	}
-	if (flag_forserv_connection)
+	if (flag_for_serv_connection)
 	{
 		std::vector<t_link>::iterator	b = serv->link.begin();
 		std::vector<t_link>::iterator	e = serv->link.end();
@@ -809,9 +806,9 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		flag = 0;
 		while (b != e)
 		{
-			if (b->hostname == serv->connect[0].hostname &&
-					b->port == serv->connect[0].port &&
-					b->pass == serv->connect[0].pass)
+			if (b->hostname == link.hostname &&
+					b->port == link.port &&
+					b->pass == link.pass)
 			{
 				b->autoconnect = true;
 				flag = 1;

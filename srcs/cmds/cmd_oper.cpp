@@ -35,7 +35,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (split.size() < 3)
 	{
-		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf = ":" + serv->servername + " ";
 		serv->fds[fd].wrbuf += ERR_NEEDMOREPARAMS;
 		serv->fds[fd].wrbuf += " OPER :Not enough parameters";
 		serv->fds[fd].wrbuf += CRLF;
@@ -49,7 +49,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (b == e)
 	{
-		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf = ":" + serv->servername + " ";
 		serv->fds[fd].wrbuf += ERR_NOOPERHOST;
 		serv->fds[fd].wrbuf += " :No O-lines for your host";
 		serv->fds[fd].wrbuf += CRLF;
@@ -57,7 +57,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (b->pass != split[2])
 	{
-		serv->fds[fd].wrbuf = ":" + serv->hostname + " ";
+		serv->fds[fd].wrbuf = ":" + serv->servername + " ";
 		serv->fds[fd].wrbuf += ERR_PASSWDMISMATCH;
 		serv->fds[fd].wrbuf += " :Password incorrect";
 		serv->fds[fd].wrbuf += CRLF;

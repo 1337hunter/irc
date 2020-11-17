@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 14:46:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 17:36:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ typedef struct		s_server
 	int				port;
 	bool			autoconnect;
 	std::string		token;
-	std::string		hostname;
+	std::string		servername;
 	std::string		pass;
 	std::string		info;
 }					t_server;
@@ -110,9 +110,9 @@ struct				IRCserv
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	int							port;
 	int							sock;
-	int							tls_port;
-	int							tls_sock;
-	std::string					hostname;	// me server name
+	int							tls_port; // what? use listen block!
+	int							tls_sock; // what? use listen block! <<<<<<<<<<<<<<<<<<<
+	std::string					servername;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;

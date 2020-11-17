@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 20:14:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/17 17:33:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ void	CreateSockTLS(IRCserv *serv)
 
 	serv->fds[serv->tls_sock].type = FD_ME;
 	serv->fds[serv->tls_sock].tls = true;
+	serv->fds[serv->tls_sock].status = true;
 	std::cout << "tlsserver created on socket " << serv->tls_sock <<
 		" (port " << serv->tls_port << ")" << std::endl;
 }
