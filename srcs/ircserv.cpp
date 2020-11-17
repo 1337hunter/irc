@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 20:03:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 21:49:25 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ void	do_socket(IRCserv *serv)
 	std::vector<t_listen>::iterator le = serv->listen.end();
 	t_listen	_listen;
 
-	 if (lb == le)
-		 error_exit("Config error. Block listen didn't specified");
 	 while (lb != le)
 	 {
 		if (lb->tls == false)
