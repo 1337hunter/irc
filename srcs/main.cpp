@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/11/06 19:44:58 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 23:14:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,11 @@ int		main(int ac, char **av)
 	IRCserv	serv;
 
 	parse(ac, av, &serv);
-	std::cout << "starting server ..." << std::endl;
+	std::cout << "\n>>>> starting server ..." << std::endl;
+	/* init ssl lib and ctx */
+	SSL_library_init();
+	SSL_load_error_strings();
+	InitSSLCTX(&serv);
 	RunServer(&serv);
 	return (0);
 }

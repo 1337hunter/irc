@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 18:40:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 23:21:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,11 @@
 
 #define TYPE_TLS 1
 
-int	do_connect(t_link &link, IRCserv *serv, int	type = 0)
+int		do_connect(t_link &link, IRCserv *serv, int	type = 0)
 {
-
 	int					socket_fd;
-	struct	addrinfo	hints;
-	struct	addrinfo	*addrs;
+	struct addrinfo		hints;
+	struct addrinfo		*addrs;
 
 	hints.ai_flags = 0;
 	hints.ai_family = AF_UNSPEC;
@@ -57,35 +56,41 @@ int	do_connect(t_link &link, IRCserv *serv, int	type = 0)
 	return socket_fd;
 }
 
-
-SSL_CTX *InitSSL_CTX(void)
-{
-	const SSL_METHOD	*method;
-	SSL_CTX				*ctx;
-	
-	method = TLS_client_method();
-	ctx = SSL_CTX_new(method);
-	return ctx;
-}
-
 void	do_tls_connect(t_link &link, IRCserv *serv)
 {
-	SSL_CTX	*ctx;
 	SSL		*ssl;
 	int		socket_fd;
 
-	SSL_load_error_strings();
-	OpenSSL_add_ssl_algorithms();
-	if ((ctx = InitSSL_CTX()) == 0) {
-		msg_error("Error: SSL_CTX_new returned error", serv); return ; }
-	if ((ssl = SSL_new(ctx)) == 0) {
-		msg_error("Error: SSL_new returned error", serv); return ; }
-	if ((socket_fd = do_connect(link, serv, TYPE_TLS)) < 0) {
-		msg_error("Socket error while server link", serv); return ; }
-	if (!(SSL_set_fd(ssl, socket_fd))) {
-		msg_error("SSL_set_fd error while server link", serv); return ; }
-	if (!(SSL_connect(ssl))) {
-		msg_error("SSL_connect error while server link", serv); return ; }
+	if (serv->sslctx == NULL)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+		msg_error("Error: No ssl context to create connection", serv);
+		return ;
+	}
+	if ((ssl = SSL_new(serv->sslctx)) == 0)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+		msg_error("Error: SSL_new returned error", serv);
+		return ;
+	}
+	if ((socket_fd = do_connect(link, serv, TYPE_TLS)) < 0)
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+		msg_error("Socket error while server link", serv);
+		return ;
+	}
+	if (!(SSL_set_fd(ssl, socket_fd)))
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+		msg_error("SSL_set_fd error while server link", serv);
+		return ;
+	}
+	if (!(SSL_connect(ssl)))
+	{
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+		msg_error("SSL_connect error while server link", serv);
+		return ;
+	}
 	serv->fds[socket_fd].status = true;
 	serv->fds[socket_fd].tls = true;
 	serv->fds[socket_fd].type = FD_SERVER;
@@ -107,7 +112,7 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		std::vector<Client>::iterator	b = serv->clients.begin();
 		std::vector<Client>::iterator	e = serv->clients.end();
-		
+
 		while (b != e)
 		{
 			if (b->getFD() == fd)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 21:49:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 23:18:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,24 +16,22 @@ std::string const	IRCserv::clrf = CRLF;
 
 void	do_socket(IRCserv *serv)
 {
-	std::vector<t_listen>::iterator lb = serv->listen.begin();
-	std::vector<t_listen>::iterator le = serv->listen.end();
+	std::vector<t_listen>::iterator lb;
 	t_listen	_listen;
 
-	 while (lb != le)
-	 {
+	for (lb = serv->listen.begin(); lb != serv->listen.end(); lb++)
+	{
 		if (lb->tls == false)
 			CreateSock(serv, *lb);
 		else
 			CreateSockTLS(serv, *lb);
-		lb++;
-	 }
-	 _listen.ip = "*";
-	 _listen.port = serv->port;
-	 _listen.tls = false;
-	 _listen.ssl = false;
-	 _listen.serveronly = false;
-	 CreateSock(serv, _listen);
+	}
+	_listen.ip = "*";
+	_listen.port = serv->port;
+	_listen.tls = false;
+	_listen.ssl = false;
+	_listen.serveronly = false;
+	CreateSock(serv, _listen);
 }
 
 void	RunServer(IRCserv *serv)

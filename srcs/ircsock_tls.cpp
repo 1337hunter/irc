@@ -6,27 +6,25 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 19:55:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/17 23:20:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 
-int		InitSSLCTX(IRCserv *serv)
+void	InitSSLCTX(IRCserv *serv)
 {
 	/* check if cert exists */
 	int	fd = open("./conf/ircserv.crt", O_RDONLY);
 	if (fd < 0)
 	{
-		std::cerr << "Certificate not found. Skipping TLS server creation" <<
+		serv->sslctx = NULL;
+		std::cerr << "Certificate not found. Skipping SSL_CTX creation" <<
 			std::endl;
-		return (1);
+		return ;
 	}
 	close(fd);
 
-	/* init ssl lib and ctx */
-	SSL_library_init();
-	SSL_load_error_strings();
 	/* ERR_free_strings() may be needed if we want to cleanup memory */
 	if (!(serv->sslctx = SSL_CTX_new(TLS_server_method())))
 	{
@@ -52,7 +50,6 @@ int		InitSSLCTX(IRCserv *serv)
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("Failed to load a private key");
 	}
-	return (0);
 }
 
 void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
@@ -61,8 +58,11 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	t_protoent		*pe = NULL;
 	int				optval = 1;
 
-	if (InitSSLCTX(serv))
+	if (serv->sslctx == NULL)
+	{
+		std::cerr << "Skipping TLS server creation. No context." << std::endl;
 		return ;
+	}
 	if (!(pe = getprotobyname("tcp")))
 		error_exit("getprotobyname error");
 	if ((_listen.socket_fd = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
