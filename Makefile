@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 14:00:51 by salec            ###   ########.fr        #
+#    Updated: 2020/11/17 14:17:00 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,8 +52,8 @@ else
 	ifeq ($(UNAME), Linux)
 	OSNAME	= Linux
 	SSLFLAG	+= linux-x86_64-clang
-	LIBFLAGS += -ldl -lpthread
-	# linux static openssl requires libdl and libpthread
+# linux openssl requires libdl and libpthread (in case we build static only)
+#	LIBFLAGS += -ldl -lpthread
 	else
 	OSNAME	= Unknown OS
 	endif
