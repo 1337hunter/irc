@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 23:41:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 00:36:38 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 		" (port " << _listen.port << ")" << std::endl;
 }
 
-void	DoHandshakeTLS(int fd, IRCserv *serv)
+void	AcceptHandshake(int fd, IRCserv *serv)
 {
 	int	handshake = SSL_accept(serv->fds[fd].sslptr);
 

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 00:03:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 00:38:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	RunServer(IRCserv *serv)
 						SSL_is_init_finished(serv->fds[fd].sslptr)))
 						ReceiveMessage(fd, serv);
 					else
-						DoHandshakeTLS(fd, serv);
+						AcceptHandshake(fd, serv);
 				}
 			}
 			if (iswrite)
@@ -88,9 +88,11 @@ void	RunServer(IRCserv *serv)
 				//	std::cout << serv->fds[fd].sslptr << "\n\n" << std::endl;
 				if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
 					SSL_is_init_finished(serv->fds[fd].sslptr)))
-				{
 					SendMessage(fd, serv);
-				}
+				else
+					std::cout << "Need to handshake" << std::endl;
+				/*	^^^	change this to some ConnectHandshake(fd, serv);
+						similar to AcceptHandshake(fd, serv);	*/
 			}
 		}
 	}

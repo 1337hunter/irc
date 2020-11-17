@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 23:21:48 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 00:50:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,12 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	}
 	if (!(SSL_connect(ssl)))
 	{
+		/*	this can trigger even if it's normal and can continue
+			when SSL_connect needs another call to finish the handshake:
+			SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE errors from
+			SSL_get_error(); should be done until it returns 1
+			SSL_is_init_finished is also used to check that it's correct
+			check my AcceptHandshake for details	*/
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("SSL_connect error while server link", serv);
 		return ;
@@ -99,8 +105,9 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
+/*	useless because it's already nonblocking after do_connect (line 76)
 	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		msg_error("fcntl error", serv); return ; }
+		msg_error("fcntl error", serv); return ; }	*/
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
