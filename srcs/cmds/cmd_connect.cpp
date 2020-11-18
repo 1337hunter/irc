@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 17:14:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 19:01:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,31 +55,30 @@ int		do_connect(t_link &link, IRCserv *serv)
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
 {
-	SSL		*ssl;
-	int		socket_fd;
+	SSL				*ssl;
+	int				socket_fd;
+	std::string		sslerr;
 
 	if (serv->sslctx == NULL)
 	{
-		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("Error: No ssl context to create connection", serv);
 		return ;
 	}
 	if ((ssl = SSL_new(serv->sslctx)) == 0)
 	{
-		ERR_print_errors_cb(SSLErrorCallback, NULL);
-		msg_error("Error: SSL_new returned error", serv);
+		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
+		msg_error("SSL_new: " + sslerr, serv);
 		return ;
 	}
 	if ((socket_fd = do_connect(link, serv)) < 0)
 	{
-		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("Socket error while server link", serv);
 		return ;
 	}
 	if (!(SSL_set_fd(ssl, socket_fd)))
 	{
-		ERR_print_errors_cb(SSLErrorCallback, NULL);
-		msg_error("SSL_set_fd error while server link", serv);
+		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
+		msg_error("SSL_set_fd: " + sslerr, serv);
 		return ;
 	}
 	serv->fds[socket_fd].tls = true;

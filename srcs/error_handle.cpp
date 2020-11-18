@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 20:20:10 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 17:50:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 19:09:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,13 @@ void	error_exit(int code)
 	exit(1);
 }
 
+// put a std::string pointer to u
 int		SSLErrorCallback(const char *str, size_t len, void *u)
 {
-	(void)u;
+	std::string		*outptr = NULL;
+
+	if (u)
+		outptr = reinterpret_cast<std::string*>(u);
 	if (len > 0)
 	{
 		t_strvect	errlines = ft_splitstring(str, "\n");
@@ -44,11 +48,17 @@ int		SSLErrorCallback(const char *str, size_t len, void *u)
 		{
 			t_strvect	err = ft_splitstring(errlines[i], ":");
 			std::cerr << "OpenSSL error";
-			if (err.size() > 4)
-				std::cerr << " in " << err[3] << ":" << err[4] << ".";
 			if (err.size() > 5)
-				std::cerr << " Reason: " << err[5];
+				std::cerr << " in " << err[3] << ":" << err[4] <<
+					". Reason: " + err[5];
 			std::cerr << std::endl;
+			if (outptr)
+			{
+				(*outptr) += "OpenSSL error";
+				if (err.size() > 5)
+					(*outptr) += " in " + err[3] + ":" + err[4] +
+						". Reason: " + err[5] + ";";
+			}
 		}
 	}
 	return (1);
