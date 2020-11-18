@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/17 20:01:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/18 18:28:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -574,7 +574,7 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 			if (pos == ENDL || line[pos] != ';')
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "pass") && line.compare(pos, 6, "swhois")) 
+			if (pos != ENDL && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "pass") && line.compare(pos, 6, "swhois"))
 				return -1;
 		}
 		else if (!line.compare(pos, 4, "pass"))
@@ -644,7 +644,7 @@ block_motd(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	if (line[pos] != '{' || config.eof())
 		return -1;
 	pos++;
-	if (pos < line.length() && line[pos] != '"')	// hmmmmmmm
+	if (pos >= line.length() || line[pos] != '"')	// hmmmmmmm
 		while ((pos = line.find_first_not_of(" \t\n", pos)) == ENDL)
 		{
 			getline(config, line);
