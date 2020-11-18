@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 20:20:10 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 20:00:19 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 20:24:30 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		SSLErrorCallback(const char *str, size_t len, void *u)
 	std::string		*outptr = NULL;
 
 	if (u)
-		outptr = static_cast<std::string*>(u);
+		outptr = reinterpret_cast<std::string*>(u);
 	if (len > 0)
 	{
 		t_strvect	errlines = ft_splitstring(str, "\n");
