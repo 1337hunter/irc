@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 14:50:57 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 17:09:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	InitSSLCTX(IRCserv *serv)
 	close(fd);
 
 	/* ERR_free_strings() may be needed if we want to cleanup memory */
-	if (!(serv->sslctx = SSL_CTX_new(TLS_server_method())))
+	/* SSL_connect won't work with TLS_server_method	*/
+	if (!(serv->sslctx = SSL_CTX_new(TLS_method())))
 	{
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		error_exit("Unable to create SSL context");
@@ -108,7 +109,7 @@ void	DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect)
 			// drop the connection if handshake gone wrong
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			SSL_shutdown(serv->fds[fd].sslptr);
+			// we shouldn't call SSL_shutdown because it's already fatal
 			SSL_free(serv->fds[fd].sslptr);
 			close(fd);
 			serv->fds.erase(fd);

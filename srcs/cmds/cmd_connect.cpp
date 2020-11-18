@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 15:06:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 17:05:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 #define TYPE_TLS 1
 
-int		do_connect(t_link &link, IRCserv *serv, int	type = 0)
+int		do_connect(t_link &link, IRCserv *serv)
 {
 	int					socket_fd;
 	struct addrinfo		hints;
@@ -39,10 +39,10 @@ int		do_connect(t_link &link, IRCserv *serv, int	type = 0)
 	freeaddrinfo(addrs);
 	if (socket_fd < 0) {
 		msg_error("Socket error while server link", serv); return socket_fd; }
+	else if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
+		msg_error("fcntl error", serv); return -1; }
 	if (addr == 0) {
 		msg_error("Connection error while server link", serv); return -1; }
-	if (type == TYPE_TLS)
-		return socket_fd;
 	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].status = true;
 	serv->fds[socket_fd].tls = false;
@@ -50,9 +50,7 @@ int		do_connect(t_link &link, IRCserv *serv, int	type = 0)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
-	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		msg_error("fcntl error", serv); return -1; }
-	return socket_fd;
+	return (socket_fd);
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
@@ -72,7 +70,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("Error: SSL_new returned error", serv);
 		return ;
 	}
-	if ((socket_fd = do_connect(link, serv, TYPE_TLS)) < 0)
+	if ((socket_fd = do_connect(link, serv)) < 0)
 	{
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("Socket error while server link", serv);
@@ -84,36 +82,12 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_set_fd error while server link", serv);
 		return ;
 	}
-/*
-	// this returns -1 on fatal SSL error and also when we need to call it again
-	// and it won't trigger
-	if (!(SSL_connect(ssl)))
-	{
-		//	this can trigger even if it's normal and can continue
-		//	when SSL_connect needs another call to finish the handshake:
-		//	SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE errors from
-		//	SSL_get_error(); should be done until it returns 1
-		//	or until fatal ssl error (any other error code)
-		//	SSL_is_init_finished is also used to check
-		//	that it's correctly and securely connected to another server
-		//	use DoHandshakeTLS maybe with true on the last argument
-		//	also check SSL_connect man for non-blocking
-		ERR_print_errors_cb(SSLErrorCallback, NULL);
-		msg_error("SSL_connect error while server link", serv);
-		return ;
-	}
-*/
-	serv->fds[socket_fd].status = true;
 	serv->fds[socket_fd].tls = true;
-	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].sslptr = ssl;
 	if (link.pass.length() != 0)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
-/*	useless because it's already nonblocking after do_connect (line 76)
-	if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
-		msg_error("fcntl error", serv); return ; }	*/
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
