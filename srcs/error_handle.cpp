@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 20:20:10 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 19:09:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 19:26:58 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ int		SSLErrorCallback(const char *str, size_t len, void *u)
 			std::cerr << std::endl;
 			if (outptr)
 			{
+				if (outptr->length() > 0)
+					(*outptr) += " ";
 				(*outptr) += "OpenSSL error";
 				if (err.size() > 5)
 					(*outptr) += " in " + err[3] + ":" + err[4] +
