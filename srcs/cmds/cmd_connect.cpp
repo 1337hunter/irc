@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 17:05:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 17:14:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,10 +84,6 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	}
 	serv->fds[socket_fd].tls = true;
 	serv->fds[socket_fd].sslptr = ssl;
-	if (link.pass.length() != 0)
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
-	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
-		serv->token + " " + serv->info + CRLF;
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
