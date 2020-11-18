@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 15:09:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 19:20:47 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,5 @@ void		SendMessage(int fd, IRCserv *serv);
 void		InitSSLCTX(IRCserv *serv);
 void		CreateSockTLS(IRCserv *serv, t_listen &listen);
 void		DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect);
-int			SSLErrorCallback(const char *str, size_t len, void *u);
 
 #endif
