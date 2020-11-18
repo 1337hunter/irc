@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 00:36:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 15:09:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ typedef struct		s_fd
 {
 	int				type;
 	bool			tls;
-	bool			status;     //for disconnect assign false
+	bool			status;     // for disconnect assign false
 	std::string		rdbuf;
 	std::string		wrbuf;
-	std::string		pass;		// this structer parameters required for
+	std::string		pass;		// this struct parameters required for
 	std::string		version;	// message PASS that can be received either
 	std::string		flags;		// from client or server before SERVER or NICK
 	std::string		options;	// register attempt
@@ -70,7 +70,7 @@ typedef struct		s_server
 
 typedef struct		s_listen
 {
-	int				socket_fd; //I don't think its necessery
+	int				socket_fd;		// I don't think its necessery
 	bool			serveronly;
 	bool			tls;
 	bool			ssl;
@@ -89,7 +89,7 @@ typedef struct		s_admin
 typedef struct		s_link
 {
 	std::string		servername;
-	std::string		hostname; //ip or domen
+	std::string		hostname;		// ip or domain
 	std::string		pass;
 	int				port;
 	bool			tls;
@@ -125,8 +125,8 @@ struct				IRCserv
 	fd_set						fdset_error;
 	std::string					motd_path;
 	SSL_CTX						*sslctx;
-	std::string					pass;		//this server (ME) password
-	int							port;       //this is stuped port for stuped subject
+	std::string					pass;		// this server (ME) password
+	int							port;       // this is stuped port for stuped subject
 	static std::string const	clrf;
 };
 
@@ -144,7 +144,7 @@ void		SendMessage(int fd, IRCserv *serv);
 //	tls connection
 void		InitSSLCTX(IRCserv *serv);
 void		CreateSockTLS(IRCserv *serv, t_listen &listen);
-void		AcceptHandshake(int fd, IRCserv *serv);
+void		DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect);
 int			SSLErrorCallback(const char *str, size_t len, void *u);
 
 #endif

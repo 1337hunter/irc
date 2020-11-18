@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 01:01:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 15:04:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	RunServer(IRCserv *serv)
 						SSL_is_init_finished(serv->fds[fd].sslptr)))
 						ReceiveMessage(fd, serv);
 					else
-						AcceptHandshake(fd, serv);
+						DoHandshakeTLS(fd, serv, false);
 				}
 			}
 			if (iswrite)
@@ -90,12 +90,7 @@ void	RunServer(IRCserv *serv)
 					SSL_is_init_finished(serv->fds[fd].sslptr)))
 					SendMessage(fd, serv);
 				else
-					std::cout << "Need to handshake" << std::endl;
-				/*	^^^	change this to some ConnectHandshake(fd, serv);
-						similar to AcceptHandshake(fd, serv);
-						but for that to happen we probably need
-						to trigger FD_SET on fdset_write first
-						push something to wrbuf on server fd for example	*/
+					DoHandshakeTLS(fd, serv, true);
 			}
 		}
 	}

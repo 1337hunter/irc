@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 00:56:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/18 15:06:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ int		do_connect(t_link &link, IRCserv *serv, int	type = 0)
 	struct addrinfo *addr = addrs;
 	for (;addr != 0; addr = addr->ai_next)
 	{
-
 		if ((socket_fd = socket(addr->ai_family, SOCK_STREAM, addr->ai_protocol)) < 0)
 			continue ;
 		if (connect(socket_fd, addr->ai_addr, addr->ai_addrlen) == 0)
@@ -85,20 +84,25 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_set_fd error while server link", serv);
 		return ;
 	}
+/*
+	// this returns -1 on fatal SSL error and also when we need to call it again
+	// and it won't trigger
 	if (!(SSL_connect(ssl)))
 	{
-		/*	this can trigger even if it's normal and can continue
-			when SSL_connect needs another call to finish the handshake:
-			SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE errors from
-			SSL_get_error(); should be done until it returns 1
-			or until fatal ssl error (any other error code)
-			SSL_is_init_finished is also used to check
-			that it's correctly and securely connected to another server
-			check my AcceptHandshake for details and SSL_connect man	*/
+		//	this can trigger even if it's normal and can continue
+		//	when SSL_connect needs another call to finish the handshake:
+		//	SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE errors from
+		//	SSL_get_error(); should be done until it returns 1
+		//	or until fatal ssl error (any other error code)
+		//	SSL_is_init_finished is also used to check
+		//	that it's correctly and securely connected to another server
+		//	use DoHandshakeTLS maybe with true on the last argument
+		//	also check SSL_connect man for non-blocking
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 		msg_error("SSL_connect error while server link", serv);
 		return ;
 	}
+*/
 	serv->fds[socket_fd].status = true;
 	serv->fds[socket_fd].tls = true;
 	serv->fds[socket_fd].type = FD_SERVER;
