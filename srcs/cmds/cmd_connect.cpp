@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 15:33:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 15:52:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 			continue ;
 		if (connect(socket_fd, addr->ai_addr, addr->ai_addrlen) == 0)
 			break ;
+		close(socket_fd);
 	}
 	freeaddrinfo(addrs);
 	if (socket_fd < 0) {
