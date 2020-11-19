@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 13:33:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 15:33:29 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,12 @@
 #include "commands.hpp"
 #include "error_handle.hpp"
 
-int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd, bool tls = false)
+int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 {
 	t_server	_server;
 
 	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].status = true;
-	serv->fds[socket_fd].tls = tls;
 	if (link.pass.length() != 0)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
@@ -68,6 +67,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	if (tls)
 		return socket_fd;
 	add_to_network(link, serv, socket_fd);
+	serv->fds[socket_fd].tls = false;
 	return socket_fd;
 }
 
@@ -100,7 +100,9 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_set_fd: " + sslerr, serv);
 		return ;
 	}
-	add_to_network(link, serv, socket_fd, true);
+	add_to_network(link, serv, socket_fd);
+	serv->fds[socket_fd].tls = true;
+	serv->fds[socket_fd].sslptr = ssl;
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
