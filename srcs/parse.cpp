@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/18 18:28:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 12:57:16 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -813,7 +813,6 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			{
 				b->autoconnect = true;
 				flag = 1;
-				serv->connect.erase(serv->connect.begin());
 				break ;
 			}
 			b++;
@@ -832,7 +831,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["CONNECT"] = cmd_connect;
 	serv->command["OPER"] = cmd_oper;
 	serv->command["ERROR"] = cmd_error;
-
+	serv->command["ADMIN"] = cmd_admin;
 }
 
 void	parse(int ac, char **av, IRCserv *serv)

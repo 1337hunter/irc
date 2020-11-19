@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/10 19:09:23 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 12:29:19 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,17 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 		res += " :" + msg;
 	res += CRLF;
 	return (res);
+}
+
+int	match(char *s1, char *s2)
+{
+	if (*s1 != '\0' && *s2 == '*')
+		return (match(s1 + 1, s2) || match(s1, s2 + 1));
+	if (*s1 == '\0' && *s2 == '*')
+		return (match(s1, s2 + 1));
+	if (*s1 == *s2 && *s1 != '\0' && *s2 != '\0')
+		return (match(s1 + 1, s2 + 1));
+	if (*s1 == *s2 && *s1 == '\0' && *s2 == '\0')
+		return (1);
+	return (0);
 }

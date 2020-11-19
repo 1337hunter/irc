@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/17 14:52:42 by salec            ###   ########.fr        #
+#    Updated: 2020/11/19 12:09:52 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
-			cmds/cmd_tools.cpp cmds/cmd_error.cpp
+			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp
 SRCDIR		= ./srcs/
 SRC			:= $(addprefix $(SRCDIR), $(SRC))
 OBJ			= $(SRC:.cpp=.o)

@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 13:15:50 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/17 17:13:23 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 13:23:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	cmd_error(int fd, const t_strvect &split, IRCserv *serv)
 	size_t	i;
 	t_citer	b = serv->clients.begin();
 	t_citer e = serv->clients.end();
-	std::vector<t_server>::iterator sb = serv->connect.begin();
-	std::vector<t_server>::iterator se = serv->connect.end();
+	std::vector<t_server>::iterator sb = serv->network.begin();
+	std::vector<t_server>::iterator se = serv->network.end();
 
 	while (sb != se)
 	{

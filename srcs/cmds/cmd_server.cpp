@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 16:53:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 13:22:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	std::vector<t_server>::iterator	begin = serv->connect.begin();
-	std::vector<t_server>::iterator	end = serv->connect.end();
+	std::vector<t_server>::iterator	begin = serv->network.begin();
+	std::vector<t_server>::iterator	end = serv->network.end();
 	while (begin != end) //looking for servers with the same name
 	{
 		if (begin->servername == split[1])
@@ -99,5 +99,5 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		b++;
 	}
 	serv->fds[fd].type = FD_SERVER;
-	serv->connect.push_back(temp);
+	serv->network.push_back(temp);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 19:20:47 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 12:54:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,15 +118,15 @@ struct				IRCserv
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
-	std::vector<t_server>		connect;	// servers that connected to this server
+	std::vector<t_server>		network;	// servers that connected to network
 	std::vector<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
 	fd_set						fdset_error;
 	std::string					motd_path;
 	SSL_CTX						*sslctx;
-	std::string					pass;		// this server (ME) password
-	int							port;       // this is stuped port for stuped subject
+	std::string					pass;		// this is argv server (ME) password
+	int							port;		// this is argv server port
 	static std::string const	clrf;
 };
 

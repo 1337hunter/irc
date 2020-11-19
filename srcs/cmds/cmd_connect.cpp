@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 19:01:26 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 13:21:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,12 @@
 
 #define TYPE_TLS 1
 
-int		do_connect(t_link &link, IRCserv *serv)
+int		do_connect(t_link &link, IRCserv *serv, int type = 0)
 {
 	int					socket_fd;
 	struct addrinfo		hints;
 	struct addrinfo		*addrs;
+	t_server			_server;
 
 	hints.ai_flags = 0;
 	hints.ai_family = AF_UNSPEC;
@@ -43,6 +44,8 @@ int		do_connect(t_link &link, IRCserv *serv)
 		msg_error("fcntl error", serv); return -1; }
 	if (addr == 0) {
 		msg_error("Connection error while server link", serv); return -1; }
+	if (TYPE_TLS == type)
+		return socket_fd;
 	serv->fds[socket_fd].type = FD_SERVER;
 	serv->fds[socket_fd].status = true;
 	serv->fds[socket_fd].tls = false;
@@ -50,7 +53,16 @@ int		do_connect(t_link &link, IRCserv *serv)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
-	return (socket_fd);
+	_server.fd = socket_fd;
+	_server.hopcount = 1;
+	_server.port = link.port;
+	_server.autoconnect = false;	// or del it? <<<<<<
+	_server.token = 69; // I will set it later coz idk what it is
+	_server.servername = link.servername;
+	_server.pass = link.pass;		// or del it? <<<<<<<
+	_server.info = "info"; 			// or del it? <<<<<<<
+	serv->network.push_back(_server);
+	return socket_fd;
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
@@ -58,6 +70,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	SSL				*ssl;
 	int				socket_fd;
 	std::string		sslerr;
+	t_server		_server;
 
 	if (serv->sslctx == NULL)
 	{
@@ -70,7 +83,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_new: " + sslerr, serv);
 		return ;
 	}
-	if ((socket_fd = do_connect(link, serv)) < 0)
+	if ((socket_fd = do_connect(link, serv, TYPE_TLS)) < 0)
 	{
 		msg_error("Socket error while server link", serv);
 		return ;
@@ -81,8 +94,24 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_set_fd: " + sslerr, serv);
 		return ;
 	}
+	serv->fds[socket_fd].type = FD_SERVER;
+	serv->fds[socket_fd].status = true;
+	serv->fds[socket_fd].tls = false;
+	if (link.pass.length() != 0)
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
+	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
+		serv->token + " " + serv->info + CRLF;
 	serv->fds[socket_fd].tls = true;
 	serv->fds[socket_fd].sslptr = ssl;
+	_server.fd = socket_fd;
+	_server.hopcount = 1;
+	_server.port = link.port;
+	_server.autoconnect = false;	// or del it? <<<<<<
+	_server.token = 69; // I will set it later coz idk what it is
+	_server.servername = link.servername;
+	_server.pass = link.pass;		// or del it? <<<<<<<
+	_server.info = "info"; 			// or del it? <<<<<<<
+	serv->network.push_back(_server);
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]
