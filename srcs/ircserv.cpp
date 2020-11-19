@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 21:51:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 22:51:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	RunServer(IRCserv *serv)
 			FD_SET(it->first, &(serv->fdset_read));
 			if (!(it->second.wrbuf.empty()))
 				FD_SET(it->first, &(serv->fdset_write));
+			FD_SET(it->first, &(serv->fdset_error));
 			lastfd = std::max(lastfd, it->first);
 		}
 		int readyfds = select(lastfd + 1,
