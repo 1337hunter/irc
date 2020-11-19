@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 19:54:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 21:07:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,11 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 		" (port " << _listen.port << ")" << std::endl;
 }
 
-void	DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect)
+void	DoHandshakeTLS(int fd, IRCserv *serv)
 {
-	int	handshake = 0;
-	if (isConnect)
+	int		handshake = 0;
+	bool	isServer = (serv->fds[fd].type == FD_SERVER);
+	if (isServer)
 		handshake = SSL_connect(serv->fds[fd].sslptr);
 	else
 		handshake = SSL_accept(serv->fds[fd].sslptr);
@@ -111,7 +112,12 @@ void	DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect)
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
 			std::string		sslerr;
 			ERR_print_errors_cb(SSLErrorCallback, &sslerr);
-			if (isConnect)
+			if (isServer && sslerr.length() == 0)
+			{
+				sslerr = "TLS handshake failed for server ";
+				sslerr += fd;
+			}
+			if (isServer)
 				msg_error("SSL_connect: " + sslerr, serv);
 			// we shouldn't call SSL_shutdown because it's already fatal
 			SSL_free(serv->fds[fd].sslptr);
