@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 17:09:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 19:54:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
+#include "message.hpp"
 
 void	InitSSLCTX(IRCserv *serv)
 {
@@ -108,7 +109,10 @@ void	DoHandshakeTLS(int fd, IRCserv *serv, bool isConnect)
 		{
 			// drop the connection if handshake gone wrong
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
-			ERR_print_errors_cb(SSLErrorCallback, NULL);
+			std::string		sslerr;
+			ERR_print_errors_cb(SSLErrorCallback, &sslerr);
+			if (isConnect)
+				msg_error("SSL_connect: " + sslerr, serv);
 			// we shouldn't call SSL_shutdown because it's already fatal
 			SSL_free(serv->fds[fd].sslptr);
 			close(fd);
