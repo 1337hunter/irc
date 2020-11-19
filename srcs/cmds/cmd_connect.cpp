@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 22:08:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 22:12:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	else
 	{
 		msg_error("Connection error while server link", serv);
+		serv->fds.erase(sock);
 		close(sock);
 		errno = 0;
 		return (-1);
