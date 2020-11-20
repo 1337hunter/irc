@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 13:22:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 20:43:34 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		if (begin->servername == split[1])
 		{
-			serv->fds[fd].wrbuf += ":" + serv->servername + " ";
-			serv->fds[fd].wrbuf += ERR_ALREADYREGISTRED;
-			serv->fds[fd].wrbuf += " " + split[1];
-			serv->fds[fd].wrbuf += " :server already registred";
-			serv->fds[fd].wrbuf += CRLF;
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, -1, "",
+					split[1] + " :server already registred");
 			serv->fds[fd].status = false;
 			return ;
 
@@ -59,12 +56,13 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
+	// if serv->servername == split[1] then cmd_squit!
 	temp.fd = fd;
 	temp.servername = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
 	{
-		msg_error("Error: bad cast hopcount. Connection is terminated.", serv);
+		msg_error("Bad hopcount. Connection is terminated.", serv);
 		cmd_squit(fd, split, serv);
 		return ;
 	}
@@ -90,6 +88,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		i++;
 	}
 	broadcast += CRLF;
+	std::cout << "\nBRRRRRRRRRRRRRRRRRRRRRRRRRROADCAST  " << broadcast << "\n\n";
 	std::map<int, t_fd>::iterator	b = serv->fds.begin();
 	std::map<int, t_fd>::iterator	e = serv->fds.end();
 	while (b != e)

@@ -17,8 +17,8 @@ void	cmd_admin(int fd, const t_strvect &split, IRCserv *serv)
 			(split.size() == 2 && match(serv->servername.c_str(), split[1].c_str())) ||
 			(split.size() == 3 && match(serv->servername.c_str(), split[2].c_str())))
 	{
-		//if client sent "ADMIN" or "ADMIN <this server name>
-		//or ":NICK" "ADMIN" "SERVERNAME"
+		//if client sent "ADMIN" or "ADMIN <this servername>
+		//or ":NICK" "ADMIN" "this servername" and servername matched
 		if (split.size() == 3)
 		{
 			t_citer nick;
