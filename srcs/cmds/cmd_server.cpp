@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 12:37:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/20 21:16:51 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 
 #if DEBUG_MODE
 	if (split.size() > 2)
-		std::cout << "incoming connection:\t" << split[1] << std::endl;
+		std::cout << "SERVER command from:\t" << split[1] << std::endl;
 #endif
 	if (split.size() < 5) // is info parameter counts?
 	{
@@ -43,7 +43,6 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 					split[1] + " :server already registred");
 			serv->fds[fd].status = false;
 			return ;
-
 		}
 		begin++;
 	}
@@ -56,7 +55,6 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	// if serv->servername == split[1] then cmd_squit!
 	temp.servername = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
@@ -68,7 +66,18 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	if (temp.hopcount == 1)
 		temp.fd = fd;
 	else
+	{
 		temp.fd = -1;
+		begin = serv->network.begin();
+		while (begin != end)
+		{
+			if (begin->fd == fd)
+				break ;
+			begin++;
+		}
+		if (begin != end)
+			begin->recieved_servers.push_back(split[1]);
+	}
 	temp.info = split[4];
 	for (size_t i = 5; i < split.size(); i++)
 	{

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 10:07:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/20 20:51:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ typedef struct		s_server
 	std::string		servername;
 	std::string		pass;
 	std::string		info;
+	t_strvect		recieved_servers;
 }					t_server;
 
 typedef struct		s_listen
