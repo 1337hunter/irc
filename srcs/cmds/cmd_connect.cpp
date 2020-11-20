@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 22:12:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/20 12:53:22 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,26 @@
 
 typedef struct addrinfo		t_addrinfo;
 
-int		add_to_network(t_link &link, IRCserv *serv, int	sock)
+int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 {
 	t_server	_server;
+	std::vector<t_server>::iterator	b = serv->network.begin();
+	std::vector<t_server>::iterator	e = serv->network.end();
 
-	serv->fds[sock].type = FD_SERVER;
+	serv->fds[socket_fd].type = FD_SERVER;
 	if (link.pass.length() != 0)
-		serv->fds[sock].wrbuf = "PASS " + link.pass + CRLF;
-	serv->fds[sock].wrbuf += "SERVER " + serv->servername + " 0 " +
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
+	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + serv->info + CRLF;
-	_server.fd = sock;
+	//forward message with servers that already connected
+	while (b != e)
+	{
+		serv->fds[socket_fd].wrbuf += "SERVER " + b->servername + " " +
+			std::to_string(b->hopcount + 1) + " " + b->token +
+			" " + b->info + CRLF;
+		b++;
+	}
+	_server.fd = socket_fd;
 	_server.hopcount = 1;
 	_server.port = link.port;
 	_server.autoconnect = false;	// or del it? <<<<<<
@@ -39,7 +49,7 @@ int		add_to_network(t_link &link, IRCserv *serv, int	sock)
 
 int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 {
-	int			sock;
+	int			socket_fd;
 	t_addrinfo	hints;
 	t_addrinfo	*addr;
 	t_server	_server;
@@ -48,42 +58,42 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	hints.ai_family = AF_INET;			// AF_UNSPEC maybe can work idk
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
-		msg_error("Socket error while server link", serv); return sock; }
-	else if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
+	if ((socket_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+		msg_error("Socket error while server link", serv); return socket_fd; }
+	else if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
 		msg_error("fcntl error", serv); return -1; }
 	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addr)) {
 		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
-	int	res = connect(sock, addr->ai_addr, addr->ai_addrlen);
+	int	res = connect(socket_fd, addr->ai_addr, addr->ai_addrlen);
 	// this is temporary
 	freeaddrinfo(addr);
 	// gotta figure out how to check all addresses
 	if (res == 0)
-		serv->fds[sock].status = true;
+		serv->fds[socket_fd].status = true;
 	else if (res == -1 && errno == EINPROGRESS)
 	{
-		serv->fds[sock].status = false;
+		serv->fds[socket_fd].status = false;
 		errno = 0;
 	}
 	else
 	{
 		msg_error("Connection error while server link", serv);
-		serv->fds.erase(sock);
-		close(sock);
+		serv->fds.erase(socket_fd);
+		close(socket_fd);
 		errno = 0;
 		return (-1);
 	}
 	if (tls)
-		return (sock);
-	add_to_network(link, serv, sock);
-	serv->fds[sock].tls = false;
-	return (sock);
+		return (socket_fd);
+	add_to_network(link, serv, socket_fd);
+	serv->fds[socket_fd].tls = false;
+	return (socket_fd);
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
 {
 	SSL			*ssl;
-	int			sock;
+	int			socket_fd;
 	std::string	sslerr;
 	t_server	_server;
 
@@ -98,20 +108,20 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_new: " + sslerr, serv);
 		return ;
 	}
-	if ((sock = do_connect(link, serv, true)) < 0)
+	if ((socket_fd = do_connect(link, serv, true)) < 0)
 	{
 		msg_error("Socket error while server link", serv);
 		return ;
 	}
-	if (!(SSL_set_fd(ssl, sock)))
+	if (!(SSL_set_fd(ssl, socket_fd)))
 	{
 		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
 		msg_error("SSL_set_fd: " + sslerr, serv);
 		return ;
 	}
-	add_to_network(link, serv, sock);
-	serv->fds[sock].tls = true;
-	serv->fds[sock].sslptr = ssl;
+	add_to_network(link, serv, socket_fd);
+	serv->fds[socket_fd].tls = true;
+	serv->fds[socket_fd].sslptr = ssl;
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]

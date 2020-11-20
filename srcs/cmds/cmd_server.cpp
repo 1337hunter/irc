@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 20:43:34 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/20 12:37:36 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "message.hpp"
 
 //Command: SERVER
-//Parameters: <servername> <hopcount> <info>
+//Parameters: <servername> <hopcount> <token> <info>
 void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server	temp;
@@ -57,7 +57,6 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	// if serv->servername == split[1] then cmd_squit!
-	temp.fd = fd;
 	temp.servername = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
 	catch (std::exception &e)
@@ -66,37 +65,57 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		cmd_squit(fd, split, serv);
 		return ;
 	}
+	if (temp.hopcount == 1)
+		temp.fd = fd;
+	else
+		temp.fd = -1;
 	temp.info = split[4];
 	for (size_t i = 5; i < split.size(); i++)
 	{
 		temp.info += " ";
 		temp.info += split[i];
 	}
-	std::string	broadcast;
+	std::string	forward;
 	std::vector<std::string>::const_iterator	itbegin = split.begin();
 	std::vector<std::string>::const_iterator	itend = split.end();
 	size_t	i = 0;
 	while (itbegin != itend)
 	{
 		if (i != 2)
-			broadcast += *itbegin;
+			forward += *itbegin;
 		else
-			broadcast += std::to_string(temp.hopcount + 1);
+			forward += std::to_string(temp.hopcount + 1);
 		if (itbegin + 1 != itend)
-			broadcast += " ";
+			forward += " ";
 		itbegin++;
 		i++;
 	}
-	broadcast += CRLF;
-	std::cout << "\nBRRRRRRRRRRRRRRRRRRRRRRRRRROADCAST  " << broadcast << "\n\n";
+	forward += CRLF;
 	std::map<int, t_fd>::iterator	b = serv->fds.begin();
 	std::map<int, t_fd>::iterator	e = serv->fds.end();
+	// server introduction (forward message) to the rest of the network
 	while (b != e)
 	{
-		if (b->second.type == FD_SERVER)
-			b->second.wrbuf += broadcast;
+		if (b->second.type == FD_SERVER && b->first != fd)
+			b->second.wrbuf += forward;
 		b++;
 	}
+	//if hopcount == 1 (new server connected to network)
+	//server backward message will send with servers that already registred
+	if (temp.hopcount == 1)
+	{
+		std::string	backward;
+		begin = serv->network.begin();
+		while (begin != end)
+		{
+			backward += "SERVER " + begin->servername + " " +
+				std::to_string(begin->hopcount + 1) + " " + begin->token + " " +
+				begin->info + CRLF;
+			begin++;
+		}
+		serv->fds[fd].wrbuf += backward;
+	}
+	begin = serv->network.begin();
 	serv->fds[fd].type = FD_SERVER;
 	serv->network.push_back(temp);
 }
