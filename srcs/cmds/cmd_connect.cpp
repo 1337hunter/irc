@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 15:52:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 22:12:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,18 @@
 #include "commands.hpp"
 #include "error_handle.hpp"
 
-int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
+typedef struct addrinfo		t_addrinfo;
+
+int		add_to_network(t_link &link, IRCserv *serv, int	sock)
 {
 	t_server	_server;
 
-	serv->fds[socket_fd].type = FD_SERVER;
-	serv->fds[socket_fd].status = true;
+	serv->fds[sock].type = FD_SERVER;
 	if (link.pass.length() != 0)
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
-	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 0 " +
+		serv->fds[sock].wrbuf = "PASS " + link.pass + CRLF;
+	serv->fds[sock].wrbuf += "SERVER " + serv->servername + " 0 " +
 		serv->token + " " + serv->info + CRLF;
-	_server.fd = socket_fd;
+	_server.fd = sock;
 	_server.hopcount = 1;
 	_server.port = link.port;
 	_server.autoconnect = false;	// or del it? <<<<<<
@@ -33,51 +34,58 @@ int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 	_server.pass = link.pass;		// or del it? <<<<<<<
 	_server.info = "info"; 			// or del it? <<<<<<<
 	serv->network.push_back(_server);
-	return 0;
+	return (0);
 }
 
 int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 {
-	int					socket_fd;
-	struct addrinfo		hints;
-	struct addrinfo		*addrs;
-	t_server			_server;
+	int			sock;
+	t_addrinfo	hints;
+	t_addrinfo	*addr;
+	t_server	_server;
 
 	hints.ai_flags = 0;
-	hints.ai_family = AF_UNSPEC;
+	hints.ai_family = AF_INET;			// AF_UNSPEC maybe can work idk
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addrs)) {
-		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
-	struct addrinfo *addr = addrs;
-	for (;addr != 0; addr = addr->ai_next)
-	{
-		if ((socket_fd = socket(addr->ai_family, SOCK_STREAM, addr->ai_protocol)) < 0)
-			continue ;
-		if (connect(socket_fd, addr->ai_addr, addr->ai_addrlen) == 0)
-			break ;
-		close(socket_fd);
-	}
-	freeaddrinfo(addrs);
-	if (socket_fd < 0) {
-		msg_error("Socket error while server link", serv); return socket_fd; }
-	else if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
+	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+		msg_error("Socket error while server link", serv); return sock; }
+	else if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0) {
 		msg_error("fcntl error", serv); return -1; }
-	if (addr == 0) {
-		msg_error("Connection error while server link", serv); return -1; }
+	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addr)) {
+		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
+	int	res = connect(sock, addr->ai_addr, addr->ai_addrlen);
+	// this is temporary
+	freeaddrinfo(addr);
+	// gotta figure out how to check all addresses
+	if (res == 0)
+		serv->fds[sock].status = true;
+	else if (res == -1 && errno == EINPROGRESS)
+	{
+		serv->fds[sock].status = false;
+		errno = 0;
+	}
+	else
+	{
+		msg_error("Connection error while server link", serv);
+		serv->fds.erase(sock);
+		close(sock);
+		errno = 0;
+		return (-1);
+	}
 	if (tls)
-		return socket_fd;
-	add_to_network(link, serv, socket_fd);
-	serv->fds[socket_fd].tls = false;
-	return socket_fd;
+		return (sock);
+	add_to_network(link, serv, sock);
+	serv->fds[sock].tls = false;
+	return (sock);
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
 {
-	SSL				*ssl;
-	int				socket_fd;
-	std::string		sslerr;
-	t_server		_server;
+	SSL			*ssl;
+	int			sock;
+	std::string	sslerr;
+	t_server	_server;
 
 	if (serv->sslctx == NULL)
 	{
@@ -90,20 +98,20 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 		msg_error("SSL_new: " + sslerr, serv);
 		return ;
 	}
-	if ((socket_fd = do_connect(link, serv, true)) < 0)
+	if ((sock = do_connect(link, serv, true)) < 0)
 	{
 		msg_error("Socket error while server link", serv);
 		return ;
 	}
-	if (!(SSL_set_fd(ssl, socket_fd)))
+	if (!(SSL_set_fd(ssl, sock)))
 	{
 		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
 		msg_error("SSL_set_fd: " + sslerr, serv);
 		return ;
 	}
-	add_to_network(link, serv, socket_fd);
-	serv->fds[socket_fd].tls = true;
-	serv->fds[socket_fd].sslptr = ssl;
+	add_to_network(link, serv, sock);
+	serv->fds[sock].tls = true;
+	serv->fds[sock].sslptr = ssl;
 }
 
 //CONNECT[0] <target server>[1] [<port>[2] [<remote server>][3]]

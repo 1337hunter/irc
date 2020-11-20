@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/17 19:53:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/19 21:51:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
+#include "message.hpp"
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
@@ -199,4 +200,30 @@ void	SendMessage(int fd, IRCserv *serv)
 			it->Disconnect();
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 	}
+}
+
+bool	didSockFail(int fd, IRCserv *serv)
+{
+	if (serv->fds[fd].status == false && serv->fds[fd].type == FD_SERVER)
+	{
+		int			error;
+		socklen_t	len = sizeof(error);
+		if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &error, &len) < 0)
+			error_exit("getsockopt failure");
+		if (error)
+		{
+			std::cerr << "Connection error to server " << fd << std::endl;
+			msg_error("Connection error to server", serv);
+			close(fd);
+			if (serv->fds[fd].tls)
+			{
+				SSL_free(serv->fds[fd].sslptr);
+				serv->fds.erase(fd);
+			}
+			return (true);
+		}
+		else
+			serv->fds[fd].status = true;
+	}
+	return (false);
 }

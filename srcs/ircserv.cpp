@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 15:04:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/19 22:51:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	RunServer(IRCserv *serv)
 			FD_SET(it->first, &(serv->fdset_read));
 			if (!(it->second.wrbuf.empty()))
 				FD_SET(it->first, &(serv->fdset_write));
+			FD_SET(it->first, &(serv->fdset_error));
 			lastfd = std::max(lastfd, it->first);
 		}
 		int readyfds = select(lastfd + 1,
@@ -69,6 +70,8 @@ void	RunServer(IRCserv *serv)
 				std::cerr << "some error happened on fd " << fd << std::endl;
 				continue ;
 			}
+			if ((isread || iswrite) && didSockFail(fd, serv))
+				continue ;
 			if (isread)
 			{
 				if (serv->fds[fd].type == FD_ME)
@@ -80,17 +83,16 @@ void	RunServer(IRCserv *serv)
 						SSL_is_init_finished(serv->fds[fd].sslptr)))
 						ReceiveMessage(fd, serv);
 					else
-						DoHandshakeTLS(fd, serv, false);
+						DoHandshakeTLS(fd, serv);
 				}
 			}
 			if (iswrite)
 			{
-				//	std::cout << serv->fds[fd].sslptr << "\n\n" << std::endl;
 				if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
 					SSL_is_init_finished(serv->fds[fd].sslptr)))
 					SendMessage(fd, serv);
 				else
-					DoHandshakeTLS(fd, serv, true);
+					DoHandshakeTLS(fd, serv);
 			}
 		}
 	}
