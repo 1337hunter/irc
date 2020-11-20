@@ -76,10 +76,8 @@ void	cmd_admin(int fd, const t_strvect &split, IRCserv *serv)
 		while (nb != ne)
 		{
 			if (nb->fd != fd && nb->hopcount == 1)
-			{
 				serv->fds[nb->fd].wrbuf += forward_message;
-				nb++;
-			}
+			nb++;
 		}
 	}
 }
