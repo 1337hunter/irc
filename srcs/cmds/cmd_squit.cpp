@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 22:13:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/21 17:22:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "message.hpp"
 
 void		cmd_squit(int fd, const t_strvect &split, IRCserv *serv)
 {
