@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 12:53:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/23 16:30:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,15 @@ int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + serv->info + CRLF;
-	//forward message with servers that already connected
+	//forward and backward message with servers that already connected
 	while (b != e)
 	{
-		serv->fds[socket_fd].wrbuf += "SERVER " + b->servername + " " +
-			std::to_string(b->hopcount + 1) + " " + b->token +
-			" " + b->info + CRLF;
+		serv->fds[socket_fd].wrbuf += ":" + serv->servername + " SERVER " +
+			b->servername + " " + std::to_string(b->hopcount + 1) + " " + b->token +
+			" " + b->info + CRLF; // forward
+		if (b->fd != -1)
+			serv->fds[b->fd].wrbuf += ":" + link.servername + " SERVER " +
+			serv->servername + " 2 " + serv->token + " " + serv->info + CRLF; //backward
 		b++;
 	}
 	_server.fd = socket_fd;

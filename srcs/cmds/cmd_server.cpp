@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 21:16:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/23 16:36:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server	temp;
+	size_t			serv_pos;
 
 #if DEBUG_MODE
 	if (split.size() > 2)
@@ -33,19 +34,21 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
+	serv_pos = split[0] == "SERVER" ? 0 : 1;
 	std::vector<t_server>::iterator	begin = serv->network.begin();
 	std::vector<t_server>::iterator	end = serv->network.end();
-	while (begin != end) //looking for servers with the same name
-	{
-		if (begin->servername == split[1])
+	if (!serv_pos)
+		while (begin != end) //looking for servers with the same name
 		{
-			serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, -1, "",
-					split[1] + " :server already registred");
-			serv->fds[fd].status = false;
-			return ;
+			if (begin->servername == split[serv_pos + 1])
+			{
+				serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, -1, "",
+						split[serv_pos + 1] + " :server already registred");
+				serv->fds[fd].status = false;
+				return ;
+			}
+			begin++;
 		}
-		begin++;
-	}
 	if (!(serv->fds[fd].pass == serv->pass || serv->pass == ""))
 	{
 #if DEBUG_MODE
@@ -55,8 +58,8 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	temp.servername = split[1];
-	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
+	temp.servername = split[serv_pos + 1];
+	try { temp.hopcount = stoi(split[serv_pos + 2]); temp.token = split[serv_pos + 3]; }
 	catch (std::exception &e)
 	{
 		msg_error("Bad hopcount. Connection is terminated.", serv);
@@ -76,10 +79,10 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 			begin++;
 		}
 		if (begin != end)
-			begin->recieved_servers.push_back(split[1]);
+			begin->routing.push_back(split[serv_pos + 1]);
 	}
-	temp.info = split[4];
-	for (size_t i = 5; i < split.size(); i++)
+	temp.info = ":" + split[serv_pos + 4];
+	for (size_t i = serv_pos + 5; i < split.size(); i++)
 	{
 		temp.info += " ";
 		temp.info += split[i];
@@ -88,9 +91,12 @@ void		cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	std::vector<std::string>::const_iterator	itbegin = split.begin();
 	std::vector<std::string>::const_iterator	itend = split.end();
 	size_t	i = 0;
+
+	if (!serv_pos)
+		forward = ":" + serv->servername;
 	while (itbegin != itend)
 	{
-		if (i != 2)
+		if (i != serv_pos + 2)
 			forward += *itbegin;
 		else
 			forward += std::to_string(temp.hopcount + 1);

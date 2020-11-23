@@ -24,6 +24,8 @@ get_reply(IRCserv *serv, std::string _error, int fd, std::string const &command,
 	else
 		nickname = "*";
 	reply = ":" + serv->servername + " " + _error;
+	if (_error != "")
+		reply += " ";
 	reply += nickname;
 	if (!command.empty())
 		reply += " " + command;
