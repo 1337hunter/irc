@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/21 17:49:28 by salec            ###   ########.fr        #
+#    Updated: 2020/11/24 21:31:47 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,26 +70,26 @@ RED			= \e[31m
 GREEN		= \e[32m
 CYAN		= \e[36m
 NC			= \e[0m
-ULINE		= "\e[4m"
-ULINEF		= "\e[24m"
+ULINE		= \e[4m
+ULINEF		= \e[24m
 
 .PHONY: all bonus openssl delssl gencert clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
+$(NAME): $(OBJ) openssl
 	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
-	@$(CC) -o $@ $^ $(EXECFLAGS)
+	@$(CC) -o $@ $(OBJ) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
 
 %.o: %.cpp $(HEADERS)
-	@echo "compiling" $(ULINE)$<$(ULINEF)
+	@echo "compiling $(ULINE)$<$(ULINEF)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 openssl: $(SSLLIBS)
 
 $(SSLLIBS):
-	@echo "OpenSSL v1.1.1h (this will take a while)"
+	@echo "building $(ULINE)OpenSSL library v1.1.1h$(ULINEF) (this will take a while)"
 	@echo -n "extracting archive..."
 	@tar -xf ./openssl-1.1.1h.tar.gz
 	@echo "\t\tdone"
