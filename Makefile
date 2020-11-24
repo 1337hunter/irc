@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/24 21:31:47 by salec            ###   ########.fr        #
+#    Updated: 2020/11/24 21:48:09 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -77,7 +77,7 @@ ULINEF		= \e[24m
 
 all: $(NAME)
 
-$(NAME): $(OBJ) openssl
+$(NAME): openssl $(OBJ)
 	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
 	@$(CC) -o $@ $(OBJ) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
