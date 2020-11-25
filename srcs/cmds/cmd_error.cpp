@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 13:15:50 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/19 13:23:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 19:58:04 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,10 @@ void	cmd_error(int fd, const t_strvect &split, IRCserv *serv)
 				{
 					std::string	temp(split[1], 1);
 					serv->fds[b->getFD()].wrbuf += temp;
+					serv->fds[b->getFD()].wrbuf += " ";
 				}
-				while (++i < split.size())
-					serv->fds[b->getFD()].wrbuf += split[i];
+				serv->fds[b->getFD()].wrbuf += strvect_to_string(split, ' ', 2);
+				serv->fds[b->getFD()].wrbuf += CRLF;
 			}
 			b++;
 		}

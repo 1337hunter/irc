@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 17:43:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 21:02:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "commands.hpp"
 #include "message.hpp"
 
+//split: :<behind> SERVER <servername> <hopcount> <token> <info>
 void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::vector<t_server>::iterator begin = serv->network.begin();
@@ -46,11 +47,11 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	}
 }
 
-//Command: SERVER
-//Parameters: <servername> <hopcount> <token> <info>
+//split: SERVER <servername> <hopcount> <token> <info>
 void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server	temp;
+	std::vector<t_link>::iterator	link;
 
 	if ((split.size() < 5 && split[0] == "SERVER") ||
 			(split.size() < 6 && split[0][0] == ':'))
@@ -63,6 +64,21 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	if (split[0][0] == ':')
 	{
 		introduce_server_behind(fd, split, serv);
+		return ;
+	}
+	link = serv->link.begin();
+	// looking for link with servername (is SERVER servername allowd to connect to us?)
+	while (link != serv->link.end())
+	{
+		if (link->servername == split[1])
+			break ;
+		link++;
+	}
+	if (link == serv->link.end())
+	{
+		serv->fds[fd].wrbuf += "ERROR :You are not allowed to connect to.";
+		serv->fds[fd].wrbuf += CRLF;
+		serv->fds[fd].status = false;
 		return ;
 	}
 	if (is_server_registred(split[1], serv))
@@ -80,6 +96,14 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += "ERROR :Password incorrect";
 		serv->fds[fd].status = false;
 		return ;
+	}
+	//backward message to introduce us to enother server
+	if (serv->fds[fd].type != FD_SERVER)
+	{
+		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + serv->version +
+			" " + "|" + CRLF;
+		serv->fds[fd].wrbuf += "SERVER " + serv->servername + " 1 " + serv->token +
+		" :" + serv->info + CRLF;
 	}
 	temp.servername = split[1];
 	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
@@ -104,10 +128,10 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		temp.info += split[i];
 	}
 	std::string	forward;
-	forward = ":" + split[1] + " SERVER " + serv->servername + " " + " 2 " + split[4];
+	forward = ":" + split[1] + " SERVER " + serv->servername + " 2 " + split[3];
+	forward += " ";
 	forward += temp.info;
 	forward += CRLF;
-
 	std::vector<t_server>::iterator begin = serv->network.begin();
 	std::vector<t_server>::iterator end = serv->network.end();
 	// server introduction (forward message) to the rest of network (here is for nearest)
