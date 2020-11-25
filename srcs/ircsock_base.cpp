@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/20 21:43:54 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 17:17:11 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "message.hpp"
+#include "commands.hpp"
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
@@ -104,6 +105,22 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	}
 }
 
+void	self_cmd_squit(int fd, IRCserv *serv)
+{
+	t_strvect	split;
+	for (size_t i = 0; i < serv->network.size(); i++)
+	{
+		if (serv->network[i].fd == fd)
+		{
+			split.push_back("SERVER");
+			split.push_back(serv->network[i].servername);
+			split.push_back(":Network split");
+			cmd_squit(fd, split, serv);
+			return ;
+		}
+	}
+}
+
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
@@ -150,6 +167,9 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			SSL_free(serv->fds[fd].sslptr);
 			std::cout << "tls";
 		}
+		//he we need to pop out introduced servers if type == FD_SERVER
+		if (serv->fds[fd].type == FD_SERVER)
+			self_cmd_squit(fd, serv);
 		close(fd);
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
@@ -197,6 +217,8 @@ void	SendMessage(int fd, IRCserv *serv)
 			SSL_free(serv->fds[fd].sslptr);
 			std::cout << "tls";
 		}
+		if (serv->fds[fd].type == FD_SERVER)
+			self_cmd_squit(fd, serv);
 		close(fd);
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);

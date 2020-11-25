@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/21 17:39:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/25 13:43:27 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,4 +59,26 @@ std::string		reply_welcome(IRCserv *serv, std::string const &nick)
 		"<available user modes>" + " " + "<available channel modes>");
 	reply += reply_motd(serv, nick);
 	return (reply);
+}
+
+bool	is_server_registred(const std::string &name, IRCserv *serv)
+{
+	std::vector<t_server>::iterator nearest = serv->network.begin();
+	std::list<t_server_intro>::iterator server_intro;
+	std::vector<t_server>::iterator end = serv->network.end();
+
+	while (nearest != end)
+	{
+		if (nearest->servername == name)
+			return true;
+		server_intro = nearest->routing.begin();
+		while (server_intro != nearest->routing.end())
+		{
+			if (server_intro->servername == name || server_intro->behind == name)
+				return true;
+			server_intro++;
+		}
+		nearest++;
+	}
+	return false;
 }

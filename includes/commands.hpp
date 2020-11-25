@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/21 17:48:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/25 13:43:11 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,6 @@ void			cmd_motd(int fd, const t_strvect &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, std::string const &it);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
+bool			is_server_registred(const std::string &name, IRCserv *serv);
 
 #endif

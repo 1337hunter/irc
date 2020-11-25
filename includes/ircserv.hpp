@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/23 15:41:00 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 13:33:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <exception>
 # include <string>
 # include <vector>
+# include <list>
 # include <map>
 # include <algorithm>
 // fcntl, select, socket, inet structs, inet
@@ -56,6 +57,15 @@ typedef struct		s_fd
 	SSL				*sslptr;
 }					t_fd;
 
+struct				t_server_intro
+{
+	std::string		servername; //server which said that 'behind' is new connection to him
+	std::string		behind;
+	std::string		info;
+	std::string		token;
+	int				hopcount;
+};
+
 typedef struct		s_server
 {
 	int				fd;
@@ -66,7 +76,7 @@ typedef struct		s_server
 	std::string		servername;
 	std::string		pass;
 	std::string		info;
-	t_strvect		routing;
+	std::list<t_server_intro>	routing;
 }					t_server;
 
 typedef struct		s_listen
@@ -111,6 +121,7 @@ struct				IRCserv
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	std::string					servername;	// me server name
+	std::string					version;
 	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;

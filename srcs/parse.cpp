@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/21 17:48:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/25 12:13:04 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -868,5 +868,6 @@ void	parse(int ac, char **av, IRCserv *serv)
 			if ((block[i](config, line, serv, line_number)) == -1)
 				error_exit("Error: config error at line ", line, line_number);
 	}
+	serv->version = "0210";
 	server_init(serv, ac, av);
 }

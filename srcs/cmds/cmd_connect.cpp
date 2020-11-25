@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/23 16:30:18 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 12:52:16 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,22 +21,33 @@ int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 	t_server	_server;
 	std::vector<t_server>::iterator	b = serv->network.begin();
 	std::vector<t_server>::iterator	e = serv->network.end();
+	std::list<t_server_intro>::iterator intro_server;
 
 	serv->fds[socket_fd].type = FD_SERVER;
-	if (link.pass.length() != 0)
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + CRLF;
+	if (link.pass.length() != 0) // I think pass is necessery.
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + serv->version + "|" + CRLF;//PZ
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
-		serv->token + " " + serv->info + CRLF;
+		serv->token + " " + serv->info + CRLF; //attempt to register
 	//forward and backward message with servers that already connected
 	while (b != e)
 	{
-		serv->fds[socket_fd].wrbuf += ":" + serv->servername + " SERVER " +
-			b->servername + " " + std::to_string(b->hopcount + 1) + " " + b->token +
-			" " + b->info + CRLF; // forward
-		if (b->fd != -1)
-			serv->fds[b->fd].wrbuf += ":" + link.servername + " SERVER " +
-			serv->servername + " 2 " + serv->token + " " + serv->info + CRLF; //backward
+		// forward nearest servers which is 2 hops away and containing in 'network'
+		serv->fds[socket_fd].wrbuf += ":" + b->servername + " SERVER " +
+			b->servername + " " + "2" + " " + b->token + " " + b->info + CRLF;
+		// inform nearest servers about new connection (what about token?)
+		serv->fds[b->fd].wrbuf += ":" + link.servername + " SERVER " +
+			serv->servername + " 2 " + "69" + " " + serv->info + CRLF;
 		b++;
+		intro_server = b->routing.begin();
+		while (intro_server != b->routing.end())
+		{
+			serv->fds[socket_fd].wrbuf += ":" + intro_server->behind + " SERVER " +
+				intro_server->servername + " " +
+				std::to_string(intro_server->hopcount + 1) + " " +
+				intro_server->token + " " +
+				intro_server->info + CRLF;
+			intro_server++;
+		}
 	}
 	_server.fd = socket_fd;
 	_server.hopcount = 1;
@@ -47,7 +58,7 @@ int		add_to_network(t_link &link, IRCserv *serv, int	socket_fd)
 	_server.pass = link.pass;		// or del it? <<<<<<<
 	_server.info = "info"; 			// or del it? <<<<<<<
 	serv->network.push_back(_server);
-	return (0);
+	return 0;
 }
 
 int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
@@ -90,7 +101,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 		return (socket_fd);
 	add_to_network(link, serv, socket_fd);
 	serv->fds[socket_fd].tls = false;
-	return (socket_fd);
+	return socket_fd;
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
