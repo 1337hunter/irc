@@ -1,6 +1,5 @@
 *.o
 *.a
-*test*
 ircserv
 bircd
 *.swp
