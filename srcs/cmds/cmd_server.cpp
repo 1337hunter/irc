@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 21:02:03 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/25 21:17:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			backward += ":" + serv_intro->behind + " SERVER " + serv_intro->servername +
 				" " + std::to_string(serv_intro->hopcount + 1) + " " +
-				serv_intro->token + " " + serv_intro->info;
+				serv_intro->token + " " + serv_intro->info + CRLF;
 			serv_intro++;
 		}
 		begin++;
