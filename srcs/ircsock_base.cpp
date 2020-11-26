@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 18:10:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/26 20:39:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,8 +138,8 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	if (r > 0)
 	{
 		serv->fds[fd].rdbuf += buf_read;
-		if (serv->fds[fd].rdbuf.rfind(CRLF) != std::string::npos &&
-			serv->fds[fd].rdbuf.rfind(CRLF) + 2 == serv->fds[fd].rdbuf.length())
+		if (serv->fds[fd].rdbuf.find_last_of(CRLF) != std::string::npos &&
+			serv->fds[fd].rdbuf.find_last_of(CRLF) + 1 == serv->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
 			if (serv->fds[fd].tls)
@@ -147,10 +147,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			std::cout << "client " << fd << " sent:\t" <<
 				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
 #endif
-			t_strvect	split = ft_splitstring(serv->fds[fd].rdbuf, CRLF);
-			// ignore msgs with \n (maybe other symbols too)
+			t_strvect	split = ft_splitstringbyany(serv->fds[fd].rdbuf, CRLF);
+			// ignore msgs with \r\n (maybe other symbols too)
 			for (size_t i = 0; i < split.size(); i++)
-				if (split[i].find_first_of("\n") == std::string::npos)
+				if (split[i].find_first_of(CRLF) == std::string::npos)
 					ProcessMessage(fd, split[i], serv);
 			try { serv->fds.at(fd).rdbuf.erase(); }
 			catch (std::out_of_range const &e) { (void)e; }
