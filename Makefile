@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/26 19:39:24 by salec            ###   ########.fr        #
+#    Updated: 2020/11/27 01:43:45 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,8 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp \
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_who.cpp
 SRCDIR		= ./srcs/
-SRC			:= $(addprefix $(SRCDIR), $(SRC))
+# SRC		:= $(addprefix $(SRCDIR), $(SRC))
+OBJDIR		= ./objs/
 OBJ			= $(SRC:.cpp=.o)
 INCLUDEDIR	= ./includes/
 HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
@@ -77,14 +78,17 @@ ULINEF		= \e[24m
 
 all: $(NAME)
 
-$(NAME): $(SSLLIBS) $(OBJ)
+$(NAME): $(SSLLIBS) $(OBJDIR) $(addprefix $(OBJDIR), $(OBJ))
 	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
-	@$(CC) -o $@ $(OBJ) $(EXECFLAGS)
+	@$(CC) -o $@ $(addprefix $(OBJDIR), $(OBJ)) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
 
-%.o: %.cpp $(HEADERS)
+$(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
 	@echo "compiling $(ULINE)$<$(ULINEF)"
 	@$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR):
+	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
 
 openssl: $(SSLLIBS)
 
@@ -124,7 +128,7 @@ delssl:
 
 clean:
 	@echo "$(RED)Cleaning object files$(NC)"
-	@/bin/rm -f $(OBJ)
+	@/bin/rm -rf $(OBJDIR)
 	@echo "$(RED)Deleting $(SSLSRCDIR)$(NC)"
 	@/bin/rm -rf $(SSLSRCDIR)
 
