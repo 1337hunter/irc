@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/27 01:43:45 by salec            ###   ########.fr        #
+#    Updated: 2020/11/27 02:24:52 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,7 +74,7 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all bonus openssl delssl gencert clean fclean re
+.PHONY: all bonus openssl delssl gencert delcert clean fclean re
 
 all: $(NAME)
 
@@ -91,6 +91,10 @@ $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
 
 openssl: $(SSLLIBS)
+
+delssl:
+	@echo "$(RED)Deleting $(SSLDIR)$(NC)"
+	@/bin/rm -rf $(SSLDIR)
 
 $(SSLLIBS):
 	@echo "building $(ULINE)OpenSSL library v1.1.1h$(ULINEF) (this will take a while)"
@@ -110,6 +114,10 @@ $(SSLLIBS):
 
 gencert: $(TLSCERT)
 
+delcert:
+	@echo "$(RED)Deleting certificates $(TLSCERT)$(NC)"
+	@/bin/rm -f $(TLSCERT)
+
 $(TLSCERT):
 	@echo "generating tls certificate..."
 	@$(OPENSSL) req \
@@ -119,12 +127,6 @@ $(TLSCERT):
 		-subj "/C=RU/ST=Moscow/L=Moscow/O=42/OU=21/CN=ircserv"
 	@echo "certificate file\t$(word 1,$(TLSCERT))"
 	@echo "certificate key\t\t$(word 2,$(TLSCERT))"
-
-delssl:
-	@echo "$(RED)Deleting certificates $(TLSCERT)$(NC)"
-	@/bin/rm -f $(TLSCERT)
-	@echo "$(RED)Deleting $(SSLDIR)$(NC)"
-	@/bin/rm -rf $(SSLDIR)
 
 clean:
 	@echo "$(RED)Cleaning object files$(NC)"
