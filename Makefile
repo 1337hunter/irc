@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/27 02:34:47 by salec            ###   ########.fr        #
+#    Updated: 2020/11/27 02:39:14 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -91,6 +91,8 @@ $(OBJDIR):
 openssl: $(SSLLIBS)
 
 delssl:
+	@echo "$(RED)Deleting $(SSLSRCDIR)$(NC)"
+	@/bin/rm -rf $(SSLSRCDIR)
 	@echo "$(RED)Deleting $(SSLDIR)$(NC)"
 	@/bin/rm -rf $(SSLDIR)
 
