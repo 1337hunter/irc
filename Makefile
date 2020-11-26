@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/27 02:24:52 by salec            ###   ########.fr        #
+#    Updated: 2020/11/27 02:34:47 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,15 +19,13 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
 			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp \
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_who.cpp
-SRCDIR		= ./srcs/
-# SRC		:= $(addprefix $(SRCDIR), $(SRC))
-OBJDIR		= ./objs/
 OBJ			= $(SRC:.cpp=.o)
+SRCDIR		= ./srcs/
+OBJDIR		= ./objs/
 INCLUDEDIR	= ./includes/
 HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			reply_codes.hpp error_codes.hpp common_defines.hpp \
-			client.hpp channel.hpp message.hpp tools.hpp \
-			commands.hpp
+			client.hpp channel.hpp message.hpp commands.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 PWD			:= $(shell pwd)
 
@@ -36,8 +34,8 @@ SSLDIR		= ./openssl/
 SSLINCLUDE	= $(SSLDIR)include/
 SSLLIBDIR	= $(SSLDIR)lib/
 SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
+# openssl config flags to compile static only: no-shared
 SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl no-shared
-# to compile static only add no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
