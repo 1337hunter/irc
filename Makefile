@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/11/24 21:48:09 by salec            ###   ########.fr        #
+#    Updated: 2020/11/26 19:39:24 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
 			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp \
-			cmds/cmd_motd.cpp
+			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_who.cpp
 SRCDIR		= ./srcs/
 SRC			:= $(addprefix $(SRCDIR), $(SRC))
 OBJ			= $(SRC:.cpp=.o)
@@ -77,7 +77,7 @@ ULINEF		= \e[24m
 
 all: $(NAME)
 
-$(NAME): openssl $(OBJ)
+$(NAME): $(SSLLIBS) $(OBJ)
 	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
 	@$(CC) -o $@ $(OBJ) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/25 12:13:04 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/26 17:57:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -833,6 +833,8 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["ERROR"] = cmd_error;
 	serv->command["ADMIN"] = cmd_admin;
 	serv->command["MOTD"] = cmd_motd;
+	serv->command["WHO"] = cmd_who;
+	serv->command["USERHOST"] = cmd_userhost;
 }
 
 void	parse(int ac, char **av, IRCserv *serv)
@@ -868,6 +870,6 @@ void	parse(int ac, char **av, IRCserv *serv)
 			if ((block[i](config, line, serv, line_number)) == -1)
 				error_exit("Error: config error at line ", line, line_number);
 	}
-	serv->version = "0210";
+	serv->version = VERSIONSTRING;
 	server_init(serv, ac, av);
 }

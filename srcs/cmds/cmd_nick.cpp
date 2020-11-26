@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/21 17:42:11 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/26 17:00:45 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,10 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
 	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end())
+	{
 		serv->clients.push_back(Client(split[1], fd));
+		serv->clients.back().sethostname(serv->fds[fd].hostname);
+	}
 	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
 			!nick_entry->isRegistred() && fd_entry == serv->clients.end())
 	{
@@ -38,11 +41,13 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[nick_entry->getFD()].wrbuf = "Error :Closing Link: " + nick_entry->getnickname() + " (Overridden)";
 		serv->fds[nick_entry->getFD()].wrbuf += CRLF;
 		nick_entry->setFD(fd);
+		nick_entry->sethostname(serv->fds[fd].hostname);
 	}
 	else if (nick_entry != serv->clients.end() && !(nick_entry->isConnected()))
 	{
 		std::cout << "3\n";
 		nick_entry->Reconnect(fd);
+		nick_entry->sethostname(serv->fds[fd].hostname);
 	}
 	else if (fd_entry != serv->clients.end() && fd_entry->isRegistred())
 	{
@@ -60,6 +65,7 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		std::cout << "5\n";
 		fd_entry->Register(split[1]);
+		fd_entry->sethostname(serv->fds[fd].hostname);
 		if (fd_entry->getUSER())
 			reply = reply_welcome(serv, fd_entry->getnickname());
 	}

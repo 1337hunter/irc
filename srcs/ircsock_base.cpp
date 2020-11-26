@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 17:17:11 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/26 18:10:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,17 +17,18 @@
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
 	t_strvect	split = ft_splitstring(msg, " ");
-	int			i;
+	int			i = 0;
 
-	i = 0;
+	/* maybe process different routes for message here */
+
 	if (split.size() > 0 && split[0][0] == ':')
 		i = 1;
 	try
 	{
-		serv->command.at(split[i])(fd, split, serv);
-#if DEBUG_MODE
-		std::cout << "command found:\t\t" << split[i] << std::endl;
-#endif
+		serv->command.at(ft_strtoupper(split[i]))(fd, split, serv);
+		#if DEBUG_MODE
+			std::cout << "command found:\t\t" << split[i] << std::endl;
+		#endif
 	}
 	catch (std::out_of_range &e) { (void)e; }
 }
@@ -88,6 +89,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	serv->fds[fd].wrbuf.erase();
 	serv->fds[fd].status = true;
 	serv->fds[fd].tls = isTLS;
+	serv->fds[fd].hostname = inet_ntoa(csin.sin_addr);
 	serv->fds[fd].sslptr = NULL;
 
 	if (isTLS)
@@ -137,8 +139,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	{
 		serv->fds[fd].rdbuf += buf_read;
 		if (serv->fds[fd].rdbuf.rfind(CRLF) != std::string::npos &&
-			serv->fds[fd].rdbuf.rfind(CRLF) + serv->clrf.length() ==
-			serv->fds[fd].rdbuf.length())
+			serv->fds[fd].rdbuf.rfind(CRLF) + 2 == serv->fds[fd].rdbuf.length())
 		{
 #if DEBUG_MODE
 			if (serv->fds[fd].tls)

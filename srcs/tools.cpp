@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 13:41:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/26 18:17:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,8 +50,7 @@ t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 	return (split);
 }
 
-std::string
-strvect_to_string(const t_strvect &split, char delimiter, size_t position, size_t len)
+std::string	strvect_to_string(const t_strvect &split, char delimiter, size_t position, size_t len)
 {
 	std::string	output_string;
 	size_t		i;
@@ -85,7 +84,7 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 	return (res);
 }
 
-int	match(const char *s1, const char *s2)
+bool		match(const char *s1, const char *s2)
 {
 	if (*s1 != '\0' && *s2 == '*')
 		return (match(s1 + 1, s2) || match(s1, s2 + 1));
@@ -94,6 +93,31 @@ int	match(const char *s1, const char *s2)
 	if (*s1 == *s2 && *s1 != '\0' && *s2 != '\0')
 		return (match(s1 + 1, s2 + 1));
 	if (*s1 == *s2 && *s1 == '\0' && *s2 == '\0')
-		return (1);
-	return (0);
+		return (true);
+	return (false);
+}
+
+bool		match(std::string const &s1, std::string const &s2)
+{
+	if (s1[0] == '\0' && s2[0] == '*')
+		return (match(s1, s2.substr(1)));
+	if (s1[0] != '\0' && s2[0] == '*')
+		return (match(s1.substr(1), s2) || match(s1, s2.substr(1)));
+	if (s1[0] == s2[0] && s1[0] != '\0' && s1[0] != '\0')
+		return (match(s1.substr(1), s2.substr(1)));
+	if (s1[0] == s2[0] && s1[0] == '\0' && s2[0] == '\0')
+		return (true);
+	return (false);
+}
+
+std::string	ft_strtoupper(std::string const &str)
+{
+	std::string	res = str;
+
+	for (int i = 0; res[i] != '\0'; i++)
+	{
+		if (res[i] >= 'a' && res[i] <= 'z')
+			res[i] = std::toupper(res[i]);
+	}
+	return (res);
 }

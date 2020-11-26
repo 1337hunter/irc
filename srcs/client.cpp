@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/14 21:36:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/26 16:54:06 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,16 @@ std::string const	&Client::getrealname(void)
 	return (this->realname);
 }
 
+std::string const	&Client::gethostname(void)
+{
+	return (this->hostname);
+}
+
+void	Client::sethostname(std::string const &host)
+{
+	this->hostname = host;
+}
+
 bool	Client::Register(std::string const &user, std::string const &real)
 {
 	if (this->_isRegistred ||
@@ -101,13 +111,13 @@ bool	Client::Register(std::string const &nick)
 	return true;
 }
 
-void				Client::Reconnect(int fd)
+void	Client::Reconnect(int fd)
 {
 	this->fd = fd;
 	this->_isConnected = true;
 }
 
-void				Client::Disconnect(void)
+void	Client::Disconnect(void)
 {
 	this->fd = -1;
 	this->hostname = "";
@@ -146,7 +156,7 @@ void	Client::setOPER(void)
 	_isOperator = true;
 }
 
-bool Client::isOperator(void)
+bool	Client::isOperator(void)
 {
 	return _isOperator;
 }

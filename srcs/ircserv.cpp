@@ -6,13 +6,11 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 22:51:03 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/26 16:43:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
-
-std::string const	IRCserv::clrf = CRLF;
 
 void	do_socket(IRCserv *serv)
 {

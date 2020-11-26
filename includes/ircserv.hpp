@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 13:33:46 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/26 16:48:45 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct		s_fd
 	std::string		version;	// message PASS that can be received either
 	std::string		flags;		// from client or server before SERVER or NICK
 	std::string		options;	// register attempt
+	std::string		hostname;
 	SSL				*sslptr;
 }					t_fd;
 
@@ -139,7 +140,6 @@ struct				IRCserv
 	SSL_CTX						*sslctx;
 	std::string					pass;		// this is argv server (ME) password
 	int							port;		// this is argv server port
-	static std::string const	clrf;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
