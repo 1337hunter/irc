@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/26 17:57:27 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 22:53:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -871,5 +871,9 @@ void	parse(int ac, char **av, IRCserv *serv)
 				error_exit("Error: config error at line ", line, line_number);
 	}
 	serv->version = VERSIONSTRING;
+	serv->dtcreated = ft_gettimestring();
+	// values below are from InspIRCd-3 (need to check what it means)
+	serv->usermodes = "iosw";
+	serv->chanmodes = "biklmnopstv";
 	server_init(serv, ac, av);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/26 17:04:11 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 22:51:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,10 +53,10 @@ std::string		reply_welcome(IRCserv *serv, std::string const &nick)
 		"Your host is " + serv->servername + ", running version " +
 		serv->version);
 	reply += ft_buildmsg(serv->servername, RPL_CREATED, nick, "",
-		"This server was created <date>");
-	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick, "",
+		"This server was created " + serv->dtcreated);
+	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick,
 		serv->servername + " " + serv->version + " " +
-		"<available user modes>" + " " + "<available channel modes>");
+		serv->usermodes + " " + serv->chanmodes, "");
 	reply += reply_motd(serv, nick);
 	return (reply);
 }

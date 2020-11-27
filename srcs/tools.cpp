@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 20:35:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 22:43:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
+#include <ctime>
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
 				int fd)
@@ -139,5 +140,34 @@ std::string	ft_strtoupper(std::string const &str)
 		if (res[i] >= 'a' && res[i] <= 'z')
 			res[i] = std::toupper(res[i]);
 	}
+	return (res);
+}
+
+std::string	ft_gettimestring(void)
+{
+	time_t			rawtime;
+	struct tm		*timeinfo;
+	std::string		res = "";
+
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+
+	if (timeinfo->tm_mday < 10)
+		res += "0";
+	res += std::to_string(timeinfo->tm_mday) + "/";
+	if (timeinfo->tm_mon + 1 < 10)
+		res += "0";
+	res += std::to_string(timeinfo->tm_mon + 1) + "/";
+	res += std::to_string(timeinfo->tm_year + 1900) + " ";
+
+	if (timeinfo->tm_hour < 10)
+		res += "0";
+	res += std::to_string(timeinfo->tm_hour) + ":";
+	if (timeinfo->tm_min < 10)
+		res += "0";
+	res += std::to_string(timeinfo->tm_min) + ":";
+	if (timeinfo->tm_sec < 10)
+		res += "0";
+	res += std::to_string(timeinfo->tm_sec);
 	return (res);
 }
