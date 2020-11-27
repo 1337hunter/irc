@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 21:17:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/27 23:33:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,37 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[begin->fd].wrbuf += forward;
 		begin++;
 	}
+}
+
+bool	send_clients(int fd, IRCserv *serv)
+{
+	std::list<Client>::iterator		outer;
+	std::vector<Client>::iterator	inner;
+	std::vector<t_server>::iterator	net;
+
+	size_t	i = 0;
+	for (; i < serv->listen.size(); i++)
+		if (serv->listen[i].socket_fd == fd)
+			break ;
+	for (inner = serv->clients.begin(); inner != serv->clients.end(); inner++)
+	{
+		serv->fds[fd].wrbuf += "NICK " + inner->getnickname() + " 1 " +
+			inner->getusername() +
+			" " + (i == serv->listen.size() ? "localhost" : serv->listen[i].ip) + " " +
+			serv->token + inner->getMode(true) + inner->getrealname() + CRLF;
+	}
+	for (net = serv->network.begin(); net != serv->network.end(); net++)
+	{
+		for (outer = net->clients.begin(); outer != net->clients.end(); outer++)
+		{
+			serv->fds[fd].wrbuf += "NICK " + outer->getnickname() +
+				outer->gethopcount(true, true) + outer->getusername() + " " +
+				(i == serv->listen.size() ? "localhost" : serv->listen[i].ip) +
+				" " + outer->gettoken() + outer->getMode(true) +
+				outer->getrealname() + CRLF;
+		}
+	}
+	return false;
 }
 
 //split: SERVER <servername> <hopcount> <token> <info>
@@ -158,6 +189,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		}
 		begin++;
 	}
+	send_clients(fd, serv);
 	serv->fds[fd].wrbuf += backward;
 	serv->fds[fd].type = FD_SERVER;
 	serv->network.push_back(temp);

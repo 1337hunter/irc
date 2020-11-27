@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 18:11:24 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/27 23:29:43 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,27 @@ Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 }
 
 Client::Client(std::string const &nickname, int fd):
-	nickname(nickname), fd(fd), _isConnected(true), _isRegistred(false),
+	nickname(nickname), hopcount (0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false)
 {
 }
 
 Client::Client(std::string const &username, std::string const &realname, int fd):
-username(username), realname(realname), fd(fd), _isConnected(true), _isRegistred(false),
-    USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
+username(username), realname(realname), hopcount (0), fd(fd), _isConnected(true),
+	_isRegistred(false), USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false)
 {
 }
+
+Client::Client (std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) : 
+	nickname(nick), username(user), realname(real), hostname(host),
+	token(servertoken), hopcount(stoi(hop)), fd(-1), _isConnected(true),
+	_isRegistred(true), USER(true), NICK(true)
+{
+	setMode(umode);
+}
+ 
 
 Client::~Client()
 {
@@ -54,6 +63,7 @@ Client				&Client::operator=(Client const &other)
 	this->_isInvisible = other._isInvisible;
 	this->_isServNotice = other._isServNotice;
 	this->_isWallOps = other._isWallOps;
+	this->hopcount = other.hopcount;
 	this->USER = other.USER;
 	this->NICK = other.NICK;
 	return (*this);
@@ -87,6 +97,23 @@ std::string const	&Client::getrealname(void)
 std::string const	&Client::gethostname(void)
 {
 	return (this->hostname);
+}
+
+std::string			Client::gethopcount(bool str, bool plus)
+{
+	std::string	hop;
+
+	if (str)
+		hop += " ";
+	hop += std::to_string(this->hopcount + (plus ? 1 : 0));
+	if (str)
+		hop += " ";
+	return hop;
+}
+
+std::string	const	&Client::gettoken(void)
+{
+	return this->token;
 }
 
 void	Client::sethostname(std::string const &host)
@@ -170,17 +197,19 @@ bool	Client::isOperator(void)
 	return _isOperator;
 }
 
-void	Client::setModes(std::string const &modes)
+bool	Client::setMode(std::string const &modes)
 {
 	size_t	i;
 	bool	set_how;
 
+	if (modes.find_first_not_of("+-wois") != std::string::npos)
+		return true;
 	if (modes[0] == '+')
 		set_how = true;
 	else if (modes[0] == '-')
 		set_how = false;
 	else
-		return ;
+		return true;
 	i = 0;
 	while (++i < modes.size())
 	{
@@ -192,7 +221,30 @@ void	Client::setModes(std::string const &modes)
 			_isWallOps = set_how;
 		else if (modes[i] == 's')
 			_isServNotice = set_how;
-		else
-			return ;
 	}
+	return false;
+}
+
+std::string	Client::getMode(bool str)
+{
+	std::string	mode;
+
+	if (str)
+		mode += " ";
+	if (_isOperator || _isInvisible || _isWallOps || _isServNotice)
+		mode += "+";
+	else
+		return mode;
+	if (_isOperator)
+		mode += "o";
+	if (_isInvisible)
+		mode += "i";
+	if (_isWallOps)
+		mode += "w";
+	if (_isServNotice)
+		mode += "s";
+	if (str && mode.size() > 2)
+		mode += " ";
+	return mode;
+
 }

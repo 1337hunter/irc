@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 16:48:45 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 22:39:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ typedef struct		s_server
 	std::string		pass;
 	std::string		info;
 	std::list<t_server_intro>	routing;
+	std::list<Client>			clients;
 }					t_server;
 
 typedef struct		s_listen

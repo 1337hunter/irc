@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 18:02:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/27 23:25:53 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,8 @@ private:
 	std::string		username;
 	std::string		realname;
 	std::string		hostname;
+	std::string		token;
+	int				hopcount;
 	int				fd;
 	bool			_isConnected;
 	bool			_isRegistred;
@@ -57,6 +59,9 @@ private:
 public:
 	Client(std::string const &nickname, int fd);
 	Client(std::string const &username, std::string const &realname, int fd);
+	Client (std::string const &nick, std::string const hop, std::string const &user,
+		std::string const &host, std::string const &servertoken,
+		std::string const umode, std::string const &real);
 	Client(int fd, std::string const &username);
 	~Client();
 	Client(Client const &other);
@@ -75,6 +80,8 @@ public:
 	std::string const	&getusername(void);
 	std::string const	&getrealname(void);
 	std::string const	&gethostname(void);
+	std::string	const	&gettoken(void);
+	std::string			gethopcount(bool str = false, bool plus = false);
 	void				sethostname(std::string const &host);
 
 	bool				Register(std::string const &user,
@@ -83,7 +90,8 @@ public:
 	void				Reconnect(int fd);
 	void				Disconnect(void);
 	void				ChangeNick(std::string const &what);
-	void				setModes(std::string const &modes);
+	bool				setMode(std::string const &modes);
+	std::string			getMode(bool str = false);
 };
 
 #endif
