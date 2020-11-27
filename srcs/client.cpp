@@ -6,26 +6,29 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 16:54:06 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 18:11:24 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
 
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
-	_isOperator(false), USER(false), NICK(false)
+	USER(false), NICK(false), _isInvisible(false), _isWallOps(false),
+	_isServNotice(false), _isOperator(false)
 {
 }
 
 Client::Client(std::string const &nickname, int fd):
 	nickname(nickname), fd(fd), _isConnected(true), _isRegistred(false),
-	_isOperator(false), USER(false), NICK(true)
+	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
+	_isServNotice(false), _isOperator(false)
 {
 }
 
 Client::Client(std::string const &username, std::string const &realname, int fd):
 username(username), realname(realname), fd(fd), _isConnected(true), _isRegistred(false),
-    _isOperator(false), USER(true), NICK(false)
+    USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
+	_isServNotice(false), _isOperator(false)
 {
 }
 
@@ -48,6 +51,9 @@ Client				&Client::operator=(Client const &other)
 	this->_isConnected = other._isConnected;
 	this->_isRegistred = other._isRegistred;
 	this->_isOperator = other._isOperator;
+	this->_isInvisible = other._isInvisible;
+	this->_isServNotice = other._isServNotice;
+	this->_isWallOps = other._isWallOps;
 	this->USER = other.USER;
 	this->NICK = other.NICK;
 	return (*this);
@@ -124,6 +130,9 @@ void	Client::Disconnect(void)
 	this->_isConnected = false;
 	this->_isRegistred = false;
 	this->_isOperator = false;
+	this->_isInvisible = false;
+	this->_isServNotice = false;
+	this->_isWallOps = false;
 }
 
 void	Client::ChangeNick(std::string const &what)
@@ -159,4 +168,31 @@ void	Client::setOPER(void)
 bool	Client::isOperator(void)
 {
 	return _isOperator;
+}
+
+void	Client::setModes(std::string const &modes)
+{
+	size_t	i;
+	bool	set_how;
+
+	if (modes[0] == '+')
+		set_how = true;
+	else if (modes[0] == '-')
+		set_how = false;
+	else
+		return ;
+	i = 0;
+	while (++i < modes.size())
+	{
+		if (modes[i] == 'o')
+			_isOperator = set_how;
+		else if (modes[i] == 'i')
+			_isInvisible = set_how;
+		else if (modes[i] == 'w')
+			_isWallOps = set_how;
+		else if (modes[i] == 's')
+			_isServNotice = set_how;
+		else
+			return ;
+	}
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 16:53:44 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/27 18:02:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,12 @@ private:
 	int				fd;
 	bool			_isConnected;
 	bool			_isRegistred;
-	bool			_isOperator;
 	bool			USER;
 	bool			NICK;
+	bool			_isInvisible; // User modes
+	bool			_isWallOps;
+	bool			_isServNotice;
+	bool			_isOperator; // User modes
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
@@ -80,6 +83,7 @@ public:
 	void				Reconnect(int fd);
 	void				Disconnect(void);
 	void				ChangeNick(std::string const &what);
+	void				setModes(std::string const &modes);
 };
 
 #endif
