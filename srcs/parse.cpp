@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/27 23:35:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 17:54:49 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -833,6 +833,8 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["MOTD"] = cmd_motd;
 	serv->command["WHO"] = cmd_who;
 	serv->command["USERHOST"] = cmd_userhost;
+	serv->command["VERSION"] = cmd_version;
+	serv->command["INFO"] = cmd_info;
 }
 
 void	parse(int ac, char **av, IRCserv *serv)

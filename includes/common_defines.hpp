@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 22:47:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 18:06:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 
 # define BUF_SIZE		512
 
-# define VERSIONSTRING	"IrcServ-021"
+# define VERSIONSTRING	"IRCserv-0.2.1"
 
 # define DEBUG_MODE		1
 
