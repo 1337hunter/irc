@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 20:03:08 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 20:56:08 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,9 +157,14 @@ std::string	ft_gettimecompiledstring(void)
 		t_stat	stat;
 		if (fstat(fd, &stat) == 0)
 		{
-			time_t		rawtime = stat.st_mtim.tv_sec;
-			struct tm	*timeinfo = localtime(&rawtime);
+			// stat struct is different on darwin
+			#ifdef __DARWIN_STRUCT_STAT64
+				time_t	rawtime = stat.st_mtimespec.tv_sec;
+			#elif
+				time_t	rawtime = stat.st_mtim.tv_sec;
+			#endif
 
+			struct tm	*timeinfo = localtime(&rawtime);
 			if (timeinfo->tm_mday < 10)
 				res += "0";
 			res += std::to_string(timeinfo->tm_mday) + "/";
@@ -177,8 +182,9 @@ std::string	ft_gettimecompiledstring(void)
 			if (timeinfo->tm_sec < 10)
 				res += "0";
 			res += std::to_string(timeinfo->tm_sec);
+
 			// tm_zone is GNU/BSD extension
-			# ifdef	__USE_MISC
+			# if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
 				res += + " ";
 				res += (timeinfo->tm_zone);
 			# endif
@@ -215,7 +221,7 @@ std::string	ft_gettimestring(void)
 		res += "0";
 	res += std::to_string(timeinfo->tm_sec);
 	// tm_zone is GNU/BSD extension
-	# ifdef	__USE_MISC
+	# if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
 		res += + " ";
 		res += (timeinfo->tm_zone);
 	# endif

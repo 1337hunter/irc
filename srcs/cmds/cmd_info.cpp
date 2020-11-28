@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 20:15:26 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 21:02:37 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,17 @@ void	cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 		buildinfo = "debug build";
 
 	t_strvect	infovect;
-	infovect.push_back("       " + serv->version + " " + buildinfo);
+	infovect.push_back("\t\t\t" + serv->version + " " + buildinfo);
 	infovect.push_back("Developed since October 2020 till present");
 	infovect.push_back("");
-	infovect.push_back("Compiled:   " + serv->dtcompiled);
-	infovect.push_back("Started:    " + serv->dtstarted);
+	infovect.push_back("Compiled:\t\t" + serv->dtcompiled);
+	infovect.push_back("Started:\t\t\t" + serv->dtstarted);
 	infovect.push_back("");
-	infovect.push_back("Created by gbright and salec");
+	infovect.push_back("Created by:");
+	infovect.push_back("\t\tgbright");
+	infovect.push_back("\t\tsalec");
 	infovect.push_back("");
-	infovect.push_back("This is an early ircserver build");
+	infovect.push_back("This is an early ircserv build for ft_irc project");
 
 	for (size_t i = 0; i < infovect.size(); i++)
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
