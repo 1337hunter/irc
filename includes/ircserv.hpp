@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 23:35:59 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 10:50:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ struct				IRCserv
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
 	std::vector<t_server>		network;	// servers that connected to network
-	std::vector<Client>			clients;
+	std::list<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
 	fd_set						fdset_error;

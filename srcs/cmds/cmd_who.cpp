@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:53:32 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 19:26:24 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 10:57:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@
 					if they are an operator.
 */
 
-typedef std::vector<Client>::iterator	t_cvit;
+typedef std::list<Client>::iterator	t_cvit;
 
 void	cmd_who(int fd, const t_strvect &split, IRCserv *serv)
 {

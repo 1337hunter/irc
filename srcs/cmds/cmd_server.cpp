@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 23:33:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 10:55:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 bool	send_clients(int fd, IRCserv *serv)
 {
 	std::list<Client>::iterator		outer;
-	std::vector<Client>::iterator	inner;
+	std::list<Client>::iterator		inner;
 	std::vector<t_server>::iterator	net;
 
 	size_t	i = 0;

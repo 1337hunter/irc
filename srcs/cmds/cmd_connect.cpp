@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 17:07:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 10:54:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,8 +110,8 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (fd != FD_ME)
 	{
-		std::vector<Client>::iterator	b = serv->clients.begin();
-		std::vector<Client>::iterator	e = serv->clients.end();
+		std::list<Client>::iterator	b = serv->clients.begin();
+		std::list<Client>::iterator	e = serv->clients.end();
 
 		while (b != e)
 		{

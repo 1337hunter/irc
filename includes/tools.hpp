@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 22:35:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 10:52:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,10 @@
 # include <string>
 # include <vector>
 # include "client.hpp"
+# include <list>
 
 typedef	std::vector<std::string>		t_strvect;
-typedef std::vector<Client>::iterator	t_citer;
+typedef std::list<Client>::iterator	t_citer;
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd);
 t_citer		ft_findnick(t_citer const &begin, t_citer const &end,

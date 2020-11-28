@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 19:35:48 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 10:56:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 	; Reply for user syrk
 */
 
-typedef std::vector<Client>::iterator	t_cvit;
+typedef std::list<Client>::iterator	t_cvit;
 
 void	cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
 {

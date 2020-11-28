@@ -9,8 +9,8 @@ get_reply(IRCserv *serv, std::string _error, int fd, std::string const &command,
 
 	if (fd > 0)
 	{
-		std::vector<Client>::iterator	b = serv->clients.begin();
-		std::vector<Client>::iterator   e = serv->clients.end();
+		std::list<Client>::iterator	b = serv->clients.begin();
+		std::list<Client>::iterator   e = serv->clients.end();
 
 		while (b != e)
 		{
