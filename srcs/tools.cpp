@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:27:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 20:03:08 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tools.hpp"
 #include <ctime>
+#include <sys/stat.h>
 #include "ircserv.hpp"
+#include "tools.hpp"
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
 				int fd)
@@ -100,7 +101,7 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 		res += target;
 	if (!cmd.empty())
 		res += " " + cmd;
-	if (!msg.empty())
+	if (!msg.empty() || msgcode != RPL_MOTD || msgcode != RPL_INFO)
 		res += " :" + msg;
 	res += CRLF;
 	return (res);
@@ -144,6 +145,49 @@ std::string	ft_strtoupper(std::string const &str)
 	return (res);
 }
 
+typedef struct stat		t_stat;
+
+std::string	ft_gettimecompiledstring(void)
+{
+	int			fd = open("./ircserv", O_RDONLY);
+	std::string	res = "";
+
+	if (fd > 0)
+	{
+		t_stat	stat;
+		if (fstat(fd, &stat) == 0)
+		{
+			time_t		rawtime = stat.st_mtim.tv_sec;
+			struct tm	*timeinfo = localtime(&rawtime);
+
+			if (timeinfo->tm_mday < 10)
+				res += "0";
+			res += std::to_string(timeinfo->tm_mday) + "/";
+			if (timeinfo->tm_mon + 1 < 10)
+				res += "0";
+			res += std::to_string(timeinfo->tm_mon + 1) + "/";
+			res += std::to_string(timeinfo->tm_year + 1900) + " ";
+
+			if (timeinfo->tm_hour < 10)
+				res += "0";
+			res += std::to_string(timeinfo->tm_hour) + ":";
+			if (timeinfo->tm_min < 10)
+				res += "0";
+			res += std::to_string(timeinfo->tm_min) + ":";
+			if (timeinfo->tm_sec < 10)
+				res += "0";
+			res += std::to_string(timeinfo->tm_sec);
+			// tm_zone is GNU/BSD extension
+			# ifdef	__USE_MISC
+				res += + " ";
+				res += (timeinfo->tm_zone);
+			# endif
+		}
+		close(fd);
+	}
+	return (res);
+}
+
 std::string	ft_gettimestring(void)
 {
 	time_t			rawtime;
@@ -170,6 +214,11 @@ std::string	ft_gettimestring(void)
 	if (timeinfo->tm_sec < 10)
 		res += "0";
 	res += std::to_string(timeinfo->tm_sec);
+	// tm_zone is GNU/BSD extension
+	# ifdef	__USE_MISC
+		res += + " ";
+		res += (timeinfo->tm_zone);
+	# endif
 	return (res);
 }
 

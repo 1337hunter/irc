@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/12 02:09:30 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 19:56:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -237,7 +237,7 @@
 
 //	":<string>"
 #define RPL_INFO			"371"
-//	"<channel> :Channel key already set"
+//	":End of INFO list"
 #define RPL_ENDOFINFO		"374"
 /*	- A server responding to an INFO message is required to
 	send all its 'info' in a series of RPL_INFO messages

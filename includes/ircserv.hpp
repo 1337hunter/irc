@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 14:25:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 19:29:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,6 @@ struct				IRCserv
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	typedef std::map<std::string, t_command>	t_cmdmap;
 	std::string					servername;	// me server name
-	std::string					version;
 	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;
@@ -143,7 +142,9 @@ struct				IRCserv
 	SSL_CTX						*sslctx;
 	std::string					pass;		// this is argv server (ME) password
 	int							port;		// this is argv server port
-	std::string					dtcreated;
+	std::string					version;
+	std::string					dtstarted;
+	std::string					dtcompiled;
 	std::string					usermodes;
 	std::string					chanmodes;
 };

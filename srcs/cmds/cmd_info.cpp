@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 18:03:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 20:15:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,25 @@ void	cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() > 1)
 		std::cerr << "info does not support other servers yet" << std::endl;
-	std::cerr << "info is not working yet" << std::endl;
-/*	std::string	verdbg = serv->version + ".";
-	std::string	comment = "release build";
+
+	std::string	buildinfo = "release build";
 	if (DEBUG_MODE)
-	{
-		verdbg += "debug build";
-		comment = "release build";
-	}
-	verdbg += " " + serv->servername;
+		buildinfo = "debug build";
+
+	t_strvect	infovect;
+	infovect.push_back("       " + serv->version + " " + buildinfo);
+	infovect.push_back("Developed since October 2020 till present");
+	infovect.push_back("");
+	infovect.push_back("Compiled:   " + serv->dtcompiled);
+	infovect.push_back("Started:    " + serv->dtstarted);
+	infovect.push_back("");
+	infovect.push_back("Created by gbright and salec");
+	infovect.push_back("");
+	infovect.push_back("This is an early ircserver build");
+
+	for (size_t i = 0; i < infovect.size(); i++)
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			RPL_INFO, target, "", infovect[i]);
 	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_VERSION, target, verdbg, comment);
-*/
+		RPL_ENDOFINFO, target, "", "End of INFO list");
 }
