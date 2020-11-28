@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 10:55:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:53:19 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "message.hpp"
+#include "tools.hpp"
 
 //split: :<behind> SERVER <servername> <hopcount> <token> <info>
 void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)

@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 10:56:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:54:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "message.hpp"
+#include "tools.hpp"
 
 /*	Command: USERHOST
 	Parameters: <nickname> *( SPACE <nickname> )

@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:05 by salec             #+#    #+#             */
-/*   Updated: 2020/11/12 02:09:47 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 12:52:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "tools.hpp"
 
 void		cmd_ping(int fd, const t_strvect &split, IRCserv *serv)
 {

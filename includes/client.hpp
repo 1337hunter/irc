@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 23:25:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:45:25 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,10 @@ private:
 public:
 	Client(std::string const &nickname, int fd);
 	Client(std::string const &username, std::string const &realname, int fd);
-	Client (std::string const &nick, std::string const hop, std::string const &user,
+	Client(std::string const &nick, std::string const hop, std::string const &user,
 		std::string const &host, std::string const &servertoken,
 		std::string const umode, std::string const &real);
+	Client(const std::vector<std::string> &split);
 	Client(int fd, std::string const &username);
 	~Client();
 	Client(Client const &other);

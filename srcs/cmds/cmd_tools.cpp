@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/27 22:51:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 12:53:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "tools.hpp"
 #include <fstream>
 
 std::string		reply_motd(IRCserv *serv, std::string const &nick)

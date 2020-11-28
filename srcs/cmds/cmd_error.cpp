@@ -6,13 +6,14 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 13:15:50 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/25 19:58:04 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:54:15 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "message.hpp"
+#include "tools.hpp"
 
 void	cmd_error(int fd, const t_strvect &split, IRCserv *serv)
 {

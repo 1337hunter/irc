@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 20:39:16 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 12:51:00 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "message.hpp"
 #include "commands.hpp"
+#include "tools.hpp"
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {

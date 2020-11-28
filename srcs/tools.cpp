@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 22:43:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 12:27:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 #include <ctime>
+#include "ircserv.hpp"
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
 				int fd)
@@ -171,3 +172,62 @@ std::string	ft_gettimestring(void)
 	res += std::to_string(timeinfo->tm_sec);
 	return (res);
 }
+
+Client	*find_client_by_nick(std::string const &nick, IRCserv *serv)
+{
+	std::list<Client>::iterator		client = serv->clients.begin();
+	std::vector<t_server>::iterator	net = serv->network.begin();
+
+	while (client != serv->clients.end())
+	{
+		if (client->getnickname() == nick)
+			return &(*client);
+		client++;
+	}
+	while (net != serv->network.end())
+	{
+		client = net->clients.begin();
+		while (client != net->clients.end())
+		{
+			if (client->getnickname() == nick)
+				return &(*client);
+			client++;
+		}
+	}
+	return 0;
+}
+
+t_server	*find_server_by_fd(int fd, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	net = serv->network.begin();
+
+	while (net != serv->network.begin())
+	{
+		if (fd == net->fd)
+			return &(*net);
+		net++;
+	}
+	return 0;
+}
+
+/*int		find_client_routing(std::string	const &nick, IRCserv *serv)
+{
+	std::list<Client>::iterator     client = serv->clients.begin();
+	std::vector<t_server>::iterator net = serv->network.begin();
+
+	while (client != serv->clients.end())
+	{
+		if (client->getnickname() == nick)
+			return client->getFD();
+		client++;
+	}
+	while (net != serv->network.end())
+	{
+		client = net->clients.begin();
+		while (client != net->clients.end())
+		{
+			if (client->getnickname() == nick)
+
+		}
+	}
+}*/

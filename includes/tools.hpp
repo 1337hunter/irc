@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 10:52:49 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:47:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include <vector>
 # include "client.hpp"
 # include <list>
+# include "ircserv.hpp"
 
 typedef	std::vector<std::string>		t_strvect;
 typedef std::list<Client>::iterator	t_citer;
@@ -40,4 +41,6 @@ std::string	ft_strtoupper(std::string const &str);
 
 std::string	ft_gettimestring(void);
 
+t_server    *find_server_by_fd(int fd, IRCserv *serv);
+Client  	*find_client_by_nick(std::string const &nick, IRCserv *serv);
 #endif

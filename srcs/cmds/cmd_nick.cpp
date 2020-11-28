@@ -6,14 +6,27 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/26 17:00:45 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 12:55:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
+#include "tools.hpp"
 
-void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
+//Command: NICK
+//Parameters: <nickname>[1] <hopcount>[2] <username>[3] <host>[4] <servertoken>[5]
+// <umode>[6] <realname>[7]
+void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
+{
+	t_server	*routing;
+	Client		newone(split);
+
+	if ((routing = find_server_by_fd(fd, serv)) != 0)
+		routing->clients.push_back(newone); //else error
+}
+
+void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string		reply;
 	t_citer			nick_entry;
@@ -24,6 +37,11 @@ void		cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		// may be different
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NONICKNAMEGIVEN, "", "NICK", "No nickname given");
+		return ;
+	}
+	if (split.size() > 6 && serv->fds[fd].type == FD_SERVER)
+	{
+		add_nick_to_routing(fd, split, serv);
 		return ;
 	}
 	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);

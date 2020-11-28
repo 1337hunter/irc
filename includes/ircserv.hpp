@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 10:50:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:50:19 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,11 @@
 # include "common_defines.hpp"
 # include "reply_codes.hpp"
 # include "error_codes.hpp"
-# include "tools.hpp"
 # include "client.hpp"
 // #include <unordered_map>
+
+typedef std::vector<std::string>        t_strvect;
+typedef std::list<Client>::iterator t_citer;
 
 typedef struct		s_fd
 {

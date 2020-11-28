@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/27 23:29:43 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 12:43:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ username(username), realname(realname), hopcount (0), fd(fd), _isConnected(true)
 {
 }
 
-Client::Client (std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) : 
+Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) : 
 	nickname(nick), username(user), realname(real), hostname(host),
 	token(servertoken), hopcount(stoi(hop)), fd(-1), _isConnected(true),
 	_isRegistred(true), USER(true), NICK(true)
@@ -40,6 +40,25 @@ Client::Client (std::string const &nick, std::string const hop, std::string cons
 	setMode(umode);
 }
  
+Client::Client(const std::vector<std::string> &split)
+{
+	nickname = split[1];
+	hopcount = stoi(split[2]);
+	username = split[3];
+	hostname = split[4];
+	token = split[5];
+	if (split.size() == 8)
+	{
+		setMode(split[6]);
+		realname = split[7];
+	}
+	else
+	{
+		setMode("-oisw");
+		realname = split[6];
+	}
+
+}
 
 Client::~Client()
 {
