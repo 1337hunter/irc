@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:55:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 14:48:20 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,31 @@
 #include "tools.hpp"
 
 //Command: NICK
-//Parameters: <nickname>[1] <hopcount>[2] <username>[3] <host>[4] <servertoken>[5]
+//Parameters: <nickname>[1] <hopcount>[2] <username>[3] <host>[4] <servertoken>[]
 // <umode>[6] <realname>[7]
 void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_server	*routing;
-	Client		newone(split);
+	t_server				*routing;
+	int						hop;
+	Client					newone(split);
+	std::vector<t_server>::iterator	net;
 
+	try { hop = stoi(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
 		routing->clients.push_back(newone); //else error
+	//forward message
+	net = serv->network.begin();
+	for (; net != serv->network.end(); net++)
+	{
+		if (net->fd != fd)
+		{
+			serv->fds[fd].wrbuf += "NICK " + std::to_string(hop + 1) + " " + split[3] +
+				" " + split[4] + " " + split[5] + " " + split[6] + " " + split[7];
+			for (size_t i = 8; i < split.size(); i++)
+				serv->fds[fd].wrbuf += " " + split[i];
+			serv->fds[fd].wrbuf += CRLF;
+		}
+	}
 }
 
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
@@ -39,7 +55,7 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 			ERR_NONICKNAMEGIVEN, "", "NICK", "No nickname given");
 		return ;
 	}
-	if (split.size() > 6 && serv->fds[fd].type == FD_SERVER)
+	if (split.size() > 7 && serv->fds[fd].type == FD_SERVER)
 	{
 		add_nick_to_routing(fd, split, serv);
 		return ;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:43:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 14:51:21 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,10 @@ Client::Client(const std::vector<std::string> &split)
 	username = split[3];
 	hostname = split[4];
 	token = split[5];
-	if (split.size() == 8)
-	{
-		setMode(split[6]);
-		realname = split[7];
-	}
-	else
-	{
-		setMode("-oisw");
-		realname = split[6];
-	}
-
+	setMode(split[6]);
+	realname = split[7];
+	for (size_t i = 8; i < split.size(); i++)
+		realname += " " + split[i];
 }
 
 Client::~Client()
@@ -253,7 +246,12 @@ std::string	Client::getMode(bool str)
 	if (_isOperator || _isInvisible || _isWallOps || _isServNotice)
 		mode += "+";
 	else
+	{
+		mode += "-iwso";
+		if (str)
+			mode += " ";
 		return mode;
+	}
 	if (_isOperator)
 		mode += "o";
 	if (_isInvisible)

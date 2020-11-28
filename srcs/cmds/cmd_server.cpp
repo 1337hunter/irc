@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:53:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 14:10:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,9 +71,10 @@ bool	send_clients(int fd, IRCserv *serv)
 		{
 			serv->fds[fd].wrbuf += "NICK " + outer->getnickname() +
 				outer->gethopcount(true, true) + outer->getusername() + " " +
-				(i == serv->listen.size() ? "localhost" : serv->listen[i].ip) +
+				//(i == serv->listen.size() ? "localhost" : serv->listen[i].ip) +
+				serv->fds[fd].hostname +
 				" " + outer->gettoken() + outer->getMode(true) +
-				outer->getrealname() + CRLF;
+				":" + outer->getrealname() + CRLF;
 		}
 	}
 	return false;

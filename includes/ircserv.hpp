@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:50:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/28 14:25:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,7 +134,7 @@ struct				IRCserv
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
-	std::vector<t_server>		network;	// servers that connected to network
+	std::vector<t_server>		network;	// nearest servers that connected to network
 	std::list<Client>			clients;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
