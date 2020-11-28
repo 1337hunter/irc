@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 20:56:08 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/28 21:17:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ std::string	ft_gettimecompiledstring(void)
 			// stat struct is different on darwin
 			#ifdef __DARWIN_STRUCT_STAT64
 				time_t	rawtime = stat.st_mtimespec.tv_sec;
-			#elif
+			#else
 				time_t	rawtime = stat.st_mtim.tv_sec;
 			#endif
 
