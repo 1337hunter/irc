@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 14:48:20 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/29 14:13:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,24 +22,23 @@ void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
 	t_server				*routing;
 	int						hop;
 	Client					newone(split);
+	std::string				forward;
 	std::vector<t_server>::iterator	net;
 
 	try { hop = stoi(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
 		routing->clients.push_back(newone); //else error
-	//forward message
+	forward = "NICK " + split[1] + " " + std::to_string(hop + 1) +
+		" " + split[3] + " " + split[4] + " " + split[5] + " " + split[6] +
+		" " + split[7];
+	for (size_t i = 8; i < split.size(); i++)
+		forward += " " + split[i];
+	forward += CRLF;
+
 	net = serv->network.begin();
 	for (; net != serv->network.end(); net++)
-	{
 		if (net->fd != fd)
-		{
-			serv->fds[fd].wrbuf += "NICK " + std::to_string(hop + 1) + " " + split[3] +
-				" " + split[4] + " " + split[5] + " " + split[6] + " " + split[7];
-			for (size_t i = 8; i < split.size(); i++)
-				serv->fds[fd].wrbuf += " " + split[i];
-			serv->fds[fd].wrbuf += CRLF;
-		}
-	}
+			serv->fds[net->fd].wrbuf += forward;
 }
 
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 14:10:10 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/29 14:37:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,31 +50,30 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 
 bool	send_clients(int fd, IRCserv *serv)
 {
-	std::list<Client>::iterator		outer;
-	std::list<Client>::iterator		inner;
+	std::list<Client>::iterator		client;
 	std::vector<t_server>::iterator	net;
 
 	size_t	i = 0;
 	for (; i < serv->listen.size(); i++)
 		if (serv->listen[i].socket_fd == fd)
 			break ;
-	for (inner = serv->clients.begin(); inner != serv->clients.end(); inner++)
+	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
-		serv->fds[fd].wrbuf += "NICK " + inner->getnickname() + " 1 " +
-			inner->getusername() +
+		serv->fds[fd].wrbuf += "NICK " + client->getnickname() + " 1 " +
+			client->getusername() +
 			" " + (i == serv->listen.size() ? "localhost" : serv->listen[i].ip) + " " +
-			serv->token + inner->getMode(true) + inner->getrealname() + CRLF;
+			serv->token + client->getMode(true) + ":" + client->getrealname() + CRLF;
 	}
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
 	{
-		for (outer = net->clients.begin(); outer != net->clients.end(); outer++)
+		for (client = net->clients.begin(); client != net->clients.end(); client++)
 		{
-			serv->fds[fd].wrbuf += "NICK " + outer->getnickname() +
-				outer->gethopcount(true, true) + outer->getusername() + " " +
+			serv->fds[fd].wrbuf += "NICK " + client->getnickname() +
+				client->gethopcount(true, true) + client->getusername() + " " +
 				//(i == serv->listen.size() ? "localhost" : serv->listen[i].ip) +
 				serv->fds[fd].hostname +
-				" " + outer->gettoken() + outer->getMode(true) +
-				":" + outer->getrealname() + CRLF;
+				" " + client->gettoken() + client->getMode(true) +
+				":" + client->getrealname() + CRLF;
 		}
 	}
 	return false;
