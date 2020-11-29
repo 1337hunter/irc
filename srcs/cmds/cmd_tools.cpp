@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/28 19:31:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 17:52:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 #include "commands.hpp"
 #include "tools.hpp"
 #include <fstream>
+
+/*
+	When responding to the MOTD message and the MOTD file is found,
+	the file is displayed line by line, with each line no longer
+	than 80 characters, using RPL_MOTD format replies.
+	These MUST be surrounded by a RPL_MOTDSTART (before the RPL_MOTDs)
+	and an RPL_ENDOFMOTD (after).
+*/
 
 std::string		reply_motd(IRCserv *serv, std::string const &nick)
 {
@@ -30,6 +38,8 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 			std::getline(motd, motdstr);
 			if (motd.eof() && motdstr.length() == 0)
 				break ;
+			if (motdstr.length() > 80)
+				motdstr = motdstr.substr(0, 80);
 			reply += ft_buildmsg(serv->servername, RPL_MOTD, nick,
 				"", motdstr);
 		}
