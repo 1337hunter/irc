@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 21:17:31 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 16:41:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -256,7 +256,7 @@ t_server	*find_server_by_fd(int fd, IRCserv *serv)
 {
 	std::vector<t_server>::iterator	net = serv->network.begin();
 
-	while (net != serv->network.begin())
+	while (net != serv->network.end())
 	{
 		if (fd == net->fd)
 			return &(*net);
