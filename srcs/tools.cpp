@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 18:28:54 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 19:09:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 		res += target;
 	if (!cmd.empty())
 		res += " " + cmd;
-	if (!msg.empty() || msgcode != RPL_MOTD || msgcode != RPL_INFO)
+	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO)
 		res += " :" + msg;
 	res += CRLF;
 	return (res);
