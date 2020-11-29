@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 19:21:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 18:29:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ bool		match(std::string const &s1, std::string const &s2);
 
 std::string	ft_strtoupper(std::string const &str);
 
-std::string	ft_gettimestring(void);
-std::string	ft_gettimecompiledstring(void);
+std::string	ft_getcurrenttimestring(void);
+std::string	ft_getcompiletimestring(void);
 
 t_server    *find_server_by_fd(int fd, IRCserv *serv);
 Client  	*find_client_by_nick(std::string const &nick, IRCserv *serv);

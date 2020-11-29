@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/29 17:52:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 19:03:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,13 +53,16 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 	return (reply);
 }
 
-std::string		reply_welcome(IRCserv *serv, std::string const &nick)
+std::string		reply_welcome(IRCserv *serv, t_citer const cli)
 {
-	std::string	reply;
+	std::string	reply = "";
+	std::string	nick = cli->getnickname();
+	std::string	user = cli->getusername();
+	std::string	host = cli->gethostname();
 
 	reply += ft_buildmsg(serv->servername, RPL_WELCOME,
 		nick, "", "Welcome to the Internet Relay Network " + nick + "!" +
-		nick + "@" + serv->servername);
+		user + "@" + host);
 	reply += ft_buildmsg(serv->servername, RPL_YOURHOST, nick, "",
 		"Your host is " + serv->servername + ", running version " +
 		serv->version);

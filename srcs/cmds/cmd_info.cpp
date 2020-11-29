@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 21:02:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 18:32:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,17 +25,16 @@
 	considered to be relevant.
 
 	Numeric Replies:
-	ERR_NOSUCHSERVER
-	RPL_INFO
-	RPL_ENDOFINFO
+		ERR_NOSUCHSERVER
+		RPL_INFO
+		RPL_ENDOFINFO
 
 	Examples:
-	INFO csd.bu.edu		; request an INFO reply from
-						csd.bu.edu
-	:Avalon INFO *.fi	; INFO request from Avalon for first
-						server found to match *.fi.
-	INFO Angel			; request info from the server that
-						Angel is connected to.
+	INFO csd.bu.edu		; request an INFO reply from csd.bu.edu
+	:Avalon INFO *.fi	; INFO request from Avalon for first server found
+						to match *.fi.
+	INFO Angel			; request info from the server that Angel
+						is connected to.
 */
 
 void	cmd_info(int fd, const t_strvect &split, IRCserv *serv)

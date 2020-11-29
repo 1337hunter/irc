@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/28 19:28:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/29 18:33:52 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -835,6 +835,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["USERHOST"] = cmd_userhost;
 	serv->command["VERSION"] = cmd_version;
 	serv->command["INFO"] = cmd_info;
+	serv->command["TIME"] = cmd_time;
 
 	serv->version = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)

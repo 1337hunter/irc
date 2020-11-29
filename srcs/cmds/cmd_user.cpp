@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:52:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/29 18:51:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 			if (it->Register(split[1], _realname))
 			{
 				if (it->getNICK())
-					reply = reply_welcome(serv, it->getnickname());
+					reply = reply_welcome(serv, it);
 			}
 			else
 				reply = ft_buildmsg(serv->servername, ERR_ALREADYREGISTRED,

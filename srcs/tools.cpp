@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 17:05:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/29 18:28:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ std::string	ft_strtoupper(std::string const &str)
 
 typedef struct stat		t_stat;
 
-std::string	ft_gettimecompiledstring(void)
+std::string	ft_getcompiletimestring(void)
 {
 	int			fd = open("./ircserv", O_RDONLY);
 	std::string	res = "";
@@ -198,7 +198,7 @@ std::string	ft_gettimecompiledstring(void)
 	return (res);
 }
 
-std::string	ft_gettimestring(void)
+std::string	ft_getcurrenttimestring(void)
 {
 	time_t			rawtime;
 	struct tm		*timeinfo;
