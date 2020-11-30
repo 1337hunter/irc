@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 14:52:44 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 16:46:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "client.hpp"
+#include "tools.hpp"
 
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 	USER(false), NICK(false), _isInvisible(false), _isWallOps(false),
@@ -32,14 +33,14 @@ username(username), realname(realname), hopcount(0), fd(fd), _isConnected(true),
 {
 }
 
-Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) : 
+Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) :
 	nickname(nick), username(user), realname(real), hostname(host),
 	token(servertoken), hopcount(stoi(hop)), fd(-1), _isConnected(true),
 	_isRegistred(true), USER(true), NICK(true)
 {
 	setMode(umode);
 }
- 
+
 Client::Client(const std::vector<std::string> &split) : nickname(split[1]),
 	username(split[3]), hostname(split[4]), token(split[5]), hopcount(stoi(split[2]))
 {
@@ -140,23 +141,36 @@ bool	Client::Register(std::string const &user, std::string const &real)
 	this->realname = real;
 	if (NICK)
 		this->_isRegistred = true;
-	USER = true;
+	this->USER = true;
+	this->dtloggedin = ft_getcurrenttimestring();
+	if (DEBUG_MODE)
+		std::cout << "fd " << this->fd << " registred as " <<
+			this->nickname << " from " << this->username << "@" <<
+			this->hostname << " (" << this->realname << ") " <<
+			this->dtloggedin << std::endl;
 	return (true);
 }
 
 bool	Client::Register(std::string const &nick)
 {
-	nickname = nick;
-	if (USER)
+	this->nickname = nick;
+	if (this->USER)
 		_isRegistred = true;
-	NICK = true;
-	return true;
+	this->NICK = true;
+	this->dtloggedin = ft_getcurrenttimestring();
+	if (DEBUG_MODE)
+		std::cout << "fd " << this->fd << " registred as " <<
+			this->nickname << " from " << this->username << "@" <<
+			this->hostname << " (" << this->realname << ") " <<
+			this->dtloggedin << std::endl;
+	return (true);
 }
 
 void	Client::Reconnect(int fd)
 {
 	this->fd = fd;
 	this->_isConnected = true;
+	this->NICK = true;
 }
 
 void	Client::Disconnect(void)
@@ -169,6 +183,10 @@ void	Client::Disconnect(void)
 	this->_isInvisible = false;
 	this->_isServNotice = false;
 	this->_isWallOps = false;
+	this->NICK = false;
+	this->USER = false;
+	this->token = "";
+	// add to nickname history here
 }
 
 void	Client::ChangeNick(std::string const &what)

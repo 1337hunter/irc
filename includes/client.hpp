@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:45:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 16:23:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ private:
 	bool			_isWallOps;
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
+	std::string		dtloggedin;
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
