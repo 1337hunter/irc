@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 13:55:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 17:09:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,21 +27,21 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else
 	{
+		if (split[4][0] == ':')
+		{
+			_realname = split[4].substr(1);
+			size_t  i = 4;
+			while (++i < split.size())
+			{
+				_realname += " ";
+				_realname += split[i];
+			}
+		}
+		else
+			_realname = split[4];
 		it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
 		{
-			if (split[4][0] == ':')
-			{
-				_realname = split[4].substr(1);
-				size_t  i = 4;
-				while (++i < split.size())
-				{
-					_realname += " ";
-					_realname += split[i];
-				}
-			}
-			else
-				_realname = split[4];
 			if (it->Register(split[1], _realname))
 			{
 				if (it->getNICK())

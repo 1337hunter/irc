@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 15:18:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 17:06:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	else if (fd_entry != serv->clients.end() && !fd_entry->isRegistred())
 	{
 		std::cout << "5\n";
-		fd_entry->Register(split[1]);
 		fd_entry->sethostname(serv->fds[fd].hostname);
+		fd_entry->Register(split[1]);
 		if (fd_entry->getUSER())
 		{
 			nick_forward(serv, fd_entry);
