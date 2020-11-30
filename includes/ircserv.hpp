@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 16:42:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 16:50:24 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@
 # include "reply_codes.hpp"
 # include "error_codes.hpp"
 # include "client.hpp"
+# include "channel.hpp"
 // #include <unordered_map>
 
 typedef std::vector<std::string>        t_strvect;
