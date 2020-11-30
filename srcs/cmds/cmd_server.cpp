@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 16:43:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 13:53:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,15 +53,10 @@ bool	send_clients(int fd, IRCserv *serv)
 	std::list<Client>::iterator		client;
 	std::vector<t_server>::iterator	net;
 
-	size_t	i = 0;
-	for (; i < serv->listen.size(); i++)
-		if (serv->listen[i].socket_fd == fd)
-			break ;
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
 		serv->fds[fd].wrbuf += "NICK " + client->getnickname() + " 1 " +
-			client->getusername() +
-			" " + (i == serv->listen.size() ? "localhost" : serv->listen[i].ip) + " " +
+			client->getusername() + " " + client->gethostname() + " " +
 			serv->token + client->getMode(true) + ":" + client->getrealname() + CRLF;
 	}
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
@@ -70,8 +65,7 @@ bool	send_clients(int fd, IRCserv *serv)
 		{
 			serv->fds[fd].wrbuf += "NICK " + client->getnickname() +
 				client->gethopcount(true, true) + client->getusername() + " " +
-				//(i == serv->listen.size() ? "localhost" : serv->listen[i].ip) +
-				serv->fds[fd].hostname +
+				client->gethostname() +
 				" " + client->gettoken() + client->getMode(true) +
 				":" + client->getrealname() + CRLF;
 		}

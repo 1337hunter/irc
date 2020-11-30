@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 19:09:03 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/30 12:54:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,6 +268,21 @@ t_server	*find_server_by_fd(int fd, IRCserv *serv)
 			return &(*net);
 		net++;
 	}
+	return 0;
+}
+
+int			nick_forward(IRCserv *serv, t_citer client)
+{
+	std::string	forward;
+	std::vector<t_server>::iterator	net;
+
+	if (client == serv->clients.end())
+		return 1;
+	forward = "NICK " + client->getnickname() + " " + client->gethopcount(true, true) +
+		client->getusername() + " " + client->gethostname() + " " + client->gettoken() +
+		client->getMode(true) + ":" + client->getrealname() + CRLF;
+	for (net = serv->network.begin(); net != serv->network.end(); net++)
+		serv->fds[net->fd].wrbuf += forward;
 	return 0;
 }
 

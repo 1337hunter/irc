@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 18:49:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/30 15:18:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string		reply;
+	Client			*client;
 	t_citer			nick_entry;
 	t_citer			fd_entry;
 
@@ -59,15 +60,17 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		add_nick_to_routing(fd, split, serv);
 		return ;
 	}
+	client = find_client_by_nick(split[1], serv);
 	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
-	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end())
+	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end() && client == 0)
 	{
 		serv->clients.push_back(Client(split[1], fd));
 		serv->clients.back().sethostname(serv->fds[fd].hostname);
 	}
 	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
-			!nick_entry->isRegistred() && fd_entry == serv->clients.end())
+			!nick_entry->isRegistred() && fd_entry == serv->clients.end() &&
+			client->gethopcount() == "0")
 	{
 		std::cout << "2\n";
 		serv->fds[nick_entry->getFD()].status = false;
@@ -100,7 +103,10 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		fd_entry->Register(split[1]);
 		fd_entry->sethostname(serv->fds[fd].hostname);
 		if (fd_entry->getUSER())
+		{
+			nick_forward(serv, fd_entry);
 			reply = reply_welcome(serv, fd_entry);
+		}
 	}
 	else
 	{

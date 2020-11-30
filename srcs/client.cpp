@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 16:57:18 by gbright          ###   ########.fr       */
+/*   Updated: 2020/11/30 14:52:44 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 }
 
 Client::Client(std::string const &nickname, int fd):
-	nickname(nickname), hopcount (0), fd(fd), _isConnected(true), _isRegistred(false),
+	nickname(nickname), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false)
 {
 }
 
 Client::Client(std::string const &username, std::string const &realname, int fd):
-username(username), realname(realname), hopcount (0), fd(fd), _isConnected(true),
+username(username), realname(realname), hopcount(0), fd(fd), _isConnected(true),
 	_isRegistred(false), USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false)
 {
