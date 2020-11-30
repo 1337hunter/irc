@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 19:29:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/30 16:42:40 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ typedef struct		s_server
 	std::string		info;
 	std::list<t_server_intro>	routing;
 	std::list<Client>			clients;
+	std::list<Channel>			channels;
 }					t_server;
 
 typedef struct		s_listen
@@ -135,6 +136,7 @@ struct				IRCserv
 	std::vector<t_oper>			oper;		// operators thac can connect to server
 	std::vector<t_server>		network;	// nearest servers that connected to network
 	std::list<Client>			clients;
+	std::list<Channel>			channels;
 	fd_set						fdset_read;
 	fd_set						fdset_write;
 	fd_set						fdset_error;

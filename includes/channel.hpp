@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/10/25 19:09:40 by salec            ###   ########.fr       */
+/*   Updated: 2020/11/30 16:27:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ class Channel {
 private:
 	std::string				name;
 	Client					&chop;		// channel operator
-	std::vector<Client>		joined;
+	std::vector<Client>		clients;
 	Channel();
 public:
 	Channel(std::string const &name, Client &creator);
