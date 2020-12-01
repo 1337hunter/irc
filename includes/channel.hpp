@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 16:27:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/01 23:04:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,24 @@
 
 class Channel {
 private:
-	std::string				name;
-	Client					&chop;		// channel operator
-	std::vector<Client>		clients;
+	std::string				_name;
+	std::string				_key;
+	char					_type;
+	Client					&_chop;		// channel operator
+	std::vector<Client*>	_clients;
 	Channel();
 public:
 	Channel(std::string const &name, Client &creator);
 	~Channel();
 	Channel(Channel const &other);
 	Channel &operator=(Channel const &other);
+	
+	std::string const	&getname(void);
+	std::string	const	&getkey(void);
+	char				gettype(void);
+	void				add_client(Client *client);
 
-	// getters-setters here
+	void	settype(char type);
 };
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 16:50:24 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/01 22:09:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 # include "error_codes.hpp"
 # include "client.hpp"
 # include "channel.hpp"
-// #include <unordered_map>
+ //#include <unordered_map>
 
 typedef std::vector<std::string>        t_strvect;
 typedef std::list<Client>::iterator t_citer;
@@ -82,7 +82,6 @@ typedef struct		s_server
 	std::string		info;
 	std::list<t_server_intro>	routing;
 	std::list<Client>			clients;
-	std::list<Channel>			channels;
 }					t_server;
 
 typedef struct		s_listen
