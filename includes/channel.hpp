@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/02 20:21:23 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/02 20:38:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@
 	channel name is that it may not contain any spaces (' '), a control G
 	(^G or ASCII 7), or a comma (',' which is used as a list item
 	separator by the protocol).	*/
+
+class Client;
 
 struct	channel_flags
 {

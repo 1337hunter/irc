@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 16:23:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/02 20:59:16 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,9 @@
 #include <netdb.h>
 // read, write
 #include <unistd.h>
-
 #include "common_defines.hpp"
+#include "channel.hpp"
+#include <list>
 
 /*	A client is anything connecting to a server that is not another
 	server.  Each client is distinguished from other clients by a unique
@@ -36,6 +37,8 @@
 	following information about all clients: the real name of the host
 	that the client is running on, the username of the client on that
 	host, and the server to which the client is connected.	*/
+
+class Channel;
 
 class Client {
 private:
@@ -55,6 +58,7 @@ private:
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
 	std::string		dtloggedin;
+	std::list<Channel*>	_channels;
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
@@ -84,6 +88,8 @@ public:
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
+	std::list<Channel*>	const &getchannels(void);
+	void				add_channel(Channel *chan);
 	void				sethostname(std::string const &host);
 
 	bool				Register(std::string const &user,

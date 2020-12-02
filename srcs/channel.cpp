@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/02 20:22:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/02 20:56:27 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ client_flags::client_flags(void) : _Operator(0), _operator(0), _voice(0) {}
 Channel::Channel(std::string const &name, Client *client) :
 	_name(name)
 {
+	client->add_channel(this);
 	_clients[client] = client_flags(1, 1, 0);
 }
 
@@ -59,6 +60,7 @@ Channel::Channel(std::string const &name, std::string const &key, Client *client
 	_name(name)
 {
 	_flags._key = key;
+	client->add_channel(this);
 	_clients[client] = client_flags(1, 1, 0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 16:46:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/02 20:59:23 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -279,4 +279,14 @@ std::string	Client::getMode(bool str)
 		mode += " ";
 	return mode;
 
+}
+
+std::list<Channel*> const &Client::getchannels(void)
+{
+	return _channels;
+}
+
+void	Client::add_channel(Channel *chan)
+{
+	_channels.push_back(chan);
 }
