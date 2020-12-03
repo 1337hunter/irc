@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/02 20:32:16 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/03 21:39:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,14 +117,4 @@ void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 		if (split[1][0] == '#')
 			join_to_hash_chan(fd, split, serv, client_it);
 	}
-	/*
-	t_citer client_it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	serv->fds[fd].wrbuf += ":" + client_it->getnickname() + "!" +
-		client_it->getusername() + "@" + client_it->gethostname() + " " + "JOIN " +
-		":" + split[1] + CRLF;
-	serv->fds[fd].wrbuf += ":" + serv->servername + " " + "MODE " + split[1] +
-		" " + "+nt" + CRLF + ":" + serv->servername + " " + "353" + " " +
-		client_it->getnickname() +  " " + "=" " " + split[1] + " " + ":" + "@" +
-		client_it->getnickname() + " nick1 " + "nick2 " + CRLF;
-		*/
 }

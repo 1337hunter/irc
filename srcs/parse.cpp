@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/02 20:27:20 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/03 21:48:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -838,6 +838,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["TIME"] = cmd_time;
 	serv->command["JOIN"] = cmd_join;
 	serv->command["PRIVMSG"] = cmd_privmsg;
+	serv->command["INVITE"] = cmd_invite;
 
 	serv->version = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)

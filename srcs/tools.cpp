@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 12:54:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/03 23:06:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -255,6 +255,16 @@ Client	*find_client_by_nick(std::string const &nick, IRCserv *serv)
 			client++;
 		}
 	}
+	return 0;
+}
+
+Client	*find_client_by_fd(int	fd, IRCserv *serv)
+{
+	std::list<Client>::iterator	client;
+
+	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
+		if (client->getFD() == fd)
+			return &(*client);
 	return 0;
 }
 

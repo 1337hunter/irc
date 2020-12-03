@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/02 20:28:59 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/03 21:48:07 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp \
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_who.cpp \
 			cmds/cmd_version.cpp cmds/cmd_info.cpp cmds/cmd_time.cpp \
-			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp
+			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp cmds/cmd_invite.cpp
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/

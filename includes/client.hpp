@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/02 20:59:16 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/03 23:16:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ private:
 	bool			_isOperator; // User modes
 	std::string		dtloggedin;
 	std::list<Channel*>	_channels;
+	std::list<std::string>	invited;
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
@@ -88,7 +89,7 @@ public:
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
-	std::list<Channel*>	const &getchannels(void);
+	std::list<Channel*>	&getchannels(void);
 	void				add_channel(Channel *chan);
 	void				sethostname(std::string const &host);
 
