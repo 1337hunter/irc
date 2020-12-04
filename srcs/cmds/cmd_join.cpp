@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 13:38:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 15:36:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,8 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
 		"@" + client_it->gethostname() + " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
-		serv->fds[c_map->first->getFD()].wrbuf += reply;
+		if (c_map->first->getFD() != client_it->getFD())
+			serv->fds[c_map->first->getFD()].wrbuf += reply;
 	serv->fds[client_it->getFD()].wrbuf += reply;
 	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
 }
@@ -92,7 +93,8 @@ void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 	}
 
 	client_it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (split[0] == "JOIN" && serv->fds[fd].type == FD_CLIENT)
+	if (split[0] == "JOIN" && (serv->fds[fd].type == FD_CLIENT ||
+			serv->fds[fd].type == FD_OPER))
 	{
 		if (!client_it->isRegistred())
 		{

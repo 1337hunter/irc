@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 11:34:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 13:57:22 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ public:
 	bool				isConnected(void);
 	bool				isRegistred(void);
 	bool				isOperator(void);
+	bool				isInvisible(void);
 	bool				getUSER(void);
 	bool				getNICK(void);
 	int const	 		&getFD(void);

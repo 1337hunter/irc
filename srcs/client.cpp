@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 10:31:58 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 13:58:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,4 +294,9 @@ void	Client::add_channel(Channel *chan)
 void	Client::invite_to(const std::string &chan)
 {
 	invited.push_back(chan);
+}
+
+bool	Client::isInvisible(void)
+{
+	return _isInvisible;
 }

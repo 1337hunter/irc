@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 13:14:58 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 15:51:15 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,18 +88,91 @@ std::string	reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, C
 		reply += "* ";
 	else
 		reply += "= ";
-	reply += chan->getname() + " ";
+	reply += chan->getname() + " :";
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 	{
-		if (c_map->second._operator)
-			reply += "@";
-		reply += c_map->first->getnickname() + " ";
+		if (client->isOperator() || !c_map->first->isInvisible())
+		{
+			if (c_map->second._operator)
+				reply += "@";
+			reply += c_map->first->getnickname() + " ";
+		}
 	}
 	reply.pop_back();
 	reply += CRLF;
 	reply += ":" + serv->servername + " 366 " + client->getnickname() + " " +
 		chan->getname() + " " + ":End of /NAMES list." + CRLF;
 	return reply;
+}
+
+std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
+{
+	std::string reply;
+	std::list<Client>::iterator	client_it;
+	std::list<Channel*>::iterator chan;
+	std::vector<t_server>::iterator	net;
+	size_t	flag;
+
+	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " + client->getnickname();
+	reply += " = * :";
+	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
+	{
+		if (&(*client_it) == client && client->getchannels().size() != 0)
+		{
+			flag = 0;
+			continue ;
+		}
+		flag = 1;
+		chan = client_it->getchannels().begin();
+		for (;chan != client_it->getchannels().end(); chan++)
+			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret || 
+						(*chan)->getchanflags()._anonymous))
+				break ;
+		if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
+						client->isOperator())) ||
+				(chan == client_it->getchannels().end() && (!client_it->isInvisible() ||
+				client->isOperator())))
+		{
+			if (client_it->isOperator())
+				reply += "@";
+			reply += client_it->getnickname() + " ";
+		}
+	}
+	for (net = serv->network.begin(); net != serv->network.end(); net++)
+	{
+		client_it = net->clients.begin();
+
+		for (; client_it != serv->clients.end(); client_it++)
+		{
+			chan = client_it->getchannels().begin();
+			for (;chan != client_it->getchannels().end(); chan++)
+				if (!((*chan)->getchanflags()._private ||
+					(*chan)->getchanflags()._secret) || (*chan)->getchanflags()._anonymous)
+					break ;
+			if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
+							client->isOperator())) ||
+				((chan == client_it->getchannels().end() &&
+				  client_it->getchannels().size() > 0) && (!client_it->isInvisible() ||
+															client->isOperator())))
+			{
+				if (client_it->isOperator())
+					reply += "@";
+				reply += client_it->getnickname() + " ";
+				flag = 1;
+			}
+		}
+	}
+	if (!flag)
+		reply.erase();
+	else
+	{
+		reply.pop_back();
+		reply += CRLF;
+		reply += ":" + serv->servername + " 366 " + client->getnickname() + " " +
+			"*" + " " + ":End of /NAMES list." + CRLF;
+	}
+	return reply;
+
 }
 
 bool	is_server_registred(const std::string &name, IRCserv *serv)
