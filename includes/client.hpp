@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:45:02 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
@@ -57,7 +45,7 @@ private:
 	bool			_isWallOps;
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
-	std::string		dtloggedin;
+	time_t			dtloggedin;
 	std::list<Channel*>	_channels;
 	std::list<std::string>	invited;
 	// Maybe server class object reference or pointer here

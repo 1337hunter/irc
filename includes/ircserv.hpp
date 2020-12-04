@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 11:29:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 18:36:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <list>
 # include <map>
 # include <algorithm>
+// time_t
+# include <ctime>
 // fcntl, select, socket, inet structs, inet
 # include <fcntl.h>
 # include <sys/types.h>
@@ -145,10 +147,10 @@ struct				IRCserv
 	std::string					pass;		// this is argv server (ME) password
 	int							port;		// this is argv server port
 	std::string					version;
-	std::string					dtstarted;
-	std::string					dtcompiled;
 	std::string					usermodes;
 	std::string					chanmodes;
+	time_t						dtstarted;
+	time_t						dtcompiled;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
