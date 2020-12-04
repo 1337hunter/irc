@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/03 23:16:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 11:34:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ public:
 	std::string			gethopcount(bool str = false, bool plus = false);
 	std::list<Channel*>	&getchannels(void);
 	void				add_channel(Channel *chan);
+	void				invite_to(const std::string &chan);
 	void				sethostname(std::string const &host);
 
 	bool				Register(std::string const &user,

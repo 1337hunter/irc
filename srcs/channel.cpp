@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/02 20:56:27 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 10:33:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,4 +119,9 @@ std::string	const &Channel::gettopic(void)
 void		Channel::settopic(std::string const &topic)
 {
 	_topic = topic;
+}
+
+channel_flags const	&Channel::getchanflags(void)
+{
+	return _flags;
 }

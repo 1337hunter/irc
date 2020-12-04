@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/01 22:09:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 11:29:55 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,8 @@ typedef struct		s_server
 	std::string		pass;
 	std::string		info;
 	std::list<t_server_intro>	routing;
-	std::list<Client>			clients;
-}					t_server;
+	std::list<Client>			clients; // if client is not on THIS server
+}					t_server;			 // client's fd must be setted to routong serv fd
 
 typedef struct		s_listen
 {
