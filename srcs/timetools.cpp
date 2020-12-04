@@ -6,34 +6,38 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 01:22:27 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 01:56:52 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 #include <sys/stat.h>		// fstat
 #include <ctime>			// time_t, strftime
-
 #ifdef NEED_GETTIMEOFDAY
 # include <sys/time.h>		// gettimeofday
 #endif
+
+// in case we actually use ft_localtime (REPLACE_LOCALTIME in common_defines)
+#define TZ_OFFSET	3
+#define	TZ_NAME		"MSK"
 
 struct tm		*ft_localtime(time_t const *rawtime)
 {
 	struct tm	*res = new struct tm;
 
-	res->tm_sec = 0;				// Seconds.			[0-60] (1 leap second)
-	res->tm_min = 0;				// Minutes.			[0-59]
-	res->tm_hour = 3;				// Hours.			[0-23]
-	res->tm_mday = 0;				// Day.				[1-31]
-	res->tm_mon = 0;				// Month.			[0-11]
-	res->tm_year = 70;				// Year	- 1900.
-	res->tm_wday = 4;				// Day of week.		[0-6]
-	res->tm_yday = 0;				// Days in year.	[0-365]
-	res->tm_isdst = 0;				// DST.				[-1/0/1]
+	res->tm_sec = 0;		// Seconds.			[0-60] (1 leap second)
+	res->tm_min = 0;		// Minutes.			[0-59]
+	res->tm_hour = 0;		// Hours.			[0-23]
+	res->tm_mday = 0;		// Day.				[1-31]
+	res->tm_mon = 0;		// Month.			[0-11]
+	res->tm_year = 70;		// Year	- 1900.		[1970-...]
+	res->tm_wday = 4;		// Day of week.		[0-6]
+	res->tm_yday = 0;		// Days in year.	[0-365]
+	res->tm_isdst = 0;		// DST.				[-1/0/1]
 	#if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
-		res->tm_gmtoff = 10800L;	// Seconds east of UTC.
-		res->tm_zone = "MSK";		// Timezone abbreviation.
+		res->tm_hour = TZ_OFFSET;				// If supports timezones.
+		res->tm_gmtoff = 3600L * TZ_OFFSET;		// Seconds east of UTC.
+		res->tm_zone = TZ_NAME;					// Timezone abbreviation.
 	#endif
 
 	if (*rawtime < 0)
@@ -48,6 +52,11 @@ struct tm		*ft_localtime(time_t const *rawtime)
 	res->tm_hour += timepart;
 	if (res->tm_hour > 23)
 		datepart++;
+	if (res->tm_hour < 0)
+	{
+		res->tm_hour += 23;
+		datepart--;
+	}
 	res->tm_hour %= 24;
 
 	res->tm_wday = (datepart + 4) % 7;
