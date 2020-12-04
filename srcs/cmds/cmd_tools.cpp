@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/29 19:03:00 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 13:14:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,33 @@ std::string		reply_welcome(IRCserv *serv, t_citer const cli)
 		serv->usermodes + " " + serv->chanmodes, "");
 	reply += reply_motd(serv, nick);
 	return (reply);
+}
+
+std::string	reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, Client *client)
+{
+	std::string	reply;
+	std::unordered_map<Client*, client_flags>::iterator c_map;
+
+	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " +
+		client->getnickname() + " ";
+	if (chan->isSecret())
+		reply += "@ ";
+	else if (chan->isPrivate())
+		reply += "* ";
+	else
+		reply += "= ";
+	reply += chan->getname() + " ";
+	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
+	{
+		if (c_map->second._operator)
+			reply += "@";
+		reply += c_map->first->getnickname() + " ";
+	}
+	reply.pop_back();
+	reply += CRLF;
+	reply += ":" + serv->servername + " 366 " + client->getnickname() + " " +
+		chan->getname() + " " + ":End of /NAMES list." + CRLF;
+	return reply;
 }
 
 bool	is_server_registred(const std::string &name, IRCserv *serv)

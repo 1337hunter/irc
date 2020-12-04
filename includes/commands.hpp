@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/03 21:49:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 13:11:59 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,9 +35,11 @@ void	cmd_time(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_join(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_privmsg(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_invite(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_names(int fd, const t_strvect &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, t_citer const cli);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
+std::string		reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, Client *client);
 bool			is_server_registred(const std::string &name, IRCserv *serv);
 
 #endif

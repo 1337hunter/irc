@@ -6,13 +6,14 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/03 21:39:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 13:21:55 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "tools.hpp"
 #include "message.hpp"
+#include "commands.hpp"
 
 //Command: JOIN
 //Parameters: <channel>[ %x7 <modes> ] *( "," <channel>[ %x7 <modes> ] )
@@ -36,25 +37,7 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	serv->fds[client_it->getFD()].wrbuf += ":" + client_it->getnickname() + "!" +
 		client_it->getusername() + "@" + client_it->gethostname() + " JOIN :" +
 		chan->getname() + CRLF;
-	serv->fds[client_it->getFD()].wrbuf += ":" + serv->servername + " " +
-		RPL_NAMREPLY + " " + client_it->getnickname() + " ";
-	if (chan->isSecret())
-		serv->fds[client_it->getFD()].wrbuf += "@ ";
-	else if (chan->isPrivate())
-		serv->fds[client_it->getFD()].wrbuf += "* ";
-	else
-		serv->fds[client_it->getFD()].wrbuf += "= ";
-	serv->fds[client_it->getFD()].wrbuf += chan->getname() + " ";
-	for (client = chan->getclients().begin(); client != chan->getclients().end(); client++)
-	{
-		if (client->second._operator)
-			serv->fds[client_it->getFD()].wrbuf += "@";
-		serv->fds[client_it->getFD()].wrbuf += client->first->getnickname() + " ";
-	}
-	serv->fds[client_it->getFD()].wrbuf += CRLF;
-	serv->fds[client_it->getFD()].wrbuf += ":" + serv->servername + " " + "366" + " " +
-		client_it->getnickname() + " " + chan->getname() + " " +
-		":End of /NAMES list." + CRLF;
+	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
 }
 
 void	join_to_hash_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_it)
