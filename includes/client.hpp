@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:10:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 13:57:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 18:37:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ private:
 	bool			_isWallOps;
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
-	std::string		dtloggedin;
+	time_t			dtloggedin;
 	std::list<Channel*>	_channels;
 	std::list<std::string>	invited;
 	// Maybe server class object reference or pointer here

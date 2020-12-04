@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 18:23:37 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 18:35:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 18:43:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
 	if (split.size() > 1)
 		std::cerr << "info does not support other servers yet" << std::endl;
 
-	std::string	timestr = ft_getcurrenttimestring();
+	time_t	rawtime = ft_getcurrenttime();
 	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_TIME, target, serv->servername, timestr);
+		RPL_TIME, target, serv->servername, ft_timetostring(rawtime));
 }
 

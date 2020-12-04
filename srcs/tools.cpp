@@ -6,14 +6,15 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/03 23:06:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 19:06:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <ctime>
-#include <sys/stat.h>
-#include "ircserv.hpp"
 #include "tools.hpp"
+#include "ircserv.hpp"
+#include <ctime>		// time_t, strftime
+#include <sys/time.h>	// gettimeofday
+#include <sys/stat.h>	// fstat
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
 				int fd)
@@ -145,67 +146,62 @@ std::string	ft_strtoupper(std::string const &str)
 	return (res);
 }
 
-typedef struct stat		t_stat;
-
-std::string	ft_getcompiletimestring(void)
+time_t	ft_getcompiletime(void)
 {
 	int			fd = open("./ircserv", O_RDONLY);
-	std::string	res = "";
+	time_t		rawtime = -1;
 
 	if (fd > 0)
 	{
-		t_stat	stat;
+		struct stat	stat;
 		if (fstat(fd, &stat) == 0)
 		{
-			time_t		rawtime;
 			// stat struct is different on darwin
 			#ifdef __DARWIN_STRUCT_STAT64
 				rawtime = stat.st_mtimespec.tv_sec;
 			#else
 				rawtime = stat.st_mtim.tv_sec;
 			#endif
-
-			struct tm	*timeinfo;
-			if ((timeinfo = localtime(&rawtime)) != NULL)
-			{
-				if (timeinfo->tm_mday < 10)
-					res += "0";
-				res += std::to_string(timeinfo->tm_mday) + "/";
-				if (timeinfo->tm_mon + 1 < 10)
-					res += "0";
-				res += std::to_string(timeinfo->tm_mon + 1) + "/";
-				res += std::to_string(timeinfo->tm_year + 1900) + " ";
-
-				if (timeinfo->tm_hour < 10)
-					res += "0";
-				res += std::to_string(timeinfo->tm_hour) + ":";
-				if (timeinfo->tm_min < 10)
-					res += "0";
-				res += std::to_string(timeinfo->tm_min) + ":";
-				if (timeinfo->tm_sec < 10)
-					res += "0";
-				res += std::to_string(timeinfo->tm_sec);
-
-				// tm_zone is GNU/BSD extension
-				#if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
-					res += + " ";
-					res += (timeinfo->tm_zone);
-				#endif
-			}
 		}
 		close(fd);
 	}
+	return (rawtime);
+}
+
+time_t	ft_getcurrenttime(void)
+{
+	struct timeval	rawtime;
+
+	if (gettimeofday(&rawtime, NULL) == 0)
+		return (rawtime.tv_sec);
+	return (-1);
+}
+
+time_t	ft_getcurrenttime2(void)
+{
+	return (time(NULL));
+}
+
+std::string	ft_timetostring(time_t rawtime)
+{
+	struct tm		*timeinfo;
+	char			str[100];
+	std::string		res = "";
+
+	// asctime date format				"%a %b %e %T %Y"
+	// RFC 2822-compliant date format	"%a, %d %b %Y %T %z"
+	if ((timeinfo = localtime(&rawtime)) != NULL)
+		if (strftime(str, sizeof(str), "%a, %d %b %Y %T %z", timeinfo))
+			res = str;
 	return (res);
 }
 
-std::string	ft_getcurrenttimestring(void)
+std::string	ft_timetostring2(time_t rawtime)
 {
-	time_t			rawtime;
 	struct tm		*timeinfo;
 	std::string		res = "";
 
-	if ((rawtime = time(NULL)) != (time_t)-1 &&
-		(timeinfo = localtime(&rawtime)) != NULL)
+	if (rawtime != (time_t)-1 && (timeinfo = localtime(&rawtime)) != NULL)
 	{
 		if (timeinfo->tm_mday < 10)
 			res += "0";

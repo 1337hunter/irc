@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/03 23:08:34 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 18:35:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,15 @@ int			nick_forward(IRCserv *serv, t_citer client);
 
 std::string	ft_strtoupper(std::string const &str);
 
-std::string	ft_getcurrenttimestring(void);
-std::string	ft_getcompiletimestring(void);
+time_t		ft_getcurrenttime(void);
+time_t		ft_getcurrenttime2(void);
+time_t		ft_getcompiletime(void);
+
+std::string	ft_timetostring(time_t rawtime);
+std::string	ft_timetostring2(time_t rawtime);
 
 t_server    *find_server_by_fd(int fd, IRCserv *serv);
 Client  	*find_client_by_nick(std::string const &nick, IRCserv *serv);
 Client		*find_client_by_fd(int fd, IRCserv *serv);
+
 #endif

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 13:58:10 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 18:38:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ Client				&Client::operator=(Client const &other)
 	this->hopcount = other.hopcount;
 	this->USER = other.USER;
 	this->NICK = other.NICK;
+	this->dtloggedin = other.dtloggedin;
 	return (*this);
 }
 
@@ -142,12 +143,12 @@ bool	Client::Register(std::string const &user, std::string const &real)
 	if (NICK)
 		this->_isRegistred = true;
 	this->USER = true;
-	this->dtloggedin = ft_getcurrenttimestring();
+	this->dtloggedin = ft_getcurrenttime();
 	if (DEBUG_MODE)
 		std::cout << "fd " << this->fd << " registred as " <<
 			this->nickname << " from " << this->username << "@" <<
 			this->hostname << " (" << this->realname << ") " <<
-			this->dtloggedin << std::endl;
+			ft_timetostring(this->dtloggedin) << std::endl;
 	return (true);
 }
 
@@ -157,12 +158,12 @@ bool	Client::Register(std::string const &nick)
 	if (this->USER)
 		_isRegistred = true;
 	this->NICK = true;
-	this->dtloggedin = ft_getcurrenttimestring();
+	this->dtloggedin = ft_getcurrenttime();
 	if (DEBUG_MODE)
 		std::cout << "fd " << this->fd << " registred as " <<
 			this->nickname << " from " << this->username << "@" <<
 			this->hostname << " (" << this->realname << ") " <<
-			this->dtloggedin << std::endl;
+			ft_timetostring(this->dtloggedin) << std::endl;
 	return (true);
 }
 

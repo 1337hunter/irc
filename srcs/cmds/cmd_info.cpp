@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/29 18:32:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 18:39:57 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ void	cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 	infovect.push_back("\t\t\t" + serv->version + " " + buildinfo);
 	infovect.push_back("Developed since October 2020 till present");
 	infovect.push_back("");
-	infovect.push_back("Compiled:\t\t" + serv->dtcompiled);
-	infovect.push_back("Started:\t\t\t" + serv->dtstarted);
+	infovect.push_back("Compiled:\t\t" + ft_timetostring(serv->dtcompiled));
+	infovect.push_back("Started:\t\t\t" + ft_timetostring(serv->dtstarted));
 	infovect.push_back("");
 	infovect.push_back("Created by:");
 	infovect.push_back("\t\tgbright");

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 17:08:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 18:41:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ std::string		reply_welcome(IRCserv *serv, t_citer const cli)
 		"Your host is " + serv->servername + ", running version " +
 		serv->version);
 	reply += ft_buildmsg(serv->servername, RPL_CREATED, nick, "",
-		"This server was created " + serv->dtstarted);
+		"This server was created " + ft_timetostring(serv->dtstarted));
 	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick,
 		serv->servername + " " + serv->version + " " +
 		serv->usermodes + " " + serv->chanmodes, "");
@@ -120,7 +120,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	{
 		chan = client_it->getchannels().begin();
 		for (;chan != client_it->getchannels().end(); chan++)
-			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret || 
+			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret ||
 						(*chan)->getchanflags()._anonymous))
 				break ;
 		if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
