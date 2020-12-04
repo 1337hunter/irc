@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:18:17 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 19:24:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ time_t	ft_getcompiletime(void)
 	return (rawtime);
 }
 
-#ifndef IWANTSUBJECTALLOWEDFUNCTIONS
+#ifndef IWANTGETTIMEOFDAY
 time_t	ft_getcurrenttime(void)
 {
 	return (time(NULL));
@@ -184,7 +184,7 @@ time_t	ft_getcurrenttime(void)
 }
 #endif
 
-#ifndef IWANTMYOWNTIMEFORMAT
+#ifndef IWANTMYTIMEFORMAT
 std::string	ft_timetostring(time_t rawtime)
 {
 	struct tm		*timeinfo;

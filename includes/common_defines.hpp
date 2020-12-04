@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 18:06:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 19:24:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@
 # define VERSIONSTRING	"IRCserv-0.2.1"
 
 # define DEBUG_MODE		1
+
+/*
+# define IWANTGETTIMEOFDAY
+# define IWANTMYTIMEFORMAT
+*/
 
 typedef struct sockaddr		t_sockaddr;
 typedef struct sockaddr_in	t_sockaddr_in;
