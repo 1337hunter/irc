@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 00:53:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 02:53:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,9 @@
 
 t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 {
-	std::vector<std::string>	split;
-	size_t						pos = 0;
-	std::string					token;
-	std::string					reply;
-	std::string					tmp;
+	t_strvect		split;
+	size_t			pos = 0;
+	std::string		tmp;
 
 	while ((pos = msg.find(delim)) != std::string::npos)
 	{
@@ -34,11 +32,9 @@ t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 
 t_strvect	ft_splitstringbyany(std::string msg, std::string const &delim)
 {
-	std::vector<std::string>	split;
-	size_t						pos = 0;
-	std::string					token;
-	std::string					reply;
-	std::string					tmp;
+	t_strvect		split;
+	size_t			pos = 0;
+	std::string		tmp;
 
 	while ((pos = msg.find_first_of(delim)) != std::string::npos)
 	{
