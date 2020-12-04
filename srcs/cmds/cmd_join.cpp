@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 13:21:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 13:38:30 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,14 @@ void	join_forward(std::string &name, std::string &key, t_citer client_it, IRCser
 
 void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer client_it)
 {
-	std::unordered_map<Client*, client_flags>::iterator client;
+	std::unordered_map<Client*, client_flags>::iterator c_map;
+	std::string		reply;
 
-	serv->fds[client_it->getFD()].wrbuf += ":" + client_it->getnickname() + "!" +
-		client_it->getusername() + "@" + client_it->gethostname() + " JOIN :" +
-		chan->getname() + CRLF;
+	reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
+		"@" + client_it->gethostname() + " JOIN :" + chan->getname() + CRLF;
+	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
+		serv->fds[c_map->first->getFD()].wrbuf += reply;
+	serv->fds[client_it->getFD()].wrbuf += reply;
 	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
 }
 
