@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 16:14:54 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 16:34:59 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,8 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 				break ;
 		if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
 						client->isOperator())) ||
-				(chan == client_it->getchannels().end() && (!client_it->isInvisible() ||
+				((chan == client_it->getchannels().end() &&
+				 client_it->getchannels().size() > 0) && (!client_it->isInvisible() ||
 				client->isOperator())))
 		{
 			if (client_it->isOperator())
