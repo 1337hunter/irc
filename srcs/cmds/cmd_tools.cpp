@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 15:51:15 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 16:14:54 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,18 +111,13 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	std::list<Client>::iterator	client_it;
 	std::list<Channel*>::iterator chan;
 	std::vector<t_server>::iterator	net;
-	size_t	flag;
+	size_t	counter;
 
+	counter = 0;
 	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " + client->getnickname();
 	reply += " = * :";
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
 	{
-		if (&(*client_it) == client && client->getchannels().size() != 0)
-		{
-			flag = 0;
-			continue ;
-		}
-		flag = 1;
 		chan = client_it->getchannels().begin();
 		for (;chan != client_it->getchannels().end(); chan++)
 			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret || 
@@ -136,6 +131,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 			if (client_it->isOperator())
 				reply += "@";
 			reply += client_it->getnickname() + " ";
+			counter++;
 		}
 	}
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
@@ -158,12 +154,12 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 				if (client_it->isOperator())
 					reply += "@";
 				reply += client_it->getnickname() + " ";
-				flag = 1;
+				counter++;
 			}
 		}
 	}
-	if (!flag)
-		reply.erase();
+	if (counter == 0)
+		reply = "";
 	else
 	{
 		reply.pop_back();

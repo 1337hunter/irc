@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 10:33:49 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 16:03:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void		Channel::settype(char type)
 
 void		Channel::add_client(Client *client)
 {
+	client->add_channel(this);
 	_clients[client];
 }
 
