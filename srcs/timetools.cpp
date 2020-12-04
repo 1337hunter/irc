@@ -6,13 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 01:56:52 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 02:21:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 #include <sys/stat.h>		// fstat
-#include <ctime>			// time_t, strftime
+#include <ctime>			// time_t, struct tm, strftime
 #ifdef NEED_GETTIMEOFDAY
 # include <sys/time.h>		// gettimeofday
 #endif
@@ -42,8 +42,8 @@ struct tm		*ft_localtime(time_t const *rawtime)
 
 	if (*rawtime < 0)
 		return (res);
-	time_t	timepart = (*rawtime) % (24 * 60 * 60);
-	time_t	datepart = (*rawtime) / (24 * 60 * 60);
+	time_t	timepart = (*rawtime) % 86400;
+	time_t	datepart = (*rawtime) / 86400;
 
 	res->tm_sec += timepart % 60;
 	timepart /= 60;
