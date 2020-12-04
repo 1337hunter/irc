@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 17:06:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 19:44:40 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server				*routing;
 	int						hop;
-	Client					newone(split);
+	Client					newone(split, fd);
 	std::string				forward;
 	std::vector<t_server>::iterator	net;
 

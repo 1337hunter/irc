@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 13:58:10 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/04 19:44:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,9 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 	setMode(umode);
 }
 
-Client::Client(const std::vector<std::string> &split) : nickname(split[1]),
-	username(split[3]), hostname(split[4]), token(split[5]), hopcount(stoi(split[2]))
+Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[1]),
+	username(split[3]), hostname(split[4]), token(split[5]), hopcount(stoi(split[2])),
+	fd(_fd)
 {
 	std::string	temp(split[7], 1);
 	setMode(split[6]);
