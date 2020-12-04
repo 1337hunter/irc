@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:24:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 01:26:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,9 @@
 # define DEBUG_MODE		1
 
 /*
-# define IWANTGETTIMEOFDAY
-# define IWANTMYTIMEFORMAT
+# define REPLACE_LOCALTIME
+# define NEED_GETTIMEOFDAY
+# define NEED_MYTIMEFORMAT
 */
 
 typedef struct sockaddr		t_sockaddr;
