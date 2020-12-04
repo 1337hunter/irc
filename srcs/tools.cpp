@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:06:26 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/04 19:18:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,12 @@ time_t	ft_getcompiletime(void)
 	return (rawtime);
 }
 
+#ifndef IWANTSUBJECTALLOWEDFUNCTIONS
+time_t	ft_getcurrenttime(void)
+{
+	return (time(NULL));
+}
+#else
 time_t	ft_getcurrenttime(void)
 {
 	struct timeval	rawtime;
@@ -176,18 +182,17 @@ time_t	ft_getcurrenttime(void)
 		return (rawtime.tv_sec);
 	return (-1);
 }
+#endif
 
-time_t	ft_getcurrenttime2(void)
-{
-	return (time(NULL));
-}
-
+#ifndef IWANTMYOWNTIMEFORMAT
 std::string	ft_timetostring(time_t rawtime)
 {
 	struct tm		*timeinfo;
 	char			str[100];
 	std::string		res = "";
 
+	if (rawtime == (time_t)-1)
+		return ("invalid rawtime");
 	// asctime date format				"%a %b %e %T %Y"
 	// RFC 2822-compliant date format	"%a, %d %b %Y %T %z"
 	if ((timeinfo = localtime(&rawtime)) != NULL)
@@ -195,13 +200,15 @@ std::string	ft_timetostring(time_t rawtime)
 			res = str;
 	return (res);
 }
-
-std::string	ft_timetostring2(time_t rawtime)
+#else
+std::string	ft_timetostring(time_t rawtime)
 {
 	struct tm		*timeinfo;
 	std::string		res = "";
 
-	if (rawtime != (time_t)-1 && (timeinfo = localtime(&rawtime)) != NULL)
+	if (rawtime == (time_t)-1)
+		return ("invalid rawtime");
+	if ((timeinfo = localtime(&rawtime)) != NULL)
 	{
 		if (timeinfo->tm_mday < 10)
 			res += "0";
@@ -229,6 +236,7 @@ std::string	ft_timetostring2(time_t rawtime)
 	}
 	return (res);
 }
+#endif
 
 Client	*find_client_by_nick(std::string const &nick, IRCserv *serv)
 {
