@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 18:36:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 02:47:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 # include "channel.hpp"
  //#include <unordered_map>
 
-typedef std::vector<std::string>        t_strvect;
+typedef std::vector<std::string>	t_strvect;
 typedef std::list<Client>::iterator t_citer;
 
 typedef struct		s_fd
