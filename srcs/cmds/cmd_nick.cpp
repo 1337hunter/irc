@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:44:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/05 06:01:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,22 +72,14 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 			!nick_entry->isRegistred() && fd_entry == serv->clients.end() &&
 			client->gethopcount() == "0")
 	{
-		std::cout << "2\n";
 		serv->fds[nick_entry->getFD()].status = false;
 		serv->fds[nick_entry->getFD()].wrbuf = "Error :Closing Link: " + nick_entry->getnickname() + " (Overridden)";
 		serv->fds[nick_entry->getFD()].wrbuf += CRLF;
 		nick_entry->setFD(fd);
 		nick_entry->sethostname(serv->fds[fd].hostname);
 	}
-	else if (nick_entry != serv->clients.end() && !(nick_entry->isConnected()))
-	{
-		std::cout << "3\n";
-		nick_entry->Reconnect(fd);
-		nick_entry->sethostname(serv->fds[fd].hostname);
-	}
 	else if (fd_entry != serv->clients.end() && fd_entry->isRegistred())
 	{
-		std::cout << "4\n";
 		// Here we also need to track nicknames
 		// for KICK, MODE and KILL commands.
 		reply = ":";
@@ -99,7 +91,6 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else if (fd_entry != serv->clients.end() && !fd_entry->isRegistred())
 	{
-		std::cout << "5\n";
 		fd_entry->sethostname(serv->fds[fd].hostname);
 		fd_entry->Register(split[1]);
 		if (fd_entry->getUSER())
@@ -110,7 +101,6 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else
 	{
-		std::cout << "6\n";
 		reply = ft_buildmsg(serv->servername, ERR_NICKNAMEINUSE, split[1], "",
 			"Nickname is already in use");
 		/*	need to save the state in this case
@@ -118,3 +108,11 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	serv->fds[fd].wrbuf += reply;
 }
+
+/*
+	else if (nick_entry != serv->clients.end() && !(nick_entry->isConnected()))
+	{
+		nick_entry->Reconnect(fd);
+		nick_entry->sethostname(serv->fds[fd].hostname);
+	}
+*/

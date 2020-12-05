@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 19:46:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/05 06:15:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ std::string			Client::gethopcount(bool str, bool plus)
 
 std::string	const	&Client::gettoken(void)
 {
-	return this->token;
+	return (this->token);
 }
 
 void	Client::sethostname(std::string const &host)
@@ -168,27 +168,9 @@ bool	Client::Register(std::string const &nick)
 	return (true);
 }
 
-void	Client::Reconnect(int fd)
+time_t	Client::gettimeloggedin(void)
 {
-	this->fd = fd;
-	this->_isConnected = true;
-	this->NICK = true;
-}
-
-void	Client::Disconnect(void)
-{
-	this->fd = -1;
-	this->hostname = "";
-	this->_isConnected = false;
-	this->_isRegistred = false;
-	this->_isOperator = false;
-	this->_isInvisible = false;
-	this->_isServNotice = false;
-	this->_isWallOps = false;
-	this->NICK = false;
-	this->USER = false;
-	this->token = "";
-	// add to nickname history here
+	return (this->dtloggedin);
 }
 
 void	Client::ChangeNick(std::string const &what)
@@ -198,32 +180,32 @@ void	Client::ChangeNick(std::string const &what)
 
 bool	Client::isRegistred(void)
 {
-	return _isRegistred;
+	return (this->_isRegistred);
 }
 
 void	Client::setFD(int what)
 {
-	fd = what;
+	this->fd = what;
 }
 
 bool	Client::getUSER(void)
 {
-	return USER;
+	return (this->USER);
 }
 
 bool	Client::getNICK(void)
 {
-	return NICK;
+	return (this->NICK);
 }
 
 void	Client::setOPER(void)
 {
-	_isOperator = true;
+	this->_isOperator = true;
 }
 
 bool	Client::isOperator(void)
 {
-	return _isOperator;
+	return (this->_isOperator);
 }
 
 bool	Client::setMode(std::string const &modes)
@@ -279,13 +261,12 @@ std::string	Client::getMode(bool str)
 		mode += "s";
 	if (str && mode.size() > 2)
 		mode += " ";
-	return mode;
-
+	return (mode);
 }
 
 std::list<Channel*> &Client::getchannels(void)
 {
-	return _channels;
+	return (this->_channels);
 }
 
 void	Client::add_channel(Channel *chan)
@@ -300,5 +281,32 @@ void	Client::invite_to(const std::string &chan)
 
 bool	Client::isInvisible(void)
 {
-	return _isInvisible;
+	return (this->_isInvisible);
 }
+
+/*
+void	Client::Disconnect(void)
+{
+	this->fd = -1;
+	this->hostname = "";
+	this->_isConnected = false;
+	this->_isRegistred = false;
+	this->_isOperator = false;
+	this->_isInvisible = false;
+	this->_isServNotice = false;
+	this->_isWallOps = false;
+	this->NICK = false;
+	this->USER = false;
+	this->token = "";
+	// add to nickname history here
+}
+*/
+
+/*
+void	Client::Reconnect(int fd)
+{
+	this->fd = fd;
+	this->_isConnected = true;
+	this->NICK = true;
+}
+*/

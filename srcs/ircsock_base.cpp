@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 14:03:59 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/05 06:20:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,11 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
-			it->Disconnect();
+		{
+			addtonickhistory(serv, it);
+			serv->clients.erase(it);
+		}
+//		won't work for suddenly disconnecting servers	//	it->Disconnect();
 		std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 	}
 }
@@ -225,7 +229,11 @@ void	SendMessage(int fd, IRCserv *serv)
 		serv->fds.erase(fd);
 		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 		if (it != serv->clients.end())
-			it->Disconnect();
+		{
+			addtonickhistory(serv, it);
+			serv->clients.erase(it);
+		}
+//		won't work for suddenly disconnecting servers	//	it->Disconnect();
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 	}
 }

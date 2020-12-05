@@ -77,6 +77,7 @@ public:
 	std::string const	&getrealname(void);
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
+	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
 	std::list<Channel*>	&getchannels(void);
 	void				add_channel(Channel *chan);
@@ -86,11 +87,11 @@ public:
 	bool				Register(std::string const &user,
 							std::string const &real);
 	bool				Register(std::string const &nick);
-	void				Reconnect(int fd);
-	void				Disconnect(void);
 	void				ChangeNick(std::string const &what);
 	bool				setMode(std::string const &modes);
 	std::string			getMode(bool str = false);
+//	void				Reconnect(int fd);
+//	void				Disconnect(void);
 };
 
 #endif

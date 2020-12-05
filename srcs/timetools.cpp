@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 02:21:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 05:52:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ struct tm		*ft_localtime(time_t const *rawtime)
 	#if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
 		res->tm_hour = TZ_OFFSET;				// If supports timezones.
 		res->tm_gmtoff = 3600L * TZ_OFFSET;		// Seconds east of UTC.
-		res->tm_zone = TZ_NAME;					// Timezone abbreviation.
+		res->tm_zone = (char *)TZ_NAME;			// Timezone abbreviation.
 	#endif
 
 	if (*rawtime < 0)

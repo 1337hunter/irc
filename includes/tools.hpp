@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 00:59:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 06:19:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ Client  	*find_client_by_nick(std::string const &nick, IRCserv *serv);
 Client		*find_client_by_fd(int fd, IRCserv *serv);
 std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 	std::string const &target, std::string const &cmd, std::string const &msg);
+void		addtonickhistory(IRCserv *serv, t_citer const client);
 int			nick_forward(IRCserv *serv, t_citer client);
 
 /****************************************************/

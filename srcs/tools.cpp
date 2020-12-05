@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 00:59:05 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 06:27:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,27 @@ std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 		res += " :" + msg;
 	res += CRLF;
 	return (res);
+}
+
+void		addtonickhistory(IRCserv *serv, t_citer const client)
+{
+	t_whowas	entry;
+
+	entry.nickname = client->getnickname();
+	entry.username = client->getusername();
+	entry.hostname = client->gethostname();
+	entry.realname = client->getrealname();
+	entry.dtloggedin = client->gettimeloggedin();
+	entry.servername = serv->servername;
+	serv->nickhistory.push_back(entry);
+	if (DEBUG_MODE)
+		std::cout << serv->nickhistory.back().nickname << " " <<
+			serv->nickhistory.back().username << "@" <<
+			serv->nickhistory.back().hostname << " (" <<
+			serv->nickhistory.back().realname << ") from " <<
+			serv->nickhistory.back().servername << " (last login " <<
+			ft_timetostring(serv->nickhistory.back().dtloggedin) <<
+			") has been added to whowas history" << std::endl;
 }
 
 int			nick_forward(IRCserv *serv, t_citer client)

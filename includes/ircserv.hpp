@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 02:47:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 06:23:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,6 +123,16 @@ typedef struct		s_oper
 	std::string		swhois;
 }					t_oper;
 
+typedef struct		s_whowas
+{
+	std::string		nickname;
+	std::string		username;
+	std::string		realname;
+	std::string		hostname;
+	std::string		servername;
+	time_t			dtloggedin;
+}					t_whowas;
+
 struct				IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
@@ -151,6 +161,7 @@ struct				IRCserv
 	std::string					chanmodes;
 	time_t						dtstarted;
 	time_t						dtcompiled;
+	std::vector<t_whowas>	nickhistory;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
