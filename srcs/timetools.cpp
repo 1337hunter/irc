@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 05:52:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 07:06:44 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,7 @@ struct tm		*ft_localtime(time_t const *rawtime)
 		if (month < 12 && datepart <= daysinmonth[month])
 		{
 			res->tm_mon = month;
-			if (datepart < daysinmonth[month])
-				res->tm_mday = datepart % daysinmonth[month];
-			else
-				res->tm_mday = datepart;
+			res->tm_mday = datepart;
 			res->tm_yday = yday + datepart - 1;
 			break ;
 		}
