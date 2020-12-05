@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 06:23:04 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 17:21:58 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,7 +161,7 @@ struct				IRCserv
 	std::string					chanmodes;
 	time_t						dtstarted;
 	time_t						dtcompiled;
-	std::vector<t_whowas>	nickhistory;
+	std::vector<t_whowas>		nickhistory;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);

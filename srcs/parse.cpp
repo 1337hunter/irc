@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 13:10:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/05 16:52:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -831,7 +831,6 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["ERROR"] = cmd_error;
 	serv->command["ADMIN"] = cmd_admin;
 	serv->command["MOTD"] = cmd_motd;
-	serv->command["WHO"] = cmd_who;
 	serv->command["USERHOST"] = cmd_userhost;
 	serv->command["VERSION"] = cmd_version;
 	serv->command["INFO"] = cmd_info;
@@ -840,6 +839,9 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["PRIVMSG"] = cmd_privmsg;
 	serv->command["INVITE"] = cmd_invite;
 	serv->command["NAMES"] = cmd_names;
+	serv->command["WHO"] = cmd_who;
+	serv->command["WHOIS"] = cmd_whois;
+	serv->command["WHOWAS"] = cmd_whowas;
 
 	serv->version = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 06:01:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 17:27:47 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		// may be different
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NONICKNAMEGIVEN, "", "NICK", "No nickname given");
+			ERR_NONICKNAMEGIVEN, "", "", "No nickname given");
 		return ;
 	}
 	if (split.size() > 7 && serv->fds[fd].type == FD_SERVER)

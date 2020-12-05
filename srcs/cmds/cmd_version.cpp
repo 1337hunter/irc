@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:17:42 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 18:02:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/05 16:50:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@
 	Wildcards are allowed in the <target> parameter.
 
 	Numeric Replies:
-	ERR_NOSUCHSERVER
-	RPL_VERSION
+		ERR_NOSUCHSERVER
+		RPL_VERSION
 
 	Examples:
 	VERSION tolsun.oulu.fi		; Command to check the version of
