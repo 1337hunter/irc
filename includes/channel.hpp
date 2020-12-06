@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 14:22:56 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 19:59:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <vector>
 #include "client.hpp"
 #include <unordered_map>
+//#include "tools.hpp"
 
 /*	A channel is a named group of one or more clients which will all
 	receive messages addressed to that channel.  The channel is created
@@ -71,6 +72,9 @@ class Channel {
 private:
 	std::unordered_map<Client*, client_flags>	_clients;
 	std::string				_name;
+	bool                    _blocked;
+	time_t					_creation_time;
+	std::string				_safe_postfix;
 	std::string				_topic;
 	char					_type;
 	channel_flags			_flags;
@@ -86,12 +90,16 @@ public:
 	std::string const	&getname(void);
 	std::string	const	&getkey(void);
 	std::string const	&gettopic(void);
-	channel_flags const	&getchanflags(void);
+	channel_flags const	&getflags(void);
 	Channel				*getptr(void);
 	char				gettype(void);
 	bool				isSecret(void);
 	bool				isPrivate(void);
 	void				add_client(Client *client);
+	void				block(void);
+	void				unblock(void);
+	bool				isBlocked(void);
+	bool				isOnChan(Client *client);
 
 	void				settype(char type);
 	void				settopic(std::string const &topic);

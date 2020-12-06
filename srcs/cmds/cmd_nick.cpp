@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 17:27:47 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/06 18:58:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,12 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 	if (split.size() > 7 && serv->fds[fd].type == FD_SERVER)
 	{
 		add_nick_to_routing(fd, split, serv);
+		return ;
+	}
+	if (split[1] == "anonymous")
+	{
+		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
+			"anonymous  :Erroneous nickname" + CRLF;
 		return ;
 	}
 	client = find_client_by_nick(split[1], serv);

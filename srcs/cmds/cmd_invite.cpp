@@ -67,7 +67,7 @@ void	cmd_invite(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTONCHANNEL, fd, chan_name,
 				"You're not on that channel"); return ;
 	}
-	if ((*client_chan)->getchanflags()._invite_only &&
+	if ((*client_chan)->getflags()._invite_only &&
 		!((*client_chan)->getclients())[invite_from]._operator &&
 		!((*client_chan)->getclients())[invite_from]._Operator)
 	{

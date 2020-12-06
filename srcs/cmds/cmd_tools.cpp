@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/06 14:35:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 19:12:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,8 +121,8 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 		chan = client_it->getchannels().begin();
 		for (;chan != client_it->getchannels().end(); chan++)
 		{
-			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret ||
-						(*chan)->getchanflags()._anonymous))
+			if (!((*chan)->getflags()._private || (*chan)->getflags()._secret ||
+						(*chan)->getflags()._anonymous))
 				break ;
 		}
 		if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
@@ -144,8 +144,8 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 		{
 			chan = client_it->getchannels().begin();
 			for (;chan != client_it->getchannels().end(); chan++)
-				if (!((*chan)->getchanflags()._private ||
-					(*chan)->getchanflags()._secret) || (*chan)->getchanflags()._anonymous)
+				if (!((*chan)->getflags()._private ||
+					(*chan)->getflags()._secret) || (*chan)->getflags()._anonymous)
 					break ;
 			if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
 							client->isOperator())) ||

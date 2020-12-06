@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/06 14:27:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 19:43:29 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
 }
 
-void	join_to_hash_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_it)
+void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_it)
 {
 	std::list<Channel>::iterator	chan;
 	std::vector<std::string>		args;
@@ -60,26 +60,45 @@ void	join_to_hash_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer cl
 	for (i = 0; i < args.size(); i++)
 	{
 		for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
+		{
 			if (chan->getname() == args[i])
 			{
-				if (keys[i] == chan->getkey())
+				if (chan->isOnChan(&(*client_it)))
+						break ;
+				if (chan->isBlocked())
 				{
-					chan->add_client(client_it->getptr());
-					client_it->add_channel(chan->getptr());
-					join_forward(args[i], keys[i], client_it, serv, "");
-					join_backward(serv, chan, client_it);
+					serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE,
+							fd, args[i], "Nick/channel is temporarily unavailable");
+					break ;
 				}
-				else
+				if (keys[i] != chan->getkey())
+				{
 					serv->fds[fd].wrbuf += get_reply(serv, ERR_BADCHANNELKEY, fd,
-							args[i], "Cannot join channel (+k)");
+						args[i], "Cannot join channel (+k)");
+					break ;
+
+				}
+				if (chan->getflags()._invite_only)
+					if (!client_it->is_invited_to(args[i]))
+					{
+						serv->fds[fd].wrbuf += ":" + serv->servername + " 473 " +
+							args[i] + " :Cannot join channel (+i)" + CRLF;
+						break ;
+					}
+				chan->add_client(client_it->getptr());
+				client_it->add_channel(chan->getptr());
+				if (args[i][0] != '&')
+					join_forward(args[i], keys[i], client_it, serv, "");
+				join_backward(serv, chan, client_it);
 				break ;
 			}
+		}
 		if (chan == serv->channels.end())
 		{
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
 			client_it->add_channel((serv->channels.rend())->getptr());
-
-			join_forward(args[i], keys[i], client_it, serv, "");
+			if (args[i][0] != '&')
+				join_forward(args[i], keys[i], client_it, serv, "");
 			join_backward(serv, --serv->channels.end(), client_it);
 		}
 	}
@@ -105,7 +124,6 @@ void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 					"You have not registered");
 			return ;
 		}
-		if (split[1][0] == '#')
-			join_to_hash_chan(fd, split, serv, client_it);
+		join_to_chan(fd, split, serv, client_it);
 	}
 }

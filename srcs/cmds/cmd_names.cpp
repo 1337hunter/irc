@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/04 13:17:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/06 13:36:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 19:13:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void	cmd_names(int fd, const t_strvect &split, IRCserv *serv)
 			for (;client_chan != client->getchannels().end(); client_chan++)
 				if ((*client_chan) == &(*chan))
 					break ;
-			if ((chan->getchanflags()._private || chan->getchanflags()._secret ||
-					chan->getchanflags()._anonymous) &&
+			if ((chan->getflags()._private || chan->getflags()._secret ||
+					chan->getflags()._anonymous) &&
 					(client->isOperator() || (*client_chan) != &(*chan)))
 				continue ;
 			else
