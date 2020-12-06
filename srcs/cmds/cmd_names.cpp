@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/04 13:17:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 15:32:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 13:36:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "ircserv.hpp"
 #include "tools.hpp"
 #include "commands.hpp"
+#include "message.hpp"
 
 //Command: NAMES
 //Parameters: [ <channel> *( "," <channel> ) [ <target> ] ]
@@ -27,15 +28,18 @@ void	cmd_names(int fd, const t_strvect &split, IRCserv *serv)
 	Client  *client;
 
 	client = find_client_by_fd(fd, serv);
-	if (client == 0)
-		return ; // It must not be 0 but ...
+	if (client == 0 || !client->isRegistred()) {
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1 , "NAMES",
+				"You have not registered");
+		return ;
+	}
 	if (split.size() == 1)
 	{
 		for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
 		{
 			client_chan = client->getchannels().begin();
 			for (;client_chan != client->getchannels().end(); client_chan++)
-				if ((*client_chan) != &(*chan))
+				if ((*client_chan) == &(*chan))
 					break ;
 			if ((chan->getchanflags()._private || chan->getchanflags()._secret ||
 					chan->getchanflags()._anonymous) &&

@@ -77,6 +77,7 @@ public:
 	std::string const	&getrealname(void);
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
+	Client				*getptr(void);
 	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
 	std::list<Channel*>	&getchannels(void);

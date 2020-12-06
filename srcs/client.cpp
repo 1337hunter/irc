@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 06:15:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/06 14:21:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,12 @@ std::string const	&Client::getrealname(void)
 std::string const	&Client::gethostname(void)
 {
 	return (this->hostname);
+}
+
+Client	*Client::getptr(void)
+{
+	Client	*ptr = this;
+	return ptr;
 }
 
 std::string			Client::gethopcount(bool str, bool plus)
@@ -266,10 +272,10 @@ std::string	Client::getMode(bool str)
 
 std::list<Channel*> &Client::getchannels(void)
 {
-	return (this->_channels);
+	return _channels;
 }
 
-void	Client::add_channel(Channel *chan)
+void	Client::add_channel(Channel *chan) 
 {
 	_channels.push_back(chan);
 }

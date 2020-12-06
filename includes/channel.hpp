@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 16:02:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 14:22:56 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ public:
 	std::string	const	&getkey(void);
 	std::string const	&gettopic(void);
 	channel_flags const	&getchanflags(void);
+	Channel				*getptr(void);
 	char				gettype(void);
 	bool				isSecret(void);
 	bool				isPrivate(void);

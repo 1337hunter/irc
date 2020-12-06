@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 06:20:22 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/06 13:18:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,10 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 
 	if (split.size() > 0 && split[0][0] == ':')
 		i = 1;
+	split[i] = ft_strtoupper(split[i]);
 	try
 	{
-		serv->command.at(ft_strtoupper(split[i]))(fd, split, serv);
+		serv->command.at(split[i])(fd, split, serv);
 		#if DEBUG_MODE
 			std::cout << "command found:\t\t" << split[i] << std::endl;
 		#endif

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 16:03:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 14:23:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ std::unordered_map<Client*, client_flags> &Channel::getclients(void)
 
 std::string	const &Channel::getname(void)
 {
-	return _name;
+	return this->_name;
 }
 
 std::string	const &Channel::getkey(void)
@@ -125,4 +125,10 @@ void		Channel::settopic(std::string const &topic)
 channel_flags const	&Channel::getchanflags(void)
 {
 	return _flags;
+}
+
+Channel		*Channel::getptr(void)
+{
+	Channel	*ptr = (Channel*)this;
+	return ptr;
 }

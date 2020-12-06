@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 18:41:03 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/06 14:35:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,16 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 
 	counter = 0;
 	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " + client->getnickname();
-	reply += " = * :";
+	reply += " * :";
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
 	{
 		chan = client_it->getchannels().begin();
 		for (;chan != client_it->getchannels().end(); chan++)
+		{
 			if (!((*chan)->getchanflags()._private || (*chan)->getchanflags()._secret ||
 						(*chan)->getchanflags()._anonymous))
 				break ;
+		}
 		if ((client_it->getchannels().size() == 0 && (!client_it->isInvisible() ||
 						client->isOperator())) ||
 				((chan == client_it->getchannels().end() &&

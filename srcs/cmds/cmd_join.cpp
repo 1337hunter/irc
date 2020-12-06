@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/04 15:36:18 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/06 14:27:51 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ void	join_to_hash_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer cl
 			{
 				if (keys[i] == chan->getkey())
 				{
-					chan->add_client(&(*client_it));
+					chan->add_client(client_it->getptr());
+					client_it->add_channel(chan->getptr());
 					join_forward(args[i], keys[i], client_it, serv, "");
 					join_backward(serv, chan, client_it);
 				}
@@ -75,7 +76,9 @@ void	join_to_hash_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer cl
 			}
 		if (chan == serv->channels.end())
 		{
-			serv->channels.push_back(Channel(args[i], keys[i], &(*client_it)));
+			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
+			client_it->add_channel((serv->channels.rend())->getptr());
+
 			join_forward(args[i], keys[i], client_it, serv, "");
 			join_backward(serv, --serv->channels.end(), client_it);
 		}
