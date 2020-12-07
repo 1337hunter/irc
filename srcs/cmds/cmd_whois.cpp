@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 19:45:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 20:13:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,8 +106,12 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 					continue ;
 				if (!channelstr.empty())
 					channelstr += " ";
-				channelstr += "@" + (*chit)->getname();
-				// @ is a placeholder. will change it later
+				if ((*chit)->getclients()[it->getptr()]._Operator ||
+					(*chit)->getclients()[it->getptr()]._operator)
+					channelstr += "@";
+				else if ((*chit)->getclients()[it->getptr()]._voice)
+					channelstr += "+";
+				channelstr += (*chit)->getname();
 			}
 
 			if (!channelstr.empty())
