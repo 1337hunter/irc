@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 16:16:17 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 17:08:11 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 	for (i = 0; i < args.size(); i++)
 	{
 		for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
-		{
 			if (chan->getname() == args[i])
 			{
 				if (chan->isOnChan(&(*client_it)))
@@ -70,8 +69,14 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 					serv->fds[fd].wrbuf += get_reply(serv, ERR_BADCHANNELKEY, fd,
 						args[i], "Cannot join channel (+k)");
 					break ;
-
 				}
+				if (chan->getflags()._quiet)
+					if (!client_it->isOperator())
+					{
+						serv->fds[fd].wrbuf += ":" + serv->servername + " 481 " + args[i] +
+							":Permission Denied- You're not an IRC operator" + CRLF;
+						break ;
+					}
 				if (chan->getflags()._invite_only)
 					if (!client_it->is_invited_to(args[i]))
 					{
@@ -86,7 +91,6 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				join_backward(serv, chan, client_it);
 				break ;
 			}
-		}
 		if (chan == serv->channels.end())
 		{
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));

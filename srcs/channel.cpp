@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 16:20:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 18:53:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ channel_flags::~channel_flags(void) {}
 client_flags::client_flags(bool Operator, bool oper, bool voice) :
 	_Operator(Operator), _operator(oper), _voice(voice) {}
 
-client_flags::client_flags(std::vector<bool> &mode) : _Operator(mode[0]),
+client_flags::client_flags(bool *mode) : _Operator(mode[0]),
 	_operator(mode[1]), _voice(mode[2]) {}
 
 client_flags::client_flags(client_flags const &obj)
@@ -84,7 +84,7 @@ Channel::Channel(std::string const &name, Client *client) : _name(name), _blocke
 Channel::Channel(std::string const &name, Client *client, std::string const &modes) :
 	_name(name), _blocked(0), _creation_time(ft_getcurrenttime())
 {
-	std::vector<bool>	bmodes(3);
+	bool	bmodes[3];
 
 	bmodes[0] = 0;
 	bmodes[1] = 0;
