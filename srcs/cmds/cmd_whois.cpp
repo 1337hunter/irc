@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 18:10:58 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 18:21:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,6 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 		servername = getmatchingservername(serv, split[1]);
 		if (servername.empty())
 		{
-			// this is what insp sends.
-			// RFC does not specify the ERR_NOSUCHSERVER for this query
-			// but it <<<SEEMS>>> pretty logical
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, cit->getnickname(),
 				split[1], "No such server");
