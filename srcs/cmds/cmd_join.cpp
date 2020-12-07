@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 19:44:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 19:55:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 						break ;
 					}
 				chan->add_client(client_it->getptr());
-				client_it->add_channel(chan->getptr());
+//				client_it->add_channel(chan->getptr());
 				if (args[i][0] != '&')
 					msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);
