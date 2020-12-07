@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 14:56:31 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 16:16:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,12 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	std::unordered_map<Client*, client_flags>::iterator c_map;
 	std::string		reply;
 
-	reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
-		"@" + client_it->gethostname() + " JOIN :" + chan->getname() + CRLF;
+	if (chan->getflags()._anonymous)
+		reply = ":anonymous!anonymous@anonymous";
+	else
+		reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
+		"@" + client_it->gethostname();
+	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 		if (c_map->first->getFD() != client_it->getFD())
 			serv->fds[c_map->first->getFD()].wrbuf += reply;
