@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/06 19:12:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 17:10:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,4 +193,22 @@ bool	is_server_registred(const std::string &name, IRCserv *serv)
 		nearest++;
 	}
 	return false;
+}
+
+std::string		getmatchingservername(IRCserv *serv, std::string const &mask)
+{
+	std::string	servername = "";
+
+	if (match(serv->servername, mask))
+		servername = serv->servername;
+	for (t_linkit servit = serv->link.begin();
+		servit != serv->link.end() && servername.empty(); servit++)
+	{
+		if (match(servit->servername, mask))
+		{
+			servername = servit->servername;
+			break ;
+		}
+	}
+	return (servername);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 17:59:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 17:09:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@
 */
 
 typedef std::vector<t_whowas>::iterator	t_whowasit;
-typedef std::vector<t_link>::iterator	t_linkit;
 
 void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 {
@@ -84,21 +83,8 @@ void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() > 3)
 	{
-		t_linkit servit = serv->link.begin();
-		if (match(serv->servername, split[3]))
-		{
-			servername = serv->servername;
-			servit = serv->link.end();
-		}
-		for (; servit != serv->link.end(); servit++)
-		{
-			if (match(servit->servername, split[3]))
-			{
-				servername = servit->servername;
-				break ;
-			}
-		}
-		if (servit == serv->link.end() && servername.empty())
+		servername = getmatchingservername(serv, split[3]);
+		if (servername.empty())
 		{
 			// this is what insp sends.
 			// RFC does not specify the ERR_NOSUCHSERVER for this query
