@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/05 16:51:41 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 14:32:14 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ void	cmd_names(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_who(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_part(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_mode(int fd, const t_strvect &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, t_citer const cli);
 std::string		reply_motd(IRCserv *serv, std::string const &it);

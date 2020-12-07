@@ -56,3 +56,12 @@ void	msg_error(std::string msg, IRCserv *serv)
 		b++;
 	}
 }
+
+void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	net;
+
+	for (net = serv->network.begin(); net != serv->network.end(); net++)
+		if (fd != net->fd)
+			serv->fds[net->fd].wrbuf += msg + CRLF;
+}

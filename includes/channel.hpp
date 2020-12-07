@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 19:59:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 14:53:48 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,9 @@ struct	client_flags
 	client_flags(void);
 	client_flags(bool Operator, bool oper, bool voice);
 	client_flags(client_flags const &obj);
-	client_flags &operator=(client_flags const &obj);
+	client_flags(std::vector<bool> &mod);
 	~client_flags(void) {}
+	client_flags &operator=(client_flags const &obj);
 };
 
 class Channel {
@@ -81,6 +82,7 @@ private:
 	Channel();
 public:
 	Channel(std::string const &name, Client *client);
+	Channel(std::string const &name, Client *client, std::string const &modes);
 	Channel(std::string const &name, std::string const &key, Client *client);
 	~Channel();
 	Channel(Channel const &other);

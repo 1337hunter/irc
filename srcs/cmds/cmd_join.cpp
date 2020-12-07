@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/06 19:43:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 14:56:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,6 @@
 //Parameters: <channel>[ %x7 <modes> ] *( "," <channel>[ %x7 <modes> ] )
 //
 //Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
-
-void	join_forward(std::string &name, std::string &key, t_citer client_it, IRCserv *serv,
-		std::string	append)
-{
-	std::vector<t_server>::iterator	net;
-
-	for (net = serv->network.begin(); net != serv->network.end(); net++)
-		serv->fds[net->fd].wrbuf += ":" + client_it->getnickname() + append +
-		   " JOIN " + name + " " + key + CRLF;
-}
 
 void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer client_it)
 {
@@ -88,7 +78,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				chan->add_client(client_it->getptr());
 				client_it->add_channel(chan->getptr());
 				if (args[i][0] != '&')
-					join_forward(args[i], keys[i], client_it, serv, "");
+					msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);
 				break ;
 			}
@@ -98,10 +88,44 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
 			client_it->add_channel((serv->channels.rend())->getptr());
 			if (args[i][0] != '&')
-				join_forward(args[i], keys[i], client_it, serv, "");
+				msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
+			if (!keys[i].empty())
+				msg_forward(-1, "MODE " + args[i] + " +k " + keys[i], serv);
 			join_backward(serv, --serv->channels.end(), client_it);
 		}
 	}
+}
+
+void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
+{
+	Client		*client;
+	Channel		*channel;
+	t_strvect	chans;
+	t_strvect	modes;
+
+	if (split.size() < 3)
+		return ;
+	if ((client = find_client_by_nick(std::string(split[0], 1), serv)) == 0)
+		return ;//bad command from server
+	chans = ft_splitstring(split[2], ',');
+	for (size_t	i = 0; i < chans.size(); i++)
+	{
+		modes = ft_splitstring(chans[i], static_cast<char>(7));
+		channel = find_channel_by_name(modes[0], serv);
+		if (channel == 0)
+		{
+			if (modes.size() > 1)
+				serv->channels.push_back(Channel(modes[0], client, modes[1]));
+			else
+				serv->channels.push_back(Channel(modes[0], client));
+		}
+		else
+		{
+			channel->add_client(client->getptr());
+			client->add_channel(channel->getptr());
+		}
+	}
+	msg_forward(fd, strvect_to_string(split), serv);
 }
 
 void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
@@ -126,4 +150,6 @@ void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 		}
 		join_to_chan(fd, split, serv, client_it);
 	}
+	else if (split[0][0] == ':' && serv->fds[fd].type == FD_SERVER)
+		join_from_network(fd, split, serv);
 }

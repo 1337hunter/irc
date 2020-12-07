@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/05 16:52:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 14:31:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -842,6 +842,8 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["WHO"] = cmd_who;
 	serv->command["WHOIS"] = cmd_whois;
 	serv->command["WHOWAS"] = cmd_whowas;
+	serv->command["PART"] = cmd_part;
+	serv->command["MODE"] = cmd_mode;
 
 	serv->version = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)

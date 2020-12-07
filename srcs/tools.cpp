@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 06:27:21 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 13:16:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,16 @@ Client		*find_client_by_fd(int	fd, IRCserv *serv)
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 		if (client->getFD() == fd)
 			return &(*client);
+	return 0;
+}
+
+Channel		*find_channel_by_name(const std::string	&name, IRCserv *serv)
+{
+	std::list<Channel>::iterator	chan;
+
+	for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
+		if (chan->getname() == name)
+			return chan->getptr();
 	return 0;
 }
 
@@ -130,25 +140,3 @@ int			nick_forward(IRCserv *serv, t_citer client)
 		serv->fds[net->fd].wrbuf += forward;
 	return 0;
 }
-
-/*int		find_client_routing(std::string	const &nick, IRCserv *serv)
-{
-	std::list<Client>::iterator     client = serv->clients.begin();
-	std::vector<t_server>::iterator net = serv->network.begin();
-
-	while (client != serv->clients.end())
-	{
-		if (client->getnickname() == nick)
-			return client->getFD();
-		client++;
-	}
-	while (net != serv->network.end())
-	{
-		client = net->clients.begin();
-		while (client != net->clients.end())
-		{
-			if (client->getnickname() == nick)
-
-		}
-	}
-}*/

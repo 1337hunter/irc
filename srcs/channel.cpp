@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 19:55:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 14:55:27 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,9 @@ channel_flags::~channel_flags(void) {}
 client_flags::client_flags(bool Operator, bool oper, bool voice) :
 	_Operator(Operator), _operator(oper), _voice(voice) {}
 
+client_flags::client_flags(std::vector<bool> &mode) : _Operator(mode[0]),
+	_operator(mode[1]), _voice(mode[2]) {}
+
 client_flags::client_flags(client_flags const &obj)
 {
 	_Operator = obj._Operator;
@@ -77,6 +80,22 @@ Channel::Channel(std::string const &name, Client *client) : _name(name), _blocke
 		_clients[client] = client_flags(1, 1, 0);
 	}
 }
+
+Channel::Channel(std::string const &name, Client *client, std::string const &modes) :
+	_name(name), _blocked(0), _creation_time(ft_getcurrenttime())
+{
+	std::vector<bool>	bmodes{0, 0, 0};
+
+	for (size_t	i = 0; i < modes.size(); i++)
+		if (modes[i] == 'O')
+			bmodes[0] = 1;
+		else if (modes[i] == 'o')
+			bmodes[1] = 1;
+		else if (modes[i] == 'v')
+			bmodes[2] = 1;
+	_clients[client] = client_flags(bmodes);
+}
+
 
 Channel::~Channel() {}
 

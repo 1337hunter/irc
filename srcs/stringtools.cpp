@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 02:53:59 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 13:17:59 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,25 @@ t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 		split.push_back(msg);
 	return (split);
 }
+
+t_strvect	ft_splitstring(std::string str, char delim)
+{
+	t_strvect	split;
+	size_t		pos(0);
+	std::string	temp;
+
+	while ((pos = str.find(delim)) != std::string::npos)
+	{
+		temp = str.substr(0, pos);
+		if (!temp.empty())
+			split.push_back(temp);
+		str.erase(0, pos + 1);
+	}
+	if (!str.empty())
+		split.push_back(str);
+	return split;
+}
+
 
 t_strvect	ft_splitstringbyany(std::string msg, std::string const &delim)
 {
