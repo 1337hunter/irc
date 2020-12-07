@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 14:32:14 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 18:27:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,5 +46,8 @@ std::string		reply_motd(IRCserv *serv, std::string const &it);
 std::string		reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, Client *client);
 std::string		reply_nochan_visible_names(IRCserv *serv, Client *client);
 bool			is_server_registred(const std::string &name, IRCserv *serv);
+std::string		getmatchingservername(IRCserv *serv, std::string const &mask);
+
+typedef std::vector<t_server>::iterator	t_netit;
 
 #endif

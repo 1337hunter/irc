@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 19:56:04 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 17:18:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@
 #define RPL_WHOISOPERATOR	"313"
 //	"<nick> <integer> :seconds idle"
 #define RPL_WHOISIDLE		"317"
-//	"<nick> :End of /WHOIS list"
+//	"<nick> :End of WHOIS list"
 #define RPL_ENDOFWHOIS		"318"
 /*	"<nick> :{[@|+]<channel><space>}"
 	or

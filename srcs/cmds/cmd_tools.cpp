@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_tools.cpp                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 17:14:51 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
@@ -189,4 +177,22 @@ bool	is_server_registred(const std::string &name, IRCserv *serv)
 		nearest++;
 	}
 	return false;
+}
+
+std::string		getmatchingservername(IRCserv *serv, std::string const &mask)
+{
+	std::string	servername = "";
+
+	if (match(serv->servername, mask))
+		servername = serv->servername;
+	for (t_netit servit = serv->network.begin();
+		servit != serv->network.end() && servername.empty(); servit++)
+	{
+		if (match(servit->servername, mask))
+		{
+			servername = servit->servername;
+			break ;
+		}
+	}
+	return (servername);
 }

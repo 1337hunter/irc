@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 17:50:39 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 18:21:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 	is presented.
 
 	If the <target> parameter is specified, it sends the query to a
-	specific server.  It is useful if you want to know how long the user
+	specific server. It is useful if you want to know how long the user
 	in question has been idle as only local server (i.e., the server the
 	user is directly connected to) knows that information, while
 	everything else is globally known.
@@ -37,7 +37,6 @@
 		ERR_NOSUCHSERVER
 		ERR_NONICKNAMEGIVEN
 		RPL_WHOISUSER
-		RPL_WHOISCHANNELS
 		RPL_WHOISCHANNELS
 		RPL_WHOISSERVER
 		RPL_AWAY
@@ -59,10 +58,11 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_citer		cit = ft_findclientfd(serv->clients.begin(),
 		serv->clients.end(), fd);
+	std::string	servername = "";
+	std::string	nickname = "";
 
 	if (cit == serv->clients.end())
 		return ;
-
 	if (split.size() < 2)
 	{
 		// may be different
@@ -70,5 +70,68 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 			ERR_NONICKNAMEGIVEN, cit->getnickname(), "", "No nickname given");
 		return ;
 	}
-	// not done
+
+	if (split.size() > 2)
+	{
+		nickname = split[2];
+		servername = getmatchingservername(serv, split[1]);
+		if (servername.empty())
+		{
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				ERR_NOSUCHSERVER, cit->getnickname(),
+				split[1], "No such server");
+			return ;
+		}
+	}
+	else
+		nickname = split[1];
+
+	t_cvit it = serv->clients.begin();
+	for (; it != serv->clients.end(); it++)
+	{
+		if (match(it->getnickname(), nickname) &&
+			(servername.empty() || (servername == serv->servername)))
+		{
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				RPL_WHOISUSER, cit->getnickname(),
+				it->getnickname() + " " + it->getusername() + " " +
+				it->gethostname() + " *", it->getrealname());
+
+			// maybe uses RPL_WHOISCHANNELS
+			/* unreal also sends
+				379 nickname nickname is using modes +iwx
+				378 nickname nickname is connecting from *@localhost 127.0.0.1
+			*/
+
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				RPL_WHOISSERVER, cit->getnickname(),
+				it->getnickname() + " " + serv->servername, serv->info);
+			if (it->isOperator())
+				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+					RPL_WHOISOPERATOR, cit->getnickname(),
+					it->getnickname(), "is an IRC operator");
+			/*
+			if (it->isAway())
+				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+					RPL_AWAY, cit->getnickname(),
+					it->getnickname(), "<away message>");
+			*/
+
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				RPL_WHOISIDLE, cit->getnickname(), it->getnickname() + " " +
+				std::to_string(ft_getcurrenttime() - it->gettimeloggedin()),
+				"seconds idle");
+			/* unreal also sends timestamp of login in 317 */
+
+			break ;
+		}
+	}
+	if (it == serv->clients.end())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOSUCHNICK, cit->getnickname(),
+			nickname, "No such nick/channel");
+	}
+	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		RPL_ENDOFWHOIS, cit->getnickname(), nickname, "End of WHOIS list");
 }

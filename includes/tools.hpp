@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 13:15:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 17:50:34 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ std::string	ft_strtoupper(std::string const &str);
 /****************************************************/
 struct tm	*ft_localtime(time_t const *rawtime);
 time_t		ft_getcurrenttime(void);
-time_t		ft_getcurrenttime2(void);
 time_t		ft_getcompiletime(void);
 std::string	ft_timetostring(time_t rawtime);
 
