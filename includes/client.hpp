@@ -84,7 +84,8 @@ public:
 	std::list<Channel*>	&getchannels(void);
 	void				add_channel(Channel *chan);
 	void				invite_to(const std::string &chan);
-	bool				is_invited_to(Channel *chan);
+	bool				isInvited(Channel *chan);
+	bool				isBanned(Channel *chan);
 	void				sethostname(std::string const &host);
 
 	bool				Register(std::string const &user,

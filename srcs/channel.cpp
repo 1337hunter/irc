@@ -6,15 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 18:53:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 20:29:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "channel.hpp"
 #include "tools.hpp"
-
-
-/*	Channel::Channel() : chop()	{}	*/
 
 std::string	get_safe_postfix(void)
 {
@@ -40,7 +37,7 @@ std::string	get_safe_postfix(void)
 channel_flags::channel_flags(void) : _anonymous(false), _invite_only(false),
 	_moderated(false), _no_messages_outside(false), _quiet(false), _private(false),
 	_secret(false), _reop(false), _topic_settable_by_chop(false), _key(""),
-	_limit_of_users(1024), _ban_mask(""), _exception_mask(""), _Invitation_mask("") {}
+	_limit_of_users(1024) {}
 
 channel_flags::~channel_flags(void) {}
 
@@ -156,7 +153,6 @@ void		Channel::settype(char type)
 
 void		Channel::add_client(Client *client)
 {
-	client->add_channel(this);
 	_clients[client];
 }
 
@@ -180,7 +176,7 @@ void		Channel::settopic(std::string const &topic)
 	_topic = topic;
 }
 
-channel_flags const	&Channel::getflags(void)
+channel_flags const &Channel::getflags(void)
 {
 	return _flags;
 }
@@ -214,4 +210,14 @@ bool		Channel::isOnChan(Client *client)
 		if (it->first == client)
 			return true;
 	return false;
+}
+
+bool		Channel::isInvited(Client *client)
+{
+	return client->isInvited(this);
+}
+
+bool		Channel::isBanned(Client *client)
+{
+	return client->isBanned(this);
 }

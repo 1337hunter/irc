@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 19:55:00 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 20:41:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,14 +78,20 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 						break ;
 					}
 				if (chan->getflags()._invite_only)
-					if (!client_it->is_invited_to(&(*chan)))
+					if (!client_it->isInvited(&(*chan)))
 					{
 						serv->fds[fd].wrbuf += ":" + serv->servername + " 473 " +
 							args[i] + " :Cannot join channel (+i)" + CRLF;
 						break ;
 					}
+				if (chan->getflags()._ban_mask.size() > 0)
+					if (chan->isBanned(client_it->getptr()))
+					{
+						serv->fds[fd].wrbuf += ":" + serv->servername + " 474 " + args[i] +
+							+ " :Cannot join channel (+b)" + CRLF;
+					}
 				chan->add_client(client_it->getptr());
-//				client_it->add_channel(chan->getptr());
+				client_it->add_channel(chan->getptr());
 				if (args[i][0] != '&')
 					msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);

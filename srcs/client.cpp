@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 19:24:24 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 20:29:55 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,15 +290,35 @@ bool	Client::isInvisible(void)
 	return (this->_isInvisible);
 }
 
-bool	Client::is_invited_to(Channel *chan)
+bool	Client::isInvited(Channel *chan)
 {
 	std::list<std::string>::iterator	begin;
+	std::list<std::string>::const_iterator	mask;
 
 	for (begin = invited.begin(); begin != invited.end(); begin++)
 		if (*begin == chan->getname())
 			return true;
-	if (match(this->getinfo(), chan->getflags()._Invitation_mask))
-		return true;
+	mask = chan->getflags()._Invitation_mask.begin();
+	for (; mask != chan->getflags()._Invitation_mask.end(); mask++)
+		if (match(this->getinfo(), *mask))
+			return true;
+	return false;
+}
+
+bool	Client::isBanned(Channel *chan)
+{
+	std::list<std::string>::const_iterator	ban_mask;
+	std::list<std::string>::const_iterator	exception_mask;
+
+	exception_mask = chan->getflags()._ban_mask.begin();
+
+	for (; exception_mask != chan->getflags()._exception_mask.end(); exception_mask++)
+		if (match(this->getinfo(), *exception_mask))
+			return false;
+	ban_mask = chan->getflags()._ban_mask.begin();
+	for (; ban_mask != chan->getflags()._ban_mask.end(); ban_mask++)
+		if (match(this->getinfo(), *ban_mask))
+			return true;
 	return false;
 }
 

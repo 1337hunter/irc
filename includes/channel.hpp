@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 19:34:50 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 20:27:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <vector>
 #include "client.hpp"
 #include <unordered_map>
+#include <list>
 //#include "tools.hpp"
 
 /*	A channel is a named group of one or more clients which will all
@@ -47,9 +48,9 @@ struct	channel_flags
 	bool		_topic_settable_by_chop;
 	std::string	_key;
 	size_t		_limit_of_users;
-	std::string	_ban_mask;
-	std::string	_exception_mask;
-	std::string	_Invitation_mask;
+	std::list<std::string>	_ban_mask;
+	std::list<std::string>	_exception_mask;
+	std::list<std::string>	_Invitation_mask;
 	
 	channel_flags(void);
 	~channel_flags(void);
@@ -103,6 +104,8 @@ public:
 	void				unblock(void);
 	bool				isBlocked(void);
 	bool				isOnChan(Client *client);
+	bool				isInvited(Client *client);
+	bool				isBanned(Client *client);
 
 	void				settype(char type);
 	void				settopic(std::string const &topic);
