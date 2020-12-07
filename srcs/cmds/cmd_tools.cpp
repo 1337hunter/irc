@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/11 17:08:35 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 18:22:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 18:27:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,8 +201,8 @@ std::string		getmatchingservername(IRCserv *serv, std::string const &mask)
 
 	if (match(serv->servername, mask))
 		servername = serv->servername;
-	for (t_linkit servit = serv->link.begin();
-		servit != serv->link.end() && servername.empty(); servit++)
+	for (t_netit servit = serv->network.begin();
+		servit != serv->network.end() && servername.empty(); servit++)
 	{
 		if (match(servit->servername, mask))
 		{
