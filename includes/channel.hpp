@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 18:53:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 19:34:50 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ struct	client_flags
 
 class Channel {
 private:
-	std::unordered_map<Client*, client_flags>	_clients;
 	std::string				_name;
 	bool                    _blocked;
 	time_t					_creation_time;
@@ -80,6 +79,7 @@ private:
 	std::string				_topic;
 	char					_type;
 	channel_flags			_flags;
+	std::unordered_map<Client*, client_flags>	_clients;
 	Channel();
 public:
 	Channel(std::string const &name, Client *client);

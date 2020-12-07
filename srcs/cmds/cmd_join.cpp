@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 17:08:11 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 19:23:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 						break ;
 					}
 				if (chan->getflags()._invite_only)
-					if (!client_it->is_invited_to(args[i]))
+					if (!client_it->is_invited_to(&(*chan)))
 					{
 						serv->fds[fd].wrbuf += ":" + serv->servername + " 473 " +
 							args[i] + " :Cannot join channel (+i)" + CRLF;

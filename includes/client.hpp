@@ -77,13 +77,14 @@ public:
 	std::string const	&getrealname(void);
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
+	std::string			getinfo(void);
 	Client				*getptr(void);
 	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
 	std::list<Channel*>	&getchannels(void);
 	void				add_channel(Channel *chan);
 	void				invite_to(const std::string &chan);
-	bool				is_invited_to(const std::string &chan);
+	bool				is_invited_to(Channel *chan);
 	void				sethostname(std::string const &host);
 
 	bool				Register(std::string const &user,

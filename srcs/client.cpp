@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 18:55:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 19:24:24 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,14 +290,21 @@ bool	Client::isInvisible(void)
 	return (this->_isInvisible);
 }
 
-bool	Client::is_invited_to(const std::string	&chan)
+bool	Client::is_invited_to(Channel *chan)
 {
 	std::list<std::string>::iterator	begin;
 
 	for (begin = invited.begin(); begin != invited.end(); begin++)
-		if (*begin == chan)
+		if (*begin == chan->getname())
 			return true;
+	if (match(this->getinfo(), chan->getflags()._Invitation_mask))
+		return true;
 	return false;
+}
+
+std::string	Client::getinfo(void)
+{
+	return std::string(nickname + "!" + username + "@" + hostname);
 }
 
 /*
