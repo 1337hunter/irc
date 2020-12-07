@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_join.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/07 19:23:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/07 19:44:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 		if (chan == serv->channels.end())
 		{
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
-			client_it->add_channel((serv->channels.rend())->getptr());
+			client_it->add_channel((serv->channels.rbegin())->getptr());
 			if (args[i][0] != '&')
 				msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
 			if (!keys[i].empty())

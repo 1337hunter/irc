@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 18:21:04 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/07 19:45:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@
 								information  about trillian
 */
 
-typedef std::list<Client>::iterator	t_cvit;
+typedef std::list<Client>::iterator		t_cvit;
+typedef std::list<Channel*>::iterator	t_chanit;
 
 void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 {
@@ -97,7 +98,23 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 				it->getnickname() + " " + it->getusername() + " " +
 				it->gethostname() + " *", it->getrealname());
 
-			// maybe uses RPL_WHOISCHANNELS
+			std::string	channelstr = "";
+			for (t_chanit chit = it->getchannels().begin();
+				chit != it->getchannels().end(); chit++)
+			{
+				if (((*chit)->isSecret()) || ((*chit)->isPrivate()))
+					continue ;
+				if (!channelstr.empty())
+					channelstr += " ";
+				channelstr += "@" + (*chit)->getname();
+				// @ is a placeholder. will change it later
+			}
+
+			if (!channelstr.empty())
+				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+					RPL_WHOISCHANNELS, cit->getnickname(),
+					it->getnickname() + " ", channelstr);
+
 			/* unreal also sends
 				379 nickname nickname is using modes +iwx
 				378 nickname nickname is connecting from *@localhost 127.0.0.1
