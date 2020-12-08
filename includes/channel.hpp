@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 14:56:23 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 22:31:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ private:
 	char					_type;
 	channel_flags			_flags;
 	std::unordered_map<Client*, client_flags>	_clients;
+	std::string				_channel_creator;
 	Channel();
 public:
 	Channel(std::string const &name, Client *client);
@@ -96,6 +97,7 @@ public:
 	std::string const	&getname(void);
 	std::string	const	&getkey(void);
 	std::string const	&gettopic(void);
+	std::string const	&getCreator(void);
 	channel_flags const	&getflags(void);
 	Channel				*getptr(void);
 	char				gettype(void);
@@ -108,6 +110,8 @@ public:
 	bool				isOnChan(Client *client);
 	bool				isInvited(Client *client);
 	bool				isBanned(Client *client);
+	bool				isOperator(Client *client); // not safe (use isOnChan before);
+	//bool				setMode(std::string const &mode);
 
 	void				settype(char type);
 	void				settopic(std::string const &topic);

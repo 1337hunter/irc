@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 15:31:31 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 22:34:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,13 +92,17 @@ Channel::Channel(std::string const &name, Client *client) : _name(name), _blocke
 	_creation_time(ft_getcurrenttime())
 {
 	if (name.size() > 0 && name[0] == '#')
+	{
 		_clients[client] = client_flags(1, 1, 0);
+		_channel_creator = client->getinfo();
+	}
 	else if (name.size() > 0 && name[0] == '+')
 		_clients[client];
 	else if (name.size() > 0 && name[0] == '!')
 	{
 		_safe_postfix = get_safe_postfix();
 		_clients[client] = client_flags(1, 1, 0);
+		_channel_creator = client->getinfo();
 	}
 }
 
@@ -112,7 +116,10 @@ Channel::Channel(std::string const &name, Client *client, std::string const &mod
 	bmodes[2] = 0;
 	for (size_t	i = 0; i < modes.size(); i++)
 		if (modes[i] == 'O')
+		{
 			bmodes[0] = 1;
+			_channel_creator = client->getinfo();
+		}
 		else if (modes[i] == 'o')
 			bmodes[1] = 1;
 		else if (modes[i] == 'v')
@@ -184,6 +191,11 @@ void		Channel::settype(char type)
 	_type = type;
 }
 
+std::string const &Channel::getCreator(void)
+{
+	return _channel_creator;
+}
+
 void		Channel::add_client(Client *client)
 {
 	_clients[client];
@@ -197,6 +209,11 @@ bool		Channel::isSecret(void)
 bool		Channel::isPrivate(void)
 {
 	return _flags._private;
+}
+
+bool		Channel::isOperator(Client *client)
+{
+	return _clients[client]._Operator || _clients[client]._operator;
 }
 
 std::string	const &Channel::gettopic(void)

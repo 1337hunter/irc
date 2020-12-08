@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 15:27:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 22:33:25 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,4 +134,57 @@ std::string	get_nick_from_info(std::string const &info)
 	while (pos < info.size() && info[pos] != '!')
 		nick += info[pos++];
 	return nick;
+}
+
+std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, IRCserv *serv)
+{
+	size_t	i;
+	std::string reply;
+	std::list<std::string>::const_iterator	mask;
+
+	i = -1;
+	while (++i < mode.size())
+	{
+		if (mode[i] == 'b')
+		{
+			mask = channel->getflags()._ban_mask.begin();
+			while (mask != channel->getflags()._ban_mask.end())
+			{
+				reply += ":" + serv->servername + " 367 " + client->getnickname();	
+				reply += " " + channel->getname() + " " + *mask + CRLF;
+				mask++;
+			}
+			reply += ":" + serv->servername + " 368 " + client->getnickname();
+			reply += " " + channel->getname() + " :End of channel ban list" + CRLF;
+		}
+		else if (mode[i] == 'I')
+		{
+			mask = channel->getflags()._Invitation_mask.begin();
+			while (mask != channel->getflags()._Invitation_mask.end())
+			{
+				reply += ":" + serv->servername + " 346 " + client->getnickname();
+				reply += " " + channel->getname() + " " + *mask + CRLF;
+			}
+			reply += ":" + serv->servername + " 347 " + client->getnickname();
+			reply += " " + channel->getname() + " :End of channel invite list" + CRLF;
+		}
+		else if (mode[i] == 'e')
+		{
+			mask = channel->getflags()._exception_mask.begin();
+			while (mask != channel->getflags()._Invitation_mask.end())
+			{
+				reply += ":" + serv->servername + " 348 " + client->getnickname();
+				reply += " " + channel->getname() + " " + *mask + CRLF;
+			}
+			reply += ":" + serv->servername + " 349 " + client->getnickname();
+			reply += " " + channel->getname() + " :End of channel exception list" + CRLF;
+		}
+		else if (mode[i] == 'O')
+		{
+			reply += ":" + serv->servername + " 325 " + client->getnickname();
+			reply += " " + channel->getname() + " ";
+			reply += get_nick_from_info(channel->getCreator()) + CRLF;
+		}
+	}
+	return reply;
 }

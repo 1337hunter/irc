@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/08 15:18:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 20:50:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,24 +73,31 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				if (chan->getflags()._quiet)
 					if (!client_it->isOperator())
 					{
-						serv->fds[fd].wrbuf += ":" + serv->servername + " 481 " + args[i] +
-							":Permission Denied- You're not an IRC operator" + CRLF;
+						serv->fds[fd].wrbuf += get_reply(serv, "481", fd, args[i],
+								"Permission Denied- You're not an IRC operator");
 						break ;
 					}
 				if (chan->getflags()._invite_only)
 					if (!client_it->isInvited(&(*chan)))
 					{
-						serv->fds[fd].wrbuf += ":" + serv->servername + " 473 " +
-							args[i] + " :Cannot join channel (+i)" + CRLF;
+						serv->fds[fd].wrbuf += get_reply(serv, "473", fd, args[i],
+								"Cannot join channel (+i)");
 						break ;
 					}
 				if (chan->getflags()._ban_mask.size() > 0)
 					if (chan->isBanned(client_it->getptr()))
 					{
-						serv->fds[fd].wrbuf += ":" + serv->servername + " 474 " + args[i] +
-							+ " :Cannot join channel (+b)" + CRLF;
+						serv->fds[fd].wrbuf += get_reply(serv, "474", fd, args[i],
+								"Cannot join channel (+b)");
 						break ;
 					}
+				if (chan->getflags()._limit_of_users >= chan->getclients().size()
+						&& !client_it->isOperator())
+				{
+					serv->fds[fd].wrbuf += get_reply(serv, "471", fd, args[i],
+							"Cannot join channel (+l)");
+					break ;
+				}
 				chan->add_client(client_it->getptr());
 				client_it->add_channel(chan->getptr());
 				if (args[i][0] != '&')

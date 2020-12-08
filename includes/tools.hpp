@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 13:32:24 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 22:34:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ bool		match(const char *s1, const char *s2);
 bool		match(std::string const &s1, std::string const &s2);
 std::string	ft_strtoupper(std::string const &str);
 std::string	get_nick_from_info(std::string const &info);
-
+std::string get_mask_reply(Channel *channel, Client *client, std::string mode, IRCserv *serv);
 /****************************************************/
 /*		time related functions (timetools.cpp)		*/
 /****************************************************/

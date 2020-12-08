@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 15:04:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 20:29:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,11 @@ std::string			Client::gethopcount(bool str, bool plus)
 	if (str)
 		hop += " ";
 	return hop;
+}
+
+int					Client::gethop(void)
+{
+	return this->hopcount;
 }
 
 std::string	const	&Client::gettoken(void)

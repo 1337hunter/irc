@@ -81,6 +81,7 @@ public:
 	Client				*getptr(void);
 	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
+	int					gethop(void);
 	std::list<Channel*>	&getchannels(void);
 	Channel				*eraseChannel(std::string const &name);
 	void				add_channel(Channel *chan);
