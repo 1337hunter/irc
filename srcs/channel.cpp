@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 15:07:15 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 15:31:31 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,6 @@ client_flags::client_flags(void) : _Operator(0), _operator(0), _voice(0) {}
 Channel::Channel(std::string const &name, Client *client) : _name(name), _blocked(false),
 	_creation_time(ft_getcurrenttime())
 {
-	std::cout << "\n\nNEW CHANNEL " << name << "\n\n";
-	if (_blocked)
-		std::cout << "\nBlocked!!!\n";
 	if (name.size() > 0 && name[0] == '#')
 		_clients[client] = client_flags(1, 1, 0);
 	else if (name.size() > 0 && name[0] == '+')
