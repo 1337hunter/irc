@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 20:13:40 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/08 18:26:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,13 +75,19 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 	if (split.size() > 2)
 	{
 		nickname = split[2];
-		servername = getmatchingservername(serv, split[1]);
-		if (servername.empty())
+
+		// for some stupid reason Textual sends WHOIS nick nick
+		// so i implement stupid solution to this
+		if (nickname != split[1])
 		{
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				ERR_NOSUCHSERVER, cit->getnickname(),
-				split[1], "No such server");
-			return ;
+			servername = getmatchingservername(serv, split[1]);
+			if (servername.empty())
+			{
+				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+					ERR_NOSUCHSERVER, cit->getnickname(),
+					split[1], "No such server");
+				return ;
+			}
 		}
 	}
 	else
