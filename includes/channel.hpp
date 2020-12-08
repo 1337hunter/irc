@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 20:27:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 14:56:23 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ struct	channel_flags
 	std::list<std::string>	_exception_mask;
 	std::list<std::string>	_Invitation_mask;
 	
+	channel_flags(const channel_flags &o);
+	channel_flags &operator=(const channel_flags &o);
 	channel_flags(void);
 	~channel_flags(void);
 };

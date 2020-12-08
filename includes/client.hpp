@@ -46,7 +46,7 @@ private:
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
 	time_t			dtloggedin;
-	std::list<Channel*>	_channels;
+	std::list<Channel*>	_channels; //unordered map is better channame->Channel*
 	std::list<std::string>	invited;
 	// Maybe server class object reference or pointer here
 	Client(void);
@@ -82,6 +82,7 @@ public:
 	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
 	std::list<Channel*>	&getchannels(void);
+	Channel				*eraseChannel(std::string const &name);
 	void				add_channel(Channel *chan);
 	void				invite_to(const std::string &chan);
 	bool				isInvited(Channel *chan);

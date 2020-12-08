@@ -65,3 +65,14 @@ void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 		if (fd != net->fd)
 			serv->fds[net->fd].wrbuf += msg + CRLF;
 }
+
+void	msg_to_channel(Channel *channel, std::string msg, IRCserv *serv)
+{
+	std::unordered_map<Client*, client_flags>::const_iterator	client;
+
+	client = channel->getclients().begin();
+	for (; client != channel->getclients().end(); client++)
+		if (client->first->gethopcount() == "0")
+			serv->fds[client->first->getFD()].wrbuf += msg + CRLF;
+}
+

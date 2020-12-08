@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 20:29:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 15:07:15 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,30 @@ channel_flags::channel_flags(void) : _anonymous(false), _invite_only(false),
 	_secret(false), _reop(false), _topic_settable_by_chop(false), _key(""),
 	_limit_of_users(1024) {}
 
+channel_flags::channel_flags(const channel_flags &o)
+{
+	*this = o;
+}
+
+channel_flags	&channel_flags::operator=(const channel_flags &o)
+{
+	_anonymous = o._anonymous;
+	_invite_only = o._invite_only;
+	_moderated = o._moderated;
+	_no_messages_outside = o._no_messages_outside;
+	_quiet = o._quiet;
+	_private = o._private;
+	_secret = o._secret;
+	_reop = o._reop;
+	_topic_settable_by_chop = o._topic_settable_by_chop;
+	_key = o._key;
+	_limit_of_users = o._limit_of_users;
+	_ban_mask = o._ban_mask;
+	_exception_mask = o._exception_mask;
+	_Invitation_mask = o._Invitation_mask;
+	return *this;
+}
+
 channel_flags::~channel_flags(void) {}
 
 client_flags::client_flags(bool Operator, bool oper, bool voice) :
@@ -64,9 +88,12 @@ client_flags	&client_flags::operator=(client_flags const &obj)
 
 client_flags::client_flags(void) : _Operator(0), _operator(0), _voice(0) {}
 
-Channel::Channel(std::string const &name, Client *client) : _name(name), _blocked(0),
+Channel::Channel(std::string const &name, Client *client) : _name(name), _blocked(false),
 	_creation_time(ft_getcurrenttime())
 {
+	std::cout << "\n\nNEW CHANNEL " << name << "\n\n";
+	if (_blocked)
+		std::cout << "\nBlocked!!!\n";
 	if (name.size() > 0 && name[0] == '#')
 		_clients[client] = client_flags(1, 1, 0);
 	else if (name.size() > 0 && name[0] == '+')
@@ -119,11 +146,20 @@ Channel::Channel(std::string const &name, std::string const &key, Client *client
 	}
 }
 
-Channel	&Channel::operator=(Channel const &other)
+Channel	&Channel::operator=(Channel const &o)
 {
-	_name = other._name;
-	_clients = other._clients;
-	return (*this);
+	_name = o._name;
+	_blocked = o._blocked;
+	_creation_time = o._creation_time;
+	_reop_delay = o._reop_delay;
+	_safe_postfix = o._safe_postfix;
+	_topic = o._topic;
+	_type = o._type;
+	_flags = o._flags;
+	_clients = o._clients;
+
+
+	return *this;
 }
 
 std::unordered_map<Client*, client_flags> &Channel::getclients(void)

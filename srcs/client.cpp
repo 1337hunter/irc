@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 20:29:55 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 15:04:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[
 	fd(_fd)
 {
 	std::string	temp(split[7], 1);
-	setMode(split[6]);
+	setMode(split[6]);// this is bad initialization PUREFY IT!
 	realname = temp;
 	for (size_t i = 8; i < split.size(); i++)
 		realname += " " + split[i];
@@ -63,21 +63,24 @@ Client::Client(Client const &other)
 
 Client				&Client::operator=(Client const &other)
 {
-	this->fd = other.fd;
 	this->nickname = other.nickname;
 	this->username = other.username;
 	this->realname = other.realname;
 	this->hostname = other.hostname;
+	this->token = other.token;
+	this->hopcount = other.hopcount;
+	this->fd = other.fd;
 	this->_isConnected = other._isConnected;
 	this->_isRegistred = other._isRegistred;
-	this->_isOperator = other._isOperator;
-	this->_isInvisible = other._isInvisible;
-	this->_isServNotice = other._isServNotice;
-	this->_isWallOps = other._isWallOps;
-	this->hopcount = other.hopcount;
 	this->USER = other.USER;
 	this->NICK = other.NICK;
+	this->_isInvisible = other._isInvisible;
+	this->_isWallOps = other._isWallOps;
+	this->_isServNotice = other._isServNotice;
+	this->_isOperator = other._isOperator;
 	this->dtloggedin = other.dtloggedin;
+	this->_channels = other._channels;
+	this->invited = other.invited;
 	return (*this);
 }
 
@@ -325,6 +328,20 @@ bool	Client::isBanned(Channel *chan)
 std::string	Client::getinfo(void)
 {
 	return std::string(nickname + "!" + username + "@" + hostname);
+}
+
+Channel	*Client::eraseChannel(std::string const &name)
+{
+	std::list<Channel*>::iterator	chan;
+
+	for (chan = _channels.begin(); chan != _channels.end(); chan++)
+		if ((*chan)->getname() == name)
+		{
+			_channels.erase(chan);
+			(*chan)->getclients().erase(this);
+			return *chan;
+		}
+	return 0;
 }
 
 /*

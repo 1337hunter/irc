@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 13:16:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 13:31:53 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,4 +139,17 @@ int			nick_forward(IRCserv *serv, t_citer client)
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
 		serv->fds[net->fd].wrbuf += forward;
 	return 0;
+}
+
+bool	remove_channel(Channel *channel, IRCserv *serv)
+{
+	std::list<Channel>::iterator	chan;
+
+	for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
+		if (channel == &(*chan))
+		{
+			serv->channels.erase(chan);
+			return true;
+		}
+	return false;
 }

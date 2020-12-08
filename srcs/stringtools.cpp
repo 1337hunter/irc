@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 13:17:59 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 11:26:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,4 +120,18 @@ std::string	ft_strtoupper(std::string const &str)
 			res[i] = std::toupper(res[i]);
 	}
 	return (res);
+}
+
+std::string	get_nick_from_info(std::string const &info)
+{
+	size_t	pos = 0;
+	std::string	nick;
+
+	if (info.empty())
+		return nick;
+	if (info[pos] == ':')
+		pos++;
+	while (pos < info.size() && info[pos] != '!')
+		nick += info[pos];
+	return nick;
 }
