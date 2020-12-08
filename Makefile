@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/07 14:31:41 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/08 14:47:32 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,6 +27,8 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/
+SRCFILES	= $(addprefix $(SRCDIR), $(SRC))
+OBJFILES	= $(addprefix $(OBJDIR), $(OBJ))
 INCLUDEDIR	= ./includes/
 HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			reply_codes.hpp error_codes.hpp common_defines.hpp \
@@ -48,6 +50,7 @@ CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
+ASANFLAGS	= -fsanitize=address
 SHELL		= /bin/zsh
 
 UNAME		:= $(shell uname)
@@ -77,13 +80,15 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all bonus openssl delssl gencert delcert clean fclean re
+.PHONY: all bonus asan openssl delssl gencert delcert clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(SSLLIBS) $(OBJDIR) $(addprefix $(OBJDIR), $(OBJ))
-	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME)"
-	@$(CC) -o $@ $(addprefix $(OBJDIR), $(OBJ)) $(EXECFLAGS)
+bonus: $(NAME)
+
+$(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
+	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
+	@$(CC) -o $@ $(OBJFILES) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
 
 $(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
@@ -92,6 +97,11 @@ $(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
+
+asan: $(SSLLIBS)
+	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME) with $(RED)$(ASANFLAGS)$(NC)"
+	@$(CC) -o $(NAME) $(SRCFILES) $(EXECFLAGS) $(ASANFLAGS)
+	@echo "$(CYAN)executable is ready$(NC)"
 
 openssl: $(SSLLIBS)
 
