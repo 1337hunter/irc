@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/08 14:27:57 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 15:18:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() < 3)
 		return ;
-	if ((client = find_client_by_nick(std::string(split[0], 1), serv)) == 0)
+	if ((client = find_client_by_nick(get_nick_from_info(split[0]), serv)) == 0)
 		return ;//bad command from server
 	chans = ft_splitstring(split[2], ',');
 	for (size_t	i = 0; i < chans.size(); i++)

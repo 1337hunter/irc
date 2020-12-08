@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 11:26:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/08 15:27:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,6 +132,6 @@ std::string	get_nick_from_info(std::string const &info)
 	if (info[pos] == ':')
 		pos++;
 	while (pos < info.size() && info[pos] != '!')
-		nick += info[pos];
+		nick += info[pos++];
 	return nick;
 }
