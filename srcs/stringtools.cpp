@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 22:33:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/09 22:48:53 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,7 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 			{
 				reply += ":" + serv->servername + " 346 " + client->getnickname();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
+				mask++;
 			}
 			reply += ":" + serv->servername + " 347 " + client->getnickname();
 			reply += " " + channel->getname() + " :End of channel invite list" + CRLF;
@@ -171,10 +172,11 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 		else if (mode[i] == 'e')
 		{
 			mask = channel->getflags()._exception_mask.begin();
-			while (mask != channel->getflags()._Invitation_mask.end())
+			while (mask != channel->getflags()._exception_mask.end())
 			{
 				reply += ":" + serv->servername + " 348 " + client->getnickname();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
+				mask++;
 			}
 			reply += ":" + serv->servername + " 349 " + client->getnickname();
 			reply += " " + channel->getname() + " :End of channel exception list" + CRLF;

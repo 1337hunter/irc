@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 20:29:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/09 15:29:30 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -333,6 +333,11 @@ bool	Client::isBanned(Channel *chan)
 std::string	Client::getinfo(void)
 {
 	return std::string(nickname + "!" + username + "@" + hostname);
+}
+
+std::string	Client::getsafeinfo(void)
+{
+	return std::string(nickname + "!" + username + "@hiddenhost");
 }
 
 Channel	*Client::eraseChannel(std::string const &name)

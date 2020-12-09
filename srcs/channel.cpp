@@ -23,8 +23,8 @@ std::string	get_safe_postfix(void)
 }
 
 channel_flags::channel_flags(void) : _anonymous(false), _invite_only(false),
-	_moderated(false), _no_messages_outside(false), _quiet(false), _private(false),
-	_secret(false), _reop(false), _topic_settable_by_chop(false), _key(""),
+	_moderated(false), _no_messages_outside(true), _quiet(false), _private(false),
+	_secret(false), _reop(false), _topic_settable_by_chop(true), _key(""),
 	_limit_of_users(NPOS) {}
 
 channel_flags::channel_flags(const channel_flags &o)
@@ -179,6 +179,11 @@ void		Channel::settype(char type)
 	_type = type;
 }
 
+std::string		Channel::getCreationTime(void)
+{
+	return std::to_string(_creation_time);
+}
+
 std::string const &Channel::getCreator(void)
 {
 	return _channel_creator;
@@ -245,6 +250,10 @@ int	Channel::setMode(std::string const &mode)
 			_flags._reop = set;
 		else if (mode[pos] == 't')
 			_flags._topic_settable_by_chop = set;
+		else if (mode[pos] == 's')
+			_flags._secret = set;
+		else if (mode[pos] == 'l' && !set)
+			_flags._limit_of_users = NPOS;
 		else
 			return INT_ERR_NEEDMOREPARAMS;
 	}
@@ -259,14 +268,12 @@ int	Channel::setMode(t_strvect const &args)
 	std::vector<std::string>	mode;
 	std::vector<std::string>	arg;
 	std::string					strmode;
-	std::string					strarg;
-	std::string					reply;
 	std::list<std::string>::iterator	it;
 
 	i = 0;
 	while (i < args.size())
 	{
-		if (args[i][0] != '-' || args[i][0] != '+')
+		if (args[i][0] != '-' && args[i][0] != '+')
 			return INT_ERR_NEEDMOREPARAMS;
 		pos = 0;
 		n = 0;
@@ -277,14 +284,13 @@ int	Channel::setMode(t_strvect const &args)
 			{
 				if (args[i][pos] == 'k' && args[i][0] == '+' && !_flags._key.empty())
 					return INT_ERR_KEYSET;
-				if (args.size() <= i + pos || args[i + pos][0] == '+' ||
-						args[i + pos][0] == '-')
+				if ((args.size() <= i + pos || args[i + pos][0] == '+' ||
+						args[i + pos][0] == '-') && i < args.size())
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];
-				strarg += args[i + pos];
 				mode.push_back(strmode);
-				arg.push_back(strarg);
+				arg.push_back(args[i + pos]);
 				n++;
 			}
 			else
@@ -294,6 +300,7 @@ int	Channel::setMode(t_strvect const &args)
 				mode.push_back(strmode);
 				arg.push_back("");
 			}
+			strmode.erase();
 		}
 		i += n + 1;
 	}
@@ -358,6 +365,37 @@ int	Channel::setMode(t_strvect const &args)
 channel_flags const &Channel::getflags(void)
 {
 	return _flags;
+}
+
+std::string	Channel::getMode(void)
+{
+	std::string	mode;
+
+	if (!(_flags._anonymous || _flags._invite_only || _flags._moderated ||
+			_flags._no_messages_outside || _flags._quiet ||
+			_flags._private || _flags._secret || _flags._reop ||
+			_flags._topic_settable_by_chop)) //if master
+		return mode;
+	mode += '+';
+	if (_flags._anonymous)
+		mode += 'a';
+	if (_flags._invite_only)
+		mode += 'i';
+	if (_flags._moderated)
+		mode += 'm';
+	if (_flags._no_messages_outside)
+		mode += 'n';
+	if (_flags._quiet)
+		mode += 'q';
+	if (_flags._private)
+		mode += 'p';
+	if (_flags._secret)
+		mode += 's';
+	if (_flags._reop)
+		mode += 'r';
+	if (_flags._topic_settable_by_chop)
+		mode += 't';
+	return mode;
 }
 
 Channel		*Channel::getptr(void)

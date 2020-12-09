@@ -78,6 +78,7 @@ public:
 	std::string const	&gethostname(void);
 	std::string	const	&gettoken(void);
 	std::string			getinfo(void);
+	std::string			getsafeinfo(void);
 	Client				*getptr(void);
 	time_t				gettimeloggedin(void);
 	std::string			gethopcount(bool str = false, bool plus = false);

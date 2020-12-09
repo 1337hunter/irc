@@ -3,5 +3,5 @@ NICK n
 USER u 0 * :r
 OPER oper oper
 join #chan
-names
+mode #chan +I chanmask
 END
