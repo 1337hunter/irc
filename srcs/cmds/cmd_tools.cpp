@@ -27,9 +27,9 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 			if (motd.eof() && motdstr.length() == 0)
 				break ;
 			if (motdstr.length() > 80)
-				motdstr = "- " + motdstr.substr(0, 80);
+				motdstr = motdstr.substr(0, 80);
 			reply += ft_buildmsg(serv->servername, RPL_MOTD, nick,
-				"", motdstr);
+				"", "- " + motdstr);
 		}
 		reply += ft_buildmsg(serv->servername, RPL_ENDOFMOTD, nick,
 			"", "End of MOTD command");
