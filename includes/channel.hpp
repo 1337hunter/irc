@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 22:31:03 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/09 15:12:51 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@
 	separator by the protocol).	*/
 
 class Client;
+typedef std::vector<std::string>	t_strvect;
 
 struct	channel_flags
 {
@@ -101,18 +102,21 @@ public:
 	channel_flags const	&getflags(void);
 	Channel				*getptr(void);
 	char				gettype(void);
-	bool				isSecret(void);
-	bool				isPrivate(void);
+
 	void				add_client(Client *client);
 	void				block(void);
 	void				unblock(void);
+
 	bool				isBlocked(void);
 	bool				isOnChan(Client *client);
 	bool				isInvited(Client *client);
 	bool				isBanned(Client *client);
 	bool				isOperator(Client *client); // not safe (use isOnChan before);
-	//bool				setMode(std::string const &mode);
+	bool				isSecret(void);
+	bool				isPrivate(void);
 
+	int					setMode(std::string const &mode);
+	int					setMode(t_strvect const &args);
 	void				settype(char type);
 	void				settopic(std::string const &topic);
 };

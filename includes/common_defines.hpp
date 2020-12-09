@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 01:26:48 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/09 14:43:17 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@
 # define VERSIONSTRING	"IRCserv-0.2.1"
 
 # define DEBUG_MODE		1
-
+# define NPOS std::string::npos
 /*
 # define REPLACE_LOCALTIME
 # define NEED_GETTIMEOFDAY

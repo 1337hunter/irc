@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   channel.cpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/24 12:43:52 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 22:34:31 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "channel.hpp"
 #include "tools.hpp"
 
@@ -37,7 +25,7 @@ std::string	get_safe_postfix(void)
 channel_flags::channel_flags(void) : _anonymous(false), _invite_only(false),
 	_moderated(false), _no_messages_outside(false), _quiet(false), _private(false),
 	_secret(false), _reop(false), _topic_settable_by_chop(false), _key(""),
-	_limit_of_users(1024) {}
+	_limit_of_users(NPOS) {}
 
 channel_flags::channel_flags(const channel_flags &o)
 {
@@ -224,6 +212,147 @@ std::string	const &Channel::gettopic(void)
 void		Channel::settopic(std::string const &topic)
 {
 	_topic = topic;
+}
+
+int	Channel::setMode(std::string const &mode)
+{
+	bool	set;
+	size_t	pos;
+	std::string	reply;
+
+	if (mode.size() > 0 && mode[0] == '+')
+		set = true;
+	else if (mode.size() > 0 && mode[0] == '-')
+		set = false;
+	else
+		return true;
+	pos = 0;
+	while (++pos < mode.size()) // unordered_map is better but I did it already
+	{
+		if (mode[pos] == 'a')
+			_flags._anonymous = set;
+		else if (mode[pos] == 'i')
+			_flags._invite_only = set;
+		else if (mode[pos] == 'm')
+			_flags._moderated = set;
+		else if (mode[pos] == 'n')
+			_flags._no_messages_outside = set;
+		else if (mode[pos] == 'q')
+			_flags._quiet = set;
+		else if (mode[pos] == 'p')
+			_flags._private = set;
+		else if (mode[pos] == 'r')
+			_flags._reop = set;
+		else if (mode[pos] == 't')
+			_flags._topic_settable_by_chop = set;
+		else
+			return INT_ERR_NEEDMOREPARAMS;
+	}
+	return 0;
+}
+
+int	Channel::setMode(t_strvect const &args)
+{
+	size_t	pos;
+	size_t	i;
+	size_t	n;
+	std::vector<std::string>	mode;
+	std::vector<std::string>	arg;
+	std::string					strmode;
+	std::string					strarg;
+	std::string					reply;
+	std::list<std::string>::iterator	it;
+
+	i = 0;
+	while (i < args.size())
+	{
+		if (args[i][0] != '-' || args[i][0] != '+')
+			return INT_ERR_NEEDMOREPARAMS;
+		pos = 0;
+		n = 0;
+		while (++pos < args[i].size())
+		{
+			if (args[i][pos] == 'I' || args[i][pos] == 'e' || args[i][pos] == 'b' ||
+					args[i][pos] == 'k' || args[i][pos] == 'l')
+			{
+				if (args[i][pos] == 'k' && args[i][0] == '+' && !_flags._key.empty())
+					return INT_ERR_KEYSET;
+				if (args.size() <= i + pos || args[i + pos][0] == '+' ||
+						args[i + pos][0] == '-')
+					return INT_ERR_NEEDMOREPARAMS;
+				strmode += args[i][0];
+				strmode += args[i][pos];
+				strarg += args[i + pos];
+				mode.push_back(strmode);
+				arg.push_back(strarg);
+				n++;
+			}
+			else
+			{
+				strmode += args[i][0];
+				strmode += args[i][pos];
+				mode.push_back(strmode);
+				arg.push_back("");
+			}
+		}
+		i += n + 1;
+	}
+	i = -1;
+	while (++i < mode.size())
+	{
+		if (mode[i].find_first_not_of("+-aimstrnqp") == NPOS)
+			setMode(mode[i]);
+		else
+		{
+			if (mode[i][1] == 'I')
+			{
+				it = std::find(_flags._Invitation_mask.begin(),
+					 _flags._Invitation_mask.end(), arg[i]);
+				if (mode[i][0] == '+')
+				{
+					if (it == _flags._Invitation_mask.end())
+						_flags._Invitation_mask.push_back(arg[i]);
+				}
+				else
+					if (it != _flags._Invitation_mask.end())
+						_flags._Invitation_mask.erase(it);
+			}
+			else if (mode[i][1] == 'b')
+			{
+				it = std::find(_flags._ban_mask.begin(),
+						 _flags._ban_mask.end(), arg[i]);
+				if (mode[i][0] == '+')
+				{
+					if (it == _flags._ban_mask.end())
+						_flags._ban_mask.push_back(arg[i]);
+				}
+				else
+					if (it != _flags._ban_mask.end())
+						_flags._Invitation_mask.erase(it);
+			}
+			else if (mode[i][1] == 'e')
+			{
+				it = std::find(_flags._exception_mask.begin(),
+					 _flags._exception_mask.end(), arg[i]);
+				if (mode[i][0] == '+')
+				{
+					if (it == _flags._exception_mask.end())
+						_flags._ban_mask.push_back(arg[i]);
+				}
+				else
+					if (it != _flags._ban_mask.end())
+						_flags._Invitation_mask.erase(it);
+			}
+			else if (mode[i][1] == 'k')
+			{
+				if (mode[i][0] == '+')
+					_flags._key = arg[i];
+				if (mode[i][0] == '-' && arg[i] == _flags._key)
+					_flags._key.erase();
+			}
+		}
+	}
+	return 0;
 }
 
 channel_flags const &Channel::getflags(void)

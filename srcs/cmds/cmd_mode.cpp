@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/08 21:58:18 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/08 22:38:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/09 15:15:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,16 +28,15 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	Channel	*channel_mode;
 	Client	*client_mode;
 	size_t	pos;
+	int		ret;
 
 	if (!(client = find_client_by_fd(fd, serv)) || !client->isRegistred()) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
-				"You have not registered");
-		return ;
+				"You have not registered"); return ;
 	}
 	if (split.size() < 3) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "MODE",
-				"Not enough parameters");
-		return ;
+				"Not enough parameters"); return ;
 	}
 	if (split[1][0] == '+')
 		serv->fds[fd].wrbuf += get_reply(serv, "477", fd, split[1],
@@ -47,14 +46,12 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (!(channel_mode = find_channel_by_name(split[1], serv)))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHCHANNEL, fd, split[1],
-					"No such channel");
-			return ;
+					"No such channel"); return ;
 		}
 		if (!channel_mode->isOnChan(client))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "442", fd, split[1],
-					"You're not on that channel");
-			return ;
+					"You're not on that channel"); return ;
 		}
 		if (split.size() == 3 && split[2][0] != '-' && split[2][0] != '+')
 		{
@@ -62,20 +59,37 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			if ((pos = split[2].find_first_not_of("eIOb")) != std::string::npos)
 			{
 				serv->fds[fd].wrbuf += get_reply(serv, ERR_UNKNOWNMODE, fd,
-				std::to_string(split[2][pos]) , "is unknown mode char to me for " + split[1]);
+				std::string(1, split[2][pos]), "is unknown mode char to me for " + split[1]);
 				return ;
 			}
 			serv->fds[fd].wrbuf += get_mask_reply(channel_mode, client, split[2], serv);
+			return ;
 		}
 		if (!channel_mode->isOperator(client))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_CHANOPRIVSNEEDED, fd, split[1],
-					"You're not channel operator");
+					"You're not channel operator"); return ;
+		}
+		if ((pos = split[2].find_first_not_of("+-OovaimnqpsrtklbeI")) != NPOS)
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNKNOWNMODE, fd,
+			std::string(1, split[2][pos]), "is unknown mode char to me for " + split[1]);
 			return ;
 		}
-		if (split.size() < 4)
+		if ((split.size() == 3 && (ret = channel_mode->setMode(split[3])) == 461) ||
+		(split.size() > 3 &&
+		((ret = channel_mode->setMode(ft_splitstring(strvect_to_string(split,' ', 1), ' ')))) == 461))
 		{
-		}	
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "MODE",
+			"Not enough parameters"); return ;
+		}
+		else if (ret == INT_ERR_KEYSET)
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_KEYSET, fd, split[1],
+			"Channel key already set"); return ;
+		}
+		//forward
+		//backward
 	}
 	else
 	{
