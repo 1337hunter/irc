@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:32:14 by salec             #+#    #+#             */
-/*   Updated: 2020/12/09 16:40:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/09 16:57:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@
 void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv)
 {
 	(void)fd;	// check if fd is other server
+	(void)serv;
 	if (split.size() != 3)
 		return ;
 
