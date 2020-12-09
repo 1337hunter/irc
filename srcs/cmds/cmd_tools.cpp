@@ -20,7 +20,7 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 	if (motd.is_open())
 	{
 		reply = ft_buildmsg(serv->servername, RPL_MOTDSTART, nick,
-			"", serv->servername + " Message of the day");
+			"", "- " + serv->servername + " Message of the day - ");
 		while (!motd.eof())
 		{
 			std::getline(motd, motdstr);
@@ -29,7 +29,7 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 			if (motdstr.length() > 80)
 				motdstr = motdstr.substr(0, 80);
 			reply += ft_buildmsg(serv->servername, RPL_MOTD, nick,
-				"", motdstr);
+				"", "- " + motdstr);
 		}
 		reply += ft_buildmsg(serv->servername, RPL_ENDOFMOTD, nick,
 			"", "End of MOTD command");

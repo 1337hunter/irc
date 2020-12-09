@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 17:18:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/09 16:26:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,11 +244,11 @@
 	with a RPL_ENDOFINFO reply to indicate the end of the
 	replies.	*/
 
-//	"<server> Message of the day"
+//	":- <server> Message of the day - "
 #define RPL_MOTDSTART		"375"
-//	"<text>"
+//	":- <text>"
 #define RPL_MOTD			"372"
-//	"End of MOTD command"
+//	":End of MOTD command"
 #define RPL_ENDOFMOTD		"376"
 /*	- When responding to the MOTD message and the MOTD file
 	is found, the file is displayed line by line, with
