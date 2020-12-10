@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd_mode.cpp                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
+/*   Updated: 2020/12/10 20:40:25 by gbright          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ircserv.hpp"
 #include "message.hpp"
 #include "tools.hpp"
@@ -31,23 +43,23 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, "477", fd, split[1],
 		"Channel doesn't support modes"); return ;
 	}
-	if (!(channel_mode = find_channel_by_name(split[1], serv)))
-	{
-		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHCHANNEL, fd, split[1],
-				"No such channel"); return ;
-	}
-	if (split.size() == 2)
-	{
-		serv->fds[fd].wrbuf += ":" + serv->servername + " 324 ";
-		serv->fds[fd].wrbuf += client->getnickname() + " " + split[1] + " ";
-		serv->fds[fd].wrbuf += channel_mode->getMode() + CRLF;
-		serv->fds[fd].wrbuf += ":" + serv->servername + " 329 " +
-			client->getnickname() + " " + split[1] + " " +
-			channel_mode->getCreationTime() + CRLF;
-		return ;
-	}
 	if (split[1][0] == '#' || split[1][0] == '!' || split[1][0] == '&')
 	{
+		if (!(channel_mode = find_channel_by_name(split[1], serv)))
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHCHANNEL, fd, split[1],
+					"No such channel"); return ;
+		}
+		if (split.size() == 2)
+		{
+			serv->fds[fd].wrbuf += ":" + serv->servername + " 324 ";
+			serv->fds[fd].wrbuf += client->getnickname() + " " + split[1] + " ";
+			serv->fds[fd].wrbuf += channel_mode->getMode() + CRLF;
+			serv->fds[fd].wrbuf += ":" + serv->servername + " 329 " +
+				client->getnickname() + " " + split[1] + " " +
+				channel_mode->getCreationTime() + CRLF;
+			return ;
+		}
 		if (!channel_mode->isOnChan(client))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "442", fd, split[1],
@@ -98,22 +110,39 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		}
 		else if (ret == 1)
 			return ;
-		if (split[1][0] != '&')
-			msg_forward(fd, ":" + client->getinfo() + " " + strvect_to_string(split), serv);
-		serv->fds[fd].wrbuf += ":" + client->getsafeinfo() + " " +
-			strvect_to_string(split) + CRLF;
 	}
 	else
 	{
 		client_mode = find_client_by_nick(split[1], serv);
-		if (client_mode->gethop() != 0)
+		if (client_mode == 0 || client_mode->getnickname() != client->getnickname())
 		{
-			serv->fds[client_mode->getFD()].wrbuf += ":" + client->getinfo();
-			serv->fds[client_mode->getFD()].wrbuf += strvect_to_string(split) + CRLF;
-			return ;
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_USERSDONTMATCH, fd, "",
+					"Cannot change mode for other users"); return ;
 		}
-
+		if (split.size() == 2)
+		{
+			serv->fds[fd].wrbuf += ":" + serv->servername + " 221 " +
+				client->getnickname() + " " + client->getMode() + CRLF; return ;
+		}
+		if (split.size() == 3)
+		{
+			if (split[2].find_first_not_of("aiwrOo+-") != NPOS)
+			{
+				serv->fds[fd].wrbuf += get_reply(serv, ERR_UMODEUNKNOWNFLAG, fd, "",
+						"Unknown MODE flag"); return ;
+			}
+			if (split[2][0] != '+' && split[2][0] != '-')
+			{
+				serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "MODE",
+						"Not enough parameters"); return ;
+			}
+			client->setUMODE(split[2]);
+		}
 	}
+	if (split[1][0] != '&')
+		msg_forward(fd, ":" + client->getinfo() + " " + strvect_to_string(split), serv);
+	serv->fds[fd].wrbuf += ":" + client->getsafeinfo() + " " +
+		strvect_to_string(split) + CRLF;
 }
 
 void	cmd_mode(int fd, const t_strvect &split, IRCserv *serv)

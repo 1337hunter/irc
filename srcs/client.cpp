@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/09 15:29:30 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/10 20:54:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,21 +15,21 @@
 
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 	USER(false), NICK(false), _isInvisible(false), _isWallOps(false),
-	_isServNotice(false), _isOperator(false)
+	_isServNotice(false), _isOperator(false), _restricted(false)
 {
 }
 
 Client::Client(std::string const &nickname, int fd):
 	nickname(nickname), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
-	_isServNotice(false), _isOperator(false)
+	_isServNotice(false), _isOperator(false), _restricted(false)
 {
 }
 
 Client::Client(std::string const &username, std::string const &realname, int fd):
 username(username), realname(realname), hopcount(0), fd(fd), _isConnected(true),
 	_isRegistred(false), USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
-	_isServNotice(false), _isOperator(false)
+	_isServNotice(false), _isOperator(false), _restricted(false)
 {
 }
 
@@ -39,6 +39,7 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 	_isRegistred(true), USER(true), NICK(true)
 {
 	setMode(umode);
+	_restricted = false;
 }
 
 Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[1]),
@@ -50,6 +51,7 @@ Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[
 	realname = temp;
 	for (size_t i = 8; i < split.size(); i++)
 		realname += " " + split[i];
+	_restricted = false;
 }
 
 Client::~Client()
@@ -250,21 +252,41 @@ bool	Client::setMode(std::string const &modes)
 	return false;
 }
 
+bool	Client::setUMODE(std::string const &mode)
+{
+	size_t	i;
+	bool	set;
+
+	if (mode[0] == '+')
+		set = true;
+	else
+		set = false;
+	i = 0;
+	while (++i < mode.size())
+	{
+		if (mode[i] == 'o' && set == false)
+			_isOperator = set;
+		else if (mode[i] == 'i')
+			_isInvisible = set;
+		else if (mode[i] == 'w')
+			_isWallOps = set;
+		else if (mode[i] == 'r' && set == true)
+			_restricted = set;
+		else if (mode[i] == 'O' && set == false)
+			_isOperator = set;
+		else if (mode[i] == 's')
+			_isServNotice = set;
+	}
+	return 0;
+}
+
 std::string	Client::getMode(bool str)
 {
 	std::string	mode;
 
 	if (str)
 		mode += " ";
-	if (_isOperator || _isInvisible || _isWallOps || _isServNotice)
-		mode += "+";
-	else
-	{
-		mode += "-iwso";
-		if (str)
-			mode += " ";
-		return mode;
-	}
+	mode += "+";
 	if (_isOperator)
 		mode += "o";
 	if (_isInvisible)
@@ -273,7 +295,7 @@ std::string	Client::getMode(bool str)
 		mode += "w";
 	if (_isServNotice)
 		mode += "s";
-	if (str && mode.size() > 2)
+	if (str)
 		mode += " ";
 	return (mode);
 }
