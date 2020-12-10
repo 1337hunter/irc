@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/09 22:39:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/10 17:34:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ struct	channel_flags
 	std::list<std::string>	_ban_mask;
 	std::list<std::string>	_exception_mask;
 	std::list<std::string>	_Invitation_mask;
-	
+
 	channel_flags(const channel_flags &o);
 	channel_flags &operator=(const channel_flags &o);
 	channel_flags(void);
@@ -93,7 +93,7 @@ public:
 	~Channel();
 	Channel(Channel const &other);
 	Channel &operator=(Channel const &other);
-	
+
 	std::unordered_map<Client*, client_flags> &getclients(void);
 	std::string const	&getname(void);
 	std::string	const	&getkey(void);
