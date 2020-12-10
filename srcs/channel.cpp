@@ -279,14 +279,14 @@ int	Channel::setMode(t_strvect const &args)
 		n = 0;
 		while (++pos < args[i].size())
 		{
+			if (args[i][pos] == 'k' && args[i][0] == '+' && !_flags._key.empty())
+				return INT_ERR_KEYSET;
 			if (args[i][pos] == 'I' || args[i][pos] == 'e' || args[i][pos] == 'b' ||
 					args[i][pos] == 'k' || args[i][pos] == 'l')
 			{
 				++n;
-				if (args[i][pos] == 'k' && args[i][0] == '+' && !_flags._key.empty())
-					return INT_ERR_KEYSET;
 				if ((args.size() <= i + n || args[i + n][0] == '+' ||
-						args[i + pos][0] == '-') && i < args.size())
+						args[i + n][0] == '-') && i < args.size())
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/08 20:50:37 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/10 18:10:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 								"Cannot join channel (+b)");
 						break ;
 					}
-				if (chan->getflags()._limit_of_users >= chan->getclients().size()
+				if (chan->getflags()._limit_of_users <= chan->getclients().size()
 						&& !client_it->isOperator())
 				{
 					serv->fds[fd].wrbuf += get_reply(serv, "471", fd, args[i],
