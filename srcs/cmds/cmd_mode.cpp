@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/10 20:40:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/10 21:35:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,31 @@
 
 void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	fd = 0;
-	(void)split;
-	serv = 0;
+	int		ret = 0;
+	Channel	*channel_mode;
+	Client	*client_mode;
+
+	if (split.size() < 4 || split[2][0] == '+')
+		return ; // error from other server
+	if (split[2][0] == '#' || split[2][0] == '!')
+	{
+		if ((channel_mode = find_channel_by_name(split[2], serv)) == 0)
+			return ;
+		if (split.size() == 4)
+			ret = channel_mode->setMode(split[3]);
+		else
+			ret = channel_mode->setMode(ft_splitstring(
+						strvect_to_string(split, ' ', 3), ' '));
+		if (ret == 461 || ret == INT_ERR_KEYSET || ret == 1)
+			return ;
+	}
+	else
+	{
+		if ((client_mode = find_client_by_nick(split[2], serv)) == 0)
+			return ;
+		client_mode->setUMODE(split[2]);
+	}
+	msg_forward(fd, strvect_to_string(split), serv);
 }
 
 void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
@@ -139,7 +161,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			client->setUMODE(split[2]);
 		}
 	}
-	if (split[1][0] != '&')
+	if (split[1][0] != '&' && split.size() > 2)
 		msg_forward(fd, ":" + client->getinfo() + " " + strvect_to_string(split), serv);
 	serv->fds[fd].wrbuf += ":" + client->getsafeinfo() + " " +
 		strvect_to_string(split) + CRLF;
