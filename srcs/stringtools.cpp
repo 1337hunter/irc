@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/11 20:26:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/11 22:01:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,4 +189,35 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 		}
 	}
 	return reply;
+}
+
+bool	is_valid_mask(std::string mask)
+{
+	std::string::iterator	it;
+
+	it = mask.begin();
+	if (mask.find_first_of("\0 \r\n\b,") != NPOS) return false;
+	while (it != mask.end() && *it != '!') it++;
+	if (it == mask.end()) return false;
+	while (it != mask.end() && *it != '@') it++;
+	if (it == mask.end()) return false;
+	return true;
+}
+
+bool	is_valid_serv_host_mask(std::string mask)
+{
+	std::string::iterator   it;
+	std::string::reverse_iterator rit;
+
+	if (mask.empty())
+		return false;
+	it = mask.begin();
+	if (*it != '#' && *it != '&' && *it != '!' && *it != '$')
+		return false;
+	rit = mask.rbegin();
+	while (rit != mask.rend() && *rit != '.') rit++;
+	if (rit == mask.rend()) return false;
+	while (rit != mask.rbegin() && *rit != '*') rit--;
+	if (*rit == '*') return false;
+	return true;
 }
