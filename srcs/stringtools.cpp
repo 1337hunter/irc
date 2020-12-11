@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/09 22:48:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/11 20:26:36 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ bool		match(const char *s1, const char *s2)
 		return (match(s1 + 1, s2) || match(s1, s2 + 1));
 	if (*s1 == '\0' && *s2 == '*')
 		return (match(s1, s2 + 1));
-	if (*s1 == *s2 && *s1 != '\0' && *s2 != '\0')
+	if ((*s1 == *s2 || *s2 == '?')  && *s1 != '\0' && *s2 != '\0')
 		return (match(s1 + 1, s2 + 1));
 	if (*s1 == *s2 && *s1 == '\0' && *s2 == '\0')
 		return (true);
@@ -103,7 +103,7 @@ bool		match(std::string const &s1, std::string const &s2)
 		return (match(s1, s2.substr(1)));
 	if (s1[0] != '\0' && s2[0] == '*')
 		return (match(s1.substr(1), s2) || match(s1, s2.substr(1)));
-	if (s1[0] == s2[0] && s1[0] != '\0' && s1[0] != '\0')
+	if ((s1[0] == s2[0] || s2[0] == '?') && s1[0] != '\0' && s1[0] != '\0')
 		return (match(s1.substr(1), s2.substr(1)));
 	if (s1[0] == s2[0] && s1[0] == '\0' && s2[0] == '\0')
 		return (true);
