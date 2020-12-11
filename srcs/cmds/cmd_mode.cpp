@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/10 21:35:03 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/11 14:15:40 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		}
 		if (split.size() == 3)
 		{
-			if (split[2].find_first_not_of("aiwrOo+-") != NPOS)
+			if (split[2].find_first_not_of("aiwrOos+-") != NPOS)
 			{
 				serv->fds[fd].wrbuf += get_reply(serv, ERR_UMODEUNKNOWNFLAG, fd, "",
 						"Unknown MODE flag"); return ;

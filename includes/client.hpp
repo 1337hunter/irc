@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/10 20:41:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/11 14:23:51 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ private:
 	bool			_isServNotice;
 	bool			_isOperator; // User modes
 	bool			_restricted;
+	bool			_away;
+	std::string		_away_message;
 	time_t			dtloggedin;
 	std::list<Channel*>	_channels; //unordered map is better channame->Channel*
 	std::list<std::string>	invited;
@@ -110,6 +112,7 @@ public:
 	void				ChangeNick(std::string const &what);
 	bool				setMode(std::string const &modes);
 	bool				setUMODE(std::string const &mode);
+	void				setAway(std::string const &msg);
 	std::string			getMode(bool str = false);
 //	void				Reconnect(int fd);
 //	void				Disconnect(void);

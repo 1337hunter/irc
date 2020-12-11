@@ -35,6 +35,18 @@ get_reply(IRCserv *serv, std::string _error, int fd, std::string const &command,
 	return reply;
 }
 
+std::string
+get_reply(IRCserv *serv, std::string rpl, Client *client, std::string command, std::string message)
+{
+	std::string	reply;
+	
+	reply = ":" + serv->servername + " " + (rpl.empty() ? "" : rpl + " ");
+	reply += (client == 0 ? "*" : client->getnickname());
+	reply += (command.empty() ? "" : " " + command);
+	reply += (message.empty() ? "" : " :" + message) + CRLF;
+	return reply;
+}
+
 void	msg_error(std::string msg, std::string msg1, IRCserv *serv)
 {
 	msg += msg1;
