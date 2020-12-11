@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/11 15:10:24 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/11 19:42:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -324,7 +324,7 @@ std::list<Channel*> &Client::getchannels(void)
 	return _channels;
 }
 
-void	Client::add_channel(Channel *chan) 
+void	Client::add_channel(Channel *chan)
 {
 	_channels.push_back(chan);
 }
@@ -388,9 +388,10 @@ Channel	*Client::eraseChannel(std::string const &name)
 	for (chan = _channels.begin(); chan != _channels.end(); chan++)
 		if ((*chan)->getname() == name)
 		{
-			_channels.erase(chan);
+			Channel	*res = (*chan);
 			(*chan)->getclients().erase(this);
-			return *chan;
+			_channels.erase(chan);
+			return (res);
 		}
 	return 0;
 }
