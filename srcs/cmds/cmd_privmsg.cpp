@@ -20,7 +20,6 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	std::vector<t_server>::iterator net;
 	std::list<Client>::iterator		client_it;
 	t_server	*_serv;
-//	Channel	*channel;
 
 	good_mask = false;
 	_serv = 0;
@@ -96,6 +95,12 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "403", client, split[1],
 					"No such channel"); return ;
+		}
+		if ((channel->getflags()._no_messages_outside && !channel->isOnChan(client)) ||
+				channel->isBanned(client))
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, "404", client, split[1],
+					"Cannot send to channel"); return ;
 		}
 		msg_to_channel(channel, client, strvect_to_string(split), serv);
 	}
