@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 16:03:34 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 21:03:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -363,7 +363,7 @@ bool	Client::isBanned(Channel *chan)
 	std::list<std::string>::const_iterator	ban_mask;
 	std::list<std::string>::const_iterator	exception_mask;
 
-	exception_mask = chan->getflags()._ban_mask.begin();
+	exception_mask = chan->getflags()._exception_mask.begin();
 
 	for (; exception_mask != chan->getflags()._exception_mask.end(); exception_mask++)
 		if (match(this->getinfo(), *exception_mask))
