@@ -90,7 +90,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 						client->getnickname() + " PRIVMSG " + client_it->getnickname() +
 						strvect_to_string(split, ' ', 2);
 	}
-	else if (split[1].find_first_of("!#&+") != NPOS)
+	else if (split[1].find_first_of("!#&+") == 0)
 	{
 		if (!(channel = find_channel_by_name(split[1], serv)))
 		{
@@ -101,10 +101,10 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	}
 	else
 	{
-		if (split[1].find_first_of("%") == NPOS)
+		if (split[1].find_first_of("%!@") == NPOS)
 			client_msg = find_client_by_nick(split[1], serv);
 		else
-			client_msg = find_client_by_user_and_host(split[1], serv);
+			client_msg = find_client_by_user_or_nick_and_host(split[1], serv);
 		if (!client_msg)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "401", client, split[1],

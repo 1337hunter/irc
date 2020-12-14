@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 17:22:19 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 18:32:21 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,52 @@ Client		*find_client_by_fd(int	fd, IRCserv *serv)
 	return 0;
 }
 
-Client		*find_client_by_user_and_host(std::string const &str, IRCserv *serv)
+t_server	*find_server_by_token(std::string const &token, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	net;
+
+	net = serv->network.begin();
+	for (; net != serv->network.end(); net++)
+		if (net->token == token)
+			return &(*net);
+	return 0;
+}
+
+Client		*find_client_by_info(std::string const &info, IRCserv *serv)
+{
+	std::list<Client>::iterator		client = serv->clients.begin();
+	std::vector<t_server>::iterator	net = serv->network.begin();
+
+	while (client != serv->clients.end())
+	{
+		if (client->getinfo() == info)
+			return &(*client);
+		client++;
+	}
+	while (net != serv->network.end())
+	{
+		client = net->clients.begin();
+		while (client != net->clients.end())
+		{
+			if (client->getinfo() == info)
+				return &(*client);
+			client++;
+		}
+	}
+	return 0;
+}
+
+Client		*find_client_by_user_or_nick_and_host(std::string const &str, IRCserv *serv)
 {
 	t_strvect				user_and_host;
 	t_strvect				host_and_server;
 	std::list<Client>::iterator		client = serv->clients.begin();
 	std::vector<t_server>::iterator	net = serv->network.begin();
 
-	user_and_host = ft_splitstring(str, '%');
+	std::cout << str << "\n\n";
+	if (str.find_first_of("!") != NPOS)
+		return find_client_by_info(str, serv);
+	user_and_host = ft_splitstring(str, "%");
 	if (user_and_host.size() != 2)
 		return 0;
 	host_and_server = ft_splitstring(user_and_host[1], '@');
@@ -91,9 +129,11 @@ Client		*find_client_by_user_and_host(std::string const &str, IRCserv *serv)
 		{
 			client = serv->clients.begin();
 			for (; client != serv->clients.end(); client++)
+			{
 				if (client->getusername() == user_and_host[0] &&
-						client->gethostname() == host_and_server[0])
+					client->gethostname() == host_and_server[0])
 					return &(*client);
+			}
 			return 0;
 		}
 		net = serv->network.begin();
@@ -106,9 +146,11 @@ Client		*find_client_by_user_and_host(std::string const &str, IRCserv *serv)
 		{
 			client = net->clients.begin();
 			for (; client != net->clients.end(); client++)
+			{
 				if (client->getusername() == user_and_host[0] &&
 						client->gethostname() == host_and_server[0])
 					return &(*client);
+			}
 		}
 	}
 	return 0;
