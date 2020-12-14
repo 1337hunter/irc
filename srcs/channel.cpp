@@ -265,10 +265,12 @@ int	Channel::setMode(t_strvect const &args)
 	size_t	pos;
 	size_t	i;
 	size_t	n;
+	std::vector<Client*>	clients;
 	std::vector<std::string>	mode;
 	std::vector<std::string>	arg;
 	std::string					strmode;
 	std::list<std::string>::iterator	it;
+	std::unordered_map<Client*, client_flags>::iterator client;
 
 	i = 0;
 	while (i < args.size())
@@ -282,7 +284,8 @@ int	Channel::setMode(t_strvect const &args)
 			if (args[i][pos] == 'k' && args[i][0] == '+' && !_flags._key.empty())
 				return INT_ERR_KEYSET;
 			if (args[i][pos] == 'I' || args[i][pos] == 'e' || args[i][pos] == 'b' ||
-					args[i][pos] == 'k' || args[i][pos] == 'l')
+					args[i][pos] == 'k' || args[i][pos] == 'l' || args[i][pos] == 'v' ||
+					args[i][pos] == 'o' || args[i][pos] == 'O')
 			{
 				++n;
 				if ((args.size() <= i + n || args[i + n][0] == '+' ||
@@ -290,6 +293,16 @@ int	Channel::setMode(t_strvect const &args)
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];
+				if (args[i][pos] == 'o' || args[i][pos] == 'O' || args[i][pos] == 'v')
+				{
+					for (client = _clients.begin(); client != _clients.end(); client++)
+						if (client->first->getnick() == args[i + n])
+							break ;
+					if (client == _clients.end())
+						return n;
+					else
+						clients.push_back(client->first);
+				}
 				mode.push_back(strmode);
 				arg.push_back(args[i + n]);
 			}
@@ -304,6 +317,7 @@ int	Channel::setMode(t_strvect const &args)
 		}
 		i += n + 1;
 	}
+	n = 0;
 	i = -1;
 	while (++i < mode.size())
 	{
@@ -356,6 +370,30 @@ int	Channel::setMode(t_strvect const &args)
 					_flags._key = arg[i];
 				if (mode[i][0] == '-' && arg[i] == _flags._key)
 					_flags._key.erase();
+			}
+			else if (mode[i][1] == 'v')
+			{
+				if (mode[i][0] == '+')
+					_clients[clients[n]]._voice = true;
+				else
+					_clients[clients[n]]._voice = false;
+				++n;
+			}
+			else if (mode[i][1] == 'o')
+			{
+				if (mode[i][0] == '+')
+					_clients[clients[n]]._operator = true;
+				else
+					_clients[clients[n]]._operator = false;
+				++n;
+			}
+			else if (mode[i][1] == 'O')
+			{
+				if (mode[i][0] == '+')
+					_clients[clients[n]]._Operator = true;
+				else
+					_clients[clients[n]]._Operator = false;
+				n++;
 			}
 		}
 	}

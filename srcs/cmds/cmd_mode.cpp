@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/11 14:15:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 22:17:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		}
 		for (size_t j = 2; j < split.size(); j++)
 			if (split[j].size() > 0 && (split[j][0] == '+' || split[j][0] == '-'))
+			{
 				if ((pos = split[j].find_first_not_of("+-OovaimnqpsrtklbeI")) != NPOS)
 				{
 					serv->fds[fd].wrbuf += get_reply(serv, ERR_UNKNOWNMODE, fd,
@@ -113,6 +114,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 					split[1]);
 					return ;
 				}
+			}
 		if (split.size() == 3)
 			ret = channel_mode->setMode(split[2]);
 		else
@@ -120,7 +122,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			ret = channel_mode->setMode(ft_splitstring(
 					strvect_to_string(split, ' ', 2), ' '));
 		}
-		if (ret == 461)
+		if (ret == INT_ERR_NEEDMOREPARAMS)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "MODE",
 					"Not enough parameters"); return ;
@@ -130,8 +132,11 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_KEYSET, fd, split[1],
 					"Channel key already set"); return ;
 		}
-		else if (ret == 1)
-			return ;
+		else if (ret > 0)
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_KEYSET, fd, split[1],
+					"No such nick/channel"); return ;
+		}
 	}
 	else
 	{

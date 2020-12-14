@@ -20,9 +20,11 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	std::vector<t_server>::iterator net;
 	std::list<Client>::iterator		client_it;
 	t_server	*_serv;
+	bool		onChan;
 
 	good_mask = false;
 	_serv = 0;
+	onChan = false;
 	if (!(client = find_client_by_fd(fd, serv)) || !client->isRegistred())
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, "451", -1, "", "You have not registered");
@@ -96,8 +98,11 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, "403", client, split[1],
 					"No such channel"); return ;
 		}
-		if ((channel->getflags()._no_messages_outside && !channel->isOnChan(client)) ||
-				channel->isBanned(client))
+		onChan = channel->isOnChan(client);
+		if ((channel->getflags()._no_messages_outside && !onChan) ||
+			channel->isBanned(client) || (channel->getflags()._moderated &&
+			onChan && !channel->getclients()[client]._voice &&
+			!channel->isOperator(client)) || (channel->getflags()._moderated && !onChan))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "404", client, split[1],
 					"Cannot send to channel"); return ;
