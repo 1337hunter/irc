@@ -78,7 +78,25 @@ void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 			serv->fds[net->fd].wrbuf += msg + CRLF;
 }
 
-void	msg_to_channel(Channel *channel, std::string msg, IRCserv *serv)
+void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IRCserv *serv)
+{
+	std::string	info;
+	std::unordered_map<Client*, client_flags>::const_iterator   client_it;
+
+	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " : ":" + client->getinfo() + " ";
+	client_it = channel->getclients().begin();
+	for (; client_it != channel->getclients().end(); client_it++)
+		if (client != client_it->first)
+		{
+			if (client_it->first->gethopcount() == "0")
+				serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
+			else
+				serv->fds[client_it->first->getFD()].wrbuf += ":"+ client->getnick() +
+					" " + msg + CRLF;
+		}
+}
+
+void	msg_to_channel_this(Channel *channel, std::string msg, IRCserv *serv)
 {
 	std::unordered_map<Client*, client_flags>::const_iterator	client;
 
@@ -88,3 +106,12 @@ void	msg_to_channel(Channel *channel, std::string msg, IRCserv *serv)
 			serv->fds[client->first->getFD()].wrbuf += msg + CRLF;
 }
 
+void	msg_each_client(std::string const &msg, Client *client, IRCserv *serv)
+{
+	std::list<Client>::iterator	client_it;
+
+	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
+		if (client_it->getFD() != client->getFD())
+			serv->fds[client_it->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
+			client_it->getnickname() + " " + msg + CRLF;
+}

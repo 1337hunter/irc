@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/11 22:01:38 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 14:35:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,7 @@ bool	is_valid_serv_host_mask(std::string mask)
 	if (mask.empty())
 		return false;
 	it = mask.begin();
-	if (*it != '#' && *it != '&' && *it != '!' && *it != '$')
+	if (*it != '#' && *it != '$')
 		return false;
 	rit = mask.rbegin();
 	while (rit != mask.rend() && *rit != '.') rit++;

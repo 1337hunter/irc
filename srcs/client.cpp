@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/11 19:42:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/14 16:03:34 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,10 @@ std::string const	&Client::getnickname(void)
 	return (this->nickname);
 }
 
+std::string const	&Client::getnick(void)
+{
+	return nickname;
+}
 std::string const	&Client::getusername(void)
 {
 	return (this->username);

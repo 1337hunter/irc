@@ -29,10 +29,10 @@ void	part_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		if (channel != 0)
 		{
 			if (channel->getflags()._anonymous)
-				msg_to_channel(channel, ":anonymous!anonymous@anonymous PART " +
+				msg_to_channel_this(channel, ":anonymous!anonymous@anonymous PART " +
 				args[i] + part_msg, serv);
 			else
-				msg_to_channel(channel, ":" + client->getinfo() + " PART " + args[i] +
+				msg_to_channel_this(channel, ":" + client->getinfo() + " PART " + args[i] +
 				part_msg, serv);
 			if (channel->getclients().size() == 0)
 				remove_channel(channel, serv);
@@ -69,14 +69,14 @@ void	part_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			{
 				serv->fds[fd].wrbuf += ":anonymous!anonymous@anonymous PART " +
 				args[i] + part_msg + CRLF;
-				msg_to_channel(channel, ":anonymous!anonymous@anonymous PART " +
+				msg_to_channel_this(channel, ":anonymous!anonymous@anonymous PART " +
 				args[i] + part_msg, serv);
 			}
 			else
 			{
 				serv->fds[fd].wrbuf += ":" + client->getinfo() + " PART " + args[i] +
 				part_msg + CRLF;
-				msg_to_channel(channel, ":" + client->getinfo() + " PART " + args[i] +
+				msg_to_channel_this(channel, ":" + client->getinfo() + " PART " + args[i] +
 				part_msg, serv);
 			}
 			if (args.size() > 0 && args[i][0] != '&')
@@ -96,7 +96,7 @@ void	part_from_client(int fd, const t_strvect &split, IRCserv *serv)
 				"You're not on that channel");
 		}
 	}
-	forward_msg = ":" + client->getinfo() + " PART ";
+	forward_msg = ":" + client->getnick() + " PART ";
 	forward_msg += strvect_to_string(forward_args, ',') + part_msg;
 	msg_forward(fd, forward_msg, serv);
 }

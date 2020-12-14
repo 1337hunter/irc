@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 13:31:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 17:22:19 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,56 @@ Client		*find_client_by_fd(int	fd, IRCserv *serv)
 	return 0;
 }
 
+Client		*find_client_by_user_and_host(std::string const &str, IRCserv *serv)
+{
+	t_strvect				user_and_host;
+	t_strvect				host_and_server;
+	std::list<Client>::iterator		client = serv->clients.begin();
+	std::vector<t_server>::iterator	net = serv->network.begin();
+
+	user_and_host = ft_splitstring(str, '%');
+	if (user_and_host.size() != 2)
+		return 0;
+	host_and_server = ft_splitstring(user_and_host[1], '@');
+	if (host_and_server.size() == 1)
+	{
+		while (client != serv->clients.end())
+		{
+			if (client->getusername() == user_and_host[0] &&
+					client->gethostname() == user_and_host[1])
+				return &(*client);
+			client++;
+		}
+	}
+	else if (host_and_server.size() == 2)
+	{
+		if (serv->servername == host_and_server[1])
+		{
+			client = serv->clients.begin();
+			for (; client != serv->clients.end(); client++)
+				if (client->getusername() == user_and_host[0] &&
+						client->gethostname() == host_and_server[0])
+					return &(*client);
+			return 0;
+		}
+		net = serv->network.begin();
+		for (; net != serv->network.end(); net++)
+			if (net->servername == host_and_server[1])
+				break ;
+		if (net == serv->network.end())
+			return 0;
+		else
+		{
+			client = net->clients.begin();
+			for (; client != net->clients.end(); client++)
+				if (client->getusername() == user_and_host[0] &&
+						client->gethostname() == host_and_server[0])
+					return &(*client);
+		}
+	}
+	return 0;
+}
+
 Channel		*find_channel_by_name(const std::string	&name, IRCserv *serv)
 {
 	std::list<Channel>::iterator	chan;
@@ -84,6 +134,26 @@ t_server	*find_server_by_fd(int fd, IRCserv *serv)
 			return &(*net);
 		net++;
 	}
+	return 0;
+}
+
+t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
+{
+	size_t		i;
+
+	for (i = 0; i < serv->network.size(); i++)
+		if (match(serv->network[i].servername, mask))
+			return &(serv->network[i]);
+	return 0;
+}
+
+t_server	*find_server_by_name(std::string const &name, IRCserv *serv)
+{
+	std::vector<t_server>::iterator net = serv->network.begin();
+
+	for (; net != serv->network.end(); net++)
+		if (net->servername == name)
+			return &(*net);
 	return 0;
 }
 

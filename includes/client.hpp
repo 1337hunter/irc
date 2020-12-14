@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/11 14:23:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/14 16:03:06 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,7 @@ public:
 	void				setFD(int fd);
 	void				setOPER(void);
 	std::string const	&getnickname(void);
+	std::string	const	&getnick(void);
 	std::string const	&getusername(void);
 	std::string const	&getrealname(void);
 	std::string const	&gethostname(void);
