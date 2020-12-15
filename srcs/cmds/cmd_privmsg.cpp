@@ -186,12 +186,12 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, "401", client, split[1],
 					"No such nick/channel"); return ;
 		}
-		if (client->gethop() == 0)
+		if (client_msg->gethop() == 0)
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
 			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 		else
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnick() + " PRIVMSG " +
-			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
+			client_msg->getnick() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 	}
 }
 

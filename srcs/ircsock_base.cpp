@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 16:32:39 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 18:32:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ void	self_cmd_squit(int fd, IRCserv *serv)
 		{
 			split.push_back("SERVER");
 			split.push_back(serv->network[i].servername);
-			split.push_back(":Network split");
+			split.push_back(":Read error");
 			cmd_squit(fd, split, serv);
 			return ;
 		}
