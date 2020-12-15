@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 15:13:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 15:17:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,9 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	int			i = 0;
 
 	/*	reply check here: reroute the reply to user or server	*/
-	if ((serv->fds[fd].type = FD_ME || serv->fds[fd].type == FD_SERVER) &&
+	//	serv->fds[fd].type = FD_ME not used because
+	//	we get only connect accept requests on read of *this* server
+	if (serv->fds[fd].type == FD_SERVER &&
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
 	{
