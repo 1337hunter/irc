@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 13:18:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 13:26:47 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,16 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	t_strvect	split = ft_splitstring(msg, " ");
 	int			i = 0;
 
-	/* maybe process different routes for message here */
+	/*	reply check here: reroute the reply to user or server	*/
+	if ((serv->fds[fd].type = FD_ME || serv->fds[fd].type == FD_SERVER) &&
+		split.size() > 3 && split[1].size() == 3 &&
+		split[1].find_first_not_of("0123456789") == std::string::npos)
+	{
+		std::cout << "A reply " << split[1] << " from fd " << fd <<
+			" recieved. Forward to " << split[2] << std::endl;
+		return ;	// for now
+	}
+
 
 	if (split.size() > 0 && split[0][0] == ':')
 		i = 1;
@@ -150,10 +159,11 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstringbyany(serv->fds[fd].rdbuf, CRLF);
-			// ignore msgs with \r\n (maybe other symbols too)
 			for (size_t i = 0; i < split.size(); i++)
-				if (split[i].find_first_of(CRLF) == std::string::npos)
-					ProcessMessage(fd, split[i], serv);
+				ProcessMessage(fd, split[i], serv);
+			//	ignore msgs with \r\n (maybe other symbols too)
+			//	if (split[i].find_first_of(CRLF) == std::string::npos)
+			//	not much use here
 			try { serv->fds.at(fd).rdbuf.erase(); }
 			catch (std::out_of_range const &e) { (void)e; }
 		}
