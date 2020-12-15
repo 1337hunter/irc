@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 14:35:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 20:02:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ t_strvect	ft_splitstring(std::string str, char delim)
 	return split;
 }
 
-
 t_strvect	ft_splitstringbyany(std::string msg, std::string const &delim)
 {
 	t_strvect		split;
@@ -61,6 +60,26 @@ t_strvect	ft_splitstringbyany(std::string msg, std::string const &delim)
 		if (!tmp.empty())
 			split.push_back(tmp);
 		msg.erase(0, pos + 1);
+	}
+	if (!msg.empty())
+		split.push_back(msg);
+	return (split);
+}
+
+t_strvect	ft_splitcmdbyspace(std::string msg)
+{
+	t_strvect		split;
+	size_t			pos = 0;
+	std::string		tmp;
+
+	while ((pos = msg.find_first_of(" ")) != std::string::npos)
+	{
+		tmp = msg.substr(0, pos);
+		if (!tmp.empty())
+			split.push_back(tmp);
+		msg.erase(0, pos + 1);
+		if (!msg.empty() && msg[0] == ':')
+			break ;
 	}
 	if (!msg.empty())
 		split.push_back(msg);
@@ -150,7 +169,7 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 			mask = channel->getflags()._ban_mask.begin();
 			while (mask != channel->getflags()._ban_mask.end())
 			{
-				reply += ":" + serv->servername + " 367 " + client->getnickname();	
+				reply += ":" + serv->servername + " 367 " + client->getnickname();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
 				mask++;
 			}

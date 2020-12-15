@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 18:28:21 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 20:14:07 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,13 @@ bool    remove_channel(Channel *channel, IRCserv *serv);
 t_strvect	ft_splitstring(std::string msg, std::string const &delim);
 t_strvect	ft_splitstring(std::string str, char delim);
 t_strvect	ft_splitstringbyany(std::string msg, std::string const &delim);
+/**
+ *	ft_splitcmdbyspace
+ *	splits until the second occurance of ':' symbol
+ *	(special for irc msg format)
+ */
+t_strvect	ft_splitcmdbyspace(std::string msg);
+
 std::string	strvect_to_string(const t_strvect &split, char delim = ' ',
 	size_t pos = 0, size_t len = std::string::npos);
 bool		match(const char *s1, const char *s2);
