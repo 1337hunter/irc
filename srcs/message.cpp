@@ -88,7 +88,7 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 	for (; client_it != channel->getclients().end(); client_it++)
 		if (client != client_it->first)
 		{
-			if (client_it->first->gethopcount() == "0")
+			if (client_it->first->gethop() == 0)
 				serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
 			else
 				serv->fds[client_it->first->getFD()].wrbuf += ":"+ client->getnick() +
@@ -96,14 +96,17 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 		}
 }
 
-void	msg_to_channel_this(Channel *channel, std::string msg, IRCserv *serv)
+void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCserv *serv)
 {
-	std::unordered_map<Client*, client_flags>::const_iterator	client;
+	std::unordered_map<Client*, client_flags>::const_iterator	client_it;
+	std::string	info;
 
-	client = channel->getclients().begin();
-	for (; client != channel->getclients().end(); client++)
-		if (client->first->gethopcount() == "0")
-			serv->fds[client->first->getFD()].wrbuf += msg + CRLF;
+	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
+		client->getinfo() + " ";
+	client_it = channel->getclients().begin();
+	for (; client_it != channel->getclients().end(); client_it++)
+		if (client_it->first->gethop() == 0)
+			serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
 }
 
 void	msg_each_client(std::string const &msg, Client *client, IRCserv *serv)

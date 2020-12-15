@@ -5,10 +5,59 @@
 //Command: PRIVMSG
 //Parameters: <receiver>{,<receiver>} <text to be sent>
 //
+//2812 :
+//Command: PRIVMSG
+//Parameters: <msgtarget> <text to be sent>
 
 void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv)
 {
-	fd = 0; (void)split; serv = 0;
+	Client		*client;
+	t_server	*routing;
+	Channel		*channel;
+	Client		*client_msg;
+	std::unordered_map<Client*, client_flags>::const_iterator   client_it;
+
+	if (split.size() < 4)
+		return ;
+	if (!(client = find_client_by_nick(std::string(split[0], 1), serv)))
+		return ;
+	if (split[2][0] == '$')
+	{
+		if (std::string(split[2], 1) == serv->servername)
+			msg_each_client(strvect_to_string(split, ' ', 3), client, serv);
+		else
+		{
+			if (!(routing = find_server_by_name(std::string(split[2], 1), serv)))
+				return ;
+			serv->fds[routing->fd].wrbuf += strvect_to_string(split) + CRLF;
+		}
+	}
+	else if (split[2].find_first_of("!#+") == 0)
+	{
+		if (!(channel = find_channel_by_name(split[2], serv)))
+			return ;
+		client_it = channel->getclients().begin();
+		for (; client_it != channel->getclients().end(); client_it++)
+			if (client_it->first->getFD() != fd)
+			{
+				if (client_it->first->gethop() == 0)
+					serv->fds[client_it->first->getFD()].wrbuf += ":" + client->getinfo()
+					+ " " + strvect_to_string(split, ' ', 1) + CRLF;
+				else
+					serv->fds[client_it->first->getFD()].wrbuf += strvect_to_string(split)
+					+ CRLF;
+			}
+	}
+	else
+	{
+		if (!(client_msg = find_client_by_nick(split[2], serv)))
+			return ;
+		if (client_msg->gethop() == 0)
+			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " " +
+			strvect_to_string(split, ' ', 1) + CRLF;
+		else if (client_msg->getFD() != fd)
+			serv->fds[client_msg->getFD()].wrbuf += strvect_to_string(split) + CRLF;
+	}
 }
 
 void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
@@ -16,15 +65,13 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	Client		*client;
 	Client		*client_msg;
 	Channel		*channel;
-	bool		good_mask;
+	bool		good_mask = false;
 	std::vector<t_server>::iterator net;
 	std::list<Client>::iterator		client_it;
-	t_server	*_serv;
-	bool		onChan;
+	std::list<t_server_intro>::iterator	routing;
+	t_server	*_serv = 0;
+	bool		onChan = false;
 
-	good_mask = false;
-	_serv = 0;
-	onChan = false;
 	if (!(client = find_client_by_fd(fd, serv)) || !client->isRegistred())
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, "451", -1, "", "You have not registered");
@@ -49,7 +96,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		}
 		good_mask = true;
 	}
-	if (split[1][0] == '$')
+	if (split[1][0] == '$') //server mask or servername
 	{
 		if (!client->isOperator())
 		{
@@ -60,9 +107,20 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		{
 			net = serv->network.begin();
 			for (; net != serv->network.end(); net++)
+			{
 				if (match(net->servername, std::string(split[1], 1)))
-					serv->fds[net->fd].wrbuf += ":" + client->getnickname() + " " +
-					strvect_to_string(split) + CRLF;
+					serv->fds[net->fd].wrbuf += ":" + client->getnickname() + " PRIVMSG $"
+					+ net->servername + " " + strvect_to_string(split, ' ', 2) + CRLF;
+				routing = net->routing.begin();
+				for (; routing != net->routing.end(); routing++)
+					if (match(routing->servername, std::string(split[1], 1)))
+					{
+						serv->fds[net->fd].wrbuf += ":" + client->getnickname() +
+						" PRIVMSG $" + routing->servername + " " +
+						strvect_to_string(split, ' ', 2) + CRLF;
+						break ;
+					}
+			}
 			if (match(serv->servername, std::string(split[1], 1)))
 				msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
 		}
@@ -79,8 +137,13 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 					"No such server"); return ;
 		}
 	}
-	else if (split[1][0] == '#' && good_mask)
+	else if (split[1][0] == '#' && good_mask) //host mask
 	{
+		if (!client->isOperator())
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOPRIVILEGES, client, "",
+			"Permission Denied- You're not an IRC operator"); return ;
+		}
 		if (match(serv->servername, std::string(split[1], 1)))
 			msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
 		for (net = serv->network.begin(); net != serv->network.end(); net++)
@@ -91,7 +154,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 						client->getnickname() + " PRIVMSG " + client_it->getnickname() +
 						strvect_to_string(split, ' ', 2);
 	}
-	else if (split[1].find_first_of("!#&+") == 0)
+	else if (split[1].find_first_of("!#&+") == 0) //to channel
 	{
 		if (!(channel = find_channel_by_name(split[1], serv)))
 		{
@@ -107,9 +170,12 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, "404", client, split[1],
 					"Cannot send to channel"); return ;
 		}
-		msg_to_channel(channel, client, strvect_to_string(split), serv);
+		if (split[1][0] == '&')
+			msg_to_channel_this(channel, client, strvect_to_string(split), serv);
+		else
+			msg_to_channel(channel, client, strvect_to_string(split), serv);
 	}
-	else
+	else //to client
 	{
 		if (split[1].find_first_of("%!@") == NPOS)
 			client_msg = find_client_by_nick(split[1], serv);

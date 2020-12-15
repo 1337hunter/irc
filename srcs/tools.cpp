@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 18:32:21 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 12:16:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,10 +192,16 @@ t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 t_server	*find_server_by_name(std::string const &name, IRCserv *serv)
 {
 	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server_intro>::iterator routing;
 
 	for (; net != serv->network.end(); net++)
+	{
 		if (net->servername == name)
 			return &(*net);
+		for (routing = net->routing.begin(); routing != net->routing.end(); ++routing)
+			if (routing->servername == name)
+				return &(*net);
+	}
 	return 0;
 }
 

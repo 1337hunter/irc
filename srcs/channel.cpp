@@ -299,7 +299,7 @@ int	Channel::setMode(t_strvect const &args)
 						if (client->first->getnick() == args[i + n])
 							break ;
 					if (client == _clients.end())
-						return n;
+						return 1;
 					else
 						clients.push_back(client->first);
 				}

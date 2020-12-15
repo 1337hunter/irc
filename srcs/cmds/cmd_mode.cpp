@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/14 22:17:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 12:25:43 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	Client	*client_mode;
 
 	if (split.size() < 4 || split[2][0] == '+')
-		return ; // error from other server
+		return ; // error from other server (may be msg_error here)
 	if (split[2][0] == '#' || split[2][0] == '!')
 	{
 		if ((channel_mode = find_channel_by_name(split[2], serv)) == 0)

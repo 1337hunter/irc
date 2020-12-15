@@ -28,14 +28,10 @@ void	part_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		channel = client->eraseChannel(args[i]);
 		if (channel != 0)
 		{
-			if (channel->getflags()._anonymous)
-				msg_to_channel_this(channel, ":anonymous!anonymous@anonymous PART " +
-				args[i] + part_msg, serv);
-			else
-				msg_to_channel_this(channel, ":" + client->getinfo() + " PART " + args[i] +
-				part_msg, serv);
 			if (channel->getclients().size() == 0)
 				remove_channel(channel, serv);
+			else
+				msg_to_channel_this(channel, client, "PART " + args[i] + part_msg, serv);
 		}
 	}
 	msg_forward(fd, strvect_to_string(split), serv);
@@ -65,24 +61,13 @@ void	part_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		channel = client->eraseChannel(args[i]);
 		if (channel != 0)
 		{
-			if (channel->getflags()._anonymous)
-			{
-				serv->fds[fd].wrbuf += ":anonymous!anonymous@anonymous PART " +
-				args[i] + part_msg + CRLF;
-				msg_to_channel_this(channel, ":anonymous!anonymous@anonymous PART " +
-				args[i] + part_msg, serv);
-			}
-			else
-			{
-				serv->fds[fd].wrbuf += ":" + client->getinfo() + " PART " + args[i] +
-				part_msg + CRLF;
-				msg_to_channel_this(channel, ":" + client->getinfo() + " PART " + args[i] +
-				part_msg, serv);
-			}
 			if (args.size() > 0 && args[i][0] != '&')
 				forward_args.push_back(args[i]);
 			if (channel->getclients().size() == 0)
 				remove_channel(channel, serv);
+			else
+				msg_to_channel_this(channel, client, "PART " + args[i] + part_msg, serv);
+
 		}
 		else
 		{
