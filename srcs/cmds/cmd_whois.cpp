@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/08 18:26:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 16:45:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 		// so i implement stupid solution to this
 		if (nickname != split[1])
 		{
-			servername = getmatchingservername(serv, split[1]);
+			servername = getservernamebymask(serv, split[1]);
 			if (servername.empty())
 			{
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,

@@ -179,7 +179,7 @@ bool	is_server_registred(const std::string &name, IRCserv *serv)
 	return false;
 }
 
-std::string		getmatchingservername(IRCserv *serv, std::string const &mask)
+std::string		getservernamebymask(IRCserv *serv, std::string const &mask)
 {
 	std::string	servername = "";
 

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/07 17:09:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 16:45:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() > 3)
 	{
-		servername = getmatchingservername(serv, split[3]);
+		servername = getservernamebymask(serv, split[3]);
 		if (servername.empty())
 		{
 			// this is what insp sends.

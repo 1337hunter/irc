@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/21 17:32:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 16:07:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 16:45:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	cmd_motd(int fd, const t_strvect &split, IRCserv *serv)
 		nick = it->getnickname();
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
-		(split.size() >= 2 && getmatchingservername(serv, split[1]) == serv->servername)))
+		(split.size() >= 2 && getservernamebymask(serv, split[1]) == serv->servername)))
 		serv->fds[fd].wrbuf += reply_motd(serv, nick);
 	else if (serv->fds[fd].type != FD_SERVER)
 	{
@@ -49,7 +49,7 @@ void	cmd_motd(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else	// from another server: forward this further or reply
 	{
-		if (split.size() >= 3 && getmatchingservername(serv, split[2]) == serv->servername)
+		if (split.size() >= 3 && getservernamebymask(serv, split[2]) == serv->servername)
 		{
 			nick = split[0].substr(1);
 			serv->fds[fd].wrbuf += reply_motd(serv, nick);
