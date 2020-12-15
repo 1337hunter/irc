@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 15:17:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 16:32:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,12 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	{
 		std::cout << "A reply " << split[1] << " from fd " << fd <<
 			" recieved. Forward to " << split[2] << std::endl;
-		Client	*found = find_client_by_nick(split[i], serv);
+		Client	*found = find_client_by_nick(split[2], serv);
 		if (found)
 		{
 			try
 			{
-				serv->fds.at(found->getFD()).wrbuf +=
-					strvect_to_string(split) + CRLF;
+				serv->fds.at(found->getFD()).wrbuf += msg + CRLF;
 				//	getFD() of client from another server is the FD of that
 				//	other server we connected to (no need to do more here)
 				//	just checking for existance with at()
