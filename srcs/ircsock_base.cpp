@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 14:19:06 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 14:31:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,17 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 			" recieved. Forward to " << split[2] << std::endl;
 		Client	*found = find_client_by_nick(split[i], serv);
 		if (found)
-			serv->fds[found->getFD()].wrbuf += strvect_to_string(split) + CRLF;
-		//	did getFD() of client from another server become the FD of that
-		//	other server we connected to so we don't need to check this here
+		{
+			try
+			{
+				if (serv->fds.at(found->getFD()).type == FD_CLIENT ||
+					serv->fds.at(found->getFD()).type == FD_OPER)
+					serv->fds[found->getFD()].wrbuf += strvect_to_string(split) + CRLF;
+				//	did getFD() of client from another server become the FD of that
+				//	other server we connected to so we don't need to check this here
+			}
+			catch (std::out_of_range &e) { (void)e; }
+		}
 		return ;	// for now because untested
 	}
 
