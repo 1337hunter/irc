@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 15:11:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/15 15:13:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,10 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 		{
 			try
 			{
-				serv->fds.at(found->getFD()).wrbuf += strvect_to_string(split) + CRLF;
-				//	getFD() of client from another server becomes the FD of that
-				//	other server we connected to so we don't need to do more here
+				serv->fds.at(found->getFD()).wrbuf +=
+					strvect_to_string(split) + CRLF;
+				//	getFD() of client from another server is the FD of that
+				//	other server we connected to (no need to do more here)
 				//	just checking for existance with at()
 			}
 			catch (std::out_of_range &e) { (void)e; }
