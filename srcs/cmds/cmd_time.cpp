@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 18:23:37 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 18:43:24 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/16 16:54:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,16 +34,45 @@
 
 void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_citer		cit = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	std::string	target = "";
-	if (cit != serv->clients.end())
-		target = cit->getnickname();
+	std::string	nick;
+	t_citer		it;
 
-	if (split.size() > 1)
-		std::cerr << "info does not support other servers yet" << std::endl;
+	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (it != serv->clients.end())
+		nick = it->getnickname();
 
-	time_t	rawtime = ft_getcurrenttime();
-	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_TIME, target, serv->servername, ft_timetostring(rawtime));
+	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
+		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
+			nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
+	}
+	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
+	{
+		int	servfd = getserverfdbymask(serv, split[1]);
+		if (servfd > 0 && !nick.empty())
+			serv->fds[servfd].wrbuf += ":" + nick + " TIME " + split[1] + CRLF;
+		else
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				ERR_NOSUCHSERVER, nick, split[1], "No such server");
+	}
+	else if (split.size() >= 3)	// from another server: reply or forward
+	{
+		nick = split[0].substr(1);
+		if (getservernamebymask(serv, split[2]) == serv->servername)
+		{
+			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
+				nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
+		}
+		else
+		{
+			int	servfd = getserverfdbymask(serv, split[2]);
+			if (servfd > 0)
+				serv->fds[servfd].wrbuf += split[0] + " TIME " + split[2] + CRLF;
+			else
+				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+					ERR_NOSUCHSERVER, nick, split[1], "No such server");
+		}
+	}
 }
 

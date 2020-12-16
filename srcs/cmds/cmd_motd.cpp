@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/21 17:32:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 16:45:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/16 16:54:11 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,25 +39,25 @@ void	cmd_motd(int fd, const t_strvect &split, IRCserv *serv)
 		nick = it->getnickname();
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
-		(split.size() >= 2 && getservernamebymask(serv, split[1]) == serv->servername)))
-		serv->fds[fd].wrbuf += reply_motd(serv, nick);
-	else if (serv->fds[fd].type != FD_SERVER)
+		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
 	{
-		int	servfd;
-		if ((servfd = getserverfdbymask(serv, split[1])) > 0 && !nick.empty())
+		serv->fds[fd].wrbuf += reply_motd(serv, nick);
+	}
+	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
+	{
+		int	servfd = getserverfdbymask(serv, split[1]);
+		if (servfd > 0 && !nick.empty())
 			serv->fds[servfd].wrbuf += ":" + nick + " MOTD " + split[1] + CRLF;
 	}
-	else	// from another server: forward this further or reply
+	else if (split.size() >= 3)	// from another server: reply or forward
 	{
-		if (split.size() >= 3 && getservernamebymask(serv, split[2]) == serv->servername)
-		{
-			nick = split[0].substr(1);
+		nick = split[0].substr(1);
+		if (getservernamebymask(serv, split[2]) == serv->servername)
 			serv->fds[fd].wrbuf += reply_motd(serv, nick);
-		}
 		else
 		{
-			int	servfd;
-			if (split.size() > 2 && (servfd = getserverfdbymask(serv, split[2])) > 0)
+			int	servfd = getserverfdbymask(serv, split[2]);
+			if (servfd > 0)
 				serv->fds[servfd].wrbuf += split[0] + " MOTD " + split[2] + CRLF;
 		}
 	}
