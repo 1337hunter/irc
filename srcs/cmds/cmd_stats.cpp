@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_time.cpp                                       :+:      :+:    :+:   */
+/*   cmd_stats.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/29 18:23:37 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 20:36:27 by salec            ###   ########.fr       */
+/*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
+/*   Updated: 2020/12/17 20:45:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,49 @@
 #include "tools.hpp"
 
 /*
-	Command: TIME
-	Parameters: [ <target> ]
+	Command: STATS
+	Parameters: [ <query> [ <target> ] ]
 
-	The time command is used to query local time from the specified
-	server. If the <target> parameter is not given, the server receiving
-	the command must reply to the query.
+	The stats command is used to query statistics of certain server.  If
+	<query> parameter is omitted, only the end of stats reply is sent
+	back.
+
+	A query may be given for any single letter which is only checked by
+	the destination server and is otherwise passed on by intermediate
+	servers, ignored and unaltered.
 	Wildcards are allowed in the <target> parameter.
+
+	Except for the ones below, the list of valid queries is
+	implementation dependent.  The standard queries below SHOULD be
+	supported by the server:
+		l - returns a list of the server's connections, showing how
+			long each connection has been established and the
+			traffic over that connection in Kbytes and messages for
+			each direction;
+		m - returns the usage count for each of commands supported
+			by the server; commands for which the usage count is
+			zero MAY be omitted;
+		o - returns a list of configured privileged users,
+			operators;
+		u - returns a string showing how long the server has been
+			up.
+	It is also RECOMMENDED that client and server access configuration be
+	published this way.
 
 	Numeric Replies:
 		ERR_NOSUCHSERVER
-		RPL_TIME
+		RPL_STATSLINKINFO
+		RPL_STATSUPTIME
+		RPL_STATSCOMMANDS
+		RPL_STATSOLINE
+		RPL_ENDOFSTATS
 
 	Examples:
-	TIME tolsun.oulu.fi		; check the time on the server "tolson.oulu.fi"
+	STATS m					; Command to check the command usage
+							for the server you are connected to
 */
 
-void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
+void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string	nick;
 	t_citer		it;
@@ -40,6 +66,10 @@ void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
 	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
 		nick = it->getnickname();
+
+
+	// placeholder from TIME below. do STATS
+
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
 		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))

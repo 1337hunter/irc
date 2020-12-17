@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_time.cpp                                       :+:      :+:    :+:   */
+/*   cmd_links.cpp                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/29 18:23:37 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 20:36:27 by salec            ###   ########.fr       */
+/*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
+/*   Updated: 2020/12/17 20:46:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,30 @@
 #include "tools.hpp"
 
 /*
-	Command: TIME
-	Parameters: [ <target> ]
+	Command: LINKS
+	Parameters: [ [ <remote server> ] <server mask> ]
 
-	The time command is used to query local time from the specified
-	server. If the <target> parameter is not given, the server receiving
-	the command must reply to the query.
-	Wildcards are allowed in the <target> parameter.
+	With LINKS, a user can list all servernames, which are known by the
+	server answering the query.  The returned list of servers MUST match
+	the mask, or if no mask is given, the full list is returned.
+
+	If <remote server> is given in addition to <server mask>, the LINKS
+	command is forwarded to the first server found that matches that name
+	(if any), and that server is then required to answer the query.
 
 	Numeric Replies:
 		ERR_NOSUCHSERVER
-		RPL_TIME
+		RPL_LINKS
+		RPL_ENDOFLINKS
 
 	Examples:
-	TIME tolsun.oulu.fi		; check the time on the server "tolson.oulu.fi"
+	LINKS *.au				; Command to list all servers which
+							have a name that matches *.au;
+	LINKS *.edu *.bu.edu	; Command to list servers matching *.bu.edu
+							as seen by the first server matching *.edu.
 */
 
-void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
+void	cmd_links(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string	nick;
 	t_citer		it;
@@ -40,6 +47,10 @@ void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
 	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
 		nick = it->getnickname();
+
+
+	// placeholder from TIME below. do LINKS
+
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
 		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
