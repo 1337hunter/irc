@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_nick.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 12:18:43 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
@@ -49,6 +37,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	Client			*client;
 	t_citer			nick_entry;
 	t_citer			fd_entry;
+	std::list<t_kill>::iterator	kill;
 
 	if (split.size() < 2)
 	{
@@ -63,7 +52,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
 			split[1] + " :Erroneous nickname" + CRLF; return ;
 	}
-	if ((client = find_client_by_nick(split[1], serv)))
+	if ((client = find_client_by_nick(split[1], serv)) && client->isRegistred())
 	{
 		if (client->isBlocked())
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, -1, split[1],
@@ -71,29 +60,59 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		else if (client->isRestricted())	
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
 			"Your connection is restricted!");
-		else
+		else if (client->gethop() == 0)
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKNAMEINUSE, -1, split[1],
 			"Nickname is already in use");
+		else if (client->gethop() > 0)
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKCOLLISION, -1, split[1],
+			"Nickname collision KILL from " + client->getusername() +
+			"@" + client->gethostname());
 		return ;
 	}
+	else if (client && client->gethop() == 0 && !client->isRegistred() &&
+			client->getFD() != fd)
+	{
+		serv->fds[client->getFD()].status = false;
+		serv->fds[client->getFD()].wrbuf = "Error :Closing Link: " +
+			client->getnickname() + " (Overridden)\r\n";
+		client->setFD(fd);
+		client->sethostname(serv->fds[fd].hostname); return ;
+	}
+	else if (client && client->getFD() == fd)
+	{
+		t_whowas	whowas;
+		serv->fds[fd].wrbuf += ":" + client->getnick() + " NICK " + split[1] + CRLF;
+		whowas.nickname = client->getnick(); whowas.username = client->getusername();
+		whowas.realname = client->getrealname(); whowas.hostname = client->gethostname();
+		whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
+		serv->nickhistory.push_back(whowas);
+		msg_forward(fd, ":" + client->getnick() + " NICK " + split[1], serv);
+		client->ChangeNick(split[1]);
+		return ;
+	}
+	for (kill = serv->kills.begin(); kill != serv->kills.end(); kill++)
+		if ((kill->nick == split[1] || kill->host == serv->fds[fd].hostname)
+				&& ft_getcurrenttime() - kill->time < KILLTIME)
+		{
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
+			"Your connection is restricted couse " + std::string(kill->cause, 1)  +
+			" for " + std::to_string(KILLTIME - ft_getcurrenttime() + kill->time));
+			serv->fds[fd].status = false; return ;
+		}
 	serv->clients.push_back(Client(split[1], fd));
 	serv->clients.back().sethostname(serv->fds[fd].hostname);
 }
 
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string		reply;
-	Client			*client = 0;
-	t_citer			nick_entry;
-	t_citer			fd_entry;
-
 	if (serv->fds[fd].type == FD_SERVER)
 		nick_from_network(fd, split, serv);
 	else
 		nick_from_client(fd, split, serv);
+#if 0
 	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
-	if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
+	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
 			!nick_entry->isRegistred() && fd_entry == serv->clients.end() &&
 			client->gethopcount() == "0")
 	{
@@ -132,6 +151,7 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		 *	cli will try to send another NICK after USER msg */
 	}
 	serv->fds[fd].wrbuf += reply;
+#endif
 }
 
 /*

@@ -28,12 +28,12 @@ void	kill_from_operator(int fd, t_strvect const &split, IRCserv *serv)
 	msg_forward(fd, strvect_to_string(split), serv);
 	msg_forward(fd, ":" + client->getnick() + " QUIT " + cause, serv);
 	serv->fds[client->getFD()].status = false;
-	remove_client_by_ptr(client, serv);
 	kill.nick = client->getnick();
 	kill.host = client->gethostname();
 	kill.time = ft_getcurrenttime();
 	kill.cause = cause;
 	serv->kills.push_back(kill);
+	remove_client_by_ptr(client, serv);
 }
 
 void	kill_from_network(int fd, t_strvect const &split, IRCserv *serv)

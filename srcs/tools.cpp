@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 15:20:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/17 16:55:21 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,4 +317,19 @@ bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 				return false;
 			}
 	return true;
+}
+
+void	clear_kill_list(IRCserv *serv)
+{
+	std::list<t_kill>::iterator	kill;
+
+	kill = serv->kills.begin();
+	while (kill != serv->kills.end())
+		if (ft_getcurrenttime() - kill->time >= KILLTIME)
+		{
+			serv->kills.erase(kill);
+			kill = serv->kills.begin();
+		}
+		else
+			kill++;
 }
