@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 17:09:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/17 19:01:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,8 +46,8 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 			{
 				if (it->getNICK())
 				{
-					nick_forward(serv, it);
-					reply = reply_welcome(serv, it);
+					nick_forward(serv, &(*it));
+					reply = reply_welcome(serv, &(*it));
 				}
 			}
 			else

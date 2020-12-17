@@ -41,7 +41,7 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 	return (reply);
 }
 
-std::string		reply_welcome(IRCserv *serv, t_citer const cli)
+std::string		reply_welcome(IRCserv *serv, Client *cli)
 {
 	std::string	reply = "";
 	std::string	nick = cli->getnickname();

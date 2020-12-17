@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/17 13:33:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/17 18:59:43 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_away(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_kill(int fd, const t_strvect &split, IRCserv *serv);
 
-std::string		reply_welcome(IRCserv *serv, t_citer const cli);
+std::string		reply_welcome(IRCserv *serv, Client *client);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
 std::string		reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, Client *client);
 std::string		reply_nochan_visible_names(IRCserv *serv, Client *client);

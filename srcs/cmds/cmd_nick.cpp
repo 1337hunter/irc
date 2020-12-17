@@ -78,25 +78,38 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		client->setFD(fd);
 		client->sethostname(serv->fds[fd].hostname); return ;
 	}
-	else if (client && client->getFD() == fd)
+	else if (!client)
 	{
-		t_whowas	whowas;
-		serv->fds[fd].wrbuf += ":" + client->getnick() + " NICK " + split[1] + CRLF;
-		whowas.nickname = client->getnick(); whowas.username = client->getusername();
-		whowas.realname = client->getrealname(); whowas.hostname = client->gethostname();
-		whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
-		serv->nickhistory.push_back(whowas);
-		msg_forward(fd, ":" + client->getnick() + " NICK " + split[1], serv);
-		client->ChangeNick(split[1]);
-		return ;
+		if ((client = find_client_by_fd(fd, serv)) && client->isRegistred())
+		{
+			t_whowas	whowas;
+			serv->fds[fd].wrbuf += ":" + client->getnick() + " NICK " + split[1] + CRLF;
+			whowas.nickname = client->getnick(); whowas.username = client->getusername();
+			whowas.realname = client->getrealname();
+			whowas.hostname = client->gethostname();
+			whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
+			serv->nickhistory.push_back(whowas);
+			msg_forward(fd, ":" + client->getnick() + " NICK " + split[1], serv);
+			client->ChangeNick(split[1]); return ;
+		}
+		else if (client && !client->isRegistred())
+		{
+			client->sethostname(serv->fds[fd].hostname);
+			client->Register(split[1]);
+			if (client->getUSER())
+			{
+				nick_forward(serv, client);
+				serv->fds[fd].wrbuf += reply_welcome(serv, client);
+			}
+			return ;
+		}
 	}
 	for (kill = serv->kills.begin(); kill != serv->kills.end(); kill++)
-		if ((kill->nick == split[1] || kill->host == serv->fds[fd].hostname)
-				&& ft_getcurrenttime() - kill->time < KILLTIME)
+		if (kill->nick == split[1] || kill->host == serv->fds[fd].hostname)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
 			"Your connection is restricted couse " + std::string(kill->cause, 1)  +
-			" for " + std::to_string(KILLTIME - ft_getcurrenttime() + kill->time));
+			" for " + std::to_string(KILLTIME - ft_getcurrenttime() + kill->time) + "s");
 			serv->fds[fd].status = false; return ;
 		}
 	serv->clients.push_back(Client(split[1], fd));
@@ -109,55 +122,4 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 		nick_from_network(fd, split, serv);
 	else
 		nick_from_client(fd, split, serv);
-#if 0
-	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
-	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
-			!nick_entry->isRegistred() && fd_entry == serv->clients.end() &&
-			client->gethopcount() == "0")
-	{
-		serv->fds[nick_entry->getFD()].status = false;
-		serv->fds[nick_entry->getFD()].wrbuf = "Error :Closing Link: " + nick_entry->getnickname() + " (Overridden)";
-		serv->fds[nick_entry->getFD()].wrbuf += CRLF;
-		nick_entry->setFD(fd);
-		nick_entry->sethostname(serv->fds[fd].hostname);
-	}
-	else if (fd_entry != serv->clients.end() && fd_entry->isRegistred())
-	{
-		// Here we also need to track nicknames
-		// for KICK, MODE and KILL commands.
-		reply = ":";
-		reply += fd_entry->getnickname();
-		fd_entry->ChangeNick(split[1]);
-		reply += " NICK ";
-		reply += fd_entry->getnickname();
-		reply += CRLF;
-	}
-	else if (fd_entry != serv->clients.end() && !fd_entry->isRegistred())
-	{
-		fd_entry->sethostname(serv->fds[fd].hostname);
-		fd_entry->Register(split[1]);
-		if (fd_entry->getUSER())
-		{
-			nick_forward(serv, fd_entry);
-			reply = reply_welcome(serv, fd_entry);
-		}
-	}
-	else
-	{
-		reply = ft_buildmsg(serv->servername, ERR_NICKNAMEINUSE, split[1], "",
-			"Nickname is already in use");
-		/*	need to save the state in this case
-		 *	cli will try to send another NICK after USER msg */
-	}
-	serv->fds[fd].wrbuf += reply;
-#endif
 }
-
-/*
-	else if (nick_entry != serv->clients.end() && !(nick_entry->isConnected()))
-	{
-		nick_entry->Reconnect(fd);
-		nick_entry->sethostname(serv->fds[fd].hostname);
-	}
-*/

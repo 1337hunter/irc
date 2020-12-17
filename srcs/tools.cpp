@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 16:55:21 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/17 18:56:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,12 +245,12 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 			") has been added to whowas history" << std::endl;
 }
 
-int			nick_forward(IRCserv *serv, t_citer client)
+int			nick_forward(IRCserv *serv, Client *client)
 {
 	std::string	forward;
 	std::vector<t_server>::iterator	net;
 
-	if (client == serv->clients.end())
+	if (!client)
 		return 1;
 	forward = "NICK " + client->getnickname() + " " + client->gethopcount(true, true) +
 		client->getusername() + " " + client->gethostname() + " " + client->gettoken() +
