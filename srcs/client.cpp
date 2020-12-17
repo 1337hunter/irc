@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 21:03:47 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 19:37:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 	USER(false), NICK(false), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message("")
+	_away_message(""), _blocked(false)
 {
 }
 
@@ -24,7 +24,7 @@ Client::Client(std::string const &nickname, int fd):
 	nickname(nickname), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message("")
+	_away_message(""), _blocked(false)
 {
 }
 
@@ -32,7 +32,7 @@ Client::Client(std::string const &username, std::string const &realname, int fd)
 username(username), realname(realname), hopcount(0), fd(fd), _isConnected(true),
 	_isRegistred(false), USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message("")
+	_away_message(""), _blocked(false)
 {
 }
 
@@ -44,6 +44,7 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 	setMode(umode);
 	_restricted = false;
 	_away = false;
+	_blocked = false;
 }
 
 Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[1]),
@@ -57,6 +58,7 @@ Client::Client(const std::vector<std::string> &split, int _fd) : nickname(split[
 		realname += " " + split[i];
 	_restricted = false;
 	_away = false;
+	_blocked = false;
 }
 
 Client::~Client()
@@ -85,6 +87,10 @@ Client				&Client::operator=(Client const &other)
 	this->_isWallOps = other._isWallOps;
 	this->_isServNotice = other._isServNotice;
 	this->_isOperator = other._isOperator;
+	this->_restricted = other._restricted;
+	this->_away = other._away;
+	this->_away_message = other._away_message;
+	this->_blocked = other._blocked;
 	this->dtloggedin = other.dtloggedin;
 	this->_channels = other._channels;
 	this->invited = other.invited;
@@ -295,6 +301,11 @@ bool	Client::setUMODE(std::string const &mode)
 	return 0;
 }
 
+bool	Client::isRestricted(void)
+{
+	return _restricted;
+}
+
 void	Client::setAway(std::string const &msg)
 {
 	_away_message = msg;
@@ -373,6 +384,21 @@ bool	Client::isBanned(Channel *chan)
 		if (match(this->getinfo(), *ban_mask))
 			return true;
 	return false;
+}
+
+void	Client::block(void)
+{
+	_blocked = true;
+}
+
+void	Client::unblock(void)
+{
+	_blocked = false;
+}
+
+bool	Client::isBlocked(void)
+{
+	return _blocked;
 }
 
 std::string	Client::getinfo(void)

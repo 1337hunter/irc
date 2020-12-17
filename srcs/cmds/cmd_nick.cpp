@@ -6,18 +6,20 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/06 18:58:10 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 19:53:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
+#include "message.hpp"
 
 //Command: NICK
 //Parameters: <nickname>[1] <hopcount>[2] <username>[3] <host>[4] <servertoken>[]
 // <umode>[6] <realname>[7]
-void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
+
+void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server				*routing;
 	int						hop;
@@ -41,7 +43,7 @@ void	add_nick_to_routing(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[net->fd].wrbuf += forward;
 }
 
-void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
+void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string		reply;
 	Client			*client;
@@ -50,31 +52,49 @@ void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() < 2)
 	{
-		// may be different
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NONICKNAMEGIVEN, "", "", "No nickname given");
-		return ;
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NONICKNAMEGIVEN, -1, "",
+				"No nickname given"); return ;
 	}
-	if (split.size() > 7 && serv->fds[fd].type == FD_SERVER)
-	{
-		add_nick_to_routing(fd, split, serv);
-		return ;
-	}
-	if (split[1] == "anonymous")
+	if (split[1] == "anonymous" ||
+			split[1].find_first_of("\b\r\n\a!@#$%^&*+-?:\"\',") != NPOS
+			|| split[1] == "admin" || split[1] == "oper" ||
+			split[1] == "operator" || split[1] == "Operator")
 	{
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
-			"anonymous  :Erroneous nickname" + CRLF;
+			split[1] + "  :Erroneous nickname" + CRLF;
 		return ;
 	}
-	client = find_client_by_nick(split[1], serv);
+	if ((client = find_client_by_nick(split[1], serv)))
+	{
+		if (client->isBlocked())
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, -1, split[1],
+			"Nick/channel is temporarily unavailable");
+		else if (client->isRestricted())	
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
+			"Your connection is restricted!");
+		else
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKNAMEINUSE, -1, split[1],
+			"Nickname is already in use");
+		return ;
+	}
+	serv->clients.push_back(Client(split[1], fd));
+	serv->clients.back().sethostname(serv->fds[fd].hostname);
+}
+
+void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
+{
+	std::string		reply;
+	Client			*client = 0;
+	t_citer			nick_entry;
+	t_citer			fd_entry;
+
+	if (serv->fds[fd].type == FD_SERVER)
+		nick_from_network(fd, split, serv);
+	else
+		nick_from_client(fd, split, serv);
 	fd_entry = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	nick_entry = ft_findnick(serv->clients.begin(), serv->clients.end(), split[1]);
-	if (nick_entry == serv->clients.end() && fd_entry == serv->clients.end() && client == 0)
-	{
-		serv->clients.push_back(Client(split[1], fd));
-		serv->clients.back().sethostname(serv->fds[fd].hostname);
-	}
-	else if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
+	if (nick_entry != serv->clients.end() && nick_entry->isConnected() &&
 			!nick_entry->isRegistred() && fd_entry == serv->clients.end() &&
 			client->gethopcount() == "0")
 	{

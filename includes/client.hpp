@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 16:03:06 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/15 19:36:59 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ private:
 	bool			_restricted;
 	bool			_away;
 	std::string		_away_message;
+	bool			_blocked;
 	time_t			dtloggedin;
 	std::list<Channel*>	_channels; //unordered map is better channame->Channel*
 	std::list<std::string>	invited;
@@ -104,6 +105,10 @@ public:
 	void				add_channel(Channel *chan);
 	void				invite_to(const std::string &chan);
 	bool				isInvited(Channel *chan);
+	bool				isBlocked(void);
+	bool				isRestricted(void);
+	void				block(void);
+	void				unblock(void);
 	bool				isBanned(Channel *chan);
 	void				sethostname(std::string const &host);
 
