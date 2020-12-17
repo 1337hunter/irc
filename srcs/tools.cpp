@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 16:18:52 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/17 15:20:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,53 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 		if (channel == &(*chan))
 		{
 			serv->channels.erase(chan);
-			return true;
+			return false;
 		}
-	return false;
+	return true;
+}
+
+bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	net;
+	std::list<Client>::iterator		client;
+
+	client = serv->clients.begin();
+	for (; client != serv->clients.end(); client++)
+		if (&(*client) == ptr)
+		{
+			serv->clients.erase(client);
+			return false;
+		}
+	net = serv->network.begin();
+	for (; net != serv->network.end(); net++)
+		for (client = net->clients.begin(); client != net->clients.end(); client++)
+			if (&(*client) == ptr)
+			{
+				net->clients.erase(client);
+				return false;
+			}
+	return true;
+}
+
+bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	net;
+	std::list<Client>::iterator		client;
+
+	client = serv->clients.begin();
+	for (; client != serv->clients.end(); client++)
+		if (client->getnick() == nick)
+		{
+			serv->clients.erase(client);
+			return false;
+		}
+	net = serv->network.begin();
+	for (; net != serv->network.end(); net++)
+		for (client = net->clients.begin(); client != net->clients.end(); client++)
+			if (client->getnick() == nick)
+			{
+				net->clients.erase(client);
+				return false;
+			}
+	return true;
 }

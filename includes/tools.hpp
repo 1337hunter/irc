@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 20:14:07 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/17 15:17:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,16 @@ Client      *find_client_by_user_or_nick_and_host(std::string const &str, IRCser
 Client      *find_client_by_info(std::string const &info, IRCserv *serv);
 t_server    *find_server_by_token(std::string const &token, IRCserv *serv);
 
+
+
 std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
 	std::string const &target, std::string const &cmd, std::string const &msg);
 void		addtonickhistory(IRCserv *serv, t_citer const client);
 int			nick_forward(IRCserv *serv, t_citer client);
+
 bool    remove_channel(Channel *channel, IRCserv *serv);
+bool    remove_client_by_ptr(Client *ptr, IRCserv *serv);
+bool    remove_client_by_nick(std::string const &nick, IRCserv *serv);
 
 /****************************************************/
 /*	string manipulation functions (stringtools.cpp)	*/

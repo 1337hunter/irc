@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:29:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 19:53:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/17 12:18:43 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			split[1] == "operator" || split[1] == "Operator")
 	{
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
-			split[1] + "  :Erroneous nickname" + CRLF;
-		return ;
+			split[1] + " :Erroneous nickname" + CRLF; return ;
 	}
 	if ((client = find_client_by_nick(split[1], serv)))
 	{

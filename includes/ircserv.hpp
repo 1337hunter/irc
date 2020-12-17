@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/14 21:51:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/17 15:11:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,14 @@ typedef struct		s_whowas
 	time_t			dtloggedin;
 }					t_whowas;
 
+typedef struct		s_kill
+{
+	std::string		nick;
+	std::string		host;
+	time_t			time;
+	std::string		cause;
+}					t_kill;
+
 struct				IRCserv
 {
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
@@ -162,6 +170,7 @@ struct				IRCserv
 	time_t						dtstarted;
 	time_t						dtcompiled;
 	std::vector<t_whowas>		nickhistory;
+	std::list<t_kill>			kills;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
