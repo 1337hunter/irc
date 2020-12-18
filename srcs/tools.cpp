@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:28:22 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:38:07 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,16 +205,16 @@ t_server	*find_server_by_name(std::string const &name, IRCserv *serv)
 	return 0;
 }
 
-std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
-	std::string const &target, std::string const &cmd, std::string const &msg)
+std::string	ft_buildmsg(std::string const &from, std::string const &msgcode,
+	std::string const &to, std::string const &cmd, std::string const &msg)
 {
 	std::string	res;
 
-	res = ":" + srv + " " + msgcode + " ";
-	if (target.empty())
+	res = ":" + from + " " + msgcode + " ";
+	if (to.empty())
 		res += "*";
 	else
-		res += target;
+		res += to;
 	if (!cmd.empty())
 		res += " " + cmd;
 	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO)
