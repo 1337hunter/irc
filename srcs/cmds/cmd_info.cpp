@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/16 17:15:19 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:54:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,13 @@ std::string	reply_info(IRCserv *serv, std::string const &target)
 
 void		cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnickname();
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
 		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
@@ -80,7 +81,7 @@ void		cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
 	{
 		int	servfd = getserverfdbymask(serv, split[1]);
-		if (servfd > 0 && !nick.empty())
+		if (servfd > 0)
 			serv->fds[servfd].wrbuf += ":" + nick + " INFO " + split[1] + CRLF;
 		else
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,

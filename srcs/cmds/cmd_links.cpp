@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 20:46:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:54:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@
 
 void	cmd_links(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnickname();
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 
 	// placeholder from TIME below. do LINKS
@@ -61,8 +62,8 @@ void	cmd_links(int fd, const t_strvect &split, IRCserv *serv)
 	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
 	{
 		int	servfd = getserverfdbymask(serv, split[1]);
-		if (servfd > 0 && !nick.empty())
-			serv->fds[servfd].wrbuf += ":" + nick + " TIME " + split[1] + CRLF;
+		if (servfd > 0)
+			serv->fds[servfd].wrbuf += ":" + nick + " LINKS " + split[1] + CRLF;
 		else
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, nick, split[1], "No such server");
@@ -79,7 +80,7 @@ void	cmd_links(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			int	servfd = getserverfdbymask(serv, split[2]);
 			if (servfd > 0)
-				serv->fds[servfd].wrbuf += split[0] + " TIME " + split[2] + CRLF;
+				serv->fds[servfd].wrbuf += split[0] + " LINKS " + split[2] + CRLF;
 			else
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 					ERR_NOSUCHSERVER, nick, split[1], "No such server");

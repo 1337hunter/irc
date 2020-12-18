@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 16:45:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:26:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,19 +51,23 @@ typedef std::vector<t_whowas>::iterator	t_whowasit;
 
 void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_citer		cit = ft_findclientfd(serv->clients.begin(),
-		serv->clients.end(), fd);
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
+
 	size_t		entrycount = -1;
 	std::string	servername = "";
 	std::string	nickname = "";
 
-	if (cit == serv->clients.end())
-		return ;
 	if (split.size() < 2)
 	{
 		// may be different
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NONICKNAMEGIVEN, cit->getnickname(), "", "No nickname given");
+			ERR_NONICKNAMEGIVEN, nick, "", "No nickname given");
 		return ;
 	}
 	nickname = split[1];
@@ -90,8 +94,7 @@ void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 			// RFC does not specify the ERR_NOSUCHSERVER for this query
 			// but it <<<SEEMS>>> pretty logical
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				ERR_NOSUCHSERVER, cit->getnickname(),
-				split[3], "No such server");
+				ERR_NOSUCHSERVER, nick, split[3], "No such server");
 			return ;
 		}
 	}
@@ -104,12 +107,11 @@ void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 			(servername.empty() || (servername == it->servername)))
 		{
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				RPL_WHOWASUSER, cit->getnickname(),
+				RPL_WHOWASUSER, nick,
 				nickname + " " + it->username + " " + it->hostname + " *",
 				it->realname);
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				RPL_WHOISSERVER, cit->getnickname(),
-				nickname + " " + it->servername,
+				RPL_WHOISSERVER, nick, nickname + " " + it->servername,
 				ft_timetostring(it->dtloggedin));
 			count++;
 		}
@@ -117,9 +119,8 @@ void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 	if (count == 0)
 	{
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_WASNOSUCHNICK, cit->getnickname(),
-			nickname, "There was no such nickname");
+			ERR_WASNOSUCHNICK, nick, nickname, "There was no such nickname");
 	}
 	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_ENDOFWHOWAS, cit->getnickname(), nickname, "End of WHOWAS");
+		RPL_ENDOFWHOWAS, nick, nickname, "End of WHOWAS");
 }

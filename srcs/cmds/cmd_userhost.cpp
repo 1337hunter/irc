@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:54:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 18:28:01 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,18 @@ typedef std::list<Client>::iterator	t_cvit;
 
 void	cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_citer	cit = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (cit == serv->clients.end())
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
 		return ;
+	}
 
 	if (split.size() < 2)
 	{
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NEEDMOREPARAMS, cit->getnickname(), "USERHOST",
+			ERR_NEEDMOREPARAMS, nick, "USERHOST",
 			"Not enough parameters");
 		return ;
 	}
@@ -59,8 +63,7 @@ void	cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
 			if (it->getnickname() == split[i])
 			{
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					RPL_USERHOST, cit->getnickname(), "",
-					it->getnickname() + "=+" +
+					RPL_USERHOST, nick, "", it->getnickname() + "=+" +
 					it->getusername() + "@" + it->gethostname());
 			}
 		}

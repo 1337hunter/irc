@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/17 20:40:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:23:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ std::string		reply_nochan_visible_names(IRCserv *serv, Client *client);
 bool			is_server_registred(const std::string &name, IRCserv *serv);
 std::string		getservernamebymask(IRCserv *serv, std::string const &mask);
 int				getserverfdbymask(IRCserv *serv, std::string const &mask);
+std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
 
 typedef std::vector<t_server>::iterator	t_netit;
 

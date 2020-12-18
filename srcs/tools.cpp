@@ -6,14 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 17:35:22 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 22:10:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 
-t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
-				int fd)
+t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
 	for (t_citer it = begin; it != end; it++)
 		if (it->isConnected() && it->getFD() == fd)
@@ -206,16 +205,16 @@ t_server	*find_server_by_name(std::string const &name, IRCserv *serv)
 	return 0;
 }
 
-std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
-	std::string const &target, std::string const &cmd, std::string const &msg)
+std::string	ft_buildmsg(std::string const &from, std::string const &msgcode,
+	std::string const &to, std::string const &cmd, std::string const &msg)
 {
 	std::string	res;
 
-	res = ":" + srv + " " + msgcode + " ";
-	if (target.empty())
+	res = ":" + from + " " + msgcode + " ";
+	if (to.empty())
 		res += "*";
 	else
-		res += target;
+		res += to;
 	if (!cmd.empty())
 		res += " " + cmd;
 	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:53:32 by salec             #+#    #+#             */
-/*   Updated: 2020/11/28 12:54:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 18:24:33 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ void	cmd_who(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string	mask;
 	bool		opers = false;
-	t_citer		cit = ft_findclientfd(serv->clients.begin(),
-		serv->clients.end(), fd);
-
-	if (cit == serv->clients.end())
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
 		return ;
+	}
 
 	if (split.size() < 2)
 	{
@@ -80,12 +82,12 @@ void	cmd_who(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			if (!opers || (opers && it->isOperator()))
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					RPL_WHOREPLY, cit->getnickname(),
+					RPL_WHOREPLY, nick,
 					"* " + it->getusername() + " " + it->gethostname() + " " +
 					serv->servername + " " + it->getnickname() + " H",
 					"0 " + it->getrealname());
 		}
 	}
 	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_ENDOFWHO, cit->getnickname(), mask, "End of WHO list");
+		RPL_ENDOFWHO, nick, mask, "End of WHO list");
 }

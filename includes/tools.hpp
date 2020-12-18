@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 18:59:26 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 19:46:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,8 @@ t_server    *find_server_by_token(std::string const &token, IRCserv *serv);
 
 
 
-std::string	ft_buildmsg(std::string const &srv, std::string const &msgcode,
-	std::string const &target, std::string const &cmd, std::string const &msg);
+std::string	ft_buildmsg(std::string const &from, std::string const &msgcode,
+	std::string const &to, std::string const &cmd, std::string const &msg);
 void		addtonickhistory(IRCserv *serv, t_citer const client);
 int			nick_forward(IRCserv *serv, Client *client);
 
@@ -67,6 +67,7 @@ std::string	strvect_to_string(const t_strvect &split, char delim = ' ',
 bool		match(const char *s1, const char *s2);
 bool		match(std::string const &s1, std::string const &s2);
 std::string	ft_strtoupper(std::string const &str);
+std::string	ft_strtolower(std::string const &str);
 std::string	get_nick_from_info(std::string const &info);
 std::string get_mask_reply(Channel *channel, Client *client, std::string mode, IRCserv *serv);
 bool    is_valid_mask(std::string mask);
