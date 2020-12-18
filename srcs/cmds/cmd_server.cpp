@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/11/30 13:53:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 20:50:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	if (serv->fds[fd].type != FD_SERVER)
 	{
 		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + serv->version +
-			" " + "|" + CRLF;
+			" " + "IRC|" + CRLF;
 		serv->fds[fd].wrbuf += "SERVER " + serv->servername + " 1 " + serv->token +
 		" :" + serv->info + CRLF;
 	}

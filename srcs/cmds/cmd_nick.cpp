@@ -11,20 +11,24 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_server				*routing;
 	int						hop;
-	Client					newone(split, fd);
 	std::string				forward;
 	std::vector<t_server>::iterator	net;
 
+	if (split.size() < 8)
+		return ;
 	try { hop = stoi(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
-		routing->clients.push_back(newone); //else error
-	forward = "NICK " + split[1] + " " + std::to_string(hop + 1) +
-		" " + split[3] + " " + split[4] + " " + split[5] + " " + split[6] +
-		" " + split[7];
+		routing->clients.push_back(Client(split, fd));
+	else
+	{
+		serv->fds[fd].wrbuf += "ERROR :NICK command from unregistred server\r\n";
+		return ;
+	}
+	forward = "NICK " + split[1] + " " + std::to_string(hop + 1) + " " + split[3] +
+		" " + split[4] + " " + split[5] + " " + split[6] + " " + split[7];
 	for (size_t i = 8; i < split.size(); i++)
 		forward += " " + split[i];
 	forward += CRLF;
-
 	net = serv->network.begin();
 	for (; net != serv->network.end(); net++)
 		if (net->fd != fd)
@@ -33,10 +37,7 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 
 void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string		reply;
 	Client			*client;
-	t_citer			nick_entry;
-	t_citer			fd_entry;
 	std::list<t_kill>::iterator	kill;
 
 	if (split.size() < 2)
@@ -45,8 +46,8 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 				"No nickname given"); return ;
 	}
 	if (split[1] == "anonymous" ||
-			split[1].find_first_of("\b\r\n\a!@#$%^&*+-?:\"\',") != NPOS
-			|| split[1] == "admin" || split[1] == "oper" ||
+			split[1].find_first_of("\b\r\n\a!@#$%^&*+-?:\"\',") != NPOS ||
+			split[1] == "admin" || split[1] == "oper" ||
 			split[1] == "operator" || split[1] == "Operator")
 	{
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
