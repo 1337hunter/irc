@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 20:55:21 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 21:02:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,8 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 	{
 		for (size_t i = 0; i < 4; i++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSOLINE, target,
-				std::string("<linkname>") + " " +
-				"<sendq>" + " " +
-				"<sent messages>" + " " +
-				"<sent Kbytes>" + " " +
-				"<received messages>" + " " +
-				"<received Kbytes>" + " " +
-				"<time open>", "");
+				std::string("O") + " " +
+				"<hostmask>" + " * " + "<name>", "");
 	}
 	if (mode == "u")
 	{
