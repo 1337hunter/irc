@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/21 17:32:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:29:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:54:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void	cmd_motd(int fd, const t_strvect &split, IRCserv *serv)
 	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
 	{
 		int	servfd = getserverfdbymask(serv, split[1]);
-		if (servfd > 0 && !nick.empty())
+		if (servfd > 0)
 			serv->fds[servfd].wrbuf += ":" + nick + " MOTD " + split[1] + CRLF;
 	}
 	else if (split.size() >= 3)	// from another server: reply or forward

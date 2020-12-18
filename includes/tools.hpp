@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:38:27 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 19:46:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ std::string	strvect_to_string(const t_strvect &split, char delim = ' ',
 bool		match(const char *s1, const char *s2);
 bool		match(std::string const &s1, std::string const &s2);
 std::string	ft_strtoupper(std::string const &str);
+std::string	ft_strtolower(std::string const &str);
 std::string	get_nick_from_info(std::string const &info);
 std::string get_mask_reply(Channel *channel, Client *client, std::string mode, IRCserv *serv);
 bool    is_valid_mask(std::string mask);

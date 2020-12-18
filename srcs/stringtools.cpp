@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 20:02:19 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 19:45:05 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,18 @@ std::string	ft_strtoupper(std::string const &str)
 	{
 		if (res[i] >= 'a' && res[i] <= 'z')
 			res[i] = std::toupper(res[i]);
+	}
+	return (res);
+}
+
+std::string	ft_strtolower(std::string const &str)
+{
+	std::string	res = str;
+
+	for (int i = 0; res[i] != '\0'; i++)
+	{
+		if (res[i] >= 'A' && res[i] <= 'Z')
+			res[i] = std::tolower(res[i]);
 	}
 	return (res);
 }

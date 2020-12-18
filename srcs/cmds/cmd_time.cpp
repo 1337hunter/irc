@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/29 18:23:37 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:22:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:54:16 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	cmd_time(int fd, const t_strvect &split, IRCserv *serv)
 	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
 	{
 		int	servfd = getserverfdbymask(serv, split[1]);
-		if (servfd > 0 && !nick.empty())
+		if (servfd > 0)
 			serv->fds[servfd].wrbuf += ":" + nick + " TIME " + split[1] + CRLF;
 		else
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,

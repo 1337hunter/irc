@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:17:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 20:55:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@
 	Parameters: [ <query> [ <target> ] ]
 
 	The stats command is used to query statistics of certain server.  If
-	<query> parameter is omitted, only the end of stats reply is sent
-	back.
+	<query> parameter is omitted, only the end of stats reply is sent back.
 
 	A query may be given for any single letter which is only checked by
 	the destination server and is otherwise passed on by intermediate
@@ -31,17 +30,13 @@
 	Except for the ones below, the list of valid queries is
 	implementation dependent.  The standard queries below SHOULD be
 	supported by the server:
-		l - returns a list of the server's connections, showing how
-			long each connection has been established and the
-			traffic over that connection in Kbytes and messages for
-			each direction;
-		m - returns the usage count for each of commands supported
-			by the server; commands for which the usage count is
-			zero MAY be omitted;
-		o - returns a list of configured privileged users,
-			operators;
-		u - returns a string showing how long the server has been
-			up.
+		l - returns a list of the server's connections, showing how long
+			each connection has been established and the traffic over
+			that connection in Kbytes and messages for each direction;
+		m - returns the usage count for each of commands supported by the
+			server; commands for which the usage count is zero MAY be omitted;
+		o - returns a list of configured privileged users, operators;
+		u - returns a string showing how long the server has been up.
 	It is also RECOMMENDED that client and server access configuration be
 	published this way.
 
@@ -57,7 +52,82 @@
 	STATS m		; Check the command usage for this server
 */
 
-void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
+std::string	getserverupstr(IRCserv *serv)
+{
+	time_t		elapsed = ft_getcurrenttime() - serv->dtstarted;
+	time_t		sec, min, hrs;
+	std::string	res = "Server Up " + std::to_string(elapsed / 86400) + " days ";
+	elapsed %= 86400;
+
+	sec = elapsed % 60;
+	elapsed	/= 60;
+	min = elapsed % 60;
+	elapsed	/= 60;
+	hrs = elapsed % 24;
+
+	res += std::to_string(hrs) + ":";
+	if (min < 10)
+		res += "0";
+	res += std::to_string(min) + ":";
+	if (sec < 10)
+		res += "0";
+	res += std::to_string(sec);
+	return (res);
+}
+
+std::string	reply_stats(IRCserv *serv, std::string const &target,
+	std::string const &modearg)
+{
+	std::string	reply = "";
+	std::string	mode = "*";
+	if (modearg.size() > 0)
+		mode = ft_strtolower(modearg.substr(0, 1));
+
+	if (mode == "l")
+	{
+		for (size_t i = 0; i < 4; i++)
+			reply += ft_buildmsg(serv->servername, RPL_STATSLINKINFO, target,
+				std::string("<linkname>") + " " +
+				"<sendq>" + " " +
+				"<sent messages>" + " " +
+				"<sent Kbytes>" + " " +
+				"<received messages>" + " " +
+				"<received Kbytes>" + " " +
+				"<time open>", "");
+	}
+	if (mode == "m")
+	{
+		for (size_t i = 0; i < 10; i++)
+			reply += ft_buildmsg(serv->servername, RPL_STATSCOMMANDS, target,
+				std::string("COMMANDNAME") + " " +
+				"<count>" + " " +
+				"<byte count>" + " " +
+				"<remote count>", "");
+	}
+	if (mode == "o")
+	{
+		for (size_t i = 0; i < 4; i++)
+			reply += ft_buildmsg(serv->servername, RPL_STATSOLINE, target,
+				std::string("<linkname>") + " " +
+				"<sendq>" + " " +
+				"<sent messages>" + " " +
+				"<sent Kbytes>" + " " +
+				"<received messages>" + " " +
+				"<received Kbytes>" + " " +
+				"<time open>", "");
+	}
+	if (mode == "u")
+	{
+		reply = ft_buildmsg(serv->servername, RPL_STATSUPTIME, target, "",
+			getserverupstr(serv));
+	}
+	reply += ft_buildmsg(serv->servername, RPL_ENDOFSTATS, target, mode,
+		"End of STATS report");
+	return (reply);
+}
+
+
+void		cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::string	nick;
 	t_citer		it;
@@ -71,40 +141,37 @@ void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
 
-
-	// placeholder from TIME below. do STATS
-
-
-	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
-		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
+	if (serv->fds[fd].type != FD_SERVER && (split.size() < 3 ||
+		(split.size() > 2 && getservernamebymask(serv, split[2]) == serv->servername)))
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
-			nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
+		if (split.size() < 2)
+			serv->fds[fd].wrbuf += reply_stats(serv, nick, "*");
+		else
+			serv->fds[fd].wrbuf += reply_stats(serv, nick, split[1]);
 	}
-	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
+	else if (serv->fds[fd].type != FD_SERVER && split.size() > 2)
 	{
-		int	servfd = getserverfdbymask(serv, split[1]);
-		if (servfd > 0 && !nick.empty())
-			serv->fds[servfd].wrbuf += ":" + nick + " TIME " + split[1] + CRLF;
+		int	servfd = getserverfdbymask(serv, split[2]);
+		if (servfd > 0)
+			serv->fds[servfd].wrbuf += ":" + nick + " STATS " +
+				split[1][0] + " " + split[2] + CRLF;
 		else
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				ERR_NOSUCHSERVER, nick, split[1], "No such server");
+				ERR_NOSUCHSERVER, nick, split[2], "No such server");
 	}
-	else if (split.size() >= 3)	// from another server: reply or forward
+	else if (split.size() >= 4)	// from another server: reply or forward
 	{
-		if (getservernamebymask(serv, split[2]) == serv->servername)
-		{
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
-				nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
-		}
+		if (getservernamebymask(serv, split[3]) == serv->servername)
+			serv->fds[fd].wrbuf += reply_stats(serv, nick, split[2]);
 		else
 		{
-			int	servfd = getserverfdbymask(serv, split[2]);
+			int	servfd = getserverfdbymask(serv, split[3]);
 			if (servfd > 0)
-				serv->fds[servfd].wrbuf += split[0] + " TIME " + split[2] + CRLF;
+				serv->fds[servfd].wrbuf += split[0] + " STATS " +
+					split[2][0] + " " + split[3] + CRLF;
 			else
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					ERR_NOSUCHSERVER, nick, split[1], "No such server");
+					ERR_NOSUCHSERVER, nick, split[3], "No such server");
 		}
 	}
 }
