@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 20:45:54 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:17:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,8 +54,7 @@
 		RPL_ENDOFSTATS
 
 	Examples:
-	STATS m					; Command to check the command usage
-							for the server you are connected to
+	STATS m		; Check the command usage for this server
 */
 
 void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
@@ -66,6 +65,11 @@ void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
 		nick = it->getnickname();
+	else if (split[0][0] == ':')
+		nick = split[0].substr(1);
+	else
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
 
 
 	// placeholder from TIME below. do STATS
@@ -88,7 +92,6 @@ void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else if (split.size() >= 3)	// from another server: reply or forward
 	{
-		nick = split[0].substr(1);
 		if (getservernamebymask(serv, split[2]) == serv->servername)
 		{
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 20:46:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:29:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,13 @@
 
 void	cmd_links(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnickname();
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 
 	// placeholder from TIME below. do LINKS

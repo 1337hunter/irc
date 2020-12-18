@@ -207,3 +207,16 @@ int				getserverfdbymask(IRCserv *serv, std::string const &mask)
 	}
 	return (-1);
 }
+
+std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv)
+{
+	std::string	nick = "";
+
+	t_citer it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (it != serv->clients.end())
+		nick = it->getnickname();
+	else if (split[0][0] == ':')
+		nick = split[0].substr(1);
+
+	return (nick);
+}

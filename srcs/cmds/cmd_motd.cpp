@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/21 17:32:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/16 16:54:11 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 18:29:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@
 
 void	cmd_motd(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnickname();
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
 		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))

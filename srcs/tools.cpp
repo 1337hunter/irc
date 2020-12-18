@@ -6,14 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 18:56:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/18 18:28:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 
-t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end,
-				int fd)
+t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
 	for (t_citer it = begin; it != end; it++)
 		if (it->isConnected() && it->getFD() == fd)

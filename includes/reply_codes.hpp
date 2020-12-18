@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/09 16:26:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/18 17:46:07 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -347,61 +347,37 @@
 		which does not fit in the other categories but is
 		being displayed anyway.		*/
 
-/*	"<linkname> <sendq> <sent messages> <sent bytes> <received messages>
-	<received bytes> <time open>"
-	or
-	"<linkname> <sendq> <sent messages>
-	<sent Kbytes> <received messages>
-	<received Kbytes> <time open>"	*/
+/*	"<linkname> <sendq> <sent messages> <sent Kbytes> <received messages>
+	<received Kbytes> <time open>"
+	- reports statistics on a connection.
+	<linkname> identifies the particular connection,
+	<sendq> is the amount of data that is queued and waiting to be sent,
+	<sent messages> the number of messages sent,
+	<sent Kbytes> the amount of data sent, in Kbytes.
+	<received messages> and <received Kbytes> are the equivalent
+	of <sent messages> and <sent Kbytes> for received data, respectively.
+	<time open> indicates how long ago the connection was opened, in seconds.	*/
 #define RPL_STATSLINKINFO	"211"
-/*	- reports statistics on a connection.  <linkname>
-	identifies the particular connection, <sendq> is
-	the amount of data that is queued and waiting to be
-	sent <sent messages> the number of messages sent,
-	and <sent Kbytes> the amount of data sent, in
-	Kbytes. <received messages> and <received Kbytes>
-	are the equivalent of <sent messages> and <sent
-	Kbytes> for received data, respectively.  <time
-	open> indicates how long ago the connection was
-	opened, in seconds.		*/
 
-//	"<command> <count>"
+/*	"<command> <count> <byte count> <remote count>"
+	- reports statistics on commands usage.		*/
 #define RPL_STATSCOMMANDS	"212"
-/*	- reports statistics on commands usage.	*/
 
-//	"C <host> * <name> <port> <class>"
-#define RPL_STATSCLINE		"213"
-//	"N <host> * <name> <port> <class>"
-#define RPL_STATSNLINE		"214"
-//	"I <host> * <host> <port> <class>"
-#define RPL_STATSILINE		"215"
-//	"K <host> * <username> <port> <class>"
-#define RPL_STATSKLINE		"216"
-//	"Y <class> <ping frequency> <connect frequency> <max sendq>"
-#define RPL_STATSYLINE		"218"
-/*	"<stats letter> :End of /STATS report"
-	or
-	"<stats letter> :End of STATS report"	*/
+//	"<stats letter> :End of STATS report"
 #define RPL_ENDOFSTATS		"219"
-//	"L <hostmask> * <servername> <maxdepth>"
-#define RPL_STATSLLINE		"241"
-//	":Server Up %d days %d:%02d:%02d"
+/*	":Server Up %d days %d:%02d:%02d"
+	- reports the server uptime.	*/
 #define RPL_STATSUPTIME		"242"
-/*	- reports the server uptime.	*/
 
-//	"O <hostmask> * <name>"
+/*	"O <hostmask> * <name>"
+	- reports the allowed hosts from where user may become IRC operators.	*/
 #define RPL_STATSOLINE		"243"
-/*	- reports the allowed hosts from where user may become IRC operators.	*/
 
-//	"H <hostmask> * <servername>"
-#define RPL_STATSHLINE		"244"
-//	"<user mode string>"
+/*	"<user mode string>"
+	- To answer a query about a client's own mode, RPL_UMODEIS is sent back. */
 #define RPL_UMODEIS			"221"
-/*	- To answer a query about a client's own mode, RPL_UMODEIS is sent back. */
 
-/*	":There are <integer> users and <integer> invisible on <integer> servers"
-	or
-	":There are <integer> users and <integer> services on <integer> servers" */
+/*	":There are <integer> users and <integer> services on <integer> servers" */
 #define RPL_LUSERCLIENT		"251"
 //	"<integer> :operator(s) online"
 #define RPL_LUSEROP			"252"
@@ -456,8 +432,6 @@
 	it MUST use the reply RPL_TRYAGAIN to inform the
 	originating client.		*/
 
-//	reserved
-#define RPL_STATSQLINE		"217"
 //	reserved
 #define RPL_SERVICEINFO		"231"
 //	reserved
