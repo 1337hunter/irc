@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 16:37:03 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 22:25:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -611,9 +611,15 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 		else
 			return -1;
 	}
+
+	//	default hostmask for all operators
+	temp.hostmask = "127.0.0.1";
+
 	serv->oper.push_back(temp);
 #if DEBUG_MODE
-	std::cout << "operator: name '" << temp.name << "' pass: '" << temp.pass << "'\n";
+	std::cout << "operator: name '" << temp.name <<
+				"' pass: '" << temp.pass <<
+				"' hostmask: '" << temp.hostmask << "'" << std::endl;
 #endif
 	return 0;
 }
