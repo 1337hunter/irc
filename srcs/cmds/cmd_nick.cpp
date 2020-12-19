@@ -58,7 +58,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (client->isBlocked())
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, -1, split[1],
 			"Nick/channel is temporarily unavailable");
-		else if (client->isRestricted())	
+		else if (client->isRestricted())
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
 			"Your connection is restricted!");
 		else if (client->gethop() == 0)
@@ -75,7 +75,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		serv->fds[client->getFD()].status = false;
 		serv->fds[client->getFD()].wrbuf = "Error :Closing Link: " +
-			client->getnickname() + " (Overridden)\r\n";
+			client->getnick() + " (Overridden)\r\n";
 		client->setFD(fd);
 		client->sethostname(serv->fds[fd].hostname); return ;
 	}
@@ -85,7 +85,8 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			t_whowas	whowas;
 			serv->fds[fd].wrbuf += ":" + client->getnick() + " NICK " + split[1] + CRLF;
-			whowas.nickname = client->getnick(); whowas.username = client->getusername();
+			whowas.nickname = client->getnick();
+			whowas.username = client->getusername();
 			whowas.realname = client->getrealname();
 			whowas.hostname = client->gethostname();
 			whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
@@ -101,6 +102,8 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			{
 				nick_forward(serv, client);
 				serv->fds[fd].wrbuf += reply_welcome(serv, client);
+				serv->fds[fd].linkname = client->getnick() + "[" +
+					client->getusername() + "@" + client->gethostname() + "]";
 			}
 			return ;
 		}

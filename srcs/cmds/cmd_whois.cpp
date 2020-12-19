@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:26:00 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,12 +99,12 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 	t_cvit it = serv->clients.begin();
 	for (; it != serv->clients.end(); it++)
 	{
-		if (match(it->getnickname(), nickname) &&
+		if (match(it->getnick(), nickname) &&
 			(servername.empty() || (servername == serv->servername)))
 		{
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 				RPL_WHOISUSER, nick,
-				it->getnickname() + " " + it->getusername() + " " +
+				it->getnick() + " " + it->getusername() + " " +
 				it->gethostname() + " *", it->getrealname());
 
 			std::string	channelstr = "";
@@ -126,7 +126,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 			if (!channelstr.empty())
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 					RPL_WHOISCHANNELS, nick,
-					it->getnickname() + " ", channelstr);
+					it->getnick() + " ", channelstr);
 
 			/* unreal also sends
 				379 nickname nickname is using modes +iwx
@@ -135,19 +135,19 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 				RPL_WHOISSERVER, nick,
-				it->getnickname() + " " + serv->servername, serv->info);
+				it->getnick() + " " + serv->servername, serv->info);
 			if (it->isOperator())
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 					RPL_WHOISOPERATOR, nick,
-					it->getnickname(), "is an IRC operator");
+					it->getnick(), "is an IRC operator");
 			/*
 			if (it->isAway())
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					RPL_AWAY, nick, it->getnickname(), "<away message>");
+					RPL_AWAY, nick, it->getnick(), "<away message>");
 			*/
 
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				RPL_WHOISIDLE, nick, it->getnickname() + " " +
+				RPL_WHOISIDLE, nick, it->getnick() + " " +
 				std::to_string(ft_getcurrenttime() - it->gettimeloggedin()),
 				"seconds idle");
 			/* unreal also sends timestamp of login in 317 */

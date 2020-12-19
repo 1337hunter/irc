@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 13:21:53 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,13 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 				{
 					nick_forward(serv, &(*it));
 					reply = reply_welcome(serv, &(*it));
+					serv->fds[fd].linkname = it->getnick() + "[" +
+						it->getusername() + "@" + it->gethostname() + "]";
 				}
 			}
 			else
 				reply = ft_buildmsg(serv->servername, ERR_ALREADYREGISTRED,
-					it->getnickname(), "", "You may not reregister");
+					it->getnick(), "", "You may not reregister");
 		}
 		else
 			serv->clients.push_back(Client(split[1], _realname, serv->token, fd));

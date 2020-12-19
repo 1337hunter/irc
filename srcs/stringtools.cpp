@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 15:26:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,11 +183,11 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 			mask = channel->getflags()._ban_mask.begin();
 			while (mask != channel->getflags()._ban_mask.end())
 			{
-				reply += ":" + serv->servername + " 367 " + client->getnickname();
+				reply += ":" + serv->servername + " 367 " + client->getnick();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
 				mask++;
 			}
-			reply += ":" + serv->servername + " 368 " + client->getnickname();
+			reply += ":" + serv->servername + " 368 " + client->getnick();
 			reply += " " + channel->getname() + " :End of channel ban list" + CRLF;
 		}
 		else if (mode[i] == 'I')
@@ -195,11 +195,11 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 			mask = channel->getflags()._Invitation_mask.begin();
 			while (mask != channel->getflags()._Invitation_mask.end())
 			{
-				reply += ":" + serv->servername + " 346 " + client->getnickname();
+				reply += ":" + serv->servername + " 346 " + client->getnick();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
 				mask++;
 			}
-			reply += ":" + serv->servername + " 347 " + client->getnickname();
+			reply += ":" + serv->servername + " 347 " + client->getnick();
 			reply += " " + channel->getname() + " :End of channel invite list" + CRLF;
 		}
 		else if (mode[i] == 'e')
@@ -207,16 +207,16 @@ std::string	get_mask_reply(Channel *channel, Client *client, std::string mode, I
 			mask = channel->getflags()._exception_mask.begin();
 			while (mask != channel->getflags()._exception_mask.end())
 			{
-				reply += ":" + serv->servername + " 348 " + client->getnickname();
+				reply += ":" + serv->servername + " 348 " + client->getnick();
 				reply += " " + channel->getname() + " " + *mask + CRLF;
 				mask++;
 			}
-			reply += ":" + serv->servername + " 349 " + client->getnickname();
+			reply += ":" + serv->servername + " 349 " + client->getnick();
 			reply += " " + channel->getname() + " :End of channel exception list" + CRLF;
 		}
 		else if (mode[i] == 'O')
 		{
-			reply += ":" + serv->servername + " 325 " + client->getnickname();
+			reply += ":" + serv->servername + " 325 " + client->getnick();
 			reply += " " + channel->getname() + " ";
 			reply += get_nick_from_info(channel->getCreator()) + CRLF;
 		}

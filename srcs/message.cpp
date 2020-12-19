@@ -19,7 +19,7 @@ get_reply(IRCserv *serv, std::string _error, int fd, std::string const &command,
 			b++;
 		}
 		if (b != e)
-			nickname = b->getnickname();
+			nickname = b->getnick();
 	}
 	else
 		nickname = "*";
@@ -39,9 +39,9 @@ std::string
 get_reply(IRCserv *serv, std::string rpl, Client *client, std::string command, std::string message)
 {
 	std::string	reply;
-	
+
 	reply = ":" + serv->servername + " " + (rpl.empty() ? "" : rpl + " ");
-	reply += (client == 0 ? "*" : client->getnickname());
+	reply += (client == 0 ? "*" : client->getnick());
 	reply += (command.empty() ? "" : " " + command);
 	reply += (message.empty() ? "" : " :" + message) + CRLF;
 	return reply;
@@ -91,8 +91,8 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 			if (client_it->first->gethop() == 0)
 				serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
 			else
-				serv->fds[client_it->first->getFD()].wrbuf += ":"+ client->getnick() +
-					" " + msg + CRLF;
+				serv->fds[client_it->first->getFD()].wrbuf += ":"+
+					client->getnick() + " " + msg + CRLF;
 		}
 }
 
@@ -116,5 +116,5 @@ void	msg_each_client(std::string const &msg, Client *client, IRCserv *serv)
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
 		if (client_it->getFD() != client->getFD())
 			serv->fds[client_it->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
-			client_it->getnickname() + " " + msg + CRLF;
+			client_it->getnick() + " " + msg + CRLF;
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_server.cpp                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:56:46 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "message.hpp"
@@ -60,7 +48,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
-		serv->fds[fd].wrbuf += "NICK " + client->getnickname() + " 1 " +
+		serv->fds[fd].wrbuf += "NICK " + client->getnick() + " 1 " +
 			client->getusername() + " " + client->gethostname() + " " +
 			serv->token + client->getMode(true) + ":" + client->getrealname() + CRLF;
 	}
@@ -68,7 +56,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	{
 		for (client = net->clients.begin(); client != net->clients.end(); client++)
 		{
-			serv->fds[fd].wrbuf += "NICK " + client->getnickname() +
+			serv->fds[fd].wrbuf += "NICK " + client->getnick() +
 				client->gethopcount(true, true) + client->getusername() + " " +
 				client->gethostname() +
 				" " + client->gettoken() + client->getMode(true) +
@@ -240,5 +228,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	send_clients_and_channels(fd, serv);
 	serv->fds[fd].wrbuf += backward;
 	serv->fds[fd].type = FD_SERVER;
+	if (serv->fds[fd].linkname.size() > 0 && serv->fds[fd].linkname[0] == '*')
+		serv->fds[fd].linkname = temp.servername + serv->fds[fd].linkname.substr(1);
 	serv->network.push_back(temp);
 }
