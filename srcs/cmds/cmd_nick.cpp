@@ -75,7 +75,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		serv->fds[client->getFD()].status = false;
 		serv->fds[client->getFD()].wrbuf = "Error :Closing Link: " +
-			client->getnickname() + " (Overridden)\r\n";
+			client->getnick() + " (Overridden)\r\n";
 		client->setFD(fd);
 		client->sethostname(serv->fds[fd].hostname); return ;
 	}
@@ -84,14 +84,14 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if ((client = find_client_by_fd(fd, serv)) && client->isRegistred())
 		{
 			t_whowas	whowas;
-			serv->fds[fd].wrbuf += ":" + client->getnickname() + " NICK " + split[1] + CRLF;
-			whowas.nickname = client->getnickname();
+			serv->fds[fd].wrbuf += ":" + client->getnick() + " NICK " + split[1] + CRLF;
+			whowas.nickname = client->getnick();
 			whowas.username = client->getusername();
 			whowas.realname = client->getrealname();
 			whowas.hostname = client->gethostname();
 			whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
 			serv->nickhistory.push_back(whowas);
-			msg_forward(fd, ":" + client->getnickname() + " NICK " + split[1], serv);
+			msg_forward(fd, ":" + client->getnick() + " NICK " + split[1], serv);
 			client->ChangeNick(split[1]); return ;
 		}
 		else if (client && !client->isRegistred())
@@ -102,7 +102,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			{
 				nick_forward(serv, client);
 				serv->fds[fd].wrbuf += reply_welcome(serv, client);
-				serv->fds[fd].linkname = client->getnickname() + "[" +
+				serv->fds[fd].linkname = client->getnick() + "[" +
 					client->getusername() + "@" + client->gethostname() + "]";
 			}
 			return ;

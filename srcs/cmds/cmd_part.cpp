@@ -81,7 +81,7 @@ void	part_from_client(int fd, const t_strvect &split, IRCserv *serv)
 				"You're not on that channel");
 		}
 	}
-	forward_msg = ":" + client->getnickname() + " PART ";
+	forward_msg = ":" + client->getnick() + " PART ";
 	forward_msg += strvect_to_string(forward_args, ',') + part_msg;
 	msg_forward(fd, forward_msg, serv);
 }

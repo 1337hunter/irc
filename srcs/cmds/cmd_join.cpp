@@ -17,9 +17,9 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	if (chan->getflags()._anonymous)
 		reply = ":anonymous!anonymous@anonymous";
 	else
-		reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
+		reply = ":" + client_it->getnick() + "!" + client_it->getusername() +
 		"@" + client_it->gethostname();
-	forward = ":" + client_it->getnickname() + " JOIN :" + chan->getname() + CRLF;
+	forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
 	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 		if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() == 0)
@@ -98,7 +98,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				chan->add_client(client_it->getptr());
 				client_it->add_channel(chan->getptr());
 				if (args[i][0] != '&')
-					msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
+					msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);
 				break ;
 			}
@@ -107,7 +107,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
 			client_it->add_channel((serv->channels.rbegin())->getptr());
 			if (args[i][0] != '&')
-				msg_forward(-1, ":" + client_it->getnickname() + " JOIN " + args[i], serv);
+				msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 			if (!keys[i].empty())
 				msg_forward(-1, "MODE " + args[i] + " +k " + keys[i], serv);
 			join_backward(serv, --serv->channels.end(), client_it);

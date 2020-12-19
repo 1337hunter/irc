@@ -16,7 +16,7 @@ void	away_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		client->setUMODE("-a");
 		serv->fds[fd].wrbuf += get_reply(serv, RPL_UNAWAY, client, "",
 				"You are no longer marked as being away");
-		msg_forward(fd, ":" + client->getinfo() + " MODE " + client->getnickname() +
+		msg_forward(fd, ":" + client->getinfo() + " MODE " + client->getnick() +
 				" -a\r\n", serv);
 	}
 	else if (split.size() > 1)
@@ -24,7 +24,7 @@ void	away_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		client->setAway(strvect_to_string(split, 1));
 		serv->fds[fd].wrbuf += get_reply(serv, RPL_NOWAWAY, client, "",
 				"You have been marked as being away");
-		msg_forward(fd, ":" + client->getinfo() + " MODE " + client->getnickname() +
+		msg_forward(fd, ":" + client->getinfo() + " MODE " + client->getnick() +
 				" +a\r\n", serv);
 	}
 }

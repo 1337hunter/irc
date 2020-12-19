@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 20:11:21 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_citer		ft_findnick(t_citer const &begin, t_citer const &end,
 				std::string const &nick)
 {
 	for (t_citer it = begin; it != end; it++)
-		if (it->getnickname() == nick)
+		if (it->getnick() == nick)
 			return (it);
 	return (end);
 }
@@ -36,7 +36,7 @@ Client		*find_client_by_nick(std::string const &nick, IRCserv *serv)
 
 	while (client != serv->clients.end())
 	{
-		if (client->getnickname() == nick)
+		if (client->getnick() == nick)
 			return &(*client);
 		client++;
 	}
@@ -45,7 +45,7 @@ Client		*find_client_by_nick(std::string const &nick, IRCserv *serv)
 		client = net->clients.begin();
 		while (client != net->clients.end())
 		{
-			if (client->getnickname() == nick)
+			if (client->getnick() == nick)
 				return &(*client);
 			client++;
 		}
@@ -227,7 +227,7 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 {
 	t_whowas	entry;
 
-	entry.nickname = client->getnickname();
+	entry.nickname = client->getnick();
 	entry.username = client->getusername();
 	entry.hostname = client->gethostname();
 	entry.realname = client->getrealname();
@@ -251,7 +251,7 @@ int			nick_forward(IRCserv *serv, Client *client)
 
 	if (!client)
 		return 1;
-	forward = "NICK " + client->getnickname() + " " + std::to_string(client->gethop() + 1)
+	forward = "NICK " + client->getnick() + " " + std::to_string(client->gethop() + 1)
 	   	+ " " + client->getusername() + " " + client->gethostname() + " " +
 		client->gettoken() + " " + client->getMode() + " " +  ":" +
 		client->getrealname() + CRLF;
@@ -303,7 +303,7 @@ bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 
 	client = serv->clients.begin();
 	for (; client != serv->clients.end(); client++)
-		if (client->getnickname() == nick)
+		if (client->getnick() == nick)
 		{
 			serv->clients.erase(client);
 			return false;
@@ -311,7 +311,7 @@ bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 	net = serv->network.begin();
 	for (; net != serv->network.end(); net++)
 		for (client = net->clients.begin(); client != net->clients.end(); client++)
-			if (client->getnickname() == nick)
+			if (client->getnick() == nick)
 			{
 				net->clients.erase(client);
 				return false;

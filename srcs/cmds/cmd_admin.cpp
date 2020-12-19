@@ -57,7 +57,7 @@ void	cmd_admin(int fd, const t_strvect &split, IRCserv *serv)
 					split[1] + " " + ":No such server");
 		else
 		{
-			forward_message = ":" + client->getnickname() + " " + split[0] +
+			forward_message = ":" + client->getnick() + " " + split[0] +
 				" " + split[1] + CRLF;
 			nb = serv->network.begin();
 			while (nb != ne)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_mode.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 15:05:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,10 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (split.size() == 2)
 		{
 			serv->fds[fd].wrbuf += ":" + serv->servername + " 324 ";
-			serv->fds[fd].wrbuf += client->getnickname() + " " + split[1] + " ";
+			serv->fds[fd].wrbuf += client->getnick() + " " + split[1] + " ";
 			serv->fds[fd].wrbuf += channel_mode->getMode() + CRLF;
 			serv->fds[fd].wrbuf += ":" + serv->servername + " 329 " +
-				client->getnickname() + " " + split[1] + " " +
+				client->getnick() + " " + split[1] + " " +
 				channel_mode->getCreationTime() + CRLF;
 			return ;
 		}
@@ -147,7 +147,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	else
 	{
 		client_mode = find_client_by_nick(split[1], serv);
-		if (client_mode == 0 || client_mode->getnickname() != client->getnickname())
+		if (client_mode == 0 || client_mode->getnick() != client->getnick())
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_USERSDONTMATCH, fd, "",
 					"Cannot change mode for other users"); return ;
@@ -155,7 +155,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (split.size() == 2)
 		{
 			serv->fds[fd].wrbuf += ":" + serv->servername + " 221 " +
-				client->getnickname() + " " + client->getMode() + CRLF; return ;
+				client->getnick() + " " + client->getMode() + CRLF; return ;
 		}
 		if (split.size() == 3)
 		{

@@ -50,7 +50,7 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 std::string		reply_welcome(IRCserv *serv, Client *cli)
 {
 	std::string	reply = "";
-	std::string	nick = cli->getnickname();
+	std::string	nick = cli->getnick();
 	std::string	user = cli->getusername();
 	std::string	host = cli->gethostname();
 
@@ -75,7 +75,7 @@ std::string	reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, C
 	std::unordered_map<Client*, client_flags>::iterator c_map;
 
 	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " +
-		client->getnickname() + " ";
+		client->getnick() + " ";
 	if (chan->isSecret())
 		reply += "@ ";
 	else if (chan->isPrivate())
@@ -89,12 +89,12 @@ std::string	reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, C
 		{
 			if (c_map->second._operator)
 				reply += "@";
-			reply += c_map->first->getnickname() + " ";
+			reply += c_map->first->getnick() + " ";
 		}
 	}
 	reply.pop_back();
 	reply += CRLF;
-	reply += ":" + serv->servername + " 366 " + client->getnickname() + " " +
+	reply += ":" + serv->servername + " 366 " + client->getnick() + " " +
 		chan->getname() + " " + ":End of /NAMES list." + CRLF;
 	return reply;
 }
@@ -108,7 +108,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	size_t	counter;
 
 	counter = 0;
-	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " + client->getnickname();
+	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " + client->getnick();
 	reply += " * :";
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
 	{
@@ -124,7 +124,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 		{
 			if (client_it->isOperator())
 				reply += "@";
-			reply += client_it->getnickname() + " ";
+			reply += client_it->getnick() + " ";
 			counter++;
 		}
 	}
@@ -145,7 +145,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 			{
 				if (client_it->isOperator())
 					reply += "@";
-				reply += client_it->getnickname() + " ";
+				reply += client_it->getnick() + " ";
 				counter++;
 			}
 		}
@@ -156,7 +156,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	{
 		reply.pop_back();
 		reply += CRLF;
-		reply += ":" + serv->servername + " 366 " + client->getnickname() + " " +
+		reply += ":" + serv->servername + " 366 " + client->getnick() + " " +
 			"*" + " " + ":End of /NAMES list." + CRLF;
 	}
 	return reply;
@@ -218,7 +218,7 @@ std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_citer it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
-		return (it->getnickname());
+		return (it->getnick());
 	else if (split[0][0] == ':')
 		return (split[0].substr(1));
 

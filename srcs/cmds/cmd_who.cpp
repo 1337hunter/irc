@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:53:32 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:24:33 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,13 +78,13 @@ void	cmd_who(int fd, const t_strvect &split, IRCserv *serv)
 
 	for (t_cvit it = serv->clients.begin(); it != serv->clients.end(); it++)
 	{
-		if (match(it->getnickname(), mask))
+		if (match(it->getnick(), mask))
 		{
 			if (!opers || (opers && it->isOperator()))
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 					RPL_WHOREPLY, nick,
 					"* " + it->getusername() + " " + it->gethostname() + " " +
-					serv->servername + " " + it->getnickname() + " H",
+					serv->servername + " " + it->getnick() + " H",
 					"0 " + it->getrealname());
 		}
 	}

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:34:00 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
-		serv->fds[fd].wrbuf += "NICK " + client->getnickname() + " 1 " +
+		serv->fds[fd].wrbuf += "NICK " + client->getnick() + " 1 " +
 			client->getusername() + " " + client->gethostname() + " " +
 			serv->token + client->getMode(true) + ":" + client->getrealname() + CRLF;
 	}
@@ -67,7 +67,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	{
 		for (client = net->clients.begin(); client != net->clients.end(); client++)
 		{
-			serv->fds[fd].wrbuf += "NICK " + client->getnickname() +
+			serv->fds[fd].wrbuf += "NICK " + client->getnick() +
 				client->gethopcount(true, true) + client->getusername() + " " +
 				client->gethostname() +
 				" " + client->gettoken() + client->getMode(true) +
@@ -86,7 +86,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 				enjoy += "@";
 			else if (client_chan->second._voice)
 				enjoy += "+";
-			enjoy += client_chan->first->getnickname() + ",";
+			enjoy += client_chan->first->getnick() + ",";
 		}
 		if (enjoy.size() > 0)
 		{

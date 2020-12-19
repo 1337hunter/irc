@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:28:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,10 @@ void	cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		for (t_cvit it = serv->clients.begin(); it != serv->clients.end(); it++)
 		{
-			if (it->getnickname() == split[i])
+			if (it->getnick() == split[i])
 			{
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					RPL_USERHOST, nick, "", it->getnickname() + "=+" +
+					RPL_USERHOST, nick, "", it->getnick() + "=+" +
 					it->getusername() + "@" + it->gethostname());
 			}
 		}

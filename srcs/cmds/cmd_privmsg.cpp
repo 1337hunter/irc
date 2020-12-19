@@ -109,13 +109,13 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			for (; net != serv->network.end(); net++)
 			{
 				if (match(net->servername, std::string(split[1], 1)))
-					serv->fds[net->fd].wrbuf += ":" + client->getnickname() + " PRIVMSG $"
+					serv->fds[net->fd].wrbuf += ":" + client->getnick() + " PRIVMSG $"
 					+ net->servername + " " + strvect_to_string(split, ' ', 2) + CRLF;
 				routing = net->routing.begin();
 				for (; routing != net->routing.end(); routing++)
 					if (match(routing->servername, std::string(split[1], 1)))
 					{
-						serv->fds[net->fd].wrbuf += ":" + client->getnickname() +
+						serv->fds[net->fd].wrbuf += ":" + client->getnick() +
 						" PRIVMSG $" + routing->servername + " " +
 						strvect_to_string(split, ' ', 2) + CRLF;
 						break ;
@@ -127,7 +127,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		else
 			_serv = find_server_by_name(std::string(split[1], 1), serv);
 		if (_serv)
-			serv->fds[fd].wrbuf += ":" + client->getnickname() +
+			serv->fds[fd].wrbuf += ":" + client->getnick() +
 				" " + strvect_to_string(split) + CRLF;
 		else if (std::string(split[1], 1) == serv->servername)
 			msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
@@ -151,7 +151,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 					client_it++)
 				if (match(client_it->gethostname(), std::string(split[1], 1)))
 					serv->fds[client_it->getFD()].wrbuf += ":" +
-						client->getnickname() + " PRIVMSG " + client_it->getnickname() +
+						client->getnick() + " PRIVMSG " + client_it->getnick() +
 						strvect_to_string(split, ' ', 2);
 	}
 	else if (split[1].find_first_of("!#&+") == 0) //to channel
@@ -188,10 +188,10 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		}
 		if (client_msg->gethop() == 0)
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
-			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
+			client_msg->getnick() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 		else
-			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnickname() + " PRIVMSG " +
-			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
+			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnick() + " PRIVMSG " +
+			client_msg->getnick() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 	}
 }
 
