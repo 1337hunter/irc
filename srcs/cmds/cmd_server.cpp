@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:28:26 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:34:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,5 +213,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	send_clients_and_channels(fd, serv);
 	serv->fds[fd].wrbuf += backward;
 	serv->fds[fd].type = FD_SERVER;
+	if (serv->fds[fd].linkname.size() > 0 && serv->fds[fd].linkname[0] == '*')
+		serv->fds[fd].linkname = temp.servername + serv->fds[fd].linkname.substr(1);
 	serv->network.push_back(temp);
 }
