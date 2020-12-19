@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 16:15:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:56:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	std::list<Channel>::iterator	channel;
 	std::string						enjoy;
 	std::string						channel_forward;
+	std::list<std::string>::const_iterator				Musk;
 	std::unordered_map<Client*, client_flags>::iterator	client_chan;
 
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
@@ -91,11 +92,37 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 		if (enjoy.size() > 0)
 		{
 			enjoy.pop_back();
-			channel_forward += ":" + serv->servername + " NJOIN " + channel->getname() +
+			channel_forward = ":" + serv->servername + " NJOIN " + channel->getname() +
 				" :" + enjoy + CRLF;
+			enjoy.erase();
+			serv->fds[fd].wrbuf += channel_forward;
 		}
-		enjoy.erase();
-		serv->fds[fd].wrbuf += channel_forward;
+		serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " + channel->getname() +
+			" " + channel->getMode() + CRLF;
+		if (!channel->getflags()._key.empty())
+			serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " + channel->getname() +
+			" +k " + channel->getflags()._key + CRLF;
+		if (channel->getflags()._ban_mask.size() > 0)
+		{
+			Musk = channel->getflags()._ban_mask.begin();
+			for (; Musk != channel->getflags()._ban_mask.end(); Musk++)
+				serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " +
+				channel->getname() + " +b " + *Musk + CRLF;
+		}
+		if (channel->getflags()._exception_mask.size() > 0)
+		{
+			Musk = channel->getflags()._exception_mask.begin();
+			for (; Musk != channel->getflags()._exception_mask.end(); Musk++)
+				serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " +
+				channel->getname() + " +e " + *Musk + CRLF;
+		}
+		if (channel->getflags()._exception_mask.size() > 0)
+		{
+			Musk = channel->getflags()._Invitation_mask.begin();
+			for (; Musk != channel->getflags()._Invitation_mask.end(); Musk++)
+				serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " +
+				channel->getname() + " +I " + *Musk + CRLF;
+		}
 	}
 	return false;
 }

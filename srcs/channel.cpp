@@ -153,11 +153,8 @@ Channel	&Channel::operator=(Channel const &o)
 	_reop_delay = o._reop_delay;
 	_safe_postfix = o._safe_postfix;
 	_topic = o._topic;
-	_type = o._type;
 	_flags = o._flags;
 	_clients = o._clients;
-
-
 	return *this;
 }
 
@@ -176,15 +173,6 @@ std::string	const &Channel::getkey(void)
 	return _flags._key;
 }
 
-char		Channel::gettype(void)
-{
-	return _type;
-}
-
-void		Channel::settype(char type)
-{
-	_type = type;
-}
 
 std::string		Channel::getCreationTime(void)
 {
