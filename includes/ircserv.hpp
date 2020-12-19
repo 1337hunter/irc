@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:15:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 22:20:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ typedef struct		s_oper
 	std::string		name;
 	std::string		pass;
 	std::string		swhois;
+	std::string		hostmask;
 }					t_oper;
 
 typedef struct		s_whowas

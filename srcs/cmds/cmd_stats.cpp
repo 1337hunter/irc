@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 22:27:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,7 @@ std::string	getserverupstr(IRCserv *serv)
 }
 
 typedef	std::map<int, t_fd>::reverse_iterator	t_fdrit;
+typedef	std::vector<t_oper>::iterator			t_opit;
 
 std::string	reply_stats(IRCserv *serv, std::string const &target,
 	std::string const &modearg)
@@ -109,9 +110,9 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 	}
 	if (mode == "o")
 	{
-		for (size_t i = 0; i < 4; i++)
+		for (t_opit it = serv->oper.begin(); it != serv->oper.end(); it++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSOLINE, target,
-				std::string("O") + " " + "<hostmask>" + " * " + "<name>", "");
+				std::string("O") + " " + it->hostmask + " * " + it->name, "");
 	}
 	if (mode == "u")
 	{
@@ -122,7 +123,6 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 		"End of STATS report");
 	return (reply);
 }
-
 
 void		cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 {
