@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/10 17:34:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 17:22:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ private:
 	std::string				_channel_creator;
 	Channel();
 public:
+	Channel(std::string const &name);
 	Channel(std::string const &name, Client *client);
 	Channel(std::string const &name, Client *client, std::string const &modes);
 	Channel(std::string const &name, std::string const &key, Client *client);
@@ -105,6 +106,7 @@ public:
 	Channel				*getptr(void);
 	char				gettype(void);
 
+	void				add_client(Client *clint, bool O, bool o, bool v);
 	void				add_client(Client *client);
 	void				block(void);
 	void				unblock(void);

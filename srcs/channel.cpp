@@ -76,6 +76,13 @@ client_flags	&client_flags::operator=(client_flags const &obj)
 
 client_flags::client_flags(void) : _Operator(0), _operator(0), _voice(0) {}
 
+Channel::Channel(std::string const &name) : _name(name), _blocked(false),
+	_creation_time(ft_getcurrenttime())
+{
+	if (name[0] == '!')
+		_safe_postfix = get_safe_postfix();
+}
+
 Channel::Channel(std::string const &name, Client *client) : _name(name), _blocked(false),
 	_creation_time(ft_getcurrenttime())
 {
@@ -192,6 +199,17 @@ std::string const &Channel::getCreator(void)
 void		Channel::add_client(Client *client)
 {
 	_clients[client];
+}
+
+void		Channel::add_client(Client *client, bool O, bool o, bool v)
+{
+	if (O)
+	{
+		_clients[client] = client_flags(1, 1, v);
+		_channel_creator = client->getinfo();
+	}
+	else
+		_clients[client] = client_flags(0, o, v);
 }
 
 bool		Channel::isSecret(void)

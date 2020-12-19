@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 16:33:32 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 16:37:03 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,9 @@ typedef std::map<int, t_block> t_blockmap;
 
 size_t	ft_strlen(const char *s)
 {
-	size_t	c;
-
-	c = 0;
-	if (!s)
-		return (0);
-	while (s[c])
-		c++;
+	size_t	c = 0;
+	if (!s) return 0;
+	while (s[c]) c++;
 	return c;
 }
 
