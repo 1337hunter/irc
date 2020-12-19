@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 21:03:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:19:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ std::string	getserverupstr(IRCserv *serv)
 	return (res);
 }
 
+typedef	std::map<int, t_fd>::reverse_iterator	t_fdrit;
+
 std::string	reply_stats(IRCserv *serv, std::string const &target,
 	std::string const &modearg)
 {
@@ -85,15 +87,16 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 
 	if (mode == "l")
 	{
-		for (size_t i = 0; i < 4; i++)
+		//	for now it's reversed
+		for (t_fdrit it = serv->fds.rbegin(); it != serv->fds.rend(); it++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSLINKINFO, target,
-				std::string("<linkname>") + " " +
-				"<sendq>" + " " +
-				"<sent messages>" + " " +
-				"<sent Kbytes>" + " " +
-				"<received messages>" + " " +
-				"<received Kbytes>" + " " +
-				"<time open>", "");
+				it->second.linkname + " " +
+				std::to_string(it->second.wrbuf.size()) + " " +
+				std::to_string(it->second.sentmsgs) + " " +
+				std::to_string(it->second.sentbytes/* / 1024*/) + " " +
+				std::to_string(it->second.recvmsgs) + " " +
+				std::to_string(it->second.recvbytes/* / 1024*/) + " " +
+				std::to_string(ft_getcurrenttime() - it->second.dtopened), "");
 	}
 	if (mode == "m")
 	{

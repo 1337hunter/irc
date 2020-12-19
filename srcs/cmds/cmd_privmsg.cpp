@@ -190,8 +190,8 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
 			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 		else
-			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnick() + " PRIVMSG " +
-			client_msg->getnick() + " " + strvect_to_string(split, ' ', 2) + CRLF;
+			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnickname() + " PRIVMSG " +
+			client_msg->getnickname() + " " + strvect_to_string(split, ' ', 2) + CRLF;
 	}
 }
 

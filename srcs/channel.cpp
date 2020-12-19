@@ -314,7 +314,7 @@ int	Channel::setMode(t_strvect const &args)
 				if (args[i][pos] == 'o' || args[i][pos] == 'O' || args[i][pos] == 'v')
 				{
 					for (client = _clients.begin(); client != _clients.end(); client++)
-						if (client->first->getnick() == args[i + n])
+						if (client->first->getnickname() == args[i + n])
 							break ;
 					if (client == _clients.end())
 						return 1;

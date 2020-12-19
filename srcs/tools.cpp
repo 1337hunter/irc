@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 13:12:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 20:11:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 
 	client = serv->clients.begin();
 	for (; client != serv->clients.end(); client++)
-		if (client->getnick() == nick)
+		if (client->getnickname() == nick)
 		{
 			serv->clients.erase(client);
 			return false;
@@ -311,7 +311,7 @@ bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 	net = serv->network.begin();
 	for (; net != serv->network.end(); net++)
 		for (client = net->clients.begin(); client != net->clients.end(); client++)
-			if (client->getnick() == nick)
+			if (client->getnickname() == nick)
 			{
 				net->clients.erase(client);
 				return false;

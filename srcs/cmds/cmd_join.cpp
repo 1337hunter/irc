@@ -19,7 +19,7 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	else
 		reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
 		"@" + client_it->gethostname();
-	forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
+	forward = ":" + client_it->getnickname() + " JOIN :" + chan->getname() + CRLF;
 	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 		if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() == 0)

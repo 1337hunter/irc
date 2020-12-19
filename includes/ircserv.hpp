@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 14:51:11 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:15:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,14 @@ typedef struct		s_fd
 	std::string		options;	// register attempt
 	std::string		hostname;
 	SSL				*sslptr;
+//	STATS l related statistics
+	std::string		linkname;
+	int				sock;
+	int				sentmsgs;
+	int				recvmsgs;
+	size_t			sentbytes;
+	size_t			recvbytes;
+	time_t			dtopened;
 }					t_fd;
 
 struct				t_server_intro

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 18:32:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:16:05 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 			}
 			catch (std::out_of_range &e) { (void)e; }
 		}
-		return ;	// for now because untested
+		return ;
 	}
 
 
@@ -84,6 +84,14 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 		error_exit("listen error");
 	serv->fds[_listen.socket_fd].type = FD_ME;
 	serv->fds[_listen.socket_fd].tls = false;
+	serv->fds[_listen.socket_fd].dtopened = ft_getcurrenttime();
+	serv->fds[_listen.socket_fd].sentmsgs = 0;
+	serv->fds[_listen.socket_fd].recvmsgs = 0;
+	serv->fds[_listen.socket_fd].sentbytes = 0;
+	serv->fds[_listen.socket_fd].recvbytes = 0;
+	serv->fds[_listen.socket_fd].linkname = serv->servername +
+		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
+
 	std::cout << "server created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
 }
@@ -116,6 +124,14 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	serv->fds[fd].tls = isTLS;
 	serv->fds[fd].hostname = inet_ntoa(csin.sin_addr);
 	serv->fds[fd].sslptr = NULL;
+	serv->fds[fd].dtopened = ft_getcurrenttime();
+	serv->fds[fd].sentmsgs = 0;
+	serv->fds[fd].recvmsgs = 0;
+	serv->fds[fd].sentbytes = 0;
+	serv->fds[fd].recvbytes = 0;
+	serv->fds[fd].sock = _socket;
+	serv->fds[fd].linkname = std::string("*[") +
+		inet_ntoa(csin.sin_addr) + ":" + std::to_string(ntohs(csin.sin_port)) + "]";
 
 	if (isTLS)
 	{
@@ -162,6 +178,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		buf_read[r] = 0;
 	if (r > 0)
 	{
+		serv->fds[fd].recvbytes += r;
+		if (serv->fds[fd].sock > 0)
+			serv->fds[serv->fds[fd].sock].recvbytes += r;
+		// ^ which sock recieved from fd
 		serv->fds[fd].rdbuf += buf_read;
 		if (serv->fds[fd].rdbuf.find_last_of(CRLF) != std::string::npos &&
 			serv->fds[fd].rdbuf.find_last_of(CRLF) + 1 == serv->fds[fd].rdbuf.length())
@@ -173,6 +193,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
 #endif
 			t_strvect	split = ft_splitstringbyany(serv->fds[fd].rdbuf, CRLF);
+			serv->fds[fd].recvmsgs += split.size();
+			if (serv->fds[fd].sock > 0)
+				serv->fds[serv->fds[fd].sock].recvmsgs += split.size();
+			// ^ which sock recieved msgs from fd
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], serv);
 			//	ignore msgs with \r\n (maybe other symbols too)
@@ -225,6 +249,15 @@ void	SendMessage(int fd, IRCserv *serv)
 		reply = serv->fds[fd].wrbuf;
 		serv->fds[fd].wrbuf.erase();
 	}
+
+	size_t tmp = ft_splitstringbyany(reply, CRLF).size();
+	if (reply.find_last_of(CRLF) != reply.length())
+		tmp--;
+	serv->fds[fd].sentmsgs += tmp;
+	if (serv->fds[fd].sock > 0)
+		serv->fds[serv->fds[fd].sock].sentmsgs += tmp;
+	// ^ which sock sent this to fd
+
 #if DEBUG_MODE
 	if (serv->fds[fd].tls)
 		std::cout << "tls";
@@ -235,6 +268,11 @@ void	SendMessage(int fd, IRCserv *serv)
 		r = SSL_write(serv->fds[fd].sslptr, reply.c_str(), reply.length());
 	else
 		r = send(fd, reply.c_str(), reply.length(), 0);
+
+	serv->fds[fd].sentbytes += r;
+	if (serv->fds[fd].sock > 0)
+		serv->fds[serv->fds[fd].sock].sentbytes += r;
+	// ^ which sock sent this to fd
 
 	if (r <= 0 || serv->fds[fd].status == false)
 	{

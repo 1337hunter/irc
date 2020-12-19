@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/11/19 21:07:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 21:16:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "message.hpp"
+#include "tools.hpp"
 
 void	InitSSLCTX(IRCserv *serv)
 {
@@ -87,6 +88,15 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	serv->fds[_listen.socket_fd].type = FD_ME;
 	serv->fds[_listen.socket_fd].tls = true;
 	serv->fds[_listen.socket_fd].status = true;
+	serv->fds[_listen.socket_fd].dtopened = ft_getcurrenttime();
+	serv->fds[_listen.socket_fd].sentmsgs = 0;
+	serv->fds[_listen.socket_fd].recvmsgs = 0;
+	serv->fds[_listen.socket_fd].sentbytes = 0;
+	serv->fds[_listen.socket_fd].recvbytes = 0;
+	serv->fds[_listen.socket_fd].sock = -1;
+	serv->fds[_listen.socket_fd].linkname = serv->servername +
+		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
+
 	std::cout << "tlsserver created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
 }

@@ -26,9 +26,9 @@ void	kill_from_operator(int fd, t_strvect const &split, IRCserv *serv)
 		(*chan)->getclients().erase(client);
 	serv->fds[client->getFD()].wrbuf += ":" + client->getinfo() + " QUIT " + cause + CRLF;
 	msg_forward(fd, strvect_to_string(split), serv);
-	msg_forward(fd, ":" + client->getnick() + " QUIT " + cause, serv);
+	msg_forward(fd, ":" + client->getnickname() + " QUIT " + cause, serv);
 	serv->fds[client->getFD()].status = false;
-	kill.nick = client->getnick();
+	kill.nick = client->getnickname();
 	kill.host = client->gethostname();
 	kill.time = ft_getcurrenttime();
 	kill.cause = cause;
@@ -45,7 +45,7 @@ void	kill_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		return ;
 	if (!(client = find_client_by_nick(split[1], serv)))
 		return ;
-	kill.nick = client->getnick();
+	kill.nick = client->getnickname();
 	kill.host = client->gethostname();
 	kill.time = ft_getcurrenttime();
 	kill.cause = strvect_to_string(split, ' ', 2);

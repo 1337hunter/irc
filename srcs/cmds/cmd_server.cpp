@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 16:15:33 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:28:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 				enjoy += "@";
 			else if (client_chan->second._voice)
 				enjoy += "+";
-			enjoy += client_chan->first->getnick() + ",";
+			enjoy += client_chan->first->getnickname() + ",";
 		}
 		if (enjoy.size() > 0)
 		{

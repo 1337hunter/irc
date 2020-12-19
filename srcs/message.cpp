@@ -39,7 +39,7 @@ std::string
 get_reply(IRCserv *serv, std::string rpl, Client *client, std::string command, std::string message)
 {
 	std::string	reply;
-	
+
 	reply = ":" + serv->servername + " " + (rpl.empty() ? "" : rpl + " ");
 	reply += (client == 0 ? "*" : client->getnickname());
 	reply += (command.empty() ? "" : " " + command);
@@ -91,8 +91,8 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 			if (client_it->first->gethop() == 0)
 				serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
 			else
-				serv->fds[client_it->first->getFD()].wrbuf += ":"+ client->getnick() +
-					" " + msg + CRLF;
+				serv->fds[client_it->first->getFD()].wrbuf += ":"+
+					client->getnickname() + " " + msg + CRLF;
 		}
 }
 

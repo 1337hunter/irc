@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 14:19:45 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 21:16:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "message.hpp"
 #include "commands.hpp"
 #include "error_handle.hpp"
+#include "tools.hpp"
 
 typedef struct addrinfo		t_addrinfo;
 
@@ -34,6 +35,15 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addr)) {
 		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
 	int	res = connect(socket_fd, addr->ai_addr, addr->ai_addrlen);
+	serv->fds[socket_fd].dtopened = ft_getcurrenttime();
+	serv->fds[socket_fd].sentmsgs = 0;
+	serv->fds[socket_fd].recvmsgs = 0;
+	serv->fds[socket_fd].sentbytes = 0;
+	serv->fds[socket_fd].recvbytes = 0;
+	serv->fds[socket_fd].sock = -1;
+	serv->fds[socket_fd].linkname = link.servername + "[" +
+		link.hostname + ":" + std::to_string(link.port) + "]";
+
 	// this is temporary
 	freeaddrinfo(addr);
 	// gotta figure out how to check all addresses
@@ -61,7 +71,8 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
 	serv->fds[socket_fd].tls = false;
-	return socket_fd;
+
+	return (socket_fd);
 }
 
 void	do_tls_connect(t_link &link, IRCserv *serv)
