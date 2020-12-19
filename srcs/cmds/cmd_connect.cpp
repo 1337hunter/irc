@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 13:03:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 14:19:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	}
 	serv->fds[socket_fd].type = FD_SERVER;
 	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION +
-		   	" " + "|" + CRLF;//P option?
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION + " IRC| \r\n";
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
 	serv->fds[socket_fd].tls = true;
@@ -122,15 +121,13 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 		if (b == e || !b->isRegistred())
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
-					"You have not registered");
-			return ;
+					"You have not registered"); return ;
 		}
 	}
 	if (serv->fds[fd].type != FD_ME && serv->fds[fd].type != FD_OPER)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOPRIVILEGES, fd, "",
-				"Permission Denied- You're not an IRC operator");
-		return ;
+				"Permission Denied- You're not an IRC operator"); return ;
 	}
 	i = -1;
 	while (++i < serv->link.size())

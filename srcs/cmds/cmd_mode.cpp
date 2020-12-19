@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/15 12:25:43 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 15:05:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,18 +20,24 @@ void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	int		ret = 0;
 	Channel	*channel_mode;
 	Client	*client_mode;
+	std::string	temp;
 
 	if (split.size() < 4 || split[2][0] == '+')
 		return ; // error from other server (may be msg_error here)
+	if (split[3][0] == ':')
+		temp = std::string(split[3], 1);
+	else
+		temp = split[3];
+	temp += strvect_to_string(split, ' ', 4);
 	if (split[2][0] == '#' || split[2][0] == '!')
 	{
 		if ((channel_mode = find_channel_by_name(split[2], serv)) == 0)
 			return ;
 		if (split.size() == 4)
-			ret = channel_mode->setMode(split[3]);
+			ret = channel_mode->setMode((split[3][0] == ':' ? std::string(split[3], 1) :
+						split[3]));
 		else
-			ret = channel_mode->setMode(ft_splitstring(
-						strvect_to_string(split, ' ', 3), ' '));
+			ret = channel_mode->setMode(ft_splitstring(temp, ' '));
 		if (ret == 461 || ret == INT_ERR_KEYSET || ret == 1)
 			return ;
 	}
@@ -39,7 +45,7 @@ void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		if ((client_mode = find_client_by_nick(split[2], serv)) == 0)
 			return ;
-		client_mode->setUMODE(split[2]);
+		client_mode->setUMODE((split[3][0] == ':' ? std::string(split[3], 1) : split[3]));
 	}
 	msg_forward(fd, strvect_to_string(split), serv);
 }

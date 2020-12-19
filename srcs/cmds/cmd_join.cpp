@@ -12,16 +12,20 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 {
 	std::unordered_map<Client*, client_flags>::iterator c_map;
 	std::string		reply;
+	std::string		forward;
 
 	if (chan->getflags()._anonymous)
 		reply = ":anonymous!anonymous@anonymous";
 	else
 		reply = ":" + client_it->getnickname() + "!" + client_it->getusername() +
 		"@" + client_it->gethostname();
+	forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
 	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
-		if (c_map->first->getFD() != client_it->getFD())
+		if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() == 0)
 			serv->fds[c_map->first->getFD()].wrbuf += reply;
+		else if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() > 0)
+			serv->fds[c_map->first->getFD()].wrbuf += forward;
 	serv->fds[client_it->getFD()].wrbuf += reply;
 	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
 }

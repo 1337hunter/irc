@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 13:06:28 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 16:15:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,14 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	}
 }
 
-bool	send_clients(int fd, IRCserv *serv)
+bool	send_clients_and_channels(int fd, IRCserv *serv)
 {
 	std::list<Client>::iterator		client;
 	std::vector<t_server>::iterator	net;
+	std::list<Channel>::iterator	channel;
+	std::string						enjoy;
+	std::string						channel_forward;
+	std::unordered_map<Client*, client_flags>::iterator	client_chan;
 
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
@@ -69,6 +73,29 @@ bool	send_clients(int fd, IRCserv *serv)
 				" " + client->gettoken() + client->getMode(true) +
 				":" + client->getrealname() + CRLF;
 		}
+	}
+	channel = serv->channels.begin();
+	for (; channel != serv->channels.end(); channel++)
+	{
+		client_chan = channel->getclients().begin();
+		for (; client_chan != channel->getclients().end(); client_chan++)
+		{
+			if (client_chan->second._Operator)
+				enjoy += "@@";
+			else if (client_chan->second._operator)
+				enjoy += "@";
+			else if (client_chan->second._voice)
+				enjoy += "+";
+			enjoy += client_chan->first->getnick() + ",";
+		}
+		if (enjoy.size() > 0)
+		{
+			enjoy.pop_back();
+			channel_forward += ":" + serv->servername + " NJOIN " + channel->getname() +
+				" :" + enjoy + CRLF;
+		}
+		enjoy.erase();
+		serv->fds[fd].wrbuf += channel_forward;
 	}
 	return false;
 }
@@ -183,7 +210,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		}
 		begin++;
 	}
-	send_clients(fd, serv);
+	send_clients_and_channels(fd, serv);
 	serv->fds[fd].wrbuf += backward;
 	serv->fds[fd].type = FD_SERVER;
 	serv->network.push_back(temp);
