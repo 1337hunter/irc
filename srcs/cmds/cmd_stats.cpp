@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 22:27:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 22:33:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 				std::to_string(it->second.recvbytes/* / 1024*/) + " " +
 				std::to_string(ft_getcurrenttime() - it->second.dtopened), "");
 	}
-	if (mode == "m")
+	else if (mode == "m")
 	{
 		for (size_t i = 0; i < 10; i++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSCOMMANDS, target,
@@ -108,13 +108,13 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 				"<byte count>" + " " +
 				"<remote count>", "");
 	}
-	if (mode == "o")
+	else if (mode == "o")
 	{
 		for (t_opit it = serv->oper.begin(); it != serv->oper.end(); it++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSOLINE, target,
 				std::string("O") + " " + it->hostmask + " * " + it->name, "");
 	}
-	if (mode == "u")
+	else if (mode == "u")
 	{
 		reply = ft_buildmsg(serv->servername, RPL_STATSUPTIME, target, "",
 			getserverupstr(serv));
