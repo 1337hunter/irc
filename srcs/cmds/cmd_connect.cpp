@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 20:50:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:03:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 		return (socket_fd);
 	serv->fds[socket_fd].type = FD_SERVER;
 	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + serv->version +
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION +
 		   	" " + "IRC|" + CRLF;//PZ
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
@@ -95,7 +95,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	}
 	serv->fds[socket_fd].type = FD_SERVER;
 	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + serv->version +
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION +
 		   	" " + "|" + CRLF;//P option?
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + ":" + serv->info + CRLF; //attempt to register

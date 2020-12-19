@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/17 20:47:31 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 13:02:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -850,7 +850,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["LINKS"] = cmd_links;
 	serv->command["STATS"] = cmd_stats;
 
-	serv->version = VERSIONSTRING;
+	serv->versionstring = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)
 	serv->usermodes = "iosw";
 	serv->chanmodes = "biklmnopstv";

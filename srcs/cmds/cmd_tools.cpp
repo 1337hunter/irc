@@ -53,11 +53,11 @@ std::string		reply_welcome(IRCserv *serv, Client *cli)
 		user + "@" + host);
 	reply += ft_buildmsg(serv->servername, RPL_YOURHOST, nick, "",
 		"Your host is " + serv->servername + ", running version " +
-		serv->version);
+		serv->versionstring);
 	reply += ft_buildmsg(serv->servername, RPL_CREATED, nick, "",
 		"This server was created " + ft_timetostring(serv->dtstarted));
 	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick,
-		serv->servername + " " + serv->version + " " +
+		serv->servername + " " + serv->versionstring + " " +
 		serv->usermodes + " " + serv->chanmodes, "");
 	reply += reply_motd(serv, nick);
 	return (reply);

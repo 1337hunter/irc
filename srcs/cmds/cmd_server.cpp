@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:39:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 20:50:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:04:04 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	//backward message to introduce us to enother server
 	if (serv->fds[fd].type != FD_SERVER)
 	{
-		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + serv->version +
+		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + VERSION +
 			" " + "IRC|" + CRLF;
 		serv->fds[fd].wrbuf += "SERVER " + serv->servername + " 1 " + serv->token +
 		" :" + serv->info + CRLF;
