@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_join.cpp                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/01 15:42:46 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/10 21:52:21 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ircserv.hpp"
 #include "tools.hpp"
 #include "message.hpp"
@@ -43,9 +31,14 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 	std::list<Channel>::iterator	chan;
 	std::vector<std::string>		args;
 	std::vector<std::string>		keys;
+	std::string						str_chan;
 	size_t	i;
 
-	args = ft_splitstring(split[1], ",");
+	if (split[1][0] == ':')
+		str_chan = std::string(split[1], 1);
+	else
+		str_chan = split[1];
+	args = ft_splitstring(str_chan, ",");
 	if (split.size() > 2)
 		keys = ft_splitstring(split[2], ",");
 	i = keys.size() - 1;
@@ -124,12 +117,17 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	Channel		*channel;
 	t_strvect	chans;
 	t_strvect	modes;
+	std::string	str_chan;
 
 	if (split.size() < 3)
 		return ;
+	if (split[2][0] == ':')
+		str_chan = std::string(split[2], 1);
+	else
+		str_chan = split[2];
 	if ((client = find_client_by_nick(get_nick_from_info(split[0]), serv)) == 0)
 		return ;//bad command from server
-	chans = ft_splitstring(split[2], ',');
+	chans = ft_splitstring(str_chan, ',');
 	for (size_t	i = 0; i < chans.size(); i++)
 	{
 		modes = ft_splitstring(chans[i], static_cast<char>(7));
@@ -153,22 +151,20 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 {
 	t_citer	client_it;
+
 	if (split.size() < 2)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "JOIN",
 				"Not enough parameters");
 		return ;
 	}
-
 	client_it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (split[0] == "JOIN" && (serv->fds[fd].type == FD_CLIENT ||
-			serv->fds[fd].type == FD_OPER))
+	if (serv->fds[fd].type == FD_CLIENT || serv->fds[fd].type == FD_OPER)
 	{
 		if (!client_it->isRegistred())
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1 , "JOIN",
-					"You have not registered");
-			return ;
+					"You have not registered"); return ;
 		}
 		join_to_chan(fd, split, serv, client_it);
 	}
