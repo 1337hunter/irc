@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 00:54:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:12:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,9 +251,10 @@ int			nick_forward(IRCserv *serv, Client *client)
 
 	if (!client)
 		return 1;
-	forward = "NICK " + client->getnickname() + " " + client->gethopcount() + " " +
-		client->getusername() + " " + client->gethostname() + " " + client->gettoken() + " " +
-		client->getMode() + " " +  ":" + client->getrealname() + CRLF;
+	forward = "NICK " + client->getnickname() + " " + std::to_string(client->gethop() + 1)
+	   	+ " " + client->getusername() + " " + client->gethostname() + " " +
+		client->gettoken() + " " + client->getMode() + " " +  ":" +
+		client->getrealname() + CRLF;
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
 		serv->fds[net->fd].wrbuf += forward;
 	return 0;

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 19:01:38 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:21:53 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 					it->getnickname(), "", "You may not reregister");
 		}
 		else
-			serv->clients.push_back(Client(split[1], _realname, fd));
+			serv->clients.push_back(Client(split[1], _realname, serv->token, fd));
 	}
 	serv->fds[fd].wrbuf += reply;
 }

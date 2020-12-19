@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/15 19:36:59 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:24:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,9 @@ private:
 	// Maybe server class object reference or pointer here
 	Client(void);
 public:
-	Client(std::string const &nickname, int fd);
-	Client(std::string const &username, std::string const &realname, int fd);
+	Client(std::string const &nickname, std::string const &token, int fd);
+	Client(std::string const &username, std::string const &realname,
+		   std::string const &token, int fd);
 	Client(std::string const &nick, std::string const hop, std::string const &user,
 		std::string const &host, std::string const &servertoken,
 		std::string const umode, std::string const &real);

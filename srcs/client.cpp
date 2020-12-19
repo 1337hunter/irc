@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 16:58:34 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 13:23:39 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,19 @@ Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 {
 }
 
-Client::Client(std::string const &nickname, int fd):
-	nickname(nickname), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
+Client::Client(std::string const &nickname, std::string const &token, int fd):
+	nickname(nickname), token(token), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
 	_away_message(""), _blocked(false)
 {
 }
 
-Client::Client(std::string const &username, std::string const &realname, int fd):
-username(username), realname(realname), hopcount(0), fd(fd), _isConnected(true),
-	_isRegistred(false), USER(true), NICK(false), _isInvisible(false), _isWallOps(false),
-	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message(""), _blocked(false)
+Client::Client(std::string const &username, std::string const &realname, std::string const &token, int fd):
+username(username), realname(realname), token(token), hopcount(0), fd(fd),
+	_isConnected(true), _isRegistred(false), USER(true), NICK(false),
+	_isInvisible(false), _isWallOps(false), _isServNotice(false), _isOperator(false),
+	_restricted(false), _away(false), _away_message(""), _blocked(false)
 {
 }
 
@@ -51,9 +51,8 @@ Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1
 	username(split[3]), hostname(split[4]), token(split[5]), hopcount(stoi(split[2])),
 	fd(fd)
 {
-	std::string	temp(split[7], 1);
 	setMode(split[6]);// this is bad initialization PUREFY IT!
-	realname = temp;
+	std::string realname = std::string(split[7], 1);
 	for (size_t i = 8; i < split.size(); i++)
 		realname += " " + split[i];
 	_restricted = false;

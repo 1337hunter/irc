@@ -113,7 +113,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			" for " + std::to_string(KILLTIME - ft_getcurrenttime() + kill->time) + "s");
 			serv->fds[fd].status = false; return ;
 		}
-	serv->clients.push_back(Client(split[1], fd));
+	serv->clients.push_back(Client(split[1], serv->token, fd));
 	serv->clients.back().sethostname(serv->fds[fd].hostname);
 }
 
