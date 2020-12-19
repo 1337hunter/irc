@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:17:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 03:09:14 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 14:46:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ void	cmd_version(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 
-	std::string	verdbg = serv->versionstring + ".";
+	std::string	verdbg(VERSIONSTRING);
+	verdbg += ".";
 	std::string	comment = "release build";
 	if (DEBUG_MODE)
 	{
