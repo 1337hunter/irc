@@ -41,6 +41,12 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 	return (reply);
 }
 
+/*
+	In particular the server SHALL send the current user/service/server
+	count (as per the LUSER reply) and finally the MOTD (if any, as per
+	the MOTD reply. (RFC2813)
+*/
+
 std::string		reply_welcome(IRCserv *serv, Client *cli)
 {
 	std::string	reply = "";
@@ -58,6 +64,7 @@ std::string		reply_welcome(IRCserv *serv, Client *cli)
 	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick,
 		serv->servername + " " + VERSIONSTRING + " " +
 		serv->usermodes + " " + serv->chanmodes, "");
+	reply += reply_lusers(serv, nick);
 	reply += reply_motd(serv, nick);
 	return (reply);
 }
@@ -216,4 +223,81 @@ std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv)
 		return (split[0].substr(1));
 
 	return ("");
+}
+
+size_t		getusercount(IRCserv *serv, std::string const &mask = "*",
+	bool opersonly = false)
+{
+	size_t	count = 0;
+
+	if (match(serv->servername, mask))
+		for (t_citer cit = serv->clients.begin(); cit != serv->clients.end(); cit++)
+			if (!opersonly || (opersonly && cit->isOperator()))
+				count++;
+	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
+		if (match(sit->servername, mask))
+			for (t_citer cit = sit->clients.begin(); cit != sit->clients.end(); cit++)
+				if (!opersonly || (opersonly && cit->isOperator()))
+					count++;
+	return (count);
+}
+
+size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
+	bool connectedtomeonly = false)
+{
+	size_t	count = 0;
+
+	if (!connectedtomeonly && match(serv->servername, mask))
+		count++;
+	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
+		if ((!connectedtomeonly || sit->hopcount == 1) && match(sit->servername, mask))
+			count++;
+	return (count);
+}
+
+size_t		getunknownconnectscount(IRCserv *serv)
+{
+	size_t	unkncount = serv->fds.size() - serv->clients.size() - serv->network.size();
+	for (std::map<int, t_fd>::iterator fit = serv->fds.begin(); fit != serv->fds.end(); fit++)
+		if (fit->second.type == FD_ME)
+			unkncount--;
+	return (unkncount);
+}
+
+std::string	reply_lusers(IRCserv *serv, std::string const &target, std::string const &mask)
+{
+	std::string	reply = "";
+	size_t	usercount = getusercount(serv, mask);
+	size_t	botscount = 0;		// services
+	size_t	servcount = getservcount(serv, mask);
+	size_t	opercount = getusercount(serv, mask, true);
+	size_t	unkncount = getunknownconnectscount(serv);
+	size_t	chancount = serv->channels.size();
+	size_t	svmecount = getservcount(serv, mask, true);
+	size_t	clmecount = 0;
+	if (match(serv->servername, mask))
+		clmecount = serv->clients.size();
+
+//  MUST send back RPL_LUSERCLIENT and RPL_LUSERME. others only when non-zero
+
+	reply += ft_buildmsg(serv->servername, RPL_LUSERCLIENT, target, "", "There are " +
+		std::to_string(usercount) + " users and " +
+		std::to_string(botscount) + " services on " +
+		std::to_string(servcount) + " servers");
+
+	if (opercount != 0)
+		reply += ft_buildmsg(serv->servername, RPL_LUSEROP, target,
+			std::to_string(opercount), "operator(s) online");
+	if (unkncount != 0)
+		reply += ft_buildmsg(serv->servername, RPL_LUSERUNKNOWN, target,
+			std::to_string(unkncount), "unknown connection(s)");
+	if (chancount != 0)
+		reply += ft_buildmsg(serv->servername, RPL_LUSERCHANNELS, target,
+			std::to_string(chancount), "channels formed");
+
+	reply += ft_buildmsg(serv->servername, RPL_LUSERME, target, "", "I have " +
+		std::to_string(clmecount) + " clients and " +
+		std::to_string(svmecount) + " servers");
+
+	return (reply);
 }

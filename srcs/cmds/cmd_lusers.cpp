@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 15:10:34 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 17:33:11 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,76 +25,62 @@
 	concern the part of the network formed by the servers matching the
 	mask.  Finally, if the <target> parameter is specified, the request
 	is forwarded to that server which will generate the reply.
-
 	Wildcards are allowed in the <target> parameter.
 
 	Numeric Replies:
 		RPL_LUSERCLIENT
 		RPL_LUSEROP
-		RPL_LUSERUNKOWN
+		RPL_LUSERUNKNOWN
 		RPL_LUSERCHANNELS
 		RPL_LUSERME
 		ERR_NOSUCHSERVER
 */
 
-/*
-	In particular the server SHALL send the current user/service/server
-	count (as per the LUSER reply) and finally the MOTD (if any, as per
-	the MOTD reply. Welcome change needed (RFC2813)
-
-	reply_lusers:
-:example.irc.org 251 arcticfox :There are 1 users and 0 services on 1 servers
-:example.irc.org 254 arcticfox 14 :channels formed
-:example.irc.org 255 arcticfox :I have 1 users, 0 services and 0 servers
-:example.irc.org 265 arcticfox 1 1 :Current local users 1, max 1
-:example.irc.org 266 arcticfox 1 1 :Current global users 1, max 1
-*/
-
-void	cmd_lusers(int fd, const t_strvect &split, IRCserv *serv)
+void		cmd_lusers(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick = getnicktoreply(fd, split, serv);
-	if (nick.empty())
-	{
+	std::string	nick;
+	t_citer		it;
+
+	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (it != serv->clients.end())
+		nick = it->getnickname();
+	else if (split[0][0] == ':')
+		nick = split[0].substr(1);
+	else
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
-		return ;
-	}
 
-
-	// placeholder from TIME below. do LUSERS
-
-
-	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
-		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
+	if (serv->fds[fd].type != FD_SERVER && (split.size() < 3 ||
+		(split.size() > 2 && getservernamebymask(serv, split[2]) == serv->servername)))
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
-			nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
+		if (split.size() < 2)
+			serv->fds[fd].wrbuf += reply_lusers(serv, nick);
+		else
+			serv->fds[fd].wrbuf += reply_lusers(serv, nick, split[1]);
 	}
-	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
+	else if (serv->fds[fd].type != FD_SERVER && split.size() > 2)
 	{
-		int	servfd = getserverfdbymask(serv, split[1]);
+		int	servfd = getserverfdbymask(serv, split[2]);
 		if (servfd > 0)
-			serv->fds[servfd].wrbuf += ":" + nick + " LINKS " + split[1] + CRLF;
+			serv->fds[servfd].wrbuf += ":" + nick + " LUSERS " +
+				split[1] + " " + split[2] + CRLF;
 		else
 			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				ERR_NOSUCHSERVER, nick, split[1], "No such server");
+				ERR_NOSUCHSERVER, nick, split[2], "No such server");
 	}
-	else if (split.size() >= 3)	// from another server: reply or forward
+	else if (split.size() >= 4)	// from another server: reply or forward
 	{
-		nick = split[0].substr(1);
-		if (getservernamebymask(serv, split[2]) == serv->servername)
-		{
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, RPL_TIME,
-				nick, serv->servername, ft_timetostring(ft_getcurrenttime()));
-		}
+		if (getservernamebymask(serv, split[3]) == serv->servername)
+			serv->fds[fd].wrbuf += reply_lusers(serv, nick, split[2]);
 		else
 		{
-			int	servfd = getserverfdbymask(serv, split[2]);
+			int	servfd = getserverfdbymask(serv, split[3]);
 			if (servfd > 0)
-				serv->fds[servfd].wrbuf += split[0] + " LINKS " + split[2] + CRLF;
+				serv->fds[servfd].wrbuf += split[0] + " LUSERS " +
+					split[2] + " " + split[3] + CRLF;
 			else
 				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					ERR_NOSUCHSERVER, nick, split[1], "No such server");
+					ERR_NOSUCHSERVER, nick, split[3], "No such server");
 		}
 	}
 }
