@@ -299,6 +299,7 @@ int	Channel::setMode(t_strvect const &args)
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];
+				std::cout << "\n\nstrmode: " << strmode << "\n\n";
 				if (args[i][pos] == 'o' || args[i][pos] == 'O' || args[i][pos] == 'v')
 				{
 					for (client = _clients.begin(); client != _clients.end(); client++)
@@ -355,7 +356,7 @@ int	Channel::setMode(t_strvect const &args)
 				}
 				else
 					if (it != _flags._ban_mask.end())
-						_flags._Invitation_mask.erase(it);
+						_flags._ban_mask.erase(it);
 			}
 			else if (mode[i][1] == 'e')
 			{
@@ -364,11 +365,11 @@ int	Channel::setMode(t_strvect const &args)
 				if (mode[i][0] == '+')
 				{
 					if (it == _flags._exception_mask.end())
-						_flags._ban_mask.push_back(arg[i]);
+						_flags._exception_mask.push_back(arg[i]);
 				}
 				else
-					if (it != _flags._ban_mask.end())
-						_flags._Invitation_mask.erase(it);
+					if (it != _flags._exception_mask.end())
+						_flags._exception_mask.erase(it);
 			}
 			else if (mode[i][1] == 'k')
 			{
