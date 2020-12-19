@@ -52,12 +52,11 @@ std::string		reply_welcome(IRCserv *serv, Client *cli)
 		nick, "", "Welcome to the Internet Relay Network " + nick + "!" +
 		user + "@" + host);
 	reply += ft_buildmsg(serv->servername, RPL_YOURHOST, nick, "",
-		"Your host is " + serv->servername + ", running version " +
-		serv->versionstring);
+		"Your host is " + serv->servername + ", running version " + VERSIONSTRING);
 	reply += ft_buildmsg(serv->servername, RPL_CREATED, nick, "",
 		"This server was created " + ft_timetostring(serv->dtstarted));
 	reply += ft_buildmsg(serv->servername, RPL_MYINFO, nick,
-		serv->servername + " " + serv->versionstring + " " +
+		serv->servername + " " + VERSIONSTRING + " " +
 		serv->usermodes + " " + serv->chanmodes, "");
 	reply += reply_motd(serv, nick);
 	return (reply);

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 16:18:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 16:33:32 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -850,11 +850,14 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	serv->command["LINKS"] = cmd_links;
 	serv->command["STATS"] = cmd_stats;
 	serv->command["NJOIN"] = cmd_njoin;
+	serv->command["LUSERS"] = cmd_lusers;
 
-	serv->versionstring = VERSIONSTRING;
 	// values below are from InspIRCd-3 (need to check what it means)
 	serv->usermodes = "iosw";
 	serv->chanmodes = "biklmnopstv";
+/*	// values below are from ircd v2.11.2p3
+	serv->usermodes = "aoOirw";
+	serv->chanmodes = "abeiIklmnoOpqrRstv";		*/
 }
 
 void	parse(int ac, char **av, IRCserv *serv)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 19:45:05 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 15:26:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 	}
 	if (!msg.empty())
 		split.push_back(msg);
+	if (split.back().size() > 0 && split.back()[0] == ':')
+		split.back() = split.back().substr(1);
 	return (split);
 }
 
