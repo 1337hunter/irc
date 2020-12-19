@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:54:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 03:08:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ std::string	reply_info(IRCserv *serv, std::string const &target)
 	if (DEBUG_MODE)
 		buildinfo = "debug build";
 
-	infovect.push_back("\t\t\t" + serv->version + " " + buildinfo);
+	infovect.push_back("\t\t\t" + serv->versionstring + " " + buildinfo);
 	infovect.push_back("Developed since October 2020 till present");
 	infovect.push_back("");
 	infovect.push_back("Compiled:\t\t" + ft_timetostring(serv->dtcompiled));

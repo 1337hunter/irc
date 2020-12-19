@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/17 16:56:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 03:06:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,8 @@ struct				IRCserv
 	SSL_CTX						*sslctx;
 	std::string					pass;		// this is argv server (ME) password
 	int							port;		// this is argv server port
-	std::string					version;
+	std::string					version;		// coded version
+	std::string					versionstring;	// human readable version
 	std::string					usermodes;
 	std::string					chanmodes;
 	time_t						dtstarted;

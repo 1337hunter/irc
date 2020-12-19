@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 20:53:13 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/19 03:04:14 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@
 # define BUF_SIZE		512
 # define KILLTIME		60
 
-# define VERSIONSTRING	"0211020003"
+# define VERSIONCODE	"0211020003"
+# define VERSIONSTRING	"IRCserv-0.2.1"
 
 # define DEBUG_MODE		1
 # define NPOS std::string::npos

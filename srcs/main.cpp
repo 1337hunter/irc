@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/12/04 18:39:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/19 03:17:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ int		main(int ac, char **av)
 
 	if (DEBUG_MODE)
 		std::cout << std::endl;
-	std::cout << ">>>> server is starting ..." << std::endl;
+	std::cout << ">>>> " << serv->versionstring << " is starting ..." << std::endl;
+	std::cout << "Version code:\t" << serv->version << std::endl;
 	serv->dtcompiled = ft_getcompiletime();
 	serv->dtstarted = ft_getcurrenttime();
 	std::cout << "Compiled:\t" << ft_timetostring(serv->dtcompiled) << std::endl;
