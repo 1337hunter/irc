@@ -107,7 +107,7 @@ this_server_names:
 				serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, client, split[2],
 						"No such server"); return ;
 			}
-			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
+			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 				strvect_to_string(split) + CRLF;
 		}
 	}
