@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 20:06:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 21:22:52 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,14 @@ std::string		getservernamebymask(IRCserv *serv, std::string const &mask);
 int				getserverfdbymask(IRCserv *serv, std::string const &mask);
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
 
-class	Command
-{
+class Command {
 private:
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
-
-	t_command		cmd;
-	// message stats
-	unsigned int	count;
-	size_t			bytes;
-	unsigned int	rcount;
-
+	t_command	cmd;
+//	message stats
+	uint		count;
+	size_t		bytes;
+	uint		rcount;
 public:
 	Command();
 	~Command();
@@ -84,9 +81,9 @@ public:
 	bool	used(void);
 	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
 		size_t bytes, bool remote);
-	unsigned int	getcount(void);
-	size_t			getbytes(void);
-	unsigned int	getrcount(void);
+	uint	getcount(void);
+	size_t	getbytes(void);
+	uint	getrcount(void);
 };
 
 #endif
