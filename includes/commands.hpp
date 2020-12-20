@@ -6,14 +6,19 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 14:06:41 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/20 20:06:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef COMMANDS_HPP
 # define COMMANDS_HPP
 
+# include "ircserv.hpp"
 # include <string>
+
+struct		IRCserv;
+
+void	initcommands(IRCserv *serv);
 
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_user(int fd, const t_strvect &split, IRCserv *serv);
@@ -58,6 +63,30 @@ std::string		getservernamebymask(IRCserv *serv, std::string const &mask);
 int				getserverfdbymask(IRCserv *serv, std::string const &mask);
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
 
-typedef std::vector<t_server>::iterator	t_netit;
+class	Command
+{
+private:
+	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
+
+	t_command		cmd;
+	// message stats
+	unsigned int	count;
+	size_t			bytes;
+	unsigned int	rcount;
+
+public:
+	Command();
+	~Command();
+	Command(t_command cmd);
+	Command(Command const &other);
+	Command &operator=(Command const &other);
+
+	bool	used(void);
+	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
+		size_t bytes, bool remote);
+	unsigned int	getcount(void);
+	size_t			getbytes(void);
+	unsigned int	getrcount(void);
+};
 
 #endif

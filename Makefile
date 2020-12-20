@@ -6,14 +6,14 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/19 16:33:09 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/20 19:33:23 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			tools.cpp stringtools.cpp timetools.cpp error_handle.cpp \
-			message.cpp parse.cpp \
+			commands.cpp message.cpp parse.cpp \
 			client.cpp channel.cpp \
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \

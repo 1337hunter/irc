@@ -6,24 +6,24 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:16:05 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 19:58:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "message.hpp"
-#include "commands.hpp"
 #include "tools.hpp"
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
 	t_strvect	split = ft_splitstring(msg, " ");
+	t_fd		&fdref = serv->fds[fd];		// decrease searches
 	int			i = 0;
 
 	/*	reply check here: reroute the reply to user or server	*/
-	//	serv->fds[fd].type = FD_ME not used because
+	//	fdref.type = FD_ME not used because
 	//	we get only connect accept requests on read of *this* server
-	if (serv->fds[fd].type == FD_SERVER &&
+	if (fdref.type == FD_SERVER &&
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
 	{
@@ -50,7 +50,11 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	split[i] = ft_strtoupper(split[i]);
 	try
 	{
-		serv->command.at(split[i])(fd, split, serv);
+		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
+//		Command	&cmdref = serv->cmds.at(split[i]);
+//		cmdref.UpdateStats(msg.size(), i > 0);
+//		cmdref.cmd(fd, split, serv);
+
 		#if DEBUG_MODE
 			std::cout << "command found:\t\t" << split[i] << std::endl;
 		#endif
@@ -82,14 +86,16 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 		error_exit("bind error (probably already binded)");
 	if (listen(_listen.socket_fd, 42) < 0) //42 can also be configured
 		error_exit("listen error");
-	serv->fds[_listen.socket_fd].type = FD_ME;
-	serv->fds[_listen.socket_fd].tls = false;
-	serv->fds[_listen.socket_fd].dtopened = ft_getcurrenttime();
-	serv->fds[_listen.socket_fd].sentmsgs = 0;
-	serv->fds[_listen.socket_fd].recvmsgs = 0;
-	serv->fds[_listen.socket_fd].sentbytes = 0;
-	serv->fds[_listen.socket_fd].recvbytes = 0;
-	serv->fds[_listen.socket_fd].linkname = serv->servername +
+
+	t_fd	&fdref = serv->fds[_listen.socket_fd];	// this will create fd
+	fdref.type = FD_ME;
+	fdref.tls = false;
+	fdref.dtopened = ft_getcurrenttime();
+	fdref.sentmsgs = 0;
+	fdref.recvmsgs = 0;
+	fdref.sentbytes = 0;
+	fdref.recvbytes = 0;
+	fdref.linkname = serv->servername +
 		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
 
 	std::cout << "server created on socket " << _listen.socket_fd <<
@@ -116,31 +122,33 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 		std::cout << "tls";
 	std::cout << "client " << fd << " accepted:\t" <<
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
-	serv->fds[fd].type = FD_CLIENT;
+
+	t_fd	&fdref = serv->fds[fd];		// this will create t_fd and return ref
+	fdref.type = FD_CLIENT;
 	// we dont know either it's client or other server
-	serv->fds[fd].rdbuf.erase();
-	serv->fds[fd].wrbuf.erase();
-	serv->fds[fd].status = true;
-	serv->fds[fd].tls = isTLS;
-	serv->fds[fd].hostname = inet_ntoa(csin.sin_addr);
-	serv->fds[fd].sslptr = NULL;
-	serv->fds[fd].dtopened = ft_getcurrenttime();
-	serv->fds[fd].sentmsgs = 0;
-	serv->fds[fd].recvmsgs = 0;
-	serv->fds[fd].sentbytes = 0;
-	serv->fds[fd].recvbytes = 0;
-	serv->fds[fd].sock = _socket;
-	serv->fds[fd].linkname = std::string("*[") +
+	fdref.rdbuf.erase();
+	fdref.wrbuf.erase();
+	fdref.status = true;
+	fdref.tls = isTLS;
+	fdref.hostname = inet_ntoa(csin.sin_addr);
+	fdref.sslptr = NULL;
+	fdref.dtopened = ft_getcurrenttime();
+	fdref.sentmsgs = 0;
+	fdref.recvmsgs = 0;
+	fdref.sentbytes = 0;
+	fdref.recvbytes = 0;
+	fdref.sock = _socket;
+	fdref.linkname = std::string("*[") +
 		inet_ntoa(csin.sin_addr) + ":" + std::to_string(ntohs(csin.sin_port)) + "]";
 
 	if (isTLS)
 	{
-		if (!(serv->fds[fd].sslptr = SSL_new(serv->sslctx)))
+		if (!(fdref.sslptr = SSL_new(serv->sslctx)))
 		{
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			error_exit("SSL_new failed");
 		}
-		if (SSL_set_fd(serv->fds[fd].sslptr, fd) < 1)
+		if (SSL_set_fd(fdref.sslptr, fd) < 1)
 		{
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
 			error_exit("SSL_set_fd failed");
@@ -168,9 +176,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
 	char		buf_read[BUF_SIZE + 1];
+	t_fd		&fdref = serv->fds[fd];	// this will decrease amount of search
 
-	if (serv->fds[fd].tls && serv->fds[fd].sslptr)
-		r = SSL_read(serv->fds[fd].sslptr, buf_read, BUF_SIZE);
+	if (fdref.tls && fdref.sslptr)
+		r = SSL_read(fdref.sslptr, buf_read, BUF_SIZE);
 	else
 		r = recv(fd, buf_read, BUF_SIZE, 0);
 
@@ -178,24 +187,24 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		buf_read[r] = 0;
 	if (r > 0)
 	{
-		serv->fds[fd].recvbytes += r;
-		if (serv->fds[fd].sock > 0)
-			serv->fds[serv->fds[fd].sock].recvbytes += r;
+		fdref.recvbytes += r;
+		if (fdref.sock > 0)
+			serv->fds[fdref.sock].recvbytes += r;
 		// ^ which sock recieved from fd
-		serv->fds[fd].rdbuf += buf_read;
-		if (serv->fds[fd].rdbuf.find_last_of(CRLF) != std::string::npos &&
-			serv->fds[fd].rdbuf.find_last_of(CRLF) + 1 == serv->fds[fd].rdbuf.length())
+		fdref.rdbuf += buf_read;
+		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
+			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())
 		{
 #if DEBUG_MODE
-			if (serv->fds[fd].tls)
+			if (fdref.tls)
 				std::cout << "tls";
 			std::cout << "client " << fd << " sent:\t" <<
-				(serv->fds[fd].tls ? "" : "\t") << serv->fds[fd].rdbuf;
+				(fdref.tls ? "" : "\t") << fdref.rdbuf;
 #endif
-			t_strvect	split = ft_splitstringbyany(serv->fds[fd].rdbuf, CRLF);
-			serv->fds[fd].recvmsgs += split.size();
-			if (serv->fds[fd].sock > 0)
-				serv->fds[serv->fds[fd].sock].recvmsgs += split.size();
+			t_strvect	split = ft_splitstringbyany(fdref.rdbuf, CRLF);
+			fdref.recvmsgs += split.size();
+			if (fdref.sock > 0)
+				serv->fds[fdref.sock].recvmsgs += split.size();
 			// ^ which sock recieved msgs from fd
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], serv);
@@ -208,18 +217,18 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	}
 	else
 	{
-		if (serv->fds[fd].tls)
+		if (fdref.tls)
 		{
 			/* for tls may be recoverable */
-			int	err = SSL_get_error(serv->fds[fd].sslptr, r);
+			int	err = SSL_get_error(fdref.sslptr, r);
 			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
 				return ;
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			SSL_free(serv->fds[fd].sslptr);
+			SSL_free(fdref.sslptr);
 			std::cout << "tls";
 		}
 		//he we need to pop out introduced servers if type == FD_SERVER
-		if (serv->fds[fd].type == FD_SERVER)
+		if (fdref.type == FD_SERVER)
 			self_cmd_squit(fd, serv);
 		close(fd);
 		serv->fds.erase(fd);
@@ -238,55 +247,56 @@ void	SendMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
 	std::string	reply;
+	t_fd		&fdref = serv->fds[fd];
 
-	if (serv->fds[fd].wrbuf.length() > BUF_SIZE)
+	if (fdref.wrbuf.length() > BUF_SIZE)
 	{
-		reply = serv->fds[fd].wrbuf.substr(0, BUF_SIZE);
-		serv->fds[fd].wrbuf = serv->fds[fd].wrbuf.substr(BUF_SIZE);
+		reply = fdref.wrbuf.substr(0, BUF_SIZE);
+		fdref.wrbuf = fdref.wrbuf.substr(BUF_SIZE);
 	}
 	else
 	{
-		reply = serv->fds[fd].wrbuf;
-		serv->fds[fd].wrbuf.erase();
+		reply = fdref.wrbuf;
+		fdref.wrbuf.erase();
 	}
 
 	size_t tmp = ft_splitstringbyany(reply, CRLF).size();
 	if (reply.find_last_of(CRLF) != reply.length())
 		tmp--;
-	serv->fds[fd].sentmsgs += tmp;
-	if (serv->fds[fd].sock > 0)
-		serv->fds[serv->fds[fd].sock].sentmsgs += tmp;
+	fdref.sentmsgs += tmp;
+	if (fdref.sock > 0)
+		serv->fds[fdref.sock].sentmsgs += tmp;
 	// ^ which sock sent this to fd
 
 #if DEBUG_MODE
-	if (serv->fds[fd].tls)
+	if (fdref.tls)
 		std::cout << "tls";
 	std::cout << "sending client " << fd << "\t" << reply;
 #endif
 
-	if (serv->fds[fd].tls && serv->fds[fd].sslptr)
-		r = SSL_write(serv->fds[fd].sslptr, reply.c_str(), reply.length());
+	if (fdref.tls && fdref.sslptr)
+		r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
 	else
 		r = send(fd, reply.c_str(), reply.length(), 0);
 
-	serv->fds[fd].sentbytes += r;
-	if (serv->fds[fd].sock > 0)
-		serv->fds[serv->fds[fd].sock].sentbytes += r;
+	fdref.sentbytes += r;
+	if (fdref.sock > 0)
+		serv->fds[fdref.sock].sentbytes += r;
 	// ^ which sock sent this to fd
 
-	if (r <= 0 || serv->fds[fd].status == false)
+	if (r <= 0 || fdref.status == false)
 	{
-		if (serv->fds[fd].tls)
+		if (fdref.tls)
 		{
 			/* for tls may be recoverable */
-			int	err = SSL_get_error(serv->fds[fd].sslptr, r);
+			int	err = SSL_get_error(fdref.sslptr, r);
 			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
 				return ;
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			SSL_free(serv->fds[fd].sslptr);
+			SSL_free(fdref.sslptr);
 			std::cout << "tls";
 		}
-		if (serv->fds[fd].type == FD_SERVER)
+		if (fdref.type == FD_SERVER)
 			self_cmd_squit(fd, serv);
 		close(fd);
 		serv->fds.erase(fd);
@@ -303,7 +313,9 @@ void	SendMessage(int fd, IRCserv *serv)
 
 bool	didSockFail(int fd, IRCserv *serv)
 {
-	if (serv->fds[fd].status == false && serv->fds[fd].type == FD_SERVER)
+	t_fd	&fdref = serv->fds[fd];
+
+	if (fdref.status == false && fdref.type == FD_SERVER)
 	{
 		int			error;
 		socklen_t	len = sizeof(error);
@@ -314,15 +326,15 @@ bool	didSockFail(int fd, IRCserv *serv)
 			std::cerr << "Connection error to server " << fd << std::endl;
 			msg_error("Connection error to server", serv);
 			close(fd);
-			if (serv->fds[fd].tls)
+			if (fdref.tls)
 			{
-				SSL_free(serv->fds[fd].sslptr);
+				SSL_free(fdref.sslptr);
 				serv->fds.erase(fd);
 			}
 			return (true);
 		}
 		else
-			serv->fds[fd].status = true;
+			fdref.status = true;
 	}
 	return (false);
 }

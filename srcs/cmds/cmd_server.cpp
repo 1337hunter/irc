@@ -125,7 +125,8 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	if (serv->fds[fd].type == FD_SERVER)
+//	if (serv->fds[fd].type == FD_SERVER)
+	if (split[0][0] == ':')
 	{
 		introduce_server_behind(fd, split, serv);
 		return ;

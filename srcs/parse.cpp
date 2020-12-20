@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 22:25:27 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 20:22:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -819,47 +819,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		}
 		if (!flag)
 			error_exit("Error: server you are trying to connect is bad configured");
-
 	}
-	serv->command["USER"] = cmd_user;
-	serv->command["NICK"] = cmd_nick;
-	serv->command["PING"] = cmd_ping;
-	serv->command["QUIT"] = cmd_quit;
-	serv->command["PASS"] = cmd_pass;
-	serv->command["SERVER"] = cmd_server;
-	serv->command["SQUIT"] = cmd_squit;
-	serv->command["CONNECT"] = cmd_connect;
-	serv->command["OPER"] = cmd_oper;
-	serv->command["ERROR"] = cmd_error;
-	serv->command["ADMIN"] = cmd_admin;
-	serv->command["MOTD"] = cmd_motd;
-	serv->command["USERHOST"] = cmd_userhost;
-	serv->command["VERSION"] = cmd_version;
-	serv->command["INFO"] = cmd_info;
-	serv->command["TIME"] = cmd_time;
-	serv->command["JOIN"] = cmd_join;
-	serv->command["PRIVMSG"] = cmd_privmsg;
-	serv->command["INVITE"] = cmd_invite;
-	serv->command["NAMES"] = cmd_names;
-	serv->command["WHO"] = cmd_who;
-	serv->command["WHOIS"] = cmd_whois;
-	serv->command["WHOWAS"] = cmd_whowas;
-	serv->command["PART"] = cmd_part;
-	serv->command["MODE"] = cmd_mode;
-	serv->command["NOTICE"] = cmd_notice;
-	serv->command["AWAY"] = cmd_away;
-	serv->command["KILL"] = cmd_kill;
-	serv->command["LINKS"] = cmd_links;
-	serv->command["STATS"] = cmd_stats;
-	serv->command["NJOIN"] = cmd_njoin;
-	serv->command["LUSERS"] = cmd_lusers;
-
-	// values below are from InspIRCd-3 (need to check what it means)
-	serv->usermodes = "iosw";
-	serv->chanmodes = "biklmnopstv";
-/*	// values below are from ircd v2.11.2p3
-	serv->usermodes = "aoOirw";
-	serv->chanmodes = "abeiIklmnoOpqrRstv";		*/
 }
 
 void	parse(int ac, char **av, IRCserv *serv)

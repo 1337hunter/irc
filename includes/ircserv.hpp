@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 22:20:50 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 19:29:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@
 # include "error_codes.hpp"
 # include "client.hpp"
 # include "channel.hpp"
+# include "commands.hpp"
  //#include <unordered_map>
 
 typedef std::vector<std::string>	t_strvect;
@@ -93,6 +94,8 @@ typedef struct		s_server
 	std::list<t_server_intro>	routing;
 	std::list<Client>			clients; // if client is not on THIS server
 }					t_server;			 // client's fd must be setted to routong serv fd
+
+typedef std::vector<t_server>::iterator	t_netit;
 
 typedef struct		s_listen
 {
@@ -152,13 +155,12 @@ typedef struct		s_kill
 
 struct				IRCserv
 {
-	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
-	typedef std::map<std::string, t_command>	t_cmdmap;
+	typedef std::map<std::string, Command>	t_cmdmap;
 	std::string					servername;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info
 	std::map<int, t_fd>			fds;
-	t_cmdmap					command;	// map of commands
+	t_cmdmap					cmds;		// map of commands
 	std::vector<t_listen>		listen;		// vector of sockets and ips to bind to listen
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to

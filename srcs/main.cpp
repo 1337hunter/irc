@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 14:51:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 20:08:57 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,9 @@ int		main(int ac, char **av)
 	serv->dtstarted = ft_getcurrenttime();
 	std::cout << "Compiled:\t" << ft_timetostring(serv->dtcompiled) << std::endl;
 	std::cout << "Started:\t" << ft_timetostring(serv->dtstarted) << std::endl;
+
+	/* init commands map */
+	initcommands(serv);
 
 	RunServer(serv);
 	return (0);
