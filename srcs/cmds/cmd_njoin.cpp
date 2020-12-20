@@ -25,22 +25,34 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 		if (clients[i][0] == '@' && clients[i][1] == '@')
 		{
 			if ((client = find_client_by_nick(std::string(clients[i], 2), serv)))
+			{
 				channel->add_client(client, 1, 1, 0);
+				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
+			}
 		}
 		else if (clients[i][0] == '@' && clients[i][1] != '@')
 		{
 			if ((client = find_client_by_nick(std::string(clients[i], 1), serv)))
+			{
 				channel->add_client(client, 0, 1, 0);
+				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
+			}
 		}
 		else if (clients[i][0] == '+')
 		{
 			if ((client = find_client_by_nick(std::string(clients[i], 1), serv)))
+			{
 				channel->add_client(client, 0, 0, 1);
+				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
+			}
 		}
 		else
 		{
 			if ((client = find_client_by_nick(clients[i], serv)))
+			{
 				channel->add_client(client);
+				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
+			}
 		}
 	msg_forward(fd, strvect_to_string(split), serv);
 }

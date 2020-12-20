@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 18:29:51 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,6 +421,13 @@ Channel	*Client::eraseChannel(std::string const &name)
 	return 0;
 }
 
+void	Client::partAllChan(void)
+{
+	std::list<Channel*>::iterator	chan;
+	for (chan = _channels.begin(); chan != _channels.end(); chan++)
+		(*chan)->getclients().erase(this);
+	_channels.clear();
+}
 /*
 void	Client::Disconnect(void)
 {

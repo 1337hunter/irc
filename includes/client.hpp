@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 18:06:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ public:
 	void				unblock(void);
 	bool				isBanned(Channel *chan);
 	void				sethostname(std::string const &host);
+	void				partAllChan(void);
 
 	bool				Register(std::string const &user,
 							std::string const &real);
