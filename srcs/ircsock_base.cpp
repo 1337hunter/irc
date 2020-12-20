@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 19:58:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 00:27:37 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,14 @@
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
-	t_strvect	split = ft_splitstring(msg, " ");
-	t_fd		&fdref = serv->fds[fd];		// decrease searches
-	int			i = 0;
+	t_strvect	split = ft_splitcmdbyspace(msg);
+//	t_strvect	split = ft_splitstring(msg, " ");
+//						^ old split just in case
 
 	/*	reply check here: reroute the reply to user or server	*/
-	//	fdref.type = FD_ME not used because
+	//	serv->fds[fd].type = FD_ME not used because
 	//	we get only connect accept requests on read of *this* server
-	if (fdref.type == FD_SERVER &&
+	if (serv->fds[fd].type == FD_SERVER &&
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
 	{
@@ -44,7 +44,7 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 		return ;
 	}
 
-
+	int	i = 0;
 	if (split.size() > 0 && split[0][0] == ':')
 		i = 1;
 	split[i] = ft_strtoupper(split[i]);

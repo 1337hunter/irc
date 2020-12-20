@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 17:46:07 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 23:54:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@
 
 //	"<mask> <server> :<hopcount> <server info>"
 #define RPL_LINKS			"364"
-//	"<mask> :End of /LINKS list" or "<mask> :End of LINKS list"
+//	"<mask> :End of LINKS list"
 #define RPL_ENDOFLINKS		"365"
 /*	- In replying to the LINKS message, a server must send
 	replies back using the RPL_LINKS numeric and mark the
