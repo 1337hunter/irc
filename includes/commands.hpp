@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 21:22:52 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 21:23:39 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,11 @@ public:
 	Command &operator=(Command const &other);
 
 	bool	used(void);
-	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
-		size_t bytes, bool remote);
 	uint	getcount(void);
 	size_t	getbytes(void);
 	uint	getrcount(void);
+	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
+		size_t bytes, bool remote);
 };
 
 #endif
