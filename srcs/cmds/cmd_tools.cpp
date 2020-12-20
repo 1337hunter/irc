@@ -69,7 +69,7 @@ std::string		reply_welcome(IRCserv *serv, Client *cli)
 	return (reply);
 }
 
-std::string	reply_chan_names(IRCserv *serv, std::list<Channel>::iterator chan, Client *client)
+std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 {
 	std::string	reply;
 	std::unordered_map<Client*, client_flags>::iterator c_map;
@@ -163,7 +163,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 
 }
 
-bool	is_server_registred(const std::string &name, IRCserv *serv)
+bool	is_server_registred(const std::string &name, std::string const token, IRCserv *serv)
 {
 	std::vector<t_server>::iterator nearest = serv->network.begin();
 	std::list<t_server_intro>::iterator server_intro;
@@ -171,12 +171,13 @@ bool	is_server_registred(const std::string &name, IRCserv *serv)
 
 	while (nearest != end)
 	{
-		if (nearest->servername == name)
+		if (nearest->servername == name || nearest->token == token)
 			return true;
 		server_intro = nearest->routing.begin();
 		while (server_intro != nearest->routing.end())
 		{
-			if (server_intro->servername == name || server_intro->behind == name)
+			if (server_intro->servername == name || server_intro->behind == name ||
+					server_intro->token == token)
 				return true;
 			server_intro++;
 		}

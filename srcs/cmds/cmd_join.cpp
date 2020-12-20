@@ -27,7 +27,7 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 		else if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() > 0)
 			serv->fds[c_map->first->getFD()].wrbuf += forward;
 	serv->fds[client_it->getFD()].wrbuf += reply;
-	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, chan, &(*client_it));
+	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, &(*chan), &(*client_it));
 }
 
 void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_it)

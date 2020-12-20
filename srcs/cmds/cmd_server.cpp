@@ -28,12 +28,9 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	forward = strvect_to_string(forward_vect);
 	forward += CRLF;
 	begin = serv->network.begin();
-	while (begin != serv->network.end())
-	{
+	for (; begin != serv->network.end(); begin++)
 		if (begin->fd != fd)
 			serv->fds[begin->fd].wrbuf += forward;
-		begin++;
-	}
 }
 
 bool	send_clients_and_channels(int fd, IRCserv *serv)
@@ -104,7 +101,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 				serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " +
 				channel->getname() + " +e " + *Musk + CRLF;
 		}
-		if (channel->getflags()._exception_mask.size() > 0)
+		if (channel->getflags()._Invitation_mask.size() > 0)
 		{
 			Musk = channel->getflags()._Invitation_mask.begin();
 			for (; Musk != channel->getflags()._Invitation_mask.end(); Musk++)
@@ -124,12 +121,11 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	if ((split.size() < 5 && split[0] == "SERVER") ||
 			(split.size() < 6 && split[0][0] == ':'))
 	{
-		serv->fds[fd].wrbuf += "ERROR :Not enough SERVER parameters";
-		serv->fds[fd].wrbuf += CRLF;
+		serv->fds[fd].wrbuf += "ERROR :Not enough SERVER parameters\r\n";
 		serv->fds[fd].status = false;
 		return ;
 	}
-	if (split[0][0] == ':')
+	if (serv->fds[fd].type == FD_SERVER)
 	{
 		introduce_server_behind(fd, split, serv);
 		return ;
@@ -149,21 +145,17 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	if (is_server_registred(split[1], serv))
+	if (is_server_registred(split[1], split[3], serv))
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, -1, "",
-		split[1] + " :server already registred");
+		split[1] + " servername or token is already registred");
 		serv->fds[fd].status = false;
 		return ;
 	}
 	if (!(serv->fds[fd].pass == serv->pass || serv->pass == ""))
 	{
-#if DEBUG_MODE
-		std::cout << "client " << fd << "\t\twrong server password" << std::endl;
-#endif
 		serv->fds[fd].wrbuf += "ERROR :Password incorrect";
-		serv->fds[fd].status = false;
-		return ;
+		serv->fds[fd].status = false; return ;
 	}
 	//backward message to introduce us to enother server
 	if (serv->fds[fd].type != FD_SERVER)
@@ -184,7 +176,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		temp.fd = fd;
 	else
 	{
-		msg_error("Error while SERVER message process. Connection Terminated.", serv);
+		msg_error("Error while SERVER message process. Connection terminated.", serv);
 		cmd_squit(fd, split, serv);
 		return ;
 	}
