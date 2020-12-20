@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 20:22:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 #define NPOS	std::string::npos
 
 typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number);
-typedef std::map<int, t_block> t_blockmap;
+typedef std::unordered_map<int, t_block> t_blockmap;
 
 size_t	ft_strlen(const char *s)
 {

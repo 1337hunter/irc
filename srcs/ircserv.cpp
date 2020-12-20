@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:15:41 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	RunServer(IRCserv *serv)
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
 		clear_kill_list(serv);
-		for (std::map<int, t_fd>::iterator it = serv->fds.begin();
+		for (std::unordered_map<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)
 		{
 			FD_SET(it->first, &(serv->fdset_read));

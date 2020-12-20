@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 20:08:43 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 22:31:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,9 +75,9 @@ std::string	getserverupstr(IRCserv *serv)
 	return (res);
 }
 
-typedef	std::map<std::string, Command>::iterator	t_cmdit;
-typedef	std::map<int, t_fd>::reverse_iterator		t_fdrit;
-typedef	std::vector<t_oper>::iterator				t_opit;
+typedef	std::unordered_map<std::string, Command>::iterator	t_cmdit;
+typedef	std::unordered_map<int, t_fd>::iterator				t_fdrit;
+typedef	std::vector<t_oper>::iterator						t_opit;
 
 std::string	reply_stats(IRCserv *serv, std::string const &target,
 	std::string const &modearg)
@@ -90,7 +90,7 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 	if (mode == "l")
 	{
 		//	for now it's reversed
-		for (t_fdrit it = serv->fds.rbegin(); it != serv->fds.rend(); it++)
+		for (t_fdrit it = serv->fds.begin(); it != serv->fds.end(); it++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSLINKINFO, target,
 				it->second.linkname + " " +
 				std::to_string(it->second.wrbuf.size()) + " " +

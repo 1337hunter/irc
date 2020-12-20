@@ -55,8 +55,8 @@ void	msg_error(std::string msg, std::string msg1, IRCserv *serv)
 
 void	msg_error(std::string msg, IRCserv *serv)
 {
-	std::map<int, t_fd>::iterator	b = serv->fds.begin();
-	std::map<int, t_fd>::iterator	e = serv->fds.end();
+	std::unordered_map<int, t_fd>::iterator	b = serv->fds.begin();
+	std::unordered_map<int, t_fd>::iterator	e = serv->fds.end();
 	std::string	_msg("ERROR :");
 
 	_msg += msg;

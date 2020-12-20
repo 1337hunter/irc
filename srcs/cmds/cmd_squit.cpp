@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/11/25 16:57:29 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void		remove_introduced_server(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			if (serv_intro->behind == split[2])
 			{
-				std::map<int, t_fd>::iterator   mit = serv->fds.begin();
+				std::unordered_map<int, t_fd>::iterator   mit = serv->fds.begin();
 				std::string	forward;
 
 				forward = strvect_to_string(split);
@@ -66,7 +66,7 @@ void		cmd_squit(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		std::list<t_server_intro>::iterator	serv_intro = begin->routing.begin();
 		std::string	splited_servers;
-		std::map<int, t_fd>::iterator   mit = serv->fds.begin();
+		std::unordered_map<int, t_fd>::iterator   mit = serv->fds.begin();
 
 		while (serv_intro != begin->routing.end())
 		{

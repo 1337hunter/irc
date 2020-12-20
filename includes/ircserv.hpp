@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 19:29:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/20 22:27:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 # include <string>
 # include <vector>
 # include <list>
-# include <map>
+//# include <map>
+# include <unordered_map>
 # include <algorithm>
 // time_t
 # include <ctime>
@@ -44,7 +45,6 @@
 # include "client.hpp"
 # include "channel.hpp"
 # include "commands.hpp"
- //#include <unordered_map>
 
 typedef std::vector<std::string>	t_strvect;
 typedef std::list<Client>::iterator t_citer;
@@ -155,11 +155,12 @@ typedef struct		s_kill
 
 struct				IRCserv
 {
-	typedef std::map<std::string, Command>	t_cmdmap;
+	typedef std::unordered_map<std::string, Command>	t_cmdmap;
+	typedef std::unordered_map<int, t_fd>				t_fdsmap;
 	std::string					servername;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info
-	std::map<int, t_fd>			fds;
+	t_fdsmap					fds;
 	t_cmdmap					cmds;		// map of commands
 	std::vector<t_listen>		listen;		// vector of sockets and ips to bind to listen
 	t_admin						admin;		// for ADMIN command

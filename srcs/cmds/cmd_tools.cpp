@@ -259,7 +259,7 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 size_t		getunknownconnectscount(IRCserv *serv)
 {
 	size_t	unkncount = serv->fds.size() - serv->clients.size() - serv->network.size();
-	for (std::map<int, t_fd>::iterator fit = serv->fds.begin(); fit != serv->fds.end(); fit++)
+	for (std::unordered_map<int, t_fd>::iterator fit = serv->fds.begin(); fit != serv->fds.end(); fit++)
 		if (fit->second.type == FD_ME)
 			unkncount--;
 	return (unkncount);
