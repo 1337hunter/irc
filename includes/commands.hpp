@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/21 15:37:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 17:19:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,16 @@ bool			is_server_registred(const std::string &name, std::string const token, IRC
 std::string		getservernamebymask(IRCserv *serv, std::string const &mask);
 int				getserverfdbymask(IRCserv *serv, std::string const &mask);
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
+std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv);
+
+#define CMD_SERVERONLY	1
+#define CMD_CLIENTONLY	2
 
 class Command {
 private:
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	t_command	cmd;
+	uint		type;
 //	message stats
 	uint		count;
 	size_t		bytes;
@@ -81,9 +86,12 @@ public:
 	Command &operator=(Command const &other);
 
 	bool	used(void);
+	bool	serveronly(void);
+	bool	clientonly(void);
 	uint	getcount(void);
 	size_t	getbytes(void);
 	uint	getrcount(void);
+	void	settype(uint type);
 	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
 		size_t bytes, bool remote);
 };

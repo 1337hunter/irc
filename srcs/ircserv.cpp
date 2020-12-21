@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 16:44:15 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 17:56:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	do_socket(IRCserv *serv)
 
 	for (lb = serv->listen.begin(); lb != serv->listen.end(); lb++)
 	{
-		if (lb->tls == false)
+		if (lb->tls == false && lb->ssl == false)
 			CreateSock(serv, *lb);
 		else
 			CreateSockTLS(serv, *lb);
@@ -30,6 +30,7 @@ void	do_socket(IRCserv *serv)
 	_listen.ssl = false;
 	_listen.serveronly = false;
 	CreateSock(serv, _listen);
+//	maybe insert here CreateSockTLS for default secure irc port 6697 (RFC 7194)
 }
 
 void	RunServer(IRCserv *serv)

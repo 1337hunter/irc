@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 13:03:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 17:34:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,13 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 		return ;
 	}
 
-	int	i = 0;
+	size_t	i = 0;
 	if (split.size() > 0 && split[0][0] == ':')
 		i = 1;
-	split[i] = ft_strtoupper(split[i]);
+	if (i < split.size())
+		split[i] = ft_strtoupper(split[i]);
+	else
+		return ;	// avoiding error if someone sends only prefix
 	try
 	{
 		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
@@ -55,7 +58,11 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 			std::cout << "command found:\t\t" << split[i] << std::endl;
 		#endif
 	}
-	catch (std::out_of_range &e) { (void)e; }
+	catch (std::out_of_range &e)
+	{
+		(void)e;
+		serv->fds[fd].wrbuf += reply_unknowncmd(fd, split, serv);
+	}
 }
 
 void	CreateSock(IRCserv *serv, t_listen &_listen)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 15:40:10 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 17:39:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["LINKS"]		= cmd_links;
 	serv->cmds["STATS"]		= cmd_stats;
 	serv->cmds["NJOIN"]		= cmd_njoin;
+	serv->cmds["NJOIN"].settype(CMD_SERVERONLY);
 	serv->cmds["LUSERS"]	= cmd_lusers;
 	serv->cmds["ISON"]		= cmd_ison;
 	serv->cmds["USERS"]		= cmd_users;		// disabled
@@ -57,14 +58,15 @@ void	initcommands(IRCserv *serv)
 	serv->chanmodes = "abeiIklmnoOpqrRstv"; */
 }
 
-Command::Command() : cmd(NULL), count(0), bytes(0), rcount(0) {}
+Command::Command() : cmd(NULL), type(0), count(0), bytes(0), rcount(0) {}
 Command::~Command() {}
-Command::Command(t_command cmd) : cmd(cmd), count(0), bytes(0), rcount(0) {}
-Command::Command(Command const &other) : cmd(other.cmd), count(other.count),
-	bytes(other.bytes), rcount(other.rcount) {}
+Command::Command(t_command cmd) : cmd(cmd), type(0), count(0), bytes(0), rcount(0) {}
+Command::Command(Command const &other) : cmd(other.cmd), type(other.type),
+	count(other.count), bytes(other.bytes), rcount(other.rcount) {}
 Command		&Command::operator=(Command const &other)
 {
 	this->cmd = other.cmd;
+	this->type = other.type;
 	this->count = other.count;
 	this->bytes = other.bytes;
 	this->rcount = other.rcount;
@@ -73,12 +75,11 @@ Command		&Command::operator=(Command const &other)
 uint	Command::getcount(void) { return (this->count); }
 size_t	Command::getbytes(void) { return (this->bytes); }
 uint	Command::getrcount(void) { return (this->rcount); }
-bool	Command::used(void)
-{
-	if (cmd != NULL && (count > 0 || rcount > 0 || bytes > 0))
-		return (true);
-	return (false);
-}
+bool	Command::used(void) {
+	return (cmd != NULL && (count > 0 || rcount > 0 || bytes > 0));	}
+bool	Command::serveronly(void) { return (this->type == CMD_SERVERONLY); }
+bool	Command::clientonly(void) { return (this->type == CMD_CLIENTONLY); }
+void	Command::settype(uint type) { this->type = type; };
 
 void	Command::Execute(int fd, const t_strvect &split, IRCserv *serv,
 	size_t bytes, bool remote)

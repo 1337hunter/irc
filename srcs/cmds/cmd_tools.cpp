@@ -227,3 +227,22 @@ std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv)
 
 	return ("");
 }
+
+std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv)
+{
+	size_t		i = 0;
+	std::string	nick = "";
+	t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (it != serv->clients.end())
+		nick = it->getnick();
+	else if (split[0][0] == ':')
+	{
+		i = 1;
+		nick = split[0].substr(1);
+	}
+	std::string	cmd;
+	if (i < split.size())
+		cmd = split[i];
+	return (ft_buildmsg(serv->servername, ERR_UNKNOWNCOMMAND, nick,
+		cmd, "Unknown command"));
+}
