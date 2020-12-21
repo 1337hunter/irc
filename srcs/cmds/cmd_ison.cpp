@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 16:29:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:35:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,16 +74,14 @@ std::string	reply_ison(IRCserv *serv, std::string const &target,
 
 void	cmd_ison(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
 	t_fd		&fdref = serv->fds[fd];
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnick();
-	else
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
 		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 	if (split.size() < 2)
 		fdref.wrbuf += ft_buildmsg(serv->servername,

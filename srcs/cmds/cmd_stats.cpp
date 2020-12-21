@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 22:31:55 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:32:44 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,18 +128,14 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 
 void		cmd_stats(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
 	t_fd		&fdref = serv->fds[fd];
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnick();
-	else if (split[0][0] == ':')
-		nick = split[0].substr(1);
-	else
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
 		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 	if (fdref.type != FD_SERVER && (split.size() < 3 ||
 		(split.size() > 2 && getservernamebymask(serv, split[2]) == serv->servername)))

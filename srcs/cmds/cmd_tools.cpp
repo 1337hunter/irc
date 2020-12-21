@@ -1,45 +1,6 @@
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
-#include <fstream>
-
-/*
-	When responding to the MOTD message and the MOTD file is found,
-	the file is displayed line by line, with each line no longer
-	than 80 characters, using RPL_MOTD format replies.
-	These MUST be surrounded by a RPL_MOTDSTART (before the RPL_MOTDs)
-	and an RPL_ENDOFMOTD (after).
-*/
-
-std::string		reply_motd(IRCserv *serv, std::string const &nick)
-{
-	std::string		reply;
-	std::string		motdstr;
-	std::ifstream	motd(serv->motd_path);
-
-	if (motd.is_open())
-	{
-		reply = ft_buildmsg(serv->servername, RPL_MOTDSTART, nick,
-			"", "- " + serv->servername + " Message of the day - ");
-		while (!motd.eof())
-		{
-			std::getline(motd, motdstr);
-			if (motd.eof() && motdstr.length() == 0)
-				break ;
-			if (motdstr.length() > 80)
-				motdstr = motdstr.substr(0, 80);
-			reply += ft_buildmsg(serv->servername, RPL_MOTD, nick,
-				"", "- " + motdstr);
-		}
-		reply += ft_buildmsg(serv->servername, RPL_ENDOFMOTD, nick,
-			"", "End of MOTD command");
-		motd.close();
-	}
-	else
-		reply = ft_buildmsg(serv->servername, ERR_NOMOTD, nick,
-			"", "MOTD File is missing");
-	return (reply);
-}
 
 /*
 	In particular the server SHALL send the current user/service/server
@@ -219,12 +180,11 @@ int				getserverfdbymask(IRCserv *serv, std::string const &mask)
 
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv)
 {
+	if (split[0][0] == ':')
+		return (split[0].substr(1));
 	t_citer it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end())
 		return (it->getnick());
-	else if (split[0][0] == ':')
-		return (split[0].substr(1));
-
 	return ("");
 }
 

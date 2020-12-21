@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 15:36:25 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:35:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,40 +115,37 @@ std::string	reply_lusers(IRCserv *serv, std::string const &target, std::string c
 
 void		cmd_lusers(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnick();
-	else if (split[0][0] == ':')
-		nick = split[0].substr(1);
-	else
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+	t_fd		&fdref = serv->fds[fd];
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
-	if (serv->fds[fd].type != FD_SERVER && (split.size() < 3 ||
+	if (fdref.type != FD_SERVER && (split.size() < 3 ||
 		(split.size() > 2 && getservernamebymask(serv, split[2]) == serv->servername)))
 	{
 		if (split.size() < 2)
-			serv->fds[fd].wrbuf += reply_lusers(serv, nick);
+			fdref.wrbuf += reply_lusers(serv, nick);
 		else
-			serv->fds[fd].wrbuf += reply_lusers(serv, nick, split[1]);
+			fdref.wrbuf += reply_lusers(serv, nick, split[1]);
 	}
-	else if (serv->fds[fd].type != FD_SERVER && split.size() > 2)
+	else if (fdref.type != FD_SERVER && split.size() > 2)
 	{
 		int	servfd = getserverfdbymask(serv, split[2]);
 		if (servfd > 0)
 			serv->fds[servfd].wrbuf += ":" + nick + " LUSERS " +
 				split[1] + " " + split[2] + CRLF;
 		else
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, nick, split[2], "No such server");
 	}
 	else if (split.size() >= 4)	// from another server: reply or forward
 	{
 		if (getservernamebymask(serv, split[3]) == serv->servername)
-			serv->fds[fd].wrbuf += reply_lusers(serv, nick, split[2]);
+			fdref.wrbuf += reply_lusers(serv, nick, split[2]);
 		else
 		{
 			int	servfd = getserverfdbymask(serv, split[3]);
@@ -156,7 +153,7 @@ void		cmd_lusers(int fd, const t_strvect &split, IRCserv *serv)
 				serv->fds[servfd].wrbuf += split[0] + " LUSERS " +
 					split[2] + " " + split[3] + CRLF;
 			else
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					ERR_NOSUCHSERVER, nick, split[3], "No such server");
 		}
 	}

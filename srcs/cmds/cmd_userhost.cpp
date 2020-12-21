@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 16:48:18 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:31:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,16 +73,14 @@ std::string	reply_userhost(IRCserv *serv, std::string const &target,
 
 void		cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::string	nick;
-	t_citer		it;
 	t_fd		&fdref = serv->fds[fd];
-
-	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
-		nick = it->getnick();
-	else
+	std::string	nick = getnicktoreply(fd, split, serv);
+	if (nick.empty())
+	{
 		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
+		return ;
+	}
 
 	if (split.size() < 2)
 		fdref.wrbuf += ft_buildmsg(serv->servername,
