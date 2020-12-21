@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/10 17:24:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 17:42:21 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
@@ -86,6 +74,7 @@ public:
 	bool				isRegistred(void);
 	bool				isOperator(void);
 	bool				isInvisible(void);
+	bool				isAway(void);
 	bool				getUSER(void);
 	bool				getNICK(void);
 	int const	 		&getFD(void);
@@ -122,7 +111,6 @@ public:
 	bool				setMode(std::string const &modes);
 	bool				setUMODE(std::string const &mode);
 	void				setAway(std::string const &msg);
-	bool				isAway(void);
 	std::string const	getAwayMsg(void);
 	std::string			getMode(bool str = false);
 //	void				Reconnect(int fd);

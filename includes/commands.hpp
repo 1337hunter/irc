@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 21:23:39 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:02:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ void	cmd_stats(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_links(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_njoin(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_lusers(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_ison(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_users(int fd, const t_strvect &split, IRCserv *serv);	// disabled
 
 std::string		reply_welcome(IRCserv *serv, Client *client);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
@@ -62,11 +64,16 @@ bool			is_server_registred(const std::string &name, std::string const token, IRC
 std::string		getservernamebymask(IRCserv *serv, std::string const &mask);
 int				getserverfdbymask(IRCserv *serv, std::string const &mask);
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
+std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv);
+
+#define CMD_CLIENTONLY	1
+#define CMD_SERVERONLY	2
 
 class Command {
 private:
 	typedef void (*t_command)(int fd, const t_strvect &split, IRCserv *serv);
 	t_command	cmd;
+	uint		type;
 //	message stats
 	uint		count;
 	size_t		bytes;
@@ -79,9 +86,12 @@ public:
 	Command &operator=(Command const &other);
 
 	bool	used(void);
+	bool	serveronly(void);
+	bool	clientonly(void);
 	uint	getcount(void);
 	size_t	getbytes(void);
 	uint	getrcount(void);
+	void	settype(uint type);
 	void	Execute(int fd, const t_strvect &split, IRCserv *serv,
 		size_t bytes, bool remote);
 };

@@ -6,26 +6,27 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/20 19:33:23 by salec            ###   ########.fr        #
+#    Updated: 2020/12/21 17:26:28 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			tools.cpp stringtools.cpp timetools.cpp error_handle.cpp \
-			commands.cpp message.cpp parse.cpp \
+			message.cpp parse.cpp commands.cpp cmds/cmd_tools.cpp \
 			client.cpp channel.cpp \
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
-			cmds/cmd_tools.cpp cmds/cmd_error.cpp cmds/cmd_admin.cpp \
+			cmds/cmd_error.cpp cmds/cmd_admin.cpp \
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_version.cpp \
 			cmds/cmd_info.cpp cmds/cmd_time.cpp cmds/cmd_names.cpp \
 			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp cmds/cmd_invite.cpp \
 			cmds/cmd_who.cpp cmds/cmd_whois.cpp cmds/cmd_whowas.cpp \
 			cmds/cmd_part.cpp cmds/cmd_mode.cpp cmds/cmd_notice.cpp \
 			cmds/cmd_away.cpp cmds/cmd_kill.cpp cmds/cmd_njoin.cpp \
-			cmds/cmd_lusers.cpp cmds/cmd_links.cpp cmds/cmd_stats.cpp
+			cmds/cmd_lusers.cpp cmds/cmd_links.cpp cmds/cmd_stats.cpp \
+			cmds/cmd_ison.cpp cmds/cmd_users.cpp
 
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/

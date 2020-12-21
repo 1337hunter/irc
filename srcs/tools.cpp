@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   tools.cpp                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 18:47:44 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "tools.hpp"
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
@@ -223,7 +211,8 @@ std::string	ft_buildmsg(std::string const &from, std::string const &msgcode,
 		res += to;
 	if (!cmd.empty())
 		res += " " + cmd;
-	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO)
+	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO ||
+		msgcode == RPL_ISON || msgcode == RPL_USERHOST)
 		res += " :" + msg;
 	res += CRLF;
 	return (res);

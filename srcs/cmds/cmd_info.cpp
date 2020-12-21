@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/28 17:55:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 14:50:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:36:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,38 +71,39 @@ std::string	reply_info(IRCserv *serv, std::string const &target)
 
 void		cmd_info(int fd, const t_strvect &split, IRCserv *serv)
 {
+	t_fd		&fdref = serv->fds[fd];
 	std::string	nick = getnicktoreply(fd, split, serv);
 	if (nick.empty())
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
 		return ;
 	}
 
-	if (serv->fds[fd].type != FD_SERVER && (split.size() < 2 ||
+	if (fdref.type != FD_SERVER && (split.size() < 2 ||
 		(split.size() > 1 && getservernamebymask(serv, split[1]) == serv->servername)))
-		serv->fds[fd].wrbuf += reply_info(serv, nick);
-	else if (serv->fds[fd].type != FD_SERVER && split.size() > 1)
+		fdref.wrbuf += reply_info(serv, nick);
+	else if (fdref.type != FD_SERVER && split.size() > 1)
 	{
 		int	servfd = getserverfdbymask(serv, split[1]);
 		if (servfd > 0)
 			serv->fds[servfd].wrbuf += ":" + nick + " INFO " + split[1] + CRLF;
 		else
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, nick, split[1], "No such server");
 	}
 	else if (split.size() >= 3)	// from another server: reply or forward
 	{
 		nick = split[0].substr(1);
 		if (getservernamebymask(serv, split[2]) == serv->servername)
-			serv->fds[fd].wrbuf += reply_info(serv, nick);
+			fdref.wrbuf += reply_info(serv, nick);
 		else
 		{
 			int	servfd = getserverfdbymask(serv, split[2]);
 			if (servfd > 0)
 				serv->fds[servfd].wrbuf += split[0] + " INFO " + split[2] + CRLF;
 			else
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					ERR_NOSUCHSERVER, nick, split[1], "No such server");
 		}
 	}
