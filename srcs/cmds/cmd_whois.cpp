@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:47:28 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,10 +57,11 @@ typedef std::list<Channel*>::iterator	t_chanit;
 
 void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 {
+	t_fd		&fdref = serv->fds[fd];
 	std::string	nick = getnicktoreply(fd, split, serv);
 	if (nick.empty())
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
 		return ;
 	}
@@ -71,7 +72,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 	if (split.size() < 2)
 	{
 		// may be different
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NONICKNAMEGIVEN, nick, "", "No nickname given");
 		return ;
 	}
@@ -87,7 +88,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 			servername = getservernamebymask(serv, split[1]);
 			if (servername.empty())
 			{
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					ERR_NOSUCHSERVER, nick, split[1], "No such server");
 				return ;
 			}
@@ -102,7 +103,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 		if (match(it->getnick(), nickname) &&
 			(servername.empty() || (servername == serv->servername)))
 		{
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				RPL_WHOISUSER, nick,
 				it->getnick() + " " + it->getusername() + " " +
 				it->gethostname() + " *", it->getrealname());
@@ -124,7 +125,7 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 			}
 
 			if (!channelstr.empty())
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					RPL_WHOISCHANNELS, nick,
 					it->getnick() + " ", channelstr);
 
@@ -133,20 +134,20 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 				378 nickname nickname is connecting from *@localhost 127.0.0.1
 			*/
 
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				RPL_WHOISSERVER, nick,
 				it->getnick() + " " + serv->servername, serv->info);
 			if (it->isOperator())
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					RPL_WHOISOPERATOR, nick,
 					it->getnick(), "is an IRC operator");
 			/*
 			if (it->isAway())
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+				fdref.wrbuf += ft_buildmsg(serv->servername,
 					RPL_AWAY, nick, it->getnick(), "<away message>");
 			*/
 
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				RPL_WHOISIDLE, nick, it->getnick() + " " +
 				std::to_string(ft_getcurrenttime() - it->gettimeloggedin()),
 				"seconds idle");
@@ -157,9 +158,9 @@ void	cmd_whois(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (it == serv->clients.end())
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOSUCHNICK, nick, nickname, "No such nick/channel");
 	}
-	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+	fdref.wrbuf += ft_buildmsg(serv->servername,
 		RPL_ENDOFWHOIS, nick, nickname, "End of WHOIS list");
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:26:46 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 20:11:28 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,79 +48,97 @@
 */
 
 typedef std::vector<t_whowas>::iterator	t_whowasit;
+typedef t_strvect::iterator				t_strvectit;
 
-void	cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
+std::string	reply_whowas(IRCserv *serv, std::string const &target,
+	std::string const &nicks, std::string const &entrycountstr = "")
 {
+	if (nicks.empty())
+		return (ft_buildmsg(serv->servername,
+			ERR_NONICKNAMEGIVEN, target, "", "No nickname given"));
+
+	size_t	entrycount = -1;
+	if (!entrycountstr.empty() &&
+		entrycountstr.find_first_not_of("0123456789") == std::string::npos)
+	{
+		try { entrycount = std::stoul(entrycountstr); }
+		catch (std::exception const &e) { (void)e; }
+	}
+	if (entrycount == 0)
+		entrycount = -1;
+
+	std::string	reply = "";
+	t_strvect	nvect = ft_splitstringbyany(nicks, ",");
+	for (t_strvectit nvit = nvect.begin(); nvit != nvect.end(); nvit++)
+	{
+		size_t	count = 0;
+		for (t_whowasit it = serv->nickhistory.begin();
+			it != serv->nickhistory.end() && count < entrycount; it++)
+		{
+			if (*nvit == it->nickname)
+			{
+				reply += ft_buildmsg(serv->servername, RPL_WHOWASUSER, target,
+					it->nickname + " " + it->username + " " + it->hostname + " *",
+					it->realname);
+				reply += ft_buildmsg(serv->servername,
+					RPL_WHOISSERVER, target, it->nickname + " " + it->servername,
+					ft_timetostring(it->dtloggedin));
+				count++;
+			}
+		}
+		if (count == 0)
+			reply += ft_buildmsg(serv->servername,
+				ERR_WASNOSUCHNICK, target, *nvit, "There was no such nickname");
+	}
+	reply += ft_buildmsg(serv->servername, RPL_ENDOFWHOWAS, target, nicks,
+		"End of WHOWAS");
+	return (reply);
+}
+
+void		cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
+{
+	t_fd		&fdref = serv->fds[fd];
 	std::string	nick = getnicktoreply(fd, split, serv);
 	if (nick.empty())
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOTREGISTERED, "", "", "You have not registered");
 		return ;
 	}
 
-	size_t		entrycount = -1;
-	std::string	servername = "";
-	std::string	nickname = "";
-
-	if (split.size() < 2)
+	if (fdref.type != FD_SERVER && (split.size() < 4 ||
+		(split.size() > 3 && getservernamebymask(serv, split[3]) == serv->servername)))
 	{
-		// may be different
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NONICKNAMEGIVEN, nick, "", "No nickname given");
-		return ;
+		if (split.size() < 2)
+			fdref.wrbuf += reply_whowas(serv, nick, "");
+		else if (split.size() > 2)
+			fdref.wrbuf += reply_whowas(serv, nick, split[1], split[2]);
+		else
+			fdref.wrbuf += reply_whowas(serv, nick, split[1]);
 	}
-	nickname = split[1];
-	if (split.size() > 2)
+	else if (fdref.type != FD_SERVER && split.size() > 3)
 	{
-		if (split[2].find_first_not_of("0123456789") == std::string::npos)
-		{
-			try
-			{
-				size_t tmp = std::stoul(split[2]);
-				if (tmp != 0)
-					entrycount = tmp;
-			}
-			catch (std::exception const &e) { (void)e; }
-		}
-	}
-
-	if (split.size() > 3)
-	{
-		servername = getservernamebymask(serv, split[3]);
-		if (servername.empty())
-		{
-			// this is what insp sends.
-			// RFC does not specify the ERR_NOSUCHSERVER for this query
-			// but it <<<SEEMS>>> pretty logical
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		int	servfd = getserverfdbymask(serv, split[3]);
+		if (servfd > 0)
+			serv->fds[servfd].wrbuf += ":" + nick + " WHOWAS " +
+				split[1] + " " + split[2] + " " + split[3] + CRLF;
+		else
+			fdref.wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, nick, split[3], "No such server");
-			return ;
-		}
 	}
-
-	size_t	count = 0;
-	for (t_whowasit it = serv->nickhistory.begin();
-		it != serv->nickhistory.end() && count < entrycount; it++)
+	else if (split.size() >= 4)	// from another server: reply or forward
 	{
-		if (nickname == it->nickname &&
-			(servername.empty() || (servername == it->servername)))
+		if (getservernamebymask(serv, split[4]) == serv->servername)
+			fdref.wrbuf += reply_whowas(serv, nick, split[2], split[3]);
+		else
 		{
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				RPL_WHOWASUSER, nick,
-				nickname + " " + it->username + " " + it->hostname + " *",
-				it->realname);
-			serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-				RPL_WHOISSERVER, nick, nickname + " " + it->servername,
-				ft_timetostring(it->dtloggedin));
-			count++;
+			int	servfd = getserverfdbymask(serv, split[3]);
+			if (servfd > 0)
+				serv->fds[servfd].wrbuf += split[0] + " WHOWAS " +
+					split[2] + " " + split[3] + " " + split[4] + CRLF;
+			else
+				fdref.wrbuf += ft_buildmsg(serv->servername,
+					ERR_NOSUCHSERVER, nick, split[4], "No such server");
 		}
 	}
-	if (count == 0)
-	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_WASNOSUCHNICK, nick, nickname, "There was no such nickname");
-	}
-	serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-		RPL_ENDOFWHOWAS, nick, nickname, "End of WHOWAS");
 }
