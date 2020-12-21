@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 19:01:11 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 18:18:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 
 void		cmd_quit(int fd, const t_strvect &split, IRCserv *serv)
 {
-	if (serv->fds[fd].type == FD_SERVER)
+	if (serv->fds[fd].type == FD_SERVER || serv->fds[fd].type == FD_ME)
 		quit_from_network(fd, split, serv);
 	else
 		quit_from_client(fd, split, serv);

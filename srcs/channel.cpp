@@ -452,6 +452,7 @@ Channel		*Channel::getptr(void)
 void		Channel::block(void)
 {
 	_blocked = true;
+	_blocked_time = ft_getcurrenttime();
 }
 
 void		Channel::unblock(void)
@@ -461,7 +462,10 @@ void		Channel::unblock(void)
 
 bool		Channel::isBlocked(void)
 {
-	return this->_blocked;
+	if (_blocked)
+		if (ft_getcurrenttime() - _blocked_time >= BLOCKTIME)
+			_blocked = false;
+	return _blocked;
 }
 
 bool		Channel::isOnChan(Client *client)
@@ -482,4 +486,22 @@ bool		Channel::isInvited(Client *client)
 bool		Channel::isBanned(Client *client)
 {
 	return client->isBanned(this);
+}
+
+bool		Channel::block_if(void)
+{
+	bool	flag;
+	std::unordered_map<Client*, client_flags>::iterator	client;
+
+	flag = false;
+	client = _clients.begin();
+	for (; client != _clients.end(); client++)
+		if (!client->first->isBlocked())
+			flag = true;
+	if (!flag)
+	{
+		this->block();
+		return true;
+	}
+	return false;
 }

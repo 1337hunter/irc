@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 22:27:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:46:44 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,14 @@ typedef struct		s_kill
 	std::string		cause;
 }					t_kill;
 
+struct				blocked
+{
+	time_t				_blocked_time;
+	std::string			servername;
+	std::list<Channel*>	channels;
+	std::list<Client*>	clients;
+};
+
 struct				IRCserv
 {
 	typedef std::unordered_map<std::string, Command>	t_cmdmap;
@@ -166,7 +174,7 @@ struct				IRCserv
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
-	std::vector<t_server>		network;	// nearest servers that connected to network
+	std::vector<t_server>		network;	// nearest servers connected to network
 	std::list<Client>			clients;
 	std::list<Channel>			channels;
 	fd_set						fdset_read;
@@ -182,10 +190,13 @@ struct				IRCserv
 	time_t						dtcompiled;
 	std::vector<t_whowas>		nickhistory;
 	std::list<t_kill>			kills;
+	std::list<blocked>			unavailable;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
 void		clear_kill_list(IRCserv *serv);
+void		clear_block_list(IRCserv *serv, std::string const &servername = "");
+void		clear_empty_channels(IRCserv *serv);
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
 
 void		RunServer(IRCserv *serv);

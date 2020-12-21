@@ -127,9 +127,11 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (split[0][0] == ':')
 	{
+		clear_block_list(serv, std::string(split[0], 1));
 		introduce_server_behind(fd, split, serv);
 		return ;
 	}
+	clear_block_list(serv, split[1]);
 	link = serv->link.begin();
 	// looking for link with servername (is SERVER servername allowd to connect to us?)
 	while (link != serv->link.end())

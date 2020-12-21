@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 13:03:08 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 16:39:50 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,17 +155,16 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 void	self_cmd_squit(int fd, IRCserv *serv)
 {
 	t_strvect	split;
+
 	for (size_t i = 0; i < serv->network.size(); i++)
-	{
 		if (serv->network[i].fd == fd)
 		{
-			split.push_back("SERVER");
+			split.push_back("SQUIT");
 			split.push_back(serv->network[i].servername);
 			split.push_back(":Read error");
 			cmd_squit(fd, split, serv);
 			return ;
 		}
-	}
 }
 
 void	self_cmd_quit(int fd, IRCserv *serv)

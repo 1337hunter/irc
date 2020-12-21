@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 19:00:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,59 +43,92 @@ void		remove_introduced_server(int fd, const t_strvect &split, IRCserv *serv)
 	}
 }
 
-void		cmd_squit(int fd, const t_strvect &split, IRCserv *serv)
+void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	begin = serv->network.begin();
-	std::vector<t_server>::iterator	end = serv->network.end();
+	if (split.size() < 3)
+		return ;
+	remove_introduced_server(fd, split, serv);
+}
 
-	if ((split[0][0] != ':' && split.size() < 2 ) ||
-			(split[0][0] == ':' && split.size() < 3))
+void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
+{
+	Client	*client = 0;
+	t_server	*_serv;
+	std::string	squit_msg;
+
+	if (serv->fds[fd].type != FD_OPER && serv->fds[fd].type != FD_ME)
+	{
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOPRIVILEGES, fd, "",
+				"Permission Denied- You're not an IRC operator"); return ;
+	}
+	if (split.size() < 2 && serv->fds[fd].type == FD_OPER)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "SQUIT",
-				"Not enough parameters");
-		return ;
+			"Not enough parameters"); return ;
 	}
-	if (split[0][0] == ':')
+	if (serv->fds[fd].type == FD_OPER)
+		if (!(client = find_client_by_fd(fd, serv)))
+			return ;
+	if (split.size() == 2)
+		squit_msg = ":Network split";
+	else if (split.size() > 2)
+		squit_msg = split[2];
+	if (!(_serv = find_server_by_name(split[1], serv)))
 	{
-		remove_introduced_server(fd, split, serv);
-		return ;
+		serv->fds[fd].wrbuf+= get_reply(serv, ERR_NOSUCHSERVER, fd, split[1],
+			"No such server"); return ;
 	}
-	while (begin != end && begin->servername != split[1])
-		begin++;
-	if (begin != end)
+	else if (_serv->servername != split[1] && serv->fds[fd].type == FD_OPER)
 	{
-		std::list<t_server_intro>::iterator	serv_intro = begin->routing.begin();
-		std::string	splited_servers;
-		std::unordered_map<int, t_fd>::iterator   mit = serv->fds.begin();
+		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
+			strvect_to_string(split) + CRLF; return ;
+	}
+	else if (_serv->servername == split[1])
+	{
+		std::list<Client>::iterator	client_it;
+		std::list<Channel>::iterator	chan;
+		std::list<blocked>::iterator	blocked_it;
+		blocked						temp;
 
-		while (serv_intro != begin->routing.end())
+		temp.servername = split[1];
+		client_it = _serv->clients.begin();
+		for (; client_it != _serv->clients.end(); client_it++)
 		{
-			splited_servers += ":" + serv->servername + " SQUIT " +
-				serv_intro->behind + " :Network split" + CRLF;
-			serv_intro++;
+			client_it->block();
+			temp.clients.push_back(&(*client_it));
 		}
-		while (mit != serv->fds.end())
-		{
-			if (mit->second.type == FD_SERVER && mit->first != begin->fd)
-				serv->fds[mit->first].wrbuf += splited_servers;
-			mit++;
-		}
+		chan = serv->channels.begin();
+		for (; chan != serv->channels.end(); chan++)
+			if (chan->block_if())
+			{
+				blocked_it = serv->unavailable.begin();
+				for (; blocked_it != serv->unavailable.end(); blocked_it++)
+					if (blocked_it->servername == split[1])
+						break ;
+				if (blocked_it == serv->unavailable.end())
+					temp.channels.push_back(&(*chan));
+			}
+		temp._blocked_time = ft_getcurrenttime();
+		serv->unavailable.push_back(temp);
 		if (serv->fds[fd].type == FD_OPER)
-		{
-			serv->fds[begin->fd].wrbuf += "SQUIT " + serv->servername;
-			if (split.size() > 2)
-				serv->fds[begin->fd].wrbuf += strvect_to_string(split, ' ', 2);
-			else
-				serv->fds[begin->fd].wrbuf += ":I am out of here!";
-			serv->fds[begin->fd].wrbuf += CRLF;
-		}
-		serv->fds[begin->fd].status = false;
-		serv->network.erase(begin);
-#if DEBUG_MODE
-		std::cout << "server " << split[1] << ":\tdisconnected" << std::endl;
-#endif
+			msg_forward(-1, ":" + client->getnick() + " " +
+					strvect_to_string(split), serv);
+		else
+			msg_forward(_serv->fd, ":" + serv->servername + " " +
+					strvect_to_string(split), serv);
+		serv->fds[_serv->fd].status = false;
 	}
+}
+
+void	cmd_squit(int fd, const t_strvect &split, IRCserv *serv)
+{
+	if (serv->fds[fd].type == FD_UNREGISTRED)
+	{
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
+				"You have not registered"); return ;
+	}
+	if (serv->fds[fd].type == FD_SERVER && split[0][0] == ':')
+		squit_from_network(fd, split, serv);
 	else
-		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, "",
-				split[1] + " :No such server");
+		squit_from_client(fd, split, serv);
 }

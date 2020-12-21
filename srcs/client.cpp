@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 18:29:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 17:42:10 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 Client::Client() : fd(-1), _isConnected(false), _isRegistred(false),
 	USER(false), NICK(false), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message(""), _blocked(false)
+	_away_message(""), _blocked(false), _blocked_time(0)
 {
 }
 
@@ -24,7 +24,7 @@ Client::Client(std::string const &nickname, std::string const &token, int fd):
 	nickname(nickname), token(token), hopcount(0), fd(fd), _isConnected(true), _isRegistred(false),
 	USER(false), NICK(true), _isInvisible(false), _isWallOps(false),
 	_isServNotice(false), _isOperator(false), _restricted(false), _away(false),
-	_away_message(""), _blocked(false)
+	_away_message(""), _blocked(false), _blocked_time(0)
 {
 }
 
@@ -32,7 +32,7 @@ Client::Client(std::string const &username, std::string const &realname, std::st
 username(username), realname(realname), token(token), hopcount(0), fd(fd),
 	_isConnected(true), _isRegistred(false), USER(true), NICK(false),
 	_isInvisible(false), _isWallOps(false), _isServNotice(false), _isOperator(false),
-	_restricted(false), _away(false), _away_message(""), _blocked(false)
+	_restricted(false), _away(false), _away_message(""), _blocked(false), _blocked_time(0)
 {
 }
 
@@ -45,6 +45,7 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 	_restricted = false;
 	_away = false;
 	_blocked = false;
+	_blocked_time = 0;
 }
 
 Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1]),
@@ -58,6 +59,7 @@ Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1
 	_restricted = false;
 	_away = false;
 	_blocked = false;
+	_blocked_time = 0;
 }
 
 Client::~Client()
@@ -90,6 +92,7 @@ Client				&Client::operator=(Client const &other)
 	this->_away = other._away;
 	this->_away_message = other._away_message;
 	this->_blocked = other._blocked;
+	this->_blocked_time = other._blocked_time;
 	this->dtloggedin = other.dtloggedin;
 	this->_channels = other._channels;
 	this->invited = other.invited;
@@ -384,6 +387,7 @@ bool	Client::isBanned(Channel *chan)
 void	Client::block(void)
 {
 	_blocked = true;
+	_blocked_time = ft_getcurrenttime();
 }
 
 void	Client::unblock(void)
@@ -393,12 +397,27 @@ void	Client::unblock(void)
 
 bool	Client::isBlocked(void)
 {
+	if (!_blocked)
+		return _blocked;
+	else
+		if (ft_getcurrenttime() - _blocked_time >= BLOCKTIME)
+			_blocked = false;
 	return _blocked;
 }
 
 std::string	Client::getinfo(void)
 {
 	return std::string(nickname + "!" + username + "@" + hostname);
+}
+
+bool	Client::isAway(void)
+{
+	return _away;
+}
+
+std::string const	Client::getAwayMsg(void)
+{
+	return _away_message;
 }
 
 std::string	Client::getsafeinfo(void)

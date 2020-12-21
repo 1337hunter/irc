@@ -21,7 +21,7 @@ void	away_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	}
 	else if (split.size() > 1)
 	{
-		client->setAway(strvect_to_string(split, 1));
+		client->setAway(strvect_to_string(split, ' ', 1));
 		serv->fds[fd].wrbuf += get_reply(serv, RPL_NOWAWAY, client, "",
 				"You have been marked as being away");
 		msg_forward(fd, ":" + client->getinfo() + " MODE " + client->getnick() +

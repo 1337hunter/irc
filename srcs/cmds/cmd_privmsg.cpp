@@ -52,7 +52,10 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		if (!(client_msg = find_client_by_nick(split[2], serv)))
 			return ;
-		if (client_msg->gethop() == 0)
+		if (client_msg->gethop() == 0 && client_msg->isAway())
+			serv->fds[fd].wrbuf += get_reply(serv, RPL_AWAY, client, client_msg->getnick(),
+			client_msg->getAwayMsg());
+		else if (client_msg->gethop() == 0 && !client->isAway())
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " " +
 			strvect_to_string(split, ' ', 1) + CRLF;
 		else if (client_msg->getFD() != fd)

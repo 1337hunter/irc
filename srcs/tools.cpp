@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:08:41 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 17:20:25 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 18:47:44 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -338,4 +338,52 @@ void	clear_kill_list(IRCserv *serv)
 		}
 		else
 			kill++;
+}
+
+void	clear_block_list(IRCserv *serv, std::string const &servername)
+{
+	std::list<blocked>::iterator	b;
+	std::list<Client*>::iterator	client;
+	std::list<Channel*>::iterator	chan;
+	t_strvect						split;
+
+	split.push_back("QUIT");
+	split.push_back(":Network split");
+	b = serv->unavailable.begin();
+	while (b != serv->unavailable.end())
+		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||
+				b->servername == servername)
+		{
+			client = b->clients.begin();
+			for (; client != b->clients.end(); client++)
+			{
+				split.push_back(":" + (*client)->getnick());
+				split.push_back("QUIT");
+				split.push_back(":Network split");
+				cmd_quit(serv->listen[0].socket_fd, split, serv);
+				split.clear();
+			}
+			chan = b->channels.begin();
+			for (; chan != b->channels.end(); chan++)
+				remove_channel(*chan, serv);
+			serv->unavailable.erase(b);
+			b = serv->unavailable.begin();
+		}
+		else
+			b++;
+}
+
+void	clear_empty_channels(IRCserv *serv)
+{
+	std::list<Channel>::iterator	chan;
+
+	chan = serv->channels.begin();
+	while (chan != serv->channels.end())
+		if (chan->getclients().size() == 0)
+		{
+			serv->channels.erase(chan);
+			chan = serv->channels.begin();
+		}
+		else
+			chan++;
 }
