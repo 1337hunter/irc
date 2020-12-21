@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_oper.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 14:09:05 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/08 14:18:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 19:22:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	if (split.size() < 3) {
-		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "OEPR",
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "OPER",
 				"Not enough parameters");
 		return ;
 	}

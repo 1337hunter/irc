@@ -227,6 +227,7 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 	entry.hostname = client->gethostname();
 	entry.realname = client->getrealname();
 	entry.dtloggedin = client->gettimeloggedin();
+	entry.dtloggedin = ft_getcurrenttime();	// it's time disconnected in ircd
 	entry.servername = serv->servername;
 	serv->nickhistory.push_back(entry);
 	if (DEBUG_MODE)

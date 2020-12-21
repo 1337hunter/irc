@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 16:39:35 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 19:11:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,13 +175,9 @@
 	the version or further version details.		*/
 
 /*	"<channel> <user> <host> <server> <nick>
-	<H|G>[*][@|+] :<hopcount> <real name>" or
- 	"<channel> <user> <host> <server> <nick>
-	( "H" / "G" > ["*"] [ ( "@" / "+" ) ]
-	:<hopcount> <real name>"	*/
+	( "H" / "G" > ["*"] [ ( "@" / "+" ) ] :<hopcount> <real name>"	*/
 #define RPL_WHOREPLY		"352"
-/*	"<name> :End of /WHO list" or
-	"<name> :End of WHO list"	*/
+/*	"<name> :End of WHO list"	*/
 #define RPL_ENDOFWHO		"315"
 /*	- The RPL_WHOREPLY and RPL_ENDOFWHO pair are used
 	to answer a WHO message.  The RPL_WHOREPLY is only
