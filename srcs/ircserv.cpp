@@ -1,4 +1,5 @@
 #include "ircserv.hpp"
+#define TIMEOUTSEC 10
 
 void	do_socket(IRCserv *serv)
 {
@@ -26,7 +27,8 @@ void	RunServer(IRCserv *serv)
 	do_socket(serv);
 	while (1)
 	{
-		int	lastfd = 0;
+		int		lastfd = 0;
+		timeval	timeout = {TIMEOUTSEC, 0};
 		FD_ZERO(&(serv->fdset_read));
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
@@ -44,7 +46,9 @@ void	RunServer(IRCserv *serv)
 		}
 		int readyfds = select(lastfd + 1,
 			&(serv->fdset_read), &(serv->fdset_write),
-			&(serv->fdset_error), NULL);
+			&(serv->fdset_error), &timeout);
+		if (DEBUG_MODE && readyfds == 0)
+			std::cout << "Server select tick (" << TIMEOUTSEC << "s)" << std::endl;
 		if (readyfds < 0)
 			error_exit(SELECT);
 		for (int fd = 0; readyfds > 0 && fd <= lastfd; fd++)
