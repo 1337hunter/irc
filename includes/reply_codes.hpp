@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 23:54:32 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 15:55:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,7 @@
 	whether the client has set an AWAY message or not
 	respectively.	*/
 
-/*	":[<nick> {<space><nick>}]" or
-	":*1<nick> *( " " <nick> )"		*/
+/*	":*1<nick> *( " " <nick> )"		*/
 #define RPL_ISON			"303"
 /*	- Reply format used by ISON to list replies to the query list.	*/
 

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:16:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 15:19:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,17 +85,18 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	if (listen(_listen.socket_fd, 42) < 0)
 		error_exit("listen error");
 
-	serv->fds[_listen.socket_fd].type = FD_ME;
-	serv->fds[_listen.socket_fd].tls = true;
-	serv->fds[_listen.socket_fd].status = true;
-	serv->fds[_listen.socket_fd].dtopened = ft_getcurrenttime();
-	serv->fds[_listen.socket_fd].sentmsgs = 0;
-	serv->fds[_listen.socket_fd].recvmsgs = 0;
-	serv->fds[_listen.socket_fd].sentbytes = 0;
-	serv->fds[_listen.socket_fd].recvbytes = 0;
-	serv->fds[_listen.socket_fd].sock = -1;
-	serv->fds[_listen.socket_fd].linkname = serv->servername +
-		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
+	t_fd	&fdref = serv->fds[_listen.socket_fd];		// this will create t_fd and return ref
+	fdref.type = FD_ME;
+	fdref.tls = true;
+	fdref.status = true;
+	fdref.dtopened = ft_getcurrenttime();
+	fdref.sentmsgs = 0;
+	fdref.recvmsgs = 0;
+	fdref.sentbytes = 0;
+	fdref.recvbytes = 0;
+	fdref.sock = -1;
+	fdref.linkname = serv->servername + "[" + inet_ntoa(sockin.sin_addr) +
+		":" + std::to_string(_listen.port) + "]";
 
 	std::cout << "tlsserver created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
@@ -103,18 +104,18 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 
 void	DoHandshakeTLS(int fd, IRCserv *serv)
 {
+	t_fd	&fdref = serv->fds[fd];
 	int		handshake = 0;
-	bool	isServer = (serv->fds[fd].type == FD_SERVER);
-	if (isServer)
-		handshake = SSL_connect(serv->fds[fd].sslptr);
+	if (fdref.type == FD_SERVER)
+		handshake = SSL_connect(fdref.sslptr);
 	else
-		handshake = SSL_accept(serv->fds[fd].sslptr);
+		handshake = SSL_accept(fdref.sslptr);
 
 	// continue if handshake need more actions (until it returns 1)
 	if (handshake != 1)
 	{
 		// check if handshake need more actions or gone wrong by SSL_get_error
-		int	err = SSL_get_error(serv->fds[fd].sslptr, handshake);
+		int	err = SSL_get_error(fdref.sslptr, handshake);
 		// SSL_ERROR_WANT_READ/WRITE in case handshake needs another round
 		if (err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE)
 		{
@@ -122,12 +123,12 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
 			std::string		sslerr;
 			ERR_print_errors_cb(SSLErrorCallback, &sslerr);
-			if (isServer && sslerr.length() == 0)
+			if (fdref.type == FD_SERVER && sslerr.length() == 0)
 			{
 				sslerr = "TLS handshake failed for server ";
 				sslerr += fd;
 			}
-			if (isServer)
+			if (fdref.type == FD_SERVER)
 				msg_error("SSL_connect: " + sslerr, serv);
 			// we shouldn't call SSL_shutdown because it's already fatal
 			SSL_free(serv->fds[fd].sslptr);

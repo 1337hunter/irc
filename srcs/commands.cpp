@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 20:12:51 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 15:40:10 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,40 @@
 
 void	initcommands(IRCserv *serv)
 {
-	serv->cmds["USER"] 		= cmd_user;
-	serv->cmds["NICK"] 		= cmd_nick;
-	serv->cmds["PING"] 		= cmd_ping;
-	serv->cmds["QUIT"] 		= cmd_quit;
-	serv->cmds["PASS"] 		= cmd_pass;
-	serv->cmds["SERVER"] 	= cmd_server;
-	serv->cmds["SQUIT"] 	= cmd_squit;
-	serv->cmds["CONNECT"] 	= cmd_connect;
-	serv->cmds["OPER"] 		= cmd_oper;
-	serv->cmds["ERROR"] 	= cmd_error;
-	serv->cmds["ADMIN"] 	= cmd_admin;
-	serv->cmds["MOTD"] 		= cmd_motd;
-	serv->cmds["USERHOST"] 	= cmd_userhost;
-	serv->cmds["VERSION"] 	= cmd_version;
-	serv->cmds["INFO"] 		= cmd_info;
-	serv->cmds["TIME"] 		= cmd_time;
-	serv->cmds["JOIN"] 		= cmd_join;
-	serv->cmds["PRIVMSG"] 	= cmd_privmsg;
-	serv->cmds["INVITE"] 	= cmd_invite;
-	serv->cmds["NAMES"] 	= cmd_names;
-	serv->cmds["WHO"] 		= cmd_who;
-	serv->cmds["WHOIS"] 	= cmd_whois;
-	serv->cmds["WHOWAS"] 	= cmd_whowas;
-	serv->cmds["PART"] 		= cmd_part;
-	serv->cmds["MODE"] 		= cmd_mode;
-	serv->cmds["NOTICE"] 	= cmd_notice;
-	serv->cmds["AWAY"] 		= cmd_away;
-	serv->cmds["KILL"] 		= cmd_kill;
-	serv->cmds["LINKS"] 	= cmd_links;
-	serv->cmds["STATS"] 	= cmd_stats;
-	serv->cmds["NJOIN"] 	= cmd_njoin;
-	serv->cmds["LUSERS"] 	= cmd_lusers;
+	serv->cmds["USER"]		= cmd_user;
+	serv->cmds["NICK"]		= cmd_nick;
+	serv->cmds["PING"]		= cmd_ping;
+	serv->cmds["QUIT"]		= cmd_quit;
+	serv->cmds["PASS"]		= cmd_pass;
+	serv->cmds["SERVER"]	= cmd_server;
+	serv->cmds["SQUIT"]		= cmd_squit;
+	serv->cmds["CONNECT"]	= cmd_connect;
+	serv->cmds["OPER"]		= cmd_oper;
+	serv->cmds["ERROR"]		= cmd_error;
+	serv->cmds["ADMIN"]		= cmd_admin;
+	serv->cmds["MOTD"]		= cmd_motd;
+	serv->cmds["USERHOST"]	= cmd_userhost;
+	serv->cmds["VERSION"]	= cmd_version;
+	serv->cmds["INFO"]		= cmd_info;
+	serv->cmds["TIME"]		= cmd_time;
+	serv->cmds["JOIN"]		= cmd_join;
+	serv->cmds["PRIVMSG"]	= cmd_privmsg;
+	serv->cmds["INVITE"]	= cmd_invite;
+	serv->cmds["NAMES"]		= cmd_names;
+	serv->cmds["WHO"]		= cmd_who;
+	serv->cmds["WHOIS"]		= cmd_whois;
+	serv->cmds["WHOWAS"]	= cmd_whowas;
+	serv->cmds["PART"]		= cmd_part;
+	serv->cmds["MODE"]		= cmd_mode;
+	serv->cmds["NOTICE"]	= cmd_notice;
+	serv->cmds["AWAY"]		= cmd_away;
+	serv->cmds["KILL"]		= cmd_kill;
+	serv->cmds["LINKS"]		= cmd_links;
+	serv->cmds["STATS"]		= cmd_stats;
+	serv->cmds["NJOIN"]		= cmd_njoin;
+	serv->cmds["LUSERS"]	= cmd_lusers;
+	serv->cmds["ISON"]		= cmd_ison;
+	serv->cmds["USERS"]		= cmd_users;		// disabled
 
 	// values below are from InspIRCd-3 (need to check what it means)
 	serv->usermodes = "iosw";
