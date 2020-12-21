@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:11:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 18:29:51 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 16:47:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,6 +232,11 @@ void	Client::setOPER(void)
 bool	Client::isOperator(void)
 {
 	return (this->_isOperator);
+}
+
+bool	Client::isAway(void)
+{
+	return (this->_away);
 }
 
 bool	Client::setMode(std::string const &modes)

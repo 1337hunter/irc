@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 20:58:56 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 15:55:12 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 16:39:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,15 +62,11 @@
 
 //	Dummy reply number. Not used.
 #define RPL_NONE			"300"
-/*	":[<reply>{<space><reply>}]"
-	or
-	":*1<reply> *( " " <reply> )"	*/
+/*	":*1<reply> *( " " <reply> )"	*/
 #define RPL_USERHOST		"302"
 /*	- Reply format used by USERHOST to list replies to
 	the query list.  The reply string is composed as
 	follows:
-	<reply> ::= <nick>['*'] '=' <'+'|'-'><hostname>
-	or
 	reply = nickname [ "*" ] "=" ( "+" / "-" ) hostname
 	The '*' indicates whether the client has registered
 	as an Operator.  The '-' or '+' characters represent

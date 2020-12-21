@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:47:09 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 16:48:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,43 +30,64 @@
 	Example:
 	USERHOST Wiz Michael syrk
 	; USERHOST request for information on nicks "Wiz", "Michael", and "syrk"
-
 	:ircd.stealth.net 302 yournick :syrk=+syrk@millennium.stealth.net
 	; Reply for user syrk
 */
 
-typedef std::list<Client>::iterator	t_cvit;
+typedef t_strvect::const_iterator	t_svectit;
 
-void	cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
+std::string	reply_userhost(IRCserv *serv, std::string const &target,
+	t_strvect const &nicks)
 {
-	std::string	nick = getnicktoreply(fd, split, serv);
-	if (nick.empty())
+	std::string	reply = "";
+	int			count = 0;
+
+	for (t_svectit it = nicks.begin(); it != nicks.end() && count < 5; it++)
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NOTREGISTERED, "", "", "You have not registered");
-		return ;
+		Client	*client = find_client_by_nick(*it, serv);
+		if (client != NULL)
+		{
+			if (!reply.empty())
+				reply += " ";
+			/*
+				reply = nickname [ "*" ] "=" ( "+" / "-" ) hostname
+				The '*' indicates whether the client has registered
+				as an Operator.  The '-' or '+' characters represent
+				whether the client has set an AWAY message or not
+				respectively.
+			*/
+			reply += client->getnick();
+			if (client->isOperator())
+				reply += "*";
+			reply += "=";
+			if (client->isAway())
+				reply += "-";
+			else
+				reply += "+";
+			reply += client->getusername() + "@" + client->gethostname();
+		}
+		count++;
 	}
+	return (ft_buildmsg(serv->servername, RPL_USERHOST, target, "", reply));
+}
+
+void		cmd_userhost(int fd, const t_strvect &split, IRCserv *serv)
+{
+	std::string	nick;
+	t_citer		it;
+	t_fd		&fdref = serv->fds[fd];
+
+	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+	if (it != serv->clients.end())
+		nick = it->getnick();
+	else
+		fdref.wrbuf += ft_buildmsg(serv->servername,
+			ERR_NOTREGISTERED, "", "", "You have not registered");
 
 	if (split.size() < 2)
-	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-			ERR_NEEDMOREPARAMS, nick, "USERHOST",
-			"Not enough parameters");
-		return ;
-	}
-
-	t_strvect::const_iterator	argit = split.begin() + 1;
-	for (int i = 1; i < 6 && argit != split.end(); i++)
-	{
-		for (t_cvit it = serv->clients.begin(); it != serv->clients.end(); it++)
-		{
-			if (it->getnick() == split[i])
-			{
-				serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
-					RPL_USERHOST, nick, "", it->getnick() + "=+" +
-					it->getusername() + "@" + it->gethostname());
-			}
-		}
-		argit++;
-	}
+		fdref.wrbuf += ft_buildmsg(serv->servername,
+			ERR_NEEDMOREPARAMS, nick, "USERHOST", "Not enough parameters");
+	else
+		fdref.wrbuf += reply_userhost(serv, nick,
+			t_strvect(split.begin() + 1, split.end()));
 }

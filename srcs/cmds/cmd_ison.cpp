@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 16:15:45 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 16:29:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,9 @@ typedef t_strvect::const_iterator	t_svectit;
 std::string	reply_ison(IRCserv *serv, std::string const &target,
 	t_strvect const &nicks)
 {
-	size_t		len = 8 + serv->servername.size() + target.size();
 	std::string	reply = "";
 	std::string	tmp;
+	size_t		len = 8 + serv->servername.size() + target.size();
 
 	for (t_svectit it = nicks.begin(); it != nicks.end(); it++)
 	{
@@ -59,8 +59,12 @@ std::string	reply_ison(IRCserv *serv, std::string const &target,
 		{
 			tmp = *it;
 			len += tmp.size() + 1;
-			if (len <= BUF_SIZE)
-				reply += tmp + " ";
+			if (len < BUF_SIZE)
+			{
+				if (!reply.empty())
+					reply += " ";
+				reply += tmp;
+			}
 			else
 				break ;
 		}
