@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 00:09:46 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 00:27:37 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 13:03:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 
 	t_fd	&fdref = serv->fds[fd];		// this will create t_fd and return ref
-	fdref.type = FD_CLIENT;
+	fdref.type = FD_UNREGISTRED;
 	// we dont know either it's client or other server
 	fdref.rdbuf.erase();
 	fdref.wrbuf.erase();
@@ -168,6 +168,15 @@ void	self_cmd_squit(int fd, IRCserv *serv)
 	}
 }
 
+void	self_cmd_quit(int fd, IRCserv *serv)
+{
+	t_strvect	split;
+
+	split.push_back("QUIT");
+	split.push_back(":Read error");
+	cmd_quit(fd, split, serv);
+}
+
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
@@ -213,29 +222,33 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	}
 	else
 	{
-		if (fdref.tls)
-		{
-			/* for tls may be recoverable */
-			int	err = SSL_get_error(fdref.sslptr, r);
-			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
-				return ;
-			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			SSL_free(fdref.sslptr);
-			std::cout << "tls";
-		}
-		//he we need to pop out introduced servers if type == FD_SERVER
 		if (fdref.type == FD_SERVER)
 			self_cmd_squit(fd, serv);
-		close(fd);
-		serv->fds.erase(fd);
-		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-		if (it != serv->clients.end())
+		else if (fdref.type == FD_CLIENT || fdref.type == FD_OPER)
+			self_cmd_quit(fd, serv);
+		else
 		{
-			addtonickhistory(serv, it);
-			serv->clients.erase(it);
+			if (fdref.tls)
+			{
+				/* for tls may be recoverable */
+				int	err = SSL_get_error(fdref.sslptr, r);
+				if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+					return ;
+				ERR_print_errors_cb(SSLErrorCallback, NULL);
+				SSL_free(fdref.sslptr);
+				std::cout << "tls";
+			}
+			close(fd);
+			serv->fds.erase(fd);
+			t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
+			if (it != serv->clients.end())
+			{
+				addtonickhistory(serv, it);
+				serv->clients.erase(it);
+			}
+	//		won't work for suddenly disconnecting servers	//	it->Disconnect();
+			std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 		}
-//		won't work for suddenly disconnecting servers	//	it->Disconnect();
-		std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 	}
 }
 

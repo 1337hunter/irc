@@ -168,16 +168,18 @@ bool	is_server_registred(const std::string &name, std::string const token, IRCse
 	std::vector<t_server>::iterator nearest = serv->network.begin();
 	std::list<t_server_intro>::iterator server_intro;
 	std::vector<t_server>::iterator end = serv->network.end();
+	std::string	except = std::to_string(NPOS);
 
 	while (nearest != end)
 	{
-		if (nearest->servername == name || nearest->token == token)
+		if (nearest->servername == name || (nearest->token == token &&
+					nearest->token != except))
 			return true;
 		server_intro = nearest->routing.begin();
 		while (server_intro != nearest->routing.end())
 		{
 			if (server_intro->servername == name || server_intro->behind == name ||
-					server_intro->token == token)
+					(server_intro->token == token && server_intro->token != except))
 				return true;
 			server_intro++;
 		}

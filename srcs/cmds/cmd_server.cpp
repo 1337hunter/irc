@@ -118,14 +118,13 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	t_server	temp;
 	std::vector<t_link>::iterator	link;
 
-	if ((split.size() < 5 && split[0] == "SERVER") ||
-			(split.size() < 6 && split[0][0] == ':'))
+	if ((split.size() < 4 && split[0] == "SERVER") ||
+			(split.size() < 5 && split[0][0] == ':'))
 	{
 		serv->fds[fd].wrbuf += "ERROR :Not enough SERVER parameters\r\n";
 		serv->fds[fd].status = false;
 		return ;
 	}
-//	if (serv->fds[fd].type == FD_SERVER)
 	if (split[0][0] == ':')
 	{
 		introduce_server_behind(fd, split, serv);
@@ -166,7 +165,11 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		" :" + serv->info + CRLF;
 	}
 	temp.servername = split[1];
-	try { temp.hopcount = stoi(split[2]); temp.token = split[3]; }
+	try
+	{
+		temp.hopcount = stoi(split[2]);
+		temp.token = split.size() < 5 ? std::to_string(NPOS) : split[3];
+	}
 	catch (std::exception &e)
 	{
 		msg_error("Bad hopcount. Connection is terminated.", serv);
@@ -181,26 +184,11 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		cmd_squit(fd, split, serv);
 		return ;
 	}
-	temp.info = split[4];
-	for (size_t i = 5; i < split.size(); i++)
-	{
-		temp.info += " ";
-		temp.info += split[i];
-	}
-	std::string	forward;
-	forward = ":" + split[1] + " SERVER " + serv->servername + " 2 " + split[3];
-	forward += " ";
-	forward += temp.info;
-	forward += CRLF;
+	temp.info = split.size() < 5 ? split[3] : split[4];
+	msg_forward(fd, ":" + split[1] + " SERVER " + serv->servername + " 2 " +
+			temp.token + " " + temp.info , serv);
 	std::vector<t_server>::iterator begin = serv->network.begin();
 	std::vector<t_server>::iterator end = serv->network.end();
-	// server introduction (forward message) to the rest of network (here is for nearest)
-	while (begin != end)
-	{
-		serv->fds[begin->fd].wrbuf += forward;
-		begin++;
-	}
-	//server introduction (backward message)
 	std::string	backward;
 	std::list<t_server_intro>::iterator	serv_intro;
 	begin = serv->network.begin();

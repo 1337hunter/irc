@@ -118,6 +118,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		}
 	serv->clients.push_back(Client(split[1], serv->token, fd));
 	serv->clients.back().sethostname(serv->fds[fd].hostname);
+	serv->fds[fd].type = FD_CLIENT;
 }
 
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv)
