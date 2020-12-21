@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/21 17:19:02 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:02:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ int				getserverfdbymask(IRCserv *serv, std::string const &mask);
 std::string		getnicktoreply(int fd, const t_strvect &split, IRCserv *serv);
 std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv);
 
-#define CMD_SERVERONLY	1
-#define CMD_CLIENTONLY	2
+#define CMD_CLIENTONLY	1
+#define CMD_SERVERONLY	2
 
 class Command {
 private:

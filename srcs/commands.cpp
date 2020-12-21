@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 17:39:54 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 18:02:30 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,8 +77,8 @@ size_t	Command::getbytes(void) { return (this->bytes); }
 uint	Command::getrcount(void) { return (this->rcount); }
 bool	Command::used(void) {
 	return (cmd != NULL && (count > 0 || rcount > 0 || bytes > 0));	}
-bool	Command::serveronly(void) { return (this->type == CMD_SERVERONLY); }
 bool	Command::clientonly(void) { return (this->type == CMD_CLIENTONLY); }
+bool	Command::serveronly(void) { return (this->type == CMD_SERVERONLY); }
 void	Command::settype(uint type) { this->type = type; };
 
 void	Command::Execute(int fd, const t_strvect &split, IRCserv *serv,
