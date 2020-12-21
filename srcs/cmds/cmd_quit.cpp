@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 18:18:38 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 20:40:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,16 +82,17 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() +
 		" QUIT " + quit_msg + CRLF;
 	it->partAllChan();
-	FD_CLR(fd, &(serv->fdset_read));
-	FD_CLR(fd, &(serv->fdset_write));
-	close(fd);
-	if (serv->fds[fd].tls)
-	{
-		SSL_shutdown(serv->fds[fd].sslptr);
-		SSL_free(serv->fds[fd].sslptr);
-	}
-	serv->fds.erase(fd);
+//	FD_CLR(fd, &(serv->fdset_read));
+//	FD_CLR(fd, &(serv->fdset_write));
+//	close(fd);
+//	if (serv->fds[fd].tls)
+//	{
+//		SSL_shutdown(serv->fds[fd].sslptr);
+//		SSL_free(serv->fds[fd].sslptr);
+//	}
+//	serv->fds.erase(fd);
 	addtonickhistory(serv, it);
+	serv->fds[it->getFD()].status = false;
 	serv->clients.erase(it);
 #if DEBUG_MODE
 	std::cout << "client " << fd << "\t\tdisconnected" << std::endl;

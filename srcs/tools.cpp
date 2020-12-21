@@ -1,4 +1,5 @@
 #include "tools.hpp"
+#include "message.hpp"
 
 t_citer		ft_findclientfd(t_citer const &begin, t_citer const &end, int fd)
 {
@@ -329,6 +330,19 @@ void	clear_kill_list(IRCserv *serv)
 			kill++;
 }
 
+void	remove_server_by_name(std::string const &servername, IRCserv *serv)
+{
+	std::vector<t_server>::iterator	it;
+
+	it = serv->network.begin();
+	for (; it != serv->network.end(); it++)
+		if (it->servername == servername)
+		{
+			serv->network.erase(it);
+			return ;
+		}
+}
+
 void	clear_block_list(IRCserv *serv, std::string const &servername)
 {
 	std::list<blocked>::iterator	b;
@@ -344,6 +358,8 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 				b->servername == servername)
 		{
 			client = b->clients.begin();
+
+			msg_forward(-1, ":" + serv->servername + " SQUIT " + b->servername, serv);
 			for (; client != b->clients.end(); client++)
 			{
 				split.push_back(":" + (*client)->getnick());

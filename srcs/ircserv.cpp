@@ -31,7 +31,7 @@ void	RunServer(IRCserv *serv)
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
 		clear_kill_list(serv);
-		clear_block_list(serv);
+	//	clear_block_list(serv);
 		clear_empty_channels(serv);
 		for (std::unordered_map<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)

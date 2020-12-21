@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/13 13:15:50 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 21:28:23 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	cmd_error(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		while (b != e)
 		{
-			if (b->isOperator())
+			if (!b->isBlocked() && b->isOperator() && !b->isAway())
 			{
 				serv->fds[b->getFD()].wrbuf += "NOTICE " + b->getnick() +
 					" :ERROR from " + sb->servername + " -- ";

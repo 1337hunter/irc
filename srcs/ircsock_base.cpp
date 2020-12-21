@@ -171,6 +171,35 @@ void	self_cmd_quit(int fd, IRCserv *serv)
 	cmd_quit(fd, split, serv);
 }
 
+void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
+{
+		if (fdref.tls)
+		{
+			/* for tls may be recoverable */
+			int	err = SSL_get_error(fdref.sslptr, r);
+			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+				return ;
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
+			SSL_free(fdref.sslptr);
+			std::cout << "tls";
+		}
+		if ((fdref.type == FD_SERVER || fdref.type == FD_OPER) && fdref.status)
+			self_cmd_squit(fd, serv);
+		else if (fdref.type == FD_CLIENT && fdref.status)
+			self_cmd_quit(fd, serv);
+		FD_CLR(fd, &(serv->fdset_read));
+		FD_CLR(fd, &(serv->fdset_write));
+		close(fd);
+		if (serv->fds[fd].tls)
+    	{
+			SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(serv->fds[fd].sslptr);
+	    }
+		serv->fds.erase(fd);
+//		won't work for suddenly disconnecting servers	//	it->Disconnect();
+		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
+}
+
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
@@ -216,33 +245,34 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	}
 	else
 	{
-		if (fdref.type == FD_SERVER)
+		read_error(fd, fdref, r, serv);
+#if 0
+		if (fdref.type == FD_SERVER && fdref.status)
 			self_cmd_squit(fd, serv);
-		else if (fdref.type == FD_CLIENT || fdref.type == FD_OPER)
+		else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
 			self_cmd_quit(fd, serv);
-		else
+		if (fdref.tls)
 		{
-			if (fdref.tls)
-			{
-				/* for tls may be recoverable */
-				int	err = SSL_get_error(fdref.sslptr, r);
-				if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
-					return ;
-				ERR_print_errors_cb(SSLErrorCallback, NULL);
-				SSL_free(fdref.sslptr);
-				std::cout << "tls";
-			}
-			close(fd);
-			serv->fds.erase(fd);
-			t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-			if (it != serv->clients.end())
-			{
-				addtonickhistory(serv, it);
-				serv->clients.erase(it);
-			}
-	//		won't work for suddenly disconnecting servers	//	it->Disconnect();
-			std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
+			/* for tls may be recoverable */
+			int	err = SSL_get_error(fdref.sslptr, r);
+			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+				return ;
+			ERR_print_errors_cb(SSLErrorCallback, NULL);
+			SSL_free(fdref.sslptr);
+			std::cout << "tls";
 		}
+		FD_CLR(fd, &(serv->fdset_read));
+		FD_CLR(fd, &(serv->fdset_write));
+		close(fd);
+		if (serv->fds[fd].tls)
+    	{
+			SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(serv->fds[fd].sslptr);
+	    }
+		serv->fds.erase(fd);
+//		won't work for suddenly disconnecting servers	//	it->Disconnect();
+		std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
+#endif
 	}
 }
 
@@ -289,6 +319,8 @@ void	SendMessage(int fd, IRCserv *serv)
 
 	if (r <= 0 || fdref.status == false)
 	{
+		read_error(fd, fdref, r, serv);
+#if 0
 		if (fdref.tls)
 		{
 			/* for tls may be recoverable */
@@ -299,18 +331,23 @@ void	SendMessage(int fd, IRCserv *serv)
 			SSL_free(fdref.sslptr);
 			std::cout << "tls";
 		}
-		if (fdref.type == FD_SERVER)
+		if ((serv->fds[fd].type == FD_SERVER || erv->fds[fd].type == FD_OPER)
+			   	&& serv->fds[fd].status)
 			self_cmd_squit(fd, serv);
+		else if (serv->fds[fd].type == FD_CLIENT && serv->fds[fd].status)
+			self_cmd_quit(fd, serv);
+		FD_CLR(fd, &(serv->fdset_read));
+		FD_CLR(fd, &(serv->fdset_write));
 		close(fd);
+		if (serv->fds[fd].tls)
+    	{
+			SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(serv->fds[fd].sslptr);
+	    }
 		serv->fds.erase(fd);
-		t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-		if (it != serv->clients.end())
-		{
-			addtonickhistory(serv, it);
-			serv->clients.erase(it);
-		}
 //		won't work for suddenly disconnecting servers	//	it->Disconnect();
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
+#endif
 	}
 }
 

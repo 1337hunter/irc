@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cmd_squit.cpp                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 16:37:57 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 19:00:33 by gbright          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "message.hpp"
@@ -111,12 +99,10 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		temp._blocked_time = ft_getcurrenttime();
 		serv->unavailable.push_back(temp);
 		if (serv->fds[fd].type == FD_OPER)
-			msg_forward(-1, ":" + client->getnick() + " " +
-					strvect_to_string(split), serv);
-		else
-			msg_forward(_serv->fd, ":" + serv->servername + " " +
-					strvect_to_string(split), serv);
+			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
+					strvect_to_string(split) + CRLF;
 		serv->fds[_serv->fd].status = false;
+		remove_server_by_name(split[1], serv);
 	}
 }
 

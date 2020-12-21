@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 19:46:16 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 21:21:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ int			nick_forward(IRCserv *serv, Client *client);
 bool    remove_channel(Channel *channel, IRCserv *serv);
 bool    remove_client_by_ptr(Client *ptr, IRCserv *serv);
 bool    remove_client_by_nick(std::string const &nick, IRCserv *serv);
+void    remove_server_by_name(std::string const &servername, IRCserv *serv);
 
 /****************************************************/
 /*	string manipulation functions (stringtools.cpp)	*/
