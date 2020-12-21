@@ -52,6 +52,7 @@ private:
 	time_t			_blocked_time;
 	std::string		_blocked_server;
 	time_t			dtloggedin;
+	time_t			dtlastactive;
 	std::list<Channel*>	_channels; //unordered map is better channame->Channel*
 	std::list<std::string>	invited;
 	// Maybe server class object reference or pointer here
@@ -89,6 +90,8 @@ public:
 	std::string			getsafeinfo(void);
 	Client				*getptr(void);
 	time_t				gettimeloggedin(void);
+	time_t				gettimelastactive(void);
+	void				updatelastactive(void);
 	std::string			gethopcount(bool str = false, bool plus = false);
 	int					gethop(void);
 	std::list<Channel*>	&getchannels(void);
@@ -111,10 +114,8 @@ public:
 	bool				setMode(std::string const &modes);
 	bool				setUMODE(std::string const &mode);
 	void				setAway(std::string const &msg);
-	std::string const	getAwayMsg(void);
+	std::string const	&getAwayMsg(void);
 	std::string			getMode(bool str = false);
-//	void				Reconnect(int fd);
-//	void				Disconnect(void);
 };
 
 #endif
