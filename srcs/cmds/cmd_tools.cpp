@@ -240,6 +240,8 @@ std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv)
 		i = 1;
 		nick = split[0].substr(1);
 	}
+	else
+		return ("");
 	std::string	cmd;
 	if (i < split.size())
 		cmd = split[i];
