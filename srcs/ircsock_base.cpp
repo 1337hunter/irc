@@ -51,10 +51,6 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	try
 	{
 		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
-//		Command	&cmdref = serv->cmds.at(split[i]);
-//		cmdref.UpdateStats(msg.size(), i > 0);
-//		cmdref.cmd(fd, split, serv);
-
 		#if DEBUG_MODE
 			std::cout << "command found:\t\t" << split[i] << std::endl;
 		#endif
