@@ -462,10 +462,12 @@ void		Channel::unblock(void)
 
 bool		Channel::isBlocked(void)
 {
-	if (_blocked)
-		if (ft_getcurrenttime() - _blocked_time >= BLOCKTIME)
-			_blocked = false;
 	return _blocked;
+}
+
+time_t		Channel::getBlockedTime(void)
+{
+	return _blocked_time;
 }
 
 bool		Channel::isOnChan(Client *client)

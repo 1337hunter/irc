@@ -97,6 +97,7 @@ public:
 	void				invite_to(const std::string &chan);
 	bool				isInvited(Channel *chan);
 	bool				isBlocked(void);
+	time_t				getBlockedTime(void);
 	bool				isRestricted(void);
 	void				block(void);
 	void				unblock(void);

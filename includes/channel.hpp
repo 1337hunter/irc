@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 17:45:16 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/21 21:50:00 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ public:
 	void				unblock(void);
 
 	bool				isBlocked(void);
+	time_t				getBlockedTime(void);
 	bool				block_if(void);
 	bool				isOnChan(Client *client);
 	bool				isInvited(Client *client);

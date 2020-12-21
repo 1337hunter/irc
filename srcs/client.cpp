@@ -385,12 +385,12 @@ void	Client::unblock(void)
 
 bool	Client::isBlocked(void)
 {
-	if (!_blocked)
-		return _blocked;
-	else
-		if (ft_getcurrenttime() - _blocked_time >= BLOCKTIME)
-			_blocked = false;
 	return _blocked;
+}
+
+time_t	Client::getBlockedTime(void)
+{
+	return _blocked_time;
 }
 
 std::string	Client::getinfo(void)
