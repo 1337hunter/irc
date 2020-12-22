@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 11:43:44 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/22 17:56:58 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	msg_for = get_clients_for_quit_msg(client);
 	msg_for_it = msg_for.begin();
 	for (; msg_for_it != msg_for.end(); msg_for_it++)
-		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " + 
+		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
 		strvect_to_string(split, ' ', 1) + CRLF;;
 	client->partAllChan();
 	remove_client_by_ptr(client, serv);
@@ -82,14 +82,15 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() +
 		" QUIT " + quit_msg + CRLF;
 	it->partAllChan();
-	addtonickhistory(serv, it);
-	serv->fds[it->getFD()].status = false;
-	serv->clients.erase(it);
 #if DEBUG_MODE
 	std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 #endif
 	msg_forward(fd, ":" + it->getnick() + " QUIT " + quit_msg, serv);
-	return 0;
+	addtonickhistory(serv, it);
+	serv->fds[it->getFD()].status = false;
+	serv->fds[it->getFD()].fatal = false;
+	serv->clients.erase(it);
+	return (0);
 }
 
 void		cmd_quit(int fd, const t_strvect &split, IRCserv *serv)

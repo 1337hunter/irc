@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 12:21:07 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/22 17:33:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct		s_fd
 	int				type;
 	bool			tls;
 	bool			status;     // for disconnect assign false
+	bool			fatal;
 	std::string		rdbuf;
 	std::string		wrbuf;
 	std::string		pass;		// this struct parameters required for

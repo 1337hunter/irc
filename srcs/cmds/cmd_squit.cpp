@@ -89,6 +89,7 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 					strvect_to_string(split) + CRLF;
 		_serv->_blocked = true;
 		serv->fds[_serv->fd].status = false;
+		serv->fds[_serv->fd].fatal = false;
 	}
 }
 

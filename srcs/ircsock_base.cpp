@@ -147,7 +147,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	}
 }
 
-void	self_cmd_squit(int fd, IRCserv *serv)
+void	self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 {
 	t_strvect	split;
 
@@ -160,41 +160,47 @@ void	self_cmd_squit(int fd, IRCserv *serv)
 			cmd_squit(fd, split, serv);
 			return ;
 		}
+	fdref.fatal = true;
 }
 
-void	self_cmd_quit(int fd, IRCserv *serv)
+void	self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv)
 {
 	t_strvect	split;
 
 	split.push_back("QUIT");
 	split.push_back(":Read error");
 	cmd_quit(fd, split, serv);
+	fdref.fatal = true;
 }
 
 void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 {
-		if (fdref.tls)
-		{
-			/* for tls may be recoverable */
-			int	err = SSL_get_error(fdref.sslptr, r);
-			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
-				return ;
-			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			if (r >= 0)
-				SSL_shutdown(serv->fds[fd].sslptr);
-			SSL_free(fdref.sslptr);
-			std::cout << "tls";
-		}
-		if ((fdref.type == FD_SERVER || fdref.type == FD_OPER) && fdref.status)
-			self_cmd_squit(fd, serv);
-		else if (fdref.type == FD_CLIENT && fdref.status)
-			self_cmd_quit(fd, serv);
-		FD_CLR(fd, &(serv->fdset_read));
-		FD_CLR(fd, &(serv->fdset_write));
-		close(fd);
-		serv->fds.erase(fd);
-//		won't work for suddenly disconnecting servers	//	it->Disconnect();
-		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
+	if (fdref.tls)
+	{
+		/* for tls may be recoverable */
+		int	err = SSL_get_error(fdref.sslptr, r);
+		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
+			return ;
+		ERR_print_errors_cb(SSLErrorCallback, NULL);
+	}
+	if ((fdref.type == FD_SERVER || fdref.type == FD_OPER) && fdref.status)
+		self_cmd_squit(fd, fdref, serv);
+	else if (fdref.type == FD_CLIENT && fdref.status)
+		self_cmd_quit(fd, fdref, serv);
+	if (fdref.status)
+		fdref.fatal = true;
+	if (fdref.tls)
+	{
+		if (!fdref.fatal)
+			SSL_shutdown(fdref.sslptr);
+		SSL_free(fdref.sslptr);
+		std::cout << "tls";
+	}
+	FD_CLR(fd, &(serv->fdset_read));
+	FD_CLR(fd, &(serv->fdset_write));
+	close(fd);
+	serv->fds.erase(fd);
+	std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 }
 
 void	ReceiveMessage(int fd, IRCserv *serv)
