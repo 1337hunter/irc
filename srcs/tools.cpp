@@ -253,7 +253,8 @@ int			nick_forward(IRCserv *serv, Client *client)
 		client->gettoken() + " " + client->getMode() + " " +  ":" +
 		client->getrealname() + CRLF;
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
-		serv->fds[net->fd].wrbuf += forward;
+		if (!net->_blocked)
+			serv->fds[net->fd].wrbuf += forward;
 	return 0;
 }
 
