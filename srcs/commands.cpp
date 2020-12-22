@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 14:15:42 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/22 15:31:04 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["USERS"]		= cmd_users;		// disabled
 	serv->cmds["TOPIC"]		= cmd_topic;
 	serv->cmds["KICK"]		= cmd_kick;
+	serv->cmds["TRACE"]		= cmd_trace;
 
 	// values below are from InspIRCd-3 (need to check what it means)
 	serv->usermodes = "iosw";
