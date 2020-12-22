@@ -436,7 +436,7 @@ Channel	*Client::eraseChannel(std::string const &name)
 			Channel	*res = (*chan);
 			(*chan)->getclients().erase(this);
 			_channels.erase(chan);
-			return (res);
+			return res;
 		}
 	return 0;
 }
