@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/21 18:02:42 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/22 13:21:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	cmd_njoin(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_lusers(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_ison(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_users(int fd, const t_strvect &split, IRCserv *serv);	// disabled
+void    cmd_topic(int fd, t_strvect const &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, Client *client);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
