@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 20:03:43 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/22 21:55:27 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,8 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	msg_for = get_clients_for_quit_msg(client);
 	msg_for_it = msg_for.begin();
 	for (; msg_for_it != msg_for.end(); msg_for_it++)
-		if (!(*msg_for_it)->isBlocked())
-			serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
-			strvect_to_string(split, ' ', 1) + CRLF;;
+		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
+		strvect_to_string(split, ' ', 1) + CRLF;;
 	client->partAllChan();
 	remove_client_by_ptr(client, serv);
 	msg_forward(fd, strvect_to_string(split), serv);
@@ -68,7 +67,7 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	std::vector<Client*>::iterator	msg_for_it;
 
 	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if ((it == serv->clients.end() || !it->isRegistred()) && !it->isBlocked())
+	if (it == serv->clients.end() || !it->isRegistred())
 	{
 		serv->fds[fd].wrbuf += "ERROR :Closing Link: [" + serv->fds[fd].hostname + "]\r\n";
 		serv->fds[fd].status = false; return 1;
@@ -80,9 +79,8 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	msg_for = get_clients_for_quit_msg(&(*it));
 	msg_for_it = msg_for.begin();
 	for (; msg_for_it != msg_for.end(); msg_for_it++)
-		if (!(*msg_for_it)->isBlocked())
-			serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() + " QUIT " +
-			quit_msg + CRLF;
+		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() + " QUIT " +
+		quit_msg + CRLF;
 	it->partAllChan();
 #if DEBUG_MODE
 	std::cout << "client " << fd << "\t\tdisconnected" << std::endl;

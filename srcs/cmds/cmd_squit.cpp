@@ -54,10 +54,8 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else if (_serv->servername != split[1] && serv->fds[fd].type == FD_OPER)
 	{
-		if (!_serv->_blocked)
-			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
-			strvect_to_string(split) + CRLF;
-		return ;
+		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
+			strvect_to_string(split) + CRLF; return ;
 	}
 	else if (_serv->servername == split[1])
 	{
@@ -71,7 +69,7 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		for (; client_it != _serv->clients.end(); client_it++)
 		{
 			client_it->block();
-			temp.clients.push_back(&(*client_it));
+			temp.nicknames.push_back(client_it->getnick());
 		}
 		chan = serv->channels.begin();
 		for (; chan != serv->channels.end(); chan++)
@@ -84,12 +82,12 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 				if (blocked_it == serv->unavailable.end())
 					temp.channels.push_back(&(*chan));
 			}
+		remove_server_by_name(_serv->servername, serv);
 		temp._blocked_time = ft_getcurrenttime();
 		serv->unavailable.push_back(temp);
 		if (serv->fds[fd].type == FD_OPER)
 			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 					strvect_to_string(split) + CRLF;
-		_serv->_blocked = true;
 		serv->fds[_serv->fd].status = false;
 		serv->fds[_serv->fd].fatal = false;
 	}

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 17:33:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/22 22:10:52 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ typedef struct		s_server
 	int				hopcount;
 	int				port;
 	bool			autoconnect;
-	bool			_blocked;
 	std::string		token;
 	std::string		servername;
 	std::string		pass;
@@ -160,7 +159,7 @@ struct				blocked
 	time_t				_blocked_time;
 	std::string			servername;
 	std::list<Channel*>	channels;
-	std::list<Client*>	clients;
+	std::list<std::string>	nicknames;
 };
 
 struct				IRCserv

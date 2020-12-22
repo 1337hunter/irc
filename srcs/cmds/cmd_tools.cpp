@@ -158,7 +158,7 @@ std::string		getservernamebymask(IRCserv *serv, std::string const &mask)
 	for (t_netit servit = serv->network.begin();
 		servit != serv->network.end() && servername.empty(); servit++)
 	{
-		if (match(servit->servername, mask) && !servit->_blocked)
+		if (match(servit->servername, mask))
 		{
 			servername = servit->servername;
 			break ;
@@ -172,7 +172,7 @@ int				getserverfdbymask(IRCserv *serv, std::string const &mask)
 	for (t_netit servit = serv->network.begin();
 		servit != serv->network.end(); servit++)
 	{
-		if (match(servit->servername, mask) && !servit->_blocked)
+		if (match(servit->servername, mask))
 			return (servit->fd);
 	}
 	return (-1);

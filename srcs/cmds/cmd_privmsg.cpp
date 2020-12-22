@@ -52,11 +52,6 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		if (!(client_msg = find_client_by_nick(split[2], serv)))
 			return ;
-		if (client_msg->isBlocked())
-		{
-			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, client,
-			client_msg->getnick(), "Nick/channel is temporarily unavailable"); return ;
-		}
 		if (client_msg->gethop() == 0 && client_msg->isAway())
 			serv->fds[fd].wrbuf += get_reply(serv, RPL_AWAY, client, client_msg->getnick(),
 			client_msg->getAwayMsg());
@@ -193,11 +188,6 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, "401", client, split[1],
 					"No such nick/channel"); return ;
-		}
-		if (client_msg->isBlocked())
-		{
-			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, client,
-			client_msg->getnick(), "Nick/channel is temporarily unavailable"); return ;
 		}
 		if (client_msg->gethop() == 0 && !client_msg->isAway())
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +

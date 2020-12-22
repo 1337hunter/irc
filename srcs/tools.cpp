@@ -246,14 +246,11 @@ int			nick_forward(IRCserv *serv, Client *client)
 	std::string	forward;
 	std::vector<t_server>::iterator	net;
 
-	if (!client)
-		return 1;
 	forward = "NICK " + client->getnick() + " " + std::to_string(client->gethop() + 1)
 	   	+ " " + client->getusername() + " " + client->gethostname() + " " +
 		client->gettoken() + " " + client->getMode() + " " +  ":" +
 		client->getrealname() + CRLF;
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
-		if (!net->_blocked)
 			serv->fds[net->fd].wrbuf += forward;
 	return 0;
 }
@@ -269,6 +266,22 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 			return false;
 		}
 	return true;
+}
+
+bool	is_nick_blocked(std::string const &nick, IRCserv *serv)
+{
+	std::list<blocked>::iterator	block_list;
+	std::list<std::string>::iterator	blocked_client;
+
+	block_list = serv->unavailable.begin();
+	for (; block_list != serv->unavailable.end(); block_list++)
+	{
+		blocked_client = block_list->nicknames.begin();
+		for (; blocked_client != block_list->nicknames.end(); blocked_client++)
+			if (*blocked_client == nick)
+				return true;
+	}
+	return false;
 }
 
 bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
@@ -348,7 +361,7 @@ void	remove_server_by_name(std::string const &servername, IRCserv *serv)
 void	clear_block_list(IRCserv *serv, std::string const &servername)
 {
 	std::list<blocked>::iterator	b;
-	std::list<Client*>::iterator	client;
+	std::list<std::string>::iterator	client;
 	std::list<Channel*>::iterator	chan;
 	t_strvect						split;
 
@@ -359,12 +372,11 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||
 				b->servername == servername)
 		{
-			client = b->clients.begin();
-			remove_server_by_name(servername, serv);
+			client = b->nicknames.begin();
 			msg_forward(-1, ":" + serv->servername + " SQUIT " + b->servername, serv);
-			for (; client != b->clients.end(); client++)
+			for (; client != b->nicknames.end(); client++)
 			{
-				split.push_back(":" + (*client)->getnick());
+				split.push_back(":" + *client);
 				split.push_back("QUIT");
 				if (!servername.empty())
 					split.push_back(":Server " + servername + " is reconnecting!");

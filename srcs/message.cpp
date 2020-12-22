@@ -74,7 +74,7 @@ void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 	std::vector<t_server>::iterator	net;
 
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
-		if (fd != net->fd && !net->_blocked)
+		if (fd != net->fd)
 			serv->fds[net->fd].wrbuf += msg + CRLF;
 }
 
@@ -83,8 +83,6 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 	std::string	info;
 	std::unordered_map<Client*, client_flags>::const_iterator   client_it;
 
-	if (channel->isBlocked())
-		return ;
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " : ":" + client->getinfo() + " ";
 	client_it = channel->getclients().begin();
 	for (; client_it != channel->getclients().end(); client_it++)
@@ -92,7 +90,7 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 		{
 			if (client_it->first->gethop() == 0)
 				serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
-			else if (!client_it->first->isBlocked())
+			else
 				serv->fds[client_it->first->getFD()].wrbuf += ":"+
 					client->getnick() + " " + msg + CRLF;
 		}
@@ -103,8 +101,6 @@ void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCs
 	std::unordered_map<Client*, client_flags>::const_iterator	client_it;
 	std::string	info;
 
-	if (channel->isBlocked())
-		return ;
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
 		client->getinfo() + " ";
 	client_it = channel->getclients().begin();
@@ -118,7 +114,7 @@ void	msg_each_client(std::string const &msg, Client *client, IRCserv *serv)
 	std::list<Client>::iterator	client_it;
 
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
-		if (client_it->getFD() != client->getFD() && !client_it->isBlocked())
+		if (client_it->getFD() != client->getFD())
 			serv->fds[client_it->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
 			client_it->getnick() + " " + msg + CRLF;
 }
