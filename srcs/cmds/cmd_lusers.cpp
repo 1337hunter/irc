@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 18:35:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/22 21:00:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ size_t		getusercount(IRCserv *serv, std::string const &mask = "*",
 			if (!opersonly || (opersonly && cit->isOperator()))
 				count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
-		if (match(sit->servername, mask))
+		if (match(sit->servername, mask) && !sit->_blocked)
 			for (t_citer cit = sit->clients.begin(); cit != sit->clients.end(); cit++)
 				if (!opersonly || (opersonly && cit->isOperator()))
 					count++;
@@ -61,17 +61,22 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 	if (!connectedtomeonly && match(serv->servername, mask))
 		count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
-		if ((!connectedtomeonly || sit->hopcount == 1) && match(sit->servername, mask))
+		if ((!connectedtomeonly || sit->hopcount == 1) &&
+			match(sit->servername, mask) && !sit->_blocked)
 			count++;
 	return (count);
 }
 
+bool		fdunreg(std::pair<int, t_fd> fd) { return (fd.second.type == FD_UNREGISTRED); }
+bool		notfdme(std::pair<int, t_fd> fd) { return (fd.second.type != FD_ME); }
+bool		notblocked(t_server i) { return (!i._blocked); }
+
 size_t		getunknownconnectscount(IRCserv *serv)
 {
-	size_t	unkncount = serv->fds.size() - serv->clients.size() - serv->network.size();
-	for (std::unordered_map<int, t_fd>::iterator fit = serv->fds.begin(); fit != serv->fds.end(); fit++)
-		if (fit->second.type == FD_ME)
-			unkncount--;
+	size_t	unkncount = std::count_if(serv->fds.begin(), serv->fds.end(), fdunreg);
+//	size_t	unkncount = std::count_if(serv->fds.begin(), serv->fds.end(), notfdme);
+//	unkncount -= serv->clients.size();
+//	unkncount -= std::count_if(serv->network.begin(), serv->network.end(), notblocked);
 	return (unkncount);
 }
 

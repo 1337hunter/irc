@@ -158,7 +158,7 @@ void	self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 			split.push_back(serv->network[i].servername);
 			split.push_back(":Read error");
 			cmd_squit(serv->listen[0].socket_fd, split, serv);
-			return ;
+			break ;
 		}
 	fdref.fatal = true;
 }
