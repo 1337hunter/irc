@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 21:00:15 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/22 22:33:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ size_t		getusercount(IRCserv *serv, std::string const &mask = "*",
 			if (!opersonly || (opersonly && cit->isOperator()))
 				count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
-		if (match(sit->servername, mask) && !sit->_blocked)
+		if (match(sit->servername, mask))
 			for (t_citer cit = sit->clients.begin(); cit != sit->clients.end(); cit++)
 				if (!opersonly || (opersonly && cit->isOperator()))
 					count++;
@@ -62,14 +62,13 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 		count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
 		if ((!connectedtomeonly || sit->hopcount == 1) &&
-			match(sit->servername, mask) && !sit->_blocked)
+			match(sit->servername, mask))
 			count++;
 	return (count);
 }
 
 bool		fdunreg(std::pair<int, t_fd> fd) { return (fd.second.type == FD_UNREGISTRED); }
 bool		notfdme(std::pair<int, t_fd> fd) { return (fd.second.type != FD_ME); }
-bool		notblocked(t_server i) { return (!i._blocked); }
 
 size_t		getunknownconnectscount(IRCserv *serv)
 {
