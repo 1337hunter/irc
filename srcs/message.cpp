@@ -74,7 +74,7 @@ void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 	std::vector<t_server>::iterator	net;
 
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
-		if (fd != net->fd)
+		if (fd != net->fd && !net->_blocked)
 			serv->fds[net->fd].wrbuf += msg + CRLF;
 }
 
@@ -103,6 +103,8 @@ void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCs
 	std::unordered_map<Client*, client_flags>::const_iterator	client_it;
 	std::string	info;
 
+	if (channel->isBlocked())
+		return ;
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
 		client->getinfo() + " ";
 	client_it = channel->getclients().begin();

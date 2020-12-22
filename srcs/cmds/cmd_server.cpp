@@ -213,5 +213,6 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	serv->fds[fd].type = FD_SERVER;
 	if (serv->fds[fd].linkname.size() > 0 && serv->fds[fd].linkname[0] == '*')
 		serv->fds[fd].linkname = temp.servername + serv->fds[fd].linkname.substr(1);
+	temp._blocked = false;
 	serv->network.push_back(temp);
 }

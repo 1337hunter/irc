@@ -3,39 +3,25 @@
 #include "message.hpp"
 #include "tools.hpp"
 
-void		remove_introduced_server(int fd, const t_strvect &split, IRCserv *serv)
-{
-	std::vector<t_server>::iterator serv_in_network = serv->network.begin();
-	std::list<t_server_intro>::iterator	serv_intro;
-
-	while (serv_in_network != serv->network.end())
-	{
-		serv_intro = serv_in_network->routing.begin();
-		while (serv_intro != serv_in_network->routing.end())
-		{
-			if (serv_intro->behind == split[2])
-			{
-				std::unordered_map<int, t_fd>::iterator   mit = serv->fds.begin();
-				std::string	forward;
-
-				forward = strvect_to_string(split);
-				serv_in_network->routing.erase(serv_intro);
-				while (mit != serv->fds.begin())
-				{
-					if (mit->second.type == FD_SERVER && mit->first != fd)
-						serv->fds[mit->first].wrbuf += forward;
-					mit++;
-				}
-			}
-		}
-	}
-}
+void    squit_from_client(int fd, const t_strvect &split, IRCserv *serv);
 
 void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	if (split.size() < 3)
+	t_strvect	command;
+	std::vector<t_server>::iterator	net;
+
+	if (split.size() < 4)
 		return ;
-	remove_introduced_server(fd, split, serv);
+	for (net = serv->network.begin(); net != serv->network.end(); ++net)
+		if (net->servername == split[2])
+		{
+			command.push_back("SQUIT");
+			command.push_back(split[2]);
+			command.push_back(split[3]);
+			squit_from_client(serv->listen[0].socket_fd, command, serv);
+			return ;
+		}
+	msg_forward(fd, strvect_to_string(split), serv);
 }
 
 void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
@@ -101,6 +87,7 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (serv->fds[fd].type == FD_OPER)
 			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 					strvect_to_string(split) + CRLF;
+		_serv->_blocked = true;
 		serv->fds[_serv->fd].status = false;
 	}
 }
