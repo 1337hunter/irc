@@ -102,7 +102,6 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 					strvect_to_string(split) + CRLF;
 		serv->fds[_serv->fd].status = false;
-		remove_server_by_name(split[1], serv);
 	}
 }
 

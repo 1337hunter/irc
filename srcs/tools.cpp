@@ -359,13 +359,16 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 				b->servername == servername)
 		{
 			client = b->clients.begin();
-
+			remove_server_by_name(servername, serv);
 			msg_forward(-1, ":" + serv->servername + " SQUIT " + b->servername, serv);
 			for (; client != b->clients.end(); client++)
 			{
 				split.push_back(":" + (*client)->getnick());
 				split.push_back("QUIT");
-				split.push_back(":Network split");
+				if (!servername.empty())
+					split.push_back(":Server " + servername + " is reconnecting!");
+				else
+					split.push_back(":Network split");
 				cmd_quit(serv->listen[0].socket_fd, split, serv);
 				split.clear();
 			}
