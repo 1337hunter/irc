@@ -180,9 +180,9 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 			if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
 				return ;
 			ERR_print_errors_cb(SSLErrorCallback, NULL);
-			SSL_free(fdref.sslptr);
 			if (r >= 0)
 				SSL_shutdown(serv->fds[fd].sslptr);
+			SSL_free(fdref.sslptr);
 			std::cout << "tls";
 		}
 		if ((fdref.type == FD_SERVER || fdref.type == FD_OPER) && fdref.status)
@@ -192,13 +192,6 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 		FD_CLR(fd, &(serv->fdset_read));
 		FD_CLR(fd, &(serv->fdset_write));
 		close(fd);
-#if 0
-		if (serv->fds[fd].tls)
-    	{
-			SSL_shutdown(serv->fds[fd].sslptr);
-			SSL_free(serv->fds[fd].sslptr);
-	    }
-#endif
 		serv->fds.erase(fd);
 //		won't work for suddenly disconnecting servers	//	it->Disconnect();
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
