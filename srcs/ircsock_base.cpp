@@ -157,7 +157,7 @@ void	self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 			split.push_back("SQUIT");
 			split.push_back(serv->network[i].servername);
 			split.push_back(":Read error");
-			cmd_squit(fd, split, serv);
+			cmd_squit(serv->listen[0].socket_fd, split, serv);
 			return ;
 		}
 	fdref.fatal = true;
@@ -183,9 +183,9 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 			return ;
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 	}
-	if ((fdref.type == FD_SERVER || fdref.type == FD_OPER) && fdref.status)
+	if (fdref.type == FD_SERVER && fdref.status)
 		self_cmd_squit(fd, fdref, serv);
-	else if (fdref.type == FD_CLIENT && fdref.status)
+	else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
 		self_cmd_quit(fd, fdref, serv);
 	if (fdref.status)
 		fdref.fatal = true;

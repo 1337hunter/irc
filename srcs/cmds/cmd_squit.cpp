@@ -54,8 +54,10 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	else if (_serv->servername != split[1] && serv->fds[fd].type == FD_OPER)
 	{
-		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
-			strvect_to_string(split) + CRLF; return ;
+		if (!_serv->_blocked)
+			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
+			strvect_to_string(split) + CRLF;
+		return ;
 	}
 	else if (_serv->servername == split[1])
 	{
