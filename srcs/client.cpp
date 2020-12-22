@@ -82,6 +82,7 @@ Client				&Client::operator=(Client const &other)
 	this->_blocked = other._blocked;
 	this->_blocked_time = other._blocked_time;
 	this->dtloggedin = other.dtloggedin;
+	this->dtlastactive = other.dtlastactive;
 	this->_channels = other._channels;
 	this->invited = other.invited;
 	return (*this);
@@ -162,6 +163,7 @@ bool	Client::Register(std::string const &user, std::string const &real)
 		this->_isRegistred = true;
 	this->USER = true;
 	this->dtloggedin = ft_getcurrenttime();
+	this->dtlastactive = this->dtloggedin;
 	if (DEBUG_MODE)
 		std::cout << "fd " << this->fd << " registred as " <<
 			this->nickname << " from " << this->username << "@" <<
@@ -177,6 +179,7 @@ bool	Client::Register(std::string const &nick)
 		_isRegistred = true;
 	this->NICK = true;
 	this->dtloggedin = ft_getcurrenttime();
+	this->dtlastactive = this->dtloggedin;
 	if (DEBUG_MODE)
 		std::cout << "fd " << this->fd << " registred as " <<
 			this->nickname << " from " << this->username << "@" <<
@@ -188,6 +191,16 @@ bool	Client::Register(std::string const &nick)
 time_t	Client::gettimeloggedin(void)
 {
 	return (this->dtloggedin);
+}
+
+time_t	Client::gettimelastactive(void)
+{
+	return (this->dtlastactive);
+}
+
+void	Client::updatelastactive(void)
+{
+	this->dtlastactive = ft_getcurrenttime();
 }
 
 void	Client::ChangeNick(std::string const &what)
@@ -395,22 +408,22 @@ time_t	Client::getBlockedTime(void)
 
 std::string	Client::getinfo(void)
 {
-	return std::string(nickname + "!" + username + "@" + hostname);
+	return (std::string(nickname + "!" + username + "@" + hostname));
 }
 
 bool	Client::isAway(void)
 {
-	return _away;
+	return (this->_away);
 }
 
-std::string const	Client::getAwayMsg(void)
+std::string const	&Client::getAwayMsg(void)
 {
-	return _away_message;
+	return (this->_away_message);
 }
 
 std::string	Client::getsafeinfo(void)
 {
-	return std::string(nickname + "!" + username + "@hiddenhost");
+	return (std::string(nickname + "!" + username + "@hiddenhost"));
 }
 
 Channel	*Client::eraseChannel(std::string const &name)
@@ -435,29 +448,3 @@ void	Client::partAllChan(void)
 		(*chan)->getclients().erase(this);
 	_channels.clear();
 }
-/*
-void	Client::Disconnect(void)
-{
-	this->fd = -1;
-	this->hostname = "";
-	this->_isConnected = false;
-	this->_isRegistred = false;
-	this->_isOperator = false;
-	this->_isInvisible = false;
-	this->_isServNotice = false;
-	this->_isWallOps = false;
-	this->NICK = false;
-	this->USER = false;
-	this->token = "";
-	// add to nickname history here
-}
-*/
-
-/*
-void	Client::Reconnect(int fd)
-{
-	this->fd = fd;
-	this->_isConnected = true;
-	this->NICK = true;
-}
-*/

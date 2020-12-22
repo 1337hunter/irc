@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 20:11:28 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/21 22:02:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ void		cmd_whowas(int fd, const t_strvect &split, IRCserv *serv)
 			fdref.wrbuf += ft_buildmsg(serv->servername,
 				ERR_NOSUCHSERVER, nick, split[3], "No such server");
 	}
-	else if (split.size() >= 4)	// from another server: reply or forward
+	else if (split.size() >= 5)	// from another server: reply or forward
 	{
 		if (getservernamebymask(serv, split[4]) == serv->servername)
 			fdref.wrbuf += reply_whowas(serv, nick, split[2], split[3]);
