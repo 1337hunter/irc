@@ -492,18 +492,14 @@ bool		Channel::isBanned(Client *client)
 
 bool		Channel::block_if(void)
 {
-	bool	flag;
 	std::unordered_map<Client*, client_flags>::iterator	client;
 
-	flag = false;
+	if (_blocked)
+		return false;
 	client = _clients.begin();
 	for (; client != _clients.end(); client++)
 		if (!client->first->isBlocked())
-			flag = true;
-	if (!flag)
-	{
-		this->block();
-		return true;
-	}
-	return false;
+			return false;
+	this->block();
+	return true;
 }

@@ -70,19 +70,11 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			client_it->block();
 			temp.clients.push_back(&(*client_it));
-			client_it->partAllChan();
 		}
 		chan = serv->channels.begin();
 		for (; chan != serv->channels.end(); chan++)
 			if (chan->block_if())
-			{
-				blocked_it = serv->unavailable.begin();
-				for (; blocked_it != serv->unavailable.end(); blocked_it++)
-					if (blocked_it->servername == split[1])
-						break ;
-				if (blocked_it == serv->unavailable.end())
-					temp.channels.push_back(&(*chan));
-			}
+				temp.channels.push_back(&(*chan));
 		temp._fd = _serv->fd;
 		temp._blocked_time = ft_getcurrenttime();
 		serv->unavailable.push_back(temp);
