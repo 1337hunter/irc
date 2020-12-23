@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/12/23 17:16:31 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/23 18:32:40 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 # define BUF_SIZE		512
 # define KILLTIME		60
-# define BLOCKTIME		10
+# define BLOCKTIME		20
 
 # define VERSION		"0210000000"
 # define VERSIONSTRING	"IRCserv-0.2.1"

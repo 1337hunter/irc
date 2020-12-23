@@ -374,7 +374,6 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||
 				b->servername == servername)
 		{
-			std::cout << "TIME TO REMOVE SPLITED SERVERS!\n\n";
 			client = b->clients.begin();
 			msg_forward(b->fd, ":" + serv->servername + " SQUIT " + b->servername, serv);
 			remove_server_by_name(b->servername, serv);
