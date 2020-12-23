@@ -382,7 +382,7 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 				split.push_back(":" + (*client)->getnick());
 				split.push_back("QUIT");
 				if (!servername.empty())
-					split.push_back(":Server " + servername + " is reconnecting!");
+					split.push_back(":Server " + servername + " is dead");
 				else
 					split.push_back(":Network split");
 				cmd_quit(serv->listen[0].socket_fd, split, serv);

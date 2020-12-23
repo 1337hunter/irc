@@ -1,5 +1,5 @@
 #include "ircserv.hpp"
-#define TIMEOUTSEC 10
+#define TIMEOUTSEC 1
 
 void	do_socket(IRCserv *serv)
 {

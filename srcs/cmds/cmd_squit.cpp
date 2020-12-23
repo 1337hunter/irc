@@ -29,6 +29,7 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 	Client	*client = 0;
 	t_server	*_serv;
 	std::string	squit_msg;
+	std::list<Client>::iterator client_it;
 
 	if (serv->fds[fd].type != FD_OPER && serv->fds[fd].type != FD_ME)
 	{
@@ -40,9 +41,6 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "SQUIT",
 			"Not enough parameters"); return ;
 	}
-	if (serv->fds[fd].type == FD_OPER)
-		if (!(client = find_client_by_fd(fd, serv)))
-			return ;
 	if (split.size() == 2)
 		squit_msg = ":Network split";
 	else if (split.size() > 2)
@@ -57,9 +55,8 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() +
 			strvect_to_string(split) + CRLF; return ;
 	}
-	else if (_serv->servername == split[1])
+	else if (_serv->servername == split[1] && serv->fds[fd].type == FD_ME)
 	{
-		std::list<Client>::iterator	client_it;
 		std::list<Channel>::iterator	chan;
 		std::list<blocked>::iterator	blocked_it;
 		blocked						temp;
@@ -78,10 +75,30 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		temp.fd = _serv->fd;
 		temp._blocked_time = ft_getcurrenttime();
 		serv->unavailable.push_back(temp);
-		if (serv->fds[fd].type == FD_OPER)
-			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
-					strvect_to_string(split) + CRLF;
 		serv->fds[_serv->fd].blocked = true;
+		serv->fds[_serv->fd].fatal = false;
+	}
+	else if (_serv->servername == split[1] && serv->fds[fd].type == FD_OPER)
+	{
+		t_strvect	command;
+
+		if (!(client = find_client_by_fd(fd, serv)))
+			return ;
+		client_it = _serv->clients.begin();
+		for (; client_it != _serv->clients.end(); client_it++)
+		{
+			command.push_back(":" + client_it->getnick());
+			command.push_back("QUIT");
+			command.push_back(":Server " + _serv->servername + " is dead");
+			cmd_quit(_serv->fd, split, serv);
+			command.clear();
+		}
+		remove_server_by_name(_serv->servername, serv);
+		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
+			strvect_to_string(split) + CRLF;
+		msg_forward(-1, ":" + client->getnick() + " " + strvect_to_string(split), serv);
+		serv->fds[_serv->fd].blocked = false;
+		serv->fds[_serv->fd].status = false;
 		serv->fds[_serv->fd].fatal = false;
 	}
 }
