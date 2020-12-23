@@ -45,7 +45,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NONICKNAMEGIVEN, -1, "",
 				"No nickname given"); return ;
 	}
-	if (split[1] == "anonymous" ||
+	if (split[1] == "anonymous" || split[1].size() > 9 ||
 			split[1].find_first_of("\b\r\n\a!@#$%^&*+-?:\"\',") != NPOS ||
 			split[1] == "admin" || split[1] == "oper" ||
 			split[1] == "operator" || split[1] == "Operator")
@@ -65,9 +65,12 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKNAMEINUSE, -1, split[1],
 			"Nickname is already in use");
 		else if (client->gethop() > 0)
+		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKCOLLISION, -1, split[1],
 			"Nickname collision KILL from " + client->getusername() +
 			"@" + client->gethostname());
+			serv->fds[fd].status = false;
+		}
 		return ;
 	}
 	else if (client && client->gethop() == 0 && !client->isRegistred() &&

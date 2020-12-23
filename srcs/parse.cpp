@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/20 22:29:23 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/23 21:22:36 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #define OPER	3
 #define ME		4
 #define MOTD	5
+#define SERVICE	6
 #define NPOS	std::string::npos
 
 typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number);
@@ -625,6 +626,16 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 }
 
 int
+block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+{
+	(void)config;
+	(void)line;
+	serv = 0;
+	(void)line_number;
+	return 0;
+}
+
+int
 block_motd(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
@@ -686,22 +697,6 @@ block_motd(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 
 }
 
-size_t	find_block(std::string line, size_t pos)
-{
-	if (!line.compare(pos, ft_strlen("listen"), "listen"))
-		return LISTEN;
-	if (!line.compare(pos, ft_strlen("admin"), "admin"))
-		return ADMIN;
-	if (!line.compare(pos, ft_strlen("link"), "link"))
-		return LINK;
-	if (!line.compare(pos, ft_strlen("me"), "me"))
-		return ME;
-	if (!line.compare(pos, ft_strlen("oper"), "oper"))
-		return OPER;
-	if (!line.compare(pos, ft_strlen("motd"), "motd"))
-		return MOTD;
-	return NPOS;
-}
 
 void	server_init(IRCserv *serv, int ac, char **av)
 {
@@ -822,6 +817,27 @@ void	server_init(IRCserv *serv, int ac, char **av)
 	}
 }
 
+
+
+size_t	find_block(std::string line, size_t pos)
+{
+	if (!line.compare(pos, ft_strlen("listen"), "listen"))
+		return LISTEN;
+	if (!line.compare(pos, ft_strlen("admin"), "admin"))
+		return ADMIN;
+	if (!line.compare(pos, ft_strlen("link"), "link"))
+		return LINK;
+	if (!line.compare(pos, ft_strlen("me"), "me"))
+		return ME;
+	if (!line.compare(pos, ft_strlen("oper"), "oper"))
+		return OPER;
+	if (!line.compare(pos, ft_strlen("motd"), "motd"))
+		return MOTD;
+	if (!line.compare(pos, ft_strlen("service"), "service"))
+		return SERVICE;
+	return NPOS;
+}
+
 void	parse(int ac, char **av, IRCserv *serv)
 {
 	std::fstream	config;
@@ -837,6 +853,7 @@ void	parse(int ac, char **av, IRCserv *serv)
 	block[OPER] = block_oper;
 	block[ME] = block_me;
 	block[MOTD] = block_motd;
+	block[SERVICE] = block_service;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())
 		error_exit("Error: can't open file \"./config/ircserv.conf\"");
