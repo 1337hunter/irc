@@ -38,10 +38,10 @@ void	RunServer(IRCserv *serv)
 		for (std::unordered_map<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)
 		{
-			if (it->second.type != FD_BLOCKED)
+			if (!it->second.blocked)
 			{
 				FD_SET(it->first, &(serv->fdset_read));
-				if (!(it->second.wrbuf.empty()) && it->second.type != FD_BLOCKED)
+				if (!(it->second.wrbuf.empty()))
 					FD_SET(it->first, &(serv->fdset_write));
 				FD_SET(it->first, &(serv->fdset_error));
 				lastfd = std::max(lastfd, it->first);

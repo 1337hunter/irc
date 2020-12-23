@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 21:55:27 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/23 18:12:56 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,10 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 #endif
 	msg_forward(fd, ":" + it->getnick() + " QUIT " + quit_msg, serv);
 	addtonickhistory(serv, it);
+	serv->fds[it->getFD()].wrbuf += "ERROR :Closing Link: [" + serv->fds[fd].hostname +
+		"] " + it->getinfo() + " " + quit_msg + CRLF;
 	serv->fds[it->getFD()].status = false;
+	serv->fds[it->getFD()].blocked = false;
 	serv->fds[it->getFD()].fatal = false;
 	serv->clients.erase(it);
 	return (0);

@@ -374,8 +374,9 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||
 				b->servername == servername)
 		{
+			std::cout << "TIME TO REMOVE SPLITED SERVERS!\n\n";
 			client = b->clients.begin();
-			msg_forward(b->_fd, ":" + serv->servername + " SQUIT " + b->servername, serv);
+			msg_forward(b->fd, ":" + serv->servername + " SQUIT " + b->servername, serv);
 			remove_server_by_name(b->servername, serv);
 			for (; client != b->clients.end(); client++)
 			{
@@ -393,6 +394,8 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 				remove_channel(*chan, serv);
 			serv->unavailable.erase(b);
 			b = serv->unavailable.begin();
+			serv->fds[b->fd].status = false;
+			serv->fds[b->fd].blocked = false;
 		}
 		else
 			b++;

@@ -119,6 +119,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	// we dont know either it's client or other server
 	fdref.rdbuf.erase();
 	fdref.wrbuf.erase();
+	fdref.blocked = false;
 	fdref.status = true;
 	fdref.tls = isTLS;
 	fdref.hostname = inet_ntoa(csin.sin_addr);
@@ -183,24 +184,27 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 			return ;
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 	}
-	if (fdref.type == FD_SERVER && fdref.status)
+	if (fdref.type == FD_SERVER && !fdref.blocked && fdref.status)
 		self_cmd_squit(fd, fdref, serv);
 	else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
 		self_cmd_quit(fd, fdref, serv);
-	if (fdref.status)
-		fdref.fatal = true;
-	if (fdref.tls)
+	if (!fdref.blocked && !fdref.status)
 	{
-		if (!fdref.fatal)
-			SSL_shutdown(fdref.sslptr);
-		SSL_free(fdref.sslptr);
-		std::cout << "tls";
+		if (fdref.status)
+			fdref.fatal = true;
+		if (fdref.tls)
+		{
+			if (!fdref.fatal)
+				SSL_shutdown(fdref.sslptr);
+			SSL_free(fdref.sslptr);
+			std::cout << "tls";
+		}
+		FD_CLR(fd, &(serv->fdset_read));
+		FD_CLR(fd, &(serv->fdset_write));
+		close(fd);
+		serv->fds.erase(fd);
+		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 	}
-	FD_CLR(fd, &(serv->fdset_read));
-	FD_CLR(fd, &(serv->fdset_write));
-	close(fd);
-	serv->fds.erase(fd);
-	std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
 }
 
 void	ReceiveMessage(int fd, IRCserv *serv)
@@ -246,7 +250,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			catch (std::out_of_range const &e) { (void)e; }
 		}
 	}
-	else
+	else if (r <= 0 || !fdref.status)
 		read_error(fd, fdref, r, serv);
 }
 

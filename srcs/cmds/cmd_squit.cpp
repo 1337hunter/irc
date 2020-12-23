@@ -75,13 +75,13 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		for (; chan != serv->channels.end(); chan++)
 			if (chan->block_if())
 				temp.channels.push_back(&(*chan));
-		temp._fd = _serv->fd;
+		temp.fd = _serv->fd;
 		temp._blocked_time = ft_getcurrenttime();
 		serv->unavailable.push_back(temp);
 		if (serv->fds[fd].type == FD_OPER)
 			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 					strvect_to_string(split) + CRLF;
-		serv->fds[_serv->fd].type = FD_BLOCKED;
+		serv->fds[_serv->fd].blocked = true;
 		serv->fds[_serv->fd].fatal = false;
 	}
 }
