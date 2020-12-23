@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 22:10:52 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/23 16:11:24 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,10 +156,11 @@ typedef struct		s_kill
 
 struct				blocked
 {
+	int					_fd;
 	time_t				_blocked_time;
 	std::string			servername;
 	std::list<Channel*>	channels;
-	std::list<std::string>	nicknames;
+	std::list<Client*>	clients;
 };
 
 struct				IRCserv

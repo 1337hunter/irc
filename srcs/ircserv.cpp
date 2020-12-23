@@ -33,14 +33,16 @@ void	RunServer(IRCserv *serv)
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
 		clear_kill_list(serv);
-	//	clear_block_list(serv);
+		clear_block_list(serv);
 		clear_empty_channels(serv);
 		for (std::unordered_map<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)
 		{
 			FD_SET(it->first, &(serv->fdset_read));
-			if (!(it->second.wrbuf.empty()))
+			if (!(it->second.wrbuf.empty()) && it->second.type != FD_BLOCKED)
 				FD_SET(it->first, &(serv->fdset_write));
+			else if (!(it->second.wrbuf.empty()) && it->second.type != FD_BLOCKED)
+				it->second.wrbuf.erase();
 			FD_SET(it->first, &(serv->fdset_error));
 			lastfd = std::max(lastfd, it->first);
 		}

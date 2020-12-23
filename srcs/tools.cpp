@@ -268,6 +268,7 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 	return true;
 }
 
+#if 0
 bool	is_nick_blocked(std::string const &nick, IRCserv *serv)
 {
 	std::list<blocked>::iterator	block_list;
@@ -283,6 +284,7 @@ bool	is_nick_blocked(std::string const &nick, IRCserv *serv)
 	}
 	return false;
 }
+#endif
 
 bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 {
@@ -361,7 +363,7 @@ void	remove_server_by_name(std::string const &servername, IRCserv *serv)
 void	clear_block_list(IRCserv *serv, std::string const &servername)
 {
 	std::list<blocked>::iterator	b;
-	std::list<std::string>::iterator	client;
+	std::list<Client*>::iterator	client;
 	std::list<Channel*>::iterator	chan;
 	t_strvect						split;
 
@@ -372,11 +374,12 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||
 				b->servername == servername)
 		{
-			client = b->nicknames.begin();
-			msg_forward(-1, ":" + serv->servername + " SQUIT " + b->servername, serv);
-			for (; client != b->nicknames.end(); client++)
+			client = b->clients.begin();
+			msg_forward(b->_fd, ":" + serv->servername + " SQUIT " + b->servername, serv);
+			remove_server_by_name(b->servername, serv);
+			for (; client != b->clients.end(); client++)
 			{
-				split.push_back(":" + *client);
+				split.push_back(":" + (*client)->getnick());
 				split.push_back("QUIT");
 				if (!servername.empty())
 					split.push_back(":Server " + servername + " is reconnecting!");

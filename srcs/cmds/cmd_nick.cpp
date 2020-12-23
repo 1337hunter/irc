@@ -51,16 +51,14 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			split[1] == "operator" || split[1] == "Operator")
 	{
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " +
-			split[1] + " :Erroneous nickname" + CRLF; return ;
-	}
-	if (is_nick_blocked(split[1], serv))
-	{
-		serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, -1, split[1],
-			"Nick/channel is temporarily unavailable"); return ;
+			split[1] + " :Erroneous nickname\r\n"; return ;
 	}
 	if ((client = find_client_by_nick(split[1], serv)) && client->isRegistred())
 	{
-		if (client->isRestricted())
+		if (client->isBlocked())
+			serv->fds[fd].wrbuf += get_reply(serv, ERR_UNAVAILRESOURCE, -1, split[1],
+			"Nick/channel is temporarily unavailable");
+		else if (client->isRestricted())
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
 			"Your connection is restricted!");
 		else if (client->gethop() == 0)
