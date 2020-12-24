@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/24 20:26:23 by salec            ###   ########.fr        #
+#    Updated: 2020/12/24 21:02:03 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -93,9 +93,6 @@ all: $(NAME)
 
 bonus: $(NAME)
 
-debug: CFLAGS += -g -DDEBUG_MODE=1
-debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' before$(NC)
-debug: $(NAME)
 
 $(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
 	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
@@ -109,10 +106,14 @@ $(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
 $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
 
-asan: $(SSLLIBS)
-	@echo "linking $(GREEN)$(NAME)$(NC) for $(OSNAME) with $(RED)$(ASANFLAGS)$(NC)"
-	@$(CC) -o $(NAME) $(SRCFILES) $(EXECFLAGS) $(ASANFLAGS)
-	@echo "$(CYAN)executable is ready$(NC)"
+# debugging rules
+debug: CFLAGS += -g -DDEBUG_MODE=1
+debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' before$(NC)
+debug: $(NAME)
+
+asan: CFLAGS += -g -DDEBUG_MODE=1 $(ASANFLAGS)
+asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS)\nmake sure to run 'fclean' rule before 'asan' if you compiled 'all' before$(NC)
+asan: $(NAME)
 
 openssl: $(SSLLIBS)
 
