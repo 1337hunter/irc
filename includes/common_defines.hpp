@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2020/12/23 18:32:40 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 18:01:22 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@
 # define FD_SERVER		2
 # define FD_ME			3
 # define FD_OPER		4
-# define FD_UNREGISTRED	5
+# define FD_SERVICE		5
+# define FD_UNREGISTRED	6
 
 # define BUF_SIZE		512
 # define KILLTIME		60

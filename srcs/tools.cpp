@@ -168,6 +168,23 @@ t_server	*find_server_by_fd(int fd, IRCserv *serv)
 	return 0;
 }
 
+std::string	get_servername_by_mask(std::string	const &mask, IRCserv *serv)
+{
+	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server_intro>::iterator routing;
+	std::string	servername;
+
+	for (; net != serv->network.end(); net++)
+	{
+		if (match(net->servername, mask))
+			return net->servername;
+		for (routing = net->routing.begin(); routing != net->routing.end(); ++routing)
+			if (match(routing->servername, mask))
+				return routing->servername;
+	}
+	return "";
+}
+
 t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 {
 	std::vector<t_server>::iterator net = serv->network.begin();
@@ -268,23 +285,6 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 	return true;
 }
 
-#if 0
-bool	is_nick_blocked(std::string const &nick, IRCserv *serv)
-{
-	std::list<blocked>::iterator	block_list;
-	std::list<std::string>::iterator	blocked_client;
-
-	block_list = serv->unavailable.begin();
-	for (; block_list != serv->unavailable.end(); block_list++)
-	{
-		blocked_client = block_list->nicknames.begin();
-		for (; blocked_client != block_list->nicknames.end(); blocked_client++)
-			if (*blocked_client == nick)
-				return true;
-	}
-	return false;
-}
-#endif
 
 bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 {
