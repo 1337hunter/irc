@@ -43,7 +43,7 @@ get_reply(IRCserv *serv, std::string rpl, Client *client, std::string command, s
 	reply = ":" + serv->servername + " " + (rpl.empty() ? "" : rpl + " ");
 	reply += (client == 0 ? "*" : client->getnick());
 	reply += (command.empty() ? "" : " " + command);
-	reply += (message.empty() ? "" : " :" + message) + CRLF;
+	reply += (message.empty() && rpl != RPL_LIST ? "" : " :" + message) + CRLF;
 	return reply;
 }
 

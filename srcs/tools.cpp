@@ -230,7 +230,7 @@ std::string	ft_buildmsg(std::string const &from, std::string const &msgcode,
 	if (!cmd.empty())
 		res += " " + cmd;
 	if (!msg.empty() || msgcode == RPL_MOTD || msgcode == RPL_INFO ||
-		msgcode == RPL_ISON || msgcode == RPL_USERHOST)
+		msgcode == RPL_ISON || msgcode == RPL_USERHOST || msgcode == RPL_LIST)
 		res += " :" + msg;
 	res += CRLF;
 	return (res);
