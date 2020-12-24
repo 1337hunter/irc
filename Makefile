@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/24 21:09:47 by salec            ###   ########.fr        #
+#    Updated: 2020/12/24 21:56:15 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,6 +56,7 @@ CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
+DEBUGFLAGS	= -g -DDEBUG_MODE=1
 ASANFLAGS	= -fsanitize=address
 SHELL		= /bin/zsh
 
@@ -87,7 +88,7 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all bonus debug asan openssl delssl gencert delcert clean fclean re
+.PHONY: all bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re
 
 all: $(NAME)
 
@@ -106,13 +107,19 @@ $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
 
 # debugging rules
-debug: CFLAGS += -g -DDEBUG_MODE=1
-debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' or 'asan' before$(NC)
-debug: $(NAME)
+debugmsg:
+	@echo "$(YELLOW)compiling $(NAME) in debug mode with $(DEBUGFLAGS)"
+	@echo "make sure to run 'fclean' if you compiled 'all'$(DBGINFO) before$(NC)"
 
-asan: CFLAGS += -g -DDEBUG_MODE=1 $(ASANFLAGS)
-asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS))\nmake sure to run 'fclean' rule before 'asan' if you compiled 'all' before$(NC)
-asan: $(NAME)
+debug: CFLAGS += $(DEBUGFLAGS)
+debug: DBGINFO = " or \'asan\'"
+debug: OSNAME += $(YELLOW)(debug mode)$(NC)
+debug: debugmsg $(NAME)
+
+asan: DEBUGFLAGS += $(ASANFLAGS)
+asan: CFLAGS += $(DEBUGFLAGS)
+asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS))$(NC)
+asan: debugmsg $(NAME)
 
 openssl: $(SSLLIBS)
 
