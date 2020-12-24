@@ -13,7 +13,7 @@ void	topic_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		return ;
 	if (!(channel = find_channel_by_name(split[2], serv)))
 		return ;
-	channel->settopic(split[3]);
+	channel->settopic(std::string(split[3], 1));
 	msg_to_channel_this(channel, client, strvect_to_string(split, ' ', 1), serv);
 	msg_forward(fd, strvect_to_string(split), serv);
 }
@@ -61,7 +61,7 @@ void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 				serv->fds[fd].wrbuf += get_reply(serv, ERR_CHANOPRIVSNEEDED, client,
 					split[1], "You're not channel operator"); return ;
 			}
-		channel->settopic(split[2]);
+		channel->settopic(std::string(split[2], 1));
 		msg_to_channel_this(channel, client, strvect_to_string(split), serv);
 		msg_forward(fd, ":" + client->getnick() + " " + strvect_to_string(split), serv);
 	}

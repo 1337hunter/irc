@@ -23,8 +23,7 @@ void	list_from_network(int fd, t_strvect const &split, IRCserv *serv)
 					continue ;
 				else
 					serv->fds[fd].wrbuf += get_reply(serv, RPL_LIST, client,
-							channel->getname() + " " + std::string(channel->gettopic(), 1),
-							std::string(channel->gettopic(), 1));
+					channel->getname() + " " + channel->gettopic(), channel->gettopic());
 			}
 		serv->fds[fd].wrbuf += get_reply(serv, RPL_LISTEND, client, "", "End of LIST");
 	}
@@ -50,17 +49,20 @@ void	list_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		chan = serv->channels.begin();
 		for (; chan != serv->channels.end(); chan++)
+		{
 			if (chan->getflags()._secret && !chan->isOnChan(client))
 				continue ;
 			else
+			{
 				serv->fds[fd].wrbuf += get_reply(serv, RPL_LIST, client, chan->getname() +
-				" " + std::string(chan->gettopic(), 1),
-				std::string(chan->gettopic(), 1));
-		serv->fds[fd].wrbuf += get_reply(serv, RPL_LISTEND, client, "", "End of LIST");
+				" " + chan->gettopic(), chan->gettopic());
+			}
+		}
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_LISTEND, client, "", "End of /LIST");
 	}
 	else if (split.size() == 2)
 	{
-this_server_list:
+this_server_lable_list:
 		args = ft_splitstring(split[1], ' ');
 		for (size_t i = 0; i < args.size(); ++i)
 			if ((channel = find_channel_by_name(args[i], serv)))
@@ -69,15 +71,14 @@ this_server_list:
 					continue ;
 				else
 					serv->fds[fd].wrbuf += get_reply(serv, RPL_LIST, client,
-							channel->getname() + " " + std::string(channel->gettopic(), 1),
-							std::string(channel->gettopic(), 1));
+					channel->getname() + " " + channel->gettopic(), channel->gettopic());
 			}
 		serv->fds[fd].wrbuf += get_reply(serv, RPL_LISTEND, client, "", "End of LIST");
 	}
 	else if (split.size() == 3)
 	{
 		if (match(serv->servername, split[2]))
-			goto this_server_list;
+			goto this_server_lable_list;
 		if (!(_serv = find_server_by_mask(split[2], serv)))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, client, split[2],

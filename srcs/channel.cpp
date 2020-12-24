@@ -81,6 +81,7 @@ Channel::Channel(std::string const &name) : _name(name), _blocked(false),
 {
 	if (name[0] == '!')
 		_safe_postfix = get_safe_postfix();
+	_topic = "";
 }
 
 Channel::Channel(std::string const &name, Client *client) : _name(name), _blocked(false),
@@ -99,6 +100,7 @@ Channel::Channel(std::string const &name, Client *client) : _name(name), _blocke
 		_clients[client] = client_flags(1, 1, 0);
 		_channel_creator = client->getinfo();
 	}
+	_topic = "";
 }
 
 Channel::Channel(std::string const &name, Client *client, std::string const &modes) :
@@ -120,6 +122,7 @@ Channel::Channel(std::string const &name, Client *client, std::string const &mod
 		else if (modes[i] == 'v')
 			bmodes[2] = 1;
 	_clients[client] = client_flags(bmodes);
+	_topic = "";
 }
 
 
