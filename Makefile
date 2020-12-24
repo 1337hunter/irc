@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/24 21:02:03 by salec            ###   ########.fr        #
+#    Updated: 2020/12/24 21:02:18 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -92,7 +92,6 @@ ULINEF		= \e[24m
 all: $(NAME)
 
 bonus: $(NAME)
-
 
 $(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
 	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
