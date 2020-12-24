@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 22:33:09 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/24 19:33:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,15 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 	return (count);
 }
 
-bool		fdunreg(std::pair<int, t_fd> fd) { return (fd.second.type == FD_UNREGISTRED); }
-bool		notfdme(std::pair<int, t_fd> fd) { return (fd.second.type != FD_ME); }
+//bool		notfdme(std::pair<int, t_fd> const &fd) { return (fd.second.type != FD_ME); }
+//	size_t	unkncount = std::count_if(serv->fds.begin(), serv->fds.end(), notfdme);
+//	unkncount -= serv->clients.size();
+//	unkncount -= std::count_if(serv->network.begin(), serv->network.end(), notblocked);
+bool		fdunreg(std::pair<int, t_fd> const &fd) { return (fd.second.type == FD_UNREGISTRED); }
 
 size_t		getunknownconnectscount(IRCserv *serv)
 {
 	size_t	unkncount = std::count_if(serv->fds.begin(), serv->fds.end(), fdunreg);
-//	size_t	unkncount = std::count_if(serv->fds.begin(), serv->fds.end(), notfdme);
-//	unkncount -= serv->clients.size();
-//	unkncount -= std::count_if(serv->network.begin(), serv->network.end(), notblocked);
 	return (unkncount);
 }
 
