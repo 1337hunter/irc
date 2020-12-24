@@ -1,17 +1,75 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd_trace.cpp                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/12/24 19:26:29 by gbright           #+#    #+#             */
+/*   Updated: 2020/12/24 19:27:30 by gbright          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ircserv.hpp"
 #include "tools.hpp"
 #include "message.hpp"
 
 void	trace_from_network(int fd, t_strvect const &split, IRCserv *serv)
 {
-	fd = 0; (void)split; serv = 0;
+	Client		*client;
+	t_server	*_serv;
+	size_t		c;
+	std::unordered_map<int, t_fd>::iterator fds;
+
+	if (split.size() != 3)
+		return ;
+	if (!(client = find_client_by_nick(get_nick_from_info(split[0]), serv)))
+		return ;
+	if (match(serv->servername, split[2]))
+	{
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACELINK, client, std::string("Link ") +
+			VERSIONSTRING + (DEBUG_MODE ? " debug " : " ") + serv->servername + " " +
+			serv->servername + " " + "V" + std::string(VERSION) + " " +
+			std::to_string(ft_getcurrenttime() - serv->dtstarted) + " " + "0 0", "");
+		c = 0;
+		fds = serv->fds.begin();
+		for (; fds != serv->fds.end(); fds++)
+			if (fds->second.type == FD_SERVICE)
+				c++;
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACESERVER, client, "Serv " +
+				std::to_string(c) + "S " + std::to_string(serv->clients.size()) +
+				"C " + serv->servername, "");
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACEEND, client, serv->servername  +
+		" " + VERSIONSTRING + (DEBUG_MODE ? " debug" : ""), "End of TRACE");
+	}
+	else
+	{
+		if (!(_serv = find_server_by_mask(split[2], serv)))
+			return ;
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACELINK, client, std::string("Link ") +
+			VERSIONSTRING + (DEBUG_MODE ? " debug " : " ") + serv->servername + " " +
+			get_servername_by_mask(split[2], serv) + " " +
+			"V" + std::string(VERSION) + " " +
+			std::to_string(ft_getcurrenttime() - serv->dtstarted) + " " +
+			std::to_string(serv->fds[_serv->fd].recvbytes) + " " +
+			std::to_string(serv->fds[_serv->fd].sentbytes), "");
+		c = 0;
+		fds = serv->fds.begin();
+        for (; fds != serv->fds.end(); fds++)
+			if (fds->second.type == FD_SERVICE)
+				c++;
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACESERVER, client, "Serv " +
+				std::to_string(c) + "S " + std::to_string(serv->clients.size()) +
+				"C " + serv->servername, "");
+		serv->fds[_serv->fd].wrbuf += strvect_to_string(split) + CRLF;
+	}
 }
 
 void	trace_from_client(int fd, t_strvect const &split, IRCserv *serv)
 {
 	Client		*client;
 	Client		*oper;
-	t_server	*_serv;
+	t_server	*_serv = 0;
 	int		c;
 	std::vector<t_server>::iterator	net;
 	std::unordered_map<int, t_fd>::iterator	fds;
@@ -67,9 +125,9 @@ void	trace_from_client(int fd, t_strvect const &split, IRCserv *serv)
 			for ( ; service != serv->services.end(); service++)
 				if (service->fd != -1 && match(net->servername, service->distribution))
 					c++;
-			serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACESERVER, client, "",
-						"Serv " + std::to_string(c) + "S " +
-						std::to_string(net->clients.size()) + "C " + net->servername);
+			serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACESERVER, client, "Serv " +
+					std::to_string(c) + "S " + std::to_string(net->clients.size()) +
+					"C " + net->servername, "");
 		}
 	}
 	else if (split.size() == 2)
@@ -87,12 +145,21 @@ void	trace_from_client(int fd, t_strvect const &split, IRCserv *serv)
 				std::to_string(ft_getcurrenttime() - serv->dtstarted) + " " +
 				(_serv ? std::to_string(serv->fds[_serv->fd].recvbytes) + " " +
 				 std::to_string(serv->fds[_serv->fd].sentbytes) : "0 0") , "");
+		c = 0;
+		fds = serv->fds.begin();
+		for (; fds != serv->fds.end(); fds++)
+			if (fds->second.type == FD_SERVICE)
+				c++;
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACESERVER, client, "Serv " +
+				std::to_string(c) + "S " + std::to_string(serv->clients.size()) +
+				"C " + serv->servername, "");
 		if (_serv)
 			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 			strvect_to_string(split) + CRLF;
 	}
-	serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACEEND, client, serv->servername  +
-			" " + VERSIONSTRING + (DEBUG_MODE ? " debug" : ""), "End of TRACE");
+	if (!_serv)
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_TRACEEND, client, serv->servername  +
+		" " + VERSIONSTRING + (DEBUG_MODE ? " debug" : ""), "End of TRACE");
 }
 
 void	cmd_trace(int fd, t_strvect const &split, IRCserv *serv)
