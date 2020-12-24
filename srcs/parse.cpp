@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/24 14:46:09 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 23:25:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 #define SERVICE	6
 #define NPOS	std::string::npos
 
-typedef	int (*t_block)(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number);
+typedef	int (*t_block)(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number);
 typedef std::unordered_map<int, t_block> t_blockmap;
 
 size_t	ft_strlen(const char *s)
@@ -79,7 +79,7 @@ size_t	get_arg(size_t pos, std::string &line, std::string &dst, std::string cons
 }
 
 int
-block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_listen(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
 	size_t		pos_copy_from;
@@ -231,7 +231,7 @@ block_listen(std::fstream &config, std::string &line, IRCserv *serv, size_t &lin
 }
 
 int
-block_admin(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_admin(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
 	size_t		i;
@@ -309,7 +309,7 @@ block_admin(std::fstream &config, std::string &line, IRCserv *serv, size_t &line
 }
 
 int
-block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_link(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	t_link	temp;
 	size_t	pos;
@@ -486,7 +486,7 @@ block_link(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 }
 
 int
-block_me(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_me(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t  pos;
 	size_t  i;
@@ -561,7 +561,7 @@ block_me(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_nu
 }
 
 int
-block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_oper(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t	pos;
 	size_t	i;
@@ -664,14 +664,14 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 #if DEBUG_MODE
 	std::cout << "operator: name '" << temp.name <<
 				"' pass: '" << temp.pass <<
-				"' whois: '" << temp.swhois << 
+				"' whois: '" << temp.swhois <<
 				"' hostmask: '" << temp.hostmask << "'" << std::endl;
 #endif
 	return 0;
 }
 
 int
-block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_service(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t	pos;
 	t_service	temp;
@@ -791,8 +791,8 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 #if DEBUG_MODE
 	std::cout << "service: name '" << temp.name <<
 				"' pass: '" << temp.pass <<
-				"' distribution: '" << temp.distribution << 
-				"' hostmask: '" << temp.hostmask << 
+				"' distribution: '" << temp.distribution <<
+				"' hostmask: '" << temp.hostmask <<
 				"' info: '" << temp.info <<
 				"' type: '" << temp.type << "'" << std::endl;
 #endif
@@ -800,7 +800,7 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 }
 
 int
-block_motd(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
 	size_t		pos;
 	size_t		i;
@@ -1004,7 +1004,7 @@ size_t	find_block(std::string line, size_t pos)
 
 void	parse(int ac, char **av, IRCserv *serv)
 {
-	std::fstream	config;
+	std::ifstream	config;
 	std::string		line;
 	size_t			line_number;
 	size_t			i;
@@ -1036,5 +1036,6 @@ void	parse(int ac, char **av, IRCserv *serv)
 			if ((block[i](config, line, serv, line_number)) == -1)
 				error_exit("Error: config error at line ", line, line_number);
 	}
+	config.close();
 	server_init(serv, ac, av);
 }
