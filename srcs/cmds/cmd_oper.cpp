@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 14:09:05 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/21 19:22:36 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/24 13:24:00 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 			break ;
 		b++;
 	}
-	if (b == e) {
+	if (b == e || !match(serv->fds[fd].hostname, b->hostmask)) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOOPERHOST, fd, "",
 				"No O-lines for your host");
 		return ;

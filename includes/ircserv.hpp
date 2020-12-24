@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/23 17:43:48 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 13:03:55 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,6 +137,15 @@ typedef struct		s_oper
 	std::string		hostmask;
 }					t_oper;
 
+typedef struct		s_service
+{
+	std::string		name;
+	std::string		pass;
+	std::string		distribution;
+	std::string		type;
+	std::string		info;
+}					t_service;
+
 typedef struct		s_whowas
 {
 	std::string		nickname;
@@ -194,6 +203,7 @@ struct				IRCserv
 	std::vector<t_whowas>		nickhistory;
 	std::list<t_kill>			kills;
 	std::list<blocked>			unavailable;
+	std::list<t_service>		services;
 };
 
 void		parse(int ac, char **av, IRCserv *serv);

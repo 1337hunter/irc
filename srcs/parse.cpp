@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/23 21:22:36 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 13:21:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,42 @@ size_t	ft_strlen(const char *s)
 	if (!s) return 0;
 	while (s[c]) c++;
 	return c;
+}
+
+size_t	get_qarg(size_t pos, std::string &line, std::string &dst, std::string const &argname)
+{
+	size_t i;
+	pos = line.find_first_not_of(" \t", pos + argname.size());
+	if (pos == NPOS || line[pos] != '"')
+		return NPOS;
+	if ((i = line.find("\"", pos + 1)) == NPOS)
+		return NPOS;
+	dst = std::string(line, pos + 1, i - pos - 1);
+	pos = line.find_first_not_of(" \t", i + 1);
+	if (pos == NPOS || line[pos] != ';')
+		return NPOS;
+	return pos;
+}
+
+size_t	get_arg(size_t pos, std::string &line, std::string &dst, std::string const &argname)
+{
+	size_t	i;
+	size_t	pos_copy_from;
+	size_t	pos_copy_size;
+
+	pos = line.find_first_not_of(" \t", pos + argname.size());
+	if (pos == NPOS)
+		return NPOS;
+	i = line.find_first_of(" \t;", pos);
+	pos_copy_from = pos;
+	pos_copy_size = i - pos;
+	if (i == NPOS)
+		return NPOS;
+	pos = line.find_first_not_of(" \t", i);
+	if (pos == NPOS || line[pos] != ';')
+		return NPOS;
+	dst = std::string(line, pos_copy_from, pos_copy_size);
+	return pos;
 }
 
 int
@@ -544,7 +580,7 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	if (line[pos] != '{' || config.eof())
 		return -1;
 	pos++;
-	while (pos >= line.length() || line[pos] != '}')	// hmmmmmmmmm
+	while (pos >= line.length() || line[pos] != '}')
 	{
 		while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS)
 		{
@@ -604,7 +640,17 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name") && line.compare(pos, 4, "pass"))
 				return -1;
 		}
-
+		else if (!line.compare(pos, 8, "hostmask"))
+		{
+			if ((pos = get_arg(pos, line, temp.hostmask, "hostmask")) == NPOS)
+                return -1;
+            pos = line.find_first_not_of(" \t\n", pos + 1);
+            if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+                    line.compare(pos, 4, "pass") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 4, "swhois"))
+                return -1;
+		}
 		else if (!line.compare(pos, 1, "#"))
 			pos = NPOS;
 		else if (!line.compare(pos, 1, "}"))
@@ -614,12 +660,11 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 	}
 
 	//	default hostmask for all operators
-	temp.hostmask = "127.0.0.1";
-
 	serv->oper.push_back(temp);
 #if DEBUG_MODE
 	std::cout << "operator: name '" << temp.name <<
 				"' pass: '" << temp.pass <<
+				"' whois: '" << temp.swhois << 
 				"' hostmask: '" << temp.hostmask << "'" << std::endl;
 #endif
 	return 0;
@@ -628,10 +673,106 @@ block_oper(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_
 int
 block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &line_number)
 {
-	(void)config;
-	(void)line;
-	serv = 0;
-	(void)line_number;
+	size_t	pos;
+	t_service	temp;
+
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("service");
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS || line[pos] == '#')
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	while (pos >= line.length() || line[pos] != '}')
+	{
+		while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+		if (line[pos] == '#' && (pos = NPOS))
+			continue ;
+		if (!line.compare(pos, 4, "name"))
+		{
+			if ((pos = get_arg(pos, line,  temp.name, "name")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "pass") &&
+					line.compare(pos, 4, "type") &&
+					line.compare(pos, 12, "distribution") &&
+					line.compare(pos, 4, "info"))
+				return -1;
+		}
+		else if (!line.compare(pos, 4, "pass"))
+		{
+			if ((pos = get_qarg(pos, line, temp.pass, "pass")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name") && line.compare(pos, 6, "swhois"))
+				return -1;
+		}
+		else if (!line.compare(pos, 12, "distribution"))
+		{
+			if ((pos = get_arg(pos, line, temp.distribution, "distribution")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "pass") &&
+                    line.compare(pos, 4, "type") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 4, "info"))
+				return -1;
+		}
+		else if (!line.compare(pos, 4, "type"))
+		{
+			if ((pos = get_arg(pos, line, temp.type, "type")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "pass") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 12, "distribution") &&
+                    line.compare(pos, 4, "info"))
+				return -1;
+		}
+		else if (!line.compare(pos, 4, "info"))
+		{
+			if ((pos = get_qarg(pos, line, temp.info, "type")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "pass") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 12, "distribution") &&
+                    line.compare(pos, 4, "info"))
+				return -1;
+		}
+		else if (!line.compare(pos, 1, "#"))
+			pos = NPOS;
+		else if (!line.compare(pos, 1, "}"))
+			break ;
+		else
+			return -1;
+	}
+
+	serv->services.push_back(temp);
+#if DEBUG_MODE
+	std::cout << "service: name '" << temp.name <<
+				"' pass: '" << temp.pass <<
+				"' hostmask: '" << temp.distribution << "'" <<
+				" info: '" << temp.info <<
+				"' type: '" << temp.type << "'" << std::endl;
+#endif
 	return 0;
 }
 
