@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/24 21:02:18 by salec            ###   ########.fr        #
+#    Updated: 2020/12/24 21:09:47 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -107,11 +107,11 @@ $(OBJDIR):
 
 # debugging rules
 debug: CFLAGS += -g -DDEBUG_MODE=1
-debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' before$(NC)
+debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' or 'asan' before$(NC)
 debug: $(NAME)
 
 asan: CFLAGS += -g -DDEBUG_MODE=1 $(ASANFLAGS)
-asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS)\nmake sure to run 'fclean' rule before 'asan' if you compiled 'all' before$(NC)
+asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS))\nmake sure to run 'fclean' rule before 'asan' if you compiled 'all' before$(NC)
 asan: $(NAME)
 
 openssl: $(SSLLIBS)
