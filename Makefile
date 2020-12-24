@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/24 13:54:18 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/24 20:26:23 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -52,7 +52,7 @@ SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
-CFLAGS		= -g -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
+CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -81,16 +81,21 @@ endif
 
 RED			= \e[31m
 GREEN		= \e[32m
+YELLOW		= \e[93m
 CYAN		= \e[36m
 NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all bonus asan openssl delssl gencert delcert clean fclean re
+.PHONY: all bonus debug asan openssl delssl gencert delcert clean fclean re
 
 all: $(NAME)
 
 bonus: $(NAME)
+
+debug: CFLAGS += -g -DDEBUG_MODE=1
+debug: OSNAME += $(YELLOW)(debug mode)\nmake sure to run 'fclean' rule before 'debug' if you compiled 'all' before$(NC)
+debug: $(NAME)
 
 $(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
 	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
