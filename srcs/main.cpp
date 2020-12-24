@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2020/12/20 20:08:57 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/24 13:48:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "error_handle.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
+
+bool	g_server_die;
 
 int		main(int ac, char **av)
 {
@@ -37,6 +39,7 @@ int		main(int ac, char **av)
 
 	/* init commands map */
 	initcommands(serv);
+	g_server_die = false;
 
 	RunServer(serv);
 	return (0);

@@ -1,5 +1,7 @@
 #include "ircserv.hpp"
-#define TIMEOUTSEC 1
+#define TIMEOUTSEC 10
+
+extern bool	g_server_die;
 
 void	do_socket(IRCserv *serv)
 {
@@ -24,11 +26,16 @@ void	do_socket(IRCserv *serv)
 
 void	RunServer(IRCserv *serv)
 {
+	bool	die = false;
+	timeval timeout = {TIMEOUTSEC, 0};
+	int     lastfd;
+
 	do_socket(serv);
 	while (1)
 	{
-		int		lastfd = 0;
-		timeval	timeout = {TIMEOUTSEC, 0};
+		if (g_server_die)
+			die = true;
+		lastfd = 0;
 		FD_ZERO(&(serv->fdset_read));
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
@@ -94,5 +101,7 @@ void	RunServer(IRCserv *serv)
 					DoHandshakeTLS(fd, serv);
 			}
 		}
+		if (die)
+			exit(0);
 	}
 }
