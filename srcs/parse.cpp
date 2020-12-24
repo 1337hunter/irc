@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/24 13:47:39 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 14:46:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -718,7 +718,12 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 			if ((pos = get_qarg(pos, line, temp.pass, "pass")) == NPOS)
 				return -1;
 			pos = line.find_first_not_of(" \t\n", pos + 1);
-			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 4, "name") && line.compare(pos, 6, "swhois"))
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "distribution") &&
+                    line.compare(pos, 4, "type") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 4, "info") &&
+                    line.compare(pos, 8, "hostmask"))
 				return -1;
 		}
 		else if (!line.compare(pos, 12, "distribution"))
@@ -730,7 +735,8 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 					line.compare(pos, 4, "pass") &&
                     line.compare(pos, 4, "type") &&
                     line.compare(pos, 4, "name") &&
-                    line.compare(pos, 4, "info"))
+                    line.compare(pos, 4, "info") &&
+					line.compare(pos, 8, "hostmask"))
 				return -1;
 		}
 		else if (!line.compare(pos, 4, "type"))
@@ -742,7 +748,8 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 					line.compare(pos, 4, "pass") &&
                     line.compare(pos, 4, "name") &&
                     line.compare(pos, 12, "distribution") &&
-                    line.compare(pos, 4, "info"))
+                    line.compare(pos, 4, "info") &&
+					line.compare(pos, 8, "hostmask"))
 				return -1;
 		}
 		else if (!line.compare(pos, 4, "info"))
@@ -754,9 +761,24 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 					line.compare(pos, 4, "pass") &&
                     line.compare(pos, 4, "name") &&
                     line.compare(pos, 12, "distribution") &&
+                    line.compare(pos, 4, "info") &&
+					line.compare(pos, 8, "hostmask"))
+				return -1;
+		}
+		else if (!line.compare(pos, 8, "hostmask"))
+		{
+			if ((pos = get_arg(pos, line, temp.hostmask, "hostmask")) == NPOS)
+				return -1;
+			pos = line.find_first_not_of(" \t\n", pos + 1);
+			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' &&
+					line.compare(pos, 4, "pass") &&
+					line.compare(pos, 4, "type") &&
+                    line.compare(pos, 4, "name") &&
+                    line.compare(pos, 12, "distribution") &&
                     line.compare(pos, 4, "info"))
 				return -1;
 		}
+
 		else if (!line.compare(pos, 1, "#"))
 			pos = NPOS;
 		else if (!line.compare(pos, 1, "}"))
@@ -764,13 +786,14 @@ block_service(std::fstream &config, std::string &line, IRCserv *serv, size_t &li
 		else
 			return -1;
 	}
-
+	temp.fd = -1;
 	serv->services.push_back(temp);
 #if DEBUG_MODE
 	std::cout << "service: name '" << temp.name <<
 				"' pass: '" << temp.pass <<
-				"' hostmask: '" << temp.distribution << "'" <<
-				" info: '" << temp.info <<
+				"' distribution: '" << temp.distribution << 
+				"' hostmask: '" << temp.hostmask << 
+				"' info: '" << temp.info <<
 				"' type: '" << temp.type << "'" << std::endl;
 #endif
 	return 0;

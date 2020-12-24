@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/24 13:46:12 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/24 14:42:02 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,11 +139,13 @@ typedef struct		s_oper
 
 typedef struct		s_service
 {
+	int				fd;
 	std::string		name;
 	std::string		pass;
 	std::string		distribution;
 	std::string		type;
 	std::string		info;
+	std::string		hostmask;
 }					t_service;
 
 typedef struct		s_whowas
