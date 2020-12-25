@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:22 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 23:44:01 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ std::string	getwhoisinfo(IRCserv *serv, std::string const &target, t_cvit it)
 
 	reply += ft_buildmsg(serv->servername,
 		RPL_WHOISIDLE, target, it->getnick() + " " +
-		std::to_string(ft_getcurrenttime() - it->gettimelastactive()),
+		TOSTRING(ft_getcurrenttime() - it->gettimelastactive()),
 		"seconds idle");
 	/* ircd also sends timestamp of login in 317 */
 	return (reply);

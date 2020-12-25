@@ -16,7 +16,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 		begin++;
 	if (begin == serv->network.end()) //error
 		return ;
-	try { temp.hopcount = stoi(split[3]); } catch (std::exception &e) { (void)e; return; }
+	try { temp.hopcount = STOI(split[3]); } catch (std::exception &e) { (void)e; return; }
 	temp.servername = split[2];
 	temp.behind = behind;
 	temp.info = strvect_to_string(split, ' ', 5);
@@ -24,7 +24,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	begin->routing.push_back(temp);
 	// forward broadcast
 	forward_vect = split;
-	forward_vect[3] = std::to_string(temp.hopcount + 1);
+	forward_vect[3] = TOSTRING(temp.hopcount + 1);
 	forward = strvect_to_string(forward_vect);
 	forward += CRLF;
 	begin = serv->network.begin();
@@ -41,7 +41,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	std::string						enjoy;
 	std::string						channel_forward;
 	std::list<std::string>::const_iterator				Musk;
-	std::unordered_map<Client*, client_flags>::iterator	client_chan;
+	std::MAP<Client*, client_flags>::iterator	client_chan;
 
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
@@ -78,7 +78,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 		}
 		if (enjoy.size() > 0)
 		{
-			enjoy.pop_back();
+			enjoy = enjoy.substr(0, enjoy.size() - 1);
 			channel_forward = ":" + serv->servername + " NJOIN " + channel->getname() +
 				" :" + enjoy + CRLF;
 			enjoy.erase();
@@ -173,8 +173,8 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	temp.servername = split[1];
 	try
 	{
-		temp.hopcount = stoi(split[2]);
-		temp.token = split.size() < 5 ? std::to_string(NPOS) : split[3];
+		temp.hopcount = STOI(split[2]);
+		temp.token = split.size() < 5 ? TOSTRING(NPOS) : split[3];
 	}
 	catch (std::exception &e)
 	{
@@ -206,7 +206,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		while (serv_intro != begin->routing.end())
 		{
 			backward += ":" + serv_intro->behind + " SERVER " + serv_intro->servername +
-				" " + std::to_string(serv_intro->hopcount + 1) + " " +
+				" " + TOSTRING(serv_intro->hopcount + 1) + " " +
 				serv_intro->token + " " + serv_intro->info + CRLF;
 			serv_intro++;
 		}

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/24 23:25:20 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:43:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 #define NPOS	std::string::npos
 
 typedef	int (*t_block)(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number);
-typedef std::unordered_map<int, t_block> t_blockmap;
+typedef std::MAP<int, t_block> t_blockmap;
 
 size_t	ft_strlen(const char *s)
 {
@@ -159,7 +159,7 @@ block_listen(std::ifstream &config, std::string &line, IRCserv *serv, size_t &li
 					line.compare(pos, 7, "options") && line.compare(pos, 2, "ip"))
 				return -1;
 			std::string	port(line, pos_copy_from, pos_copy_size);
-			temp.port = std::stoi(port);
+			temp.port = STOI(port);
 		}
 		else if (!line.compare(pos, 7, "options"))
 		{
@@ -398,7 +398,7 @@ block_link(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 			if (pos != NPOS && line[pos] != '#' && line[pos] != '}' && line.compare(pos, 2, "ip") && line.compare(pos, 4, "pass") && line.compare(pos, 7, "options") && line.compare(pos, 8, "hostname"))
 				return -1;
 			std::string     port(line, pos_copy_from, pos_copy_size);
-			temp.port = std::stoi(port);
+			temp.port = STOI(port);
 		}
 		else if (!line.compare(pos, 4, "pass"))
 		{
@@ -877,7 +877,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		if (port.find_first_not_of("0123456789") != NPOS ||
 				port.length() < 1 || port.length() > 5)
 			error_exit("Error: bad port number");
-		serv->port = stoi(port);
+		serv->port = STOI(port);
 		if (serv->port < 1 || serv->port > 65535)
 			error_exit("Error: bad port number");
 	}
@@ -893,7 +893,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			else
 			{
 				serv->pass = pass;
-				serv->port = stoi(port);
+				serv->port = STOI(port);
 				if (serv->port < 1 || serv->port > 65535)
 					error_exit("Error: bad port number");
 			}
@@ -910,7 +910,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			if (temp[1].find_first_not_of("0123456789") != NPOS ||
 										temp.size() < 1 || temp.size() > 5)
 								error_exit("Error: bad port number");
-			link.port = stoi(temp[1]);
+			link.port = STOI(temp[1]);
 			if (temp.size() == 3)
 				link.pass = temp[2];
 			if (pass.find_first_not_of("0123456789") != NPOS ||
@@ -918,7 +918,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 				error_exit("Error: bad port number");
 			else
 			{
-				serv->port = stoi(pass);
+				serv->port = STOI(pass);
 				if (serv->port < 1 || serv->port > 65535)
 					error_exit("Error: bad port number");
 			}
@@ -943,10 +943,10 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			error_exit("Error: bad port number");
 		else
 		{
-			link.port = stoi(connect_to[1]);
+			link.port = STOI(connect_to[1]);
 			if (connect_to.size() == 3)
 				link.pass = connect_to[2];
-			serv->port = stoi(port);
+			serv->port = STOI(port);
 			if (serv->port < 1 || serv->port > 65535)
 				error_exit("Error: bad port number");
 		}
@@ -980,8 +980,6 @@ void	server_init(IRCserv *serv, int ac, char **av)
 			error_exit("Error: server you are trying to connect is bad configured");
 	}
 }
-
-
 
 size_t	find_block(std::string line, size_t pos)
 {

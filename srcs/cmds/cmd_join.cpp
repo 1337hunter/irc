@@ -10,7 +10,7 @@
 
 void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer client_it)
 {
-	std::unordered_map<Client*, client_flags>::iterator c_map;
+	std::MAP<Client*, client_flags>::iterator c_map;
 	std::string		reply;
 	std::string		forward;
 

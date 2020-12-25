@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/23 18:29:05 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 20:07:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ std::vector<Client*>	get_clients_for_quit_msg(Client *client)
 {
 	std::list<Channel*>::iterator   client_chan;
 	std::vector<Client*>            msg_for;
-	std::unordered_map<Client*, client_flags>::iterator chan_client;
+	std::MAP<Client*, client_flags>::iterator chan_client;
 
 	client_chan = client->getchannels().begin();
 	for (; client_chan != client->getchannels().end(); client_chan++)

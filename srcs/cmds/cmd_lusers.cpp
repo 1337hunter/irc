@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/24 19:33:03 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,23 +96,23 @@ std::string	reply_lusers(IRCserv *serv, std::string const &target, std::string c
 //  MUST send back RPL_LUSERCLIENT and RPL_LUSERME. others only when non-zero
 
 	reply += ft_buildmsg(serv->servername, RPL_LUSERCLIENT, target, "", "There are " +
-		std::to_string(usercount) + " users and " +
-		std::to_string(botscount) + " services on " +
-		std::to_string(servcount) + " servers");
+		TOSTRING(usercount) + " users and " +
+		TOSTRING(botscount) + " services on " +
+		TOSTRING(servcount) + " servers");
 
 	if (opercount != 0)
 		reply += ft_buildmsg(serv->servername, RPL_LUSEROP, target,
-			std::to_string(opercount), "operator(s) online");
+			TOSTRING(opercount), "operator(s) online");
 	if (unkncount != 0)
 		reply += ft_buildmsg(serv->servername, RPL_LUSERUNKNOWN, target,
-			std::to_string(unkncount), "unknown connection(s)");
+			TOSTRING(unkncount), "unknown connection(s)");
 	if (chancount != 0)
 		reply += ft_buildmsg(serv->servername, RPL_LUSERCHANNELS, target,
-			std::to_string(chancount), "channels formed");
+			TOSTRING(chancount), "channels formed");
 
 	reply += ft_buildmsg(serv->servername, RPL_LUSERME, target, "", "I have " +
-		std::to_string(clmecount) + " clients and " +
-		std::to_string(svmecount) + " servers");
+		TOSTRING(clmecount) + " clients and " +
+		TOSTRING(svmecount) + " servers");
 
 	return (reply);
 }

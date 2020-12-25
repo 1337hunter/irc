@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 10:46:35 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 20:12:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,12 @@
 #include <string>
 #include <vector>
 #include "client.hpp"
-#include <unordered_map>
 #include <list>
+#ifndef STD_CPP98
+# include <unordered_map>
+#else
+# include <map>
+#endif
 
 class Client;
 typedef std::vector<std::string>	t_strvect;
@@ -71,7 +75,7 @@ private:
 	std::string				_topic;
 	char					_type;
 	channel_flags			_flags;
-	std::unordered_map<Client*, client_flags>	_clients;
+	std::MAP<Client*, client_flags>	_clients;
 	std::string				_channel_creator;
 	Channel();
 public:
@@ -83,7 +87,7 @@ public:
 	Channel(Channel const &other);
 	Channel &operator=(Channel const &other);
 
-	std::unordered_map<Client*, client_flags> &getclients(void);
+	std::MAP<Client*, client_flags> &getclients(void);
 	std::string const	&getname(void);
 	std::string	const	&getkey(void);
 	std::string const	&gettopic(void);

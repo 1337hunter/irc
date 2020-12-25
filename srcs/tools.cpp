@@ -212,15 +212,13 @@ std::string	get_hopcount_by_token(std::string const &token, IRCserv *serv)
 	for (; net != serv->network.end(); net++)
 	{
 		if (net->token == token)
-			return std::to_string(net->hopcount);
+			return TOSTRING(net->hopcount);
 		for (routing = net->routing.begin(); routing != net->routing.end(); ++routing)
 			if (routing->token == token)
-				return std::to_string(routing->hopcount);
+				return TOSTRING(routing->hopcount);
 	}
 	return "";
-
 }
-
 
 t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 {
@@ -300,7 +298,7 @@ int			nick_forward(IRCserv *serv, Client *client)
 	std::string	forward;
 	std::vector<t_server>::iterator	net;
 
-	forward = "NICK " + client->getnick() + " " + std::to_string(client->gethop() + 1)
+	forward = "NICK " + client->getnick() + " " + TOSTRING(client->gethop() + 1)
 	   	+ " " + client->getusername() + " " + client->gethostname() + " " +
 		client->gettoken() + " " + client->getMode() + " " +  ":" +
 		client->getrealname() + CRLF;
@@ -321,7 +319,6 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 		}
 	return true;
 }
-
 
 bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 {

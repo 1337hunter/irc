@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 13:08:01 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 20:24:28 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,18 @@ std::string	ft_strtoupper(std::string const &str);
 std::string	ft_strtolower(std::string const &str);
 std::string	get_nick_from_info(std::string const &info);
 std::string get_mask_reply(Channel *channel, Client *client, std::string mode, IRCserv *serv);
-bool    is_valid_mask(std::string mask);
-bool    is_valid_serv_host_mask(std::string mask);
+bool    	is_valid_mask(std::string mask);
+bool    	is_valid_serv_host_mask(std::string mask);
+//	ft_tostring
+std::string	ft_tostring(int val);
+std::string	ft_tostring(long val);
+std::string	ft_tostring(uint val);
+std::string	ft_tostring(ulong val);
+//	ft_sto*
+int			ft_stoi(std::string const &str);
+long		ft_stol(std::string const &str);
+uint		ft_stou(std::string const &str);
+ulong		ft_stoul(std::string const &str);
 
 /****************************************************/
 /*		time related functions (timetools.cpp)		*/

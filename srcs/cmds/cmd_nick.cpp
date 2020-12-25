@@ -16,7 +16,7 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 
 	if (split.size() < 8)
 		return ;
-	try { hop = stoi(split[2]); } catch (std::exception &e) { (void)e; return ; }
+	try { hop = STOI(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
 		routing->clients.push_back(Client(split, fd));
 	else
@@ -24,7 +24,7 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += "ERROR :NICK command from unregistred server\r\n";
 		return ;
 	}
-	forward = "NICK " + split[1] + " " + std::to_string(hop + 1) + " " + split[3] +
+	forward = "NICK " + split[1] + " " + TOSTRING(hop + 1) + " " + split[3] +
 		" " + split[4] + " " + split[5] + " " + split[6] + " " + split[7];
 	for (size_t i = 8; i < split.size(); i++)
 		forward += " " + split[i];
@@ -116,7 +116,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
 			"Your connection is restricted couse " + std::string(kill->cause, 1)  +
-			" for " + std::to_string(KILLTIME - ft_getcurrenttime() + kill->time) + "s");
+			" for " + TOSTRING(KILLTIME - ft_getcurrenttime() + kill->time) + "s");
 			serv->fds[fd].status = false; return ;
 		}
 	serv->clients.push_back(Client(split[1], serv->token, fd));

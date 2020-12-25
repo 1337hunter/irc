@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 22:02:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:41:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ std::string	reply_whowas(IRCserv *serv, std::string const &target,
 	if (!entrycountstr.empty() &&
 		entrycountstr.find_first_not_of("0123456789") == std::string::npos)
 	{
-		try { entrycount = std::stoul(entrycountstr); }
+		try { entrycount = STOUL(entrycountstr); }
 		catch (std::exception const &e) { (void)e; }
 	}
 	if (entrycount == 0)

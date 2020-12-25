@@ -55,8 +55,8 @@ void	msg_error(std::string msg, std::string msg1, IRCserv *serv)
 
 void	msg_error(std::string msg, IRCserv *serv)
 {
-	std::unordered_map<int, t_fd>::iterator	b = serv->fds.begin();
-	std::unordered_map<int, t_fd>::iterator	e = serv->fds.end();
+	std::MAP<int, t_fd>::iterator	b = serv->fds.begin();
+	std::MAP<int, t_fd>::iterator	e = serv->fds.end();
 	std::string	_msg("ERROR :");
 
 	_msg += msg;
@@ -81,7 +81,7 @@ void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IRCserv *serv, bool all)
 {
 	std::string	info;
-	std::unordered_map<Client*, client_flags>::const_iterator   client_it;
+	std::MAP<Client*, client_flags>::const_iterator   client_it;
 
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " : ":" + client->getinfo() + " ";
 	client_it = channel->getclients().begin();
@@ -98,7 +98,7 @@ void	msg_to_channel(Channel *channel, Client *client, std::string const &msg, IR
 
 void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCserv *serv)
 {
-	std::unordered_map<Client*, client_flags>::const_iterator	client_it;
+	std::MAP<Client*, client_flags>::const_iterator	client_it;
 	std::string	info;
 
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
