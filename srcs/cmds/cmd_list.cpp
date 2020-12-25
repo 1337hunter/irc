@@ -72,7 +72,6 @@ void	list_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	{
 this_server:
 		chan = serv->channels.begin();
-		std::cout << "THIS SERVER\n\n";
 		for (; chan != serv->channels.end(); chan++)
 		{
 			if (chan->getflags()._secret && !chan->isOnChan(client))
