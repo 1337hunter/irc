@@ -18,7 +18,7 @@ void	list_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		if (match(serv->servername, split[3]))
 		{
-			args = ft_splitstring(split[1], ' ');
+			args = ft_splitstring(split[2], ',');
 			for (size_t i = 0; i < args.size(); ++i)
 				if ((channel = find_channel_by_name(args[i], serv)))
 				{
@@ -92,7 +92,6 @@ this_server:
 				goto this_server;
 			else if (!(_serv = find_server_by_mask(split[1], serv)))
 			{
-				std::cout << "\nno syuch server!\n";
 				serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, client, split[1],
 						"No such server"); return ;
 			}

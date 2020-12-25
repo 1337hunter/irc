@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/10 14:09:05 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/24 13:24:00 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 14:40:05 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void    cmd_oper(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	fd_entry->setOPER();
+	fd_entry->setUMODE("+w");
 	serv->fds[fd].type = FD_OPER;
 	serv->fds[fd].wrbuf += get_reply(serv, RPL_YOUREOPER, fd, "",
 			"You are now an IRC operator");

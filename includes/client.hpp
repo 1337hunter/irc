@@ -75,6 +75,7 @@ public:
 	bool				isRegistred(void);
 	bool				isOperator(void);
 	bool				isInvisible(void);
+	bool				isWallOps(void);
 	bool				isAway(void);
 	bool				getUSER(void);
 	bool				getNICK(void);

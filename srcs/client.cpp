@@ -238,6 +238,11 @@ bool	Client::isOperator(void)
 	return (this->_isOperator);
 }
 
+bool	Client::isWallOps(void)
+{
+	return _isWallOps;
+}
+
 bool	Client::setMode(std::string const &modes)
 {
 	size_t	i;
