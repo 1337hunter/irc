@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 14:28:21 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 15:16:20 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,8 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["SERVLIST"]	= cmd_servlist;
 	serv->cmds["WALLOPS"]	= cmd_wallops;
 	serv->cmds["WALLOPS"].settype(CMD_SERVERONLY);
+	serv->cmds["REHASH"]	= cmd_rehash;
+	serv->cmds["REHASH"].settype(CMD_CLIENTONLY);
 
 	// values below are from InspIRCd-3 (need to check what it means)
 	serv->usermodes = "iosw";

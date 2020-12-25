@@ -15,8 +15,10 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
 	{
+#if DEBUG_MODE
 		std::cout << "A reply " << split[1] << " from fd " << fd <<
 			" recieved. Forward to " << split[2] << std::endl;
+#endif
 		Client	*found = find_client_by_nick(split[2], serv);
 		if (found)
 		{
@@ -42,9 +44,9 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	try
 	{
 		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
-		#if DEBUG_MODE
+#if DEBUG_MODE
 			std::cout << "command found:\t\t" << split[i] << std::endl;
-		#endif
+#endif
 	}
 	catch (std::out_of_range &e)
 	{
@@ -88,9 +90,10 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 	fdref.recvbytes = 0;
 	fdref.linkname = serv->servername +
 		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
-
+#if DEBUG_MODE
 	std::cout << "server created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
+#endif
 }
 
 void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
@@ -109,9 +112,11 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 		error_exit("accept error");
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
+#if DEBUG_MODE
 	if (isTLS)
 		std::cout << "tls";
 	std::cout << "client " << fd << " accepted:\t" <<
+#endif
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 
 	t_fd	&fdref = serv->fds[fd];		// this will create t_fd and return ref
@@ -197,13 +202,17 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 			if (!fdref.fatal)
 				SSL_shutdown(fdref.sslptr);
 			SSL_free(fdref.sslptr);
+#if DEBUG_MODE
 			std::cout << "tls";
+#endif
 		}
 		FD_CLR(fd, &(serv->fdset_read));
 		FD_CLR(fd, &(serv->fdset_write));
 		close(fd);
 		serv->fds.erase(fd);
+#if DEBUG_MODE
 		std::cout << "client " << fd << ":\t\tdisconnected" << std::endl;
+#endif
 	}
 }
 

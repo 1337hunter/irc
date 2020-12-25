@@ -2,6 +2,7 @@
 #define TIMEOUTSEC 10
 
 extern bool	g_server_die;
+extern bool	g_rehash;
 
 void	do_socket(IRCserv *serv)
 {
@@ -24,9 +25,28 @@ void	do_socket(IRCserv *serv)
 //	maybe insert here CreateSockTLS for default secure irc port 6697 (RFC 7194)
 }
 
+void	ircserv_free(IRCserv *serv)
+{
+	std::unordered_map<int, t_fd>::iterator	fd;
+
+	fd = serv->fds.begin();
+	for (; fd != serv->fds.end(); fd++)
+	{
+		if (fd->second.tls)
+		{
+		//	SSL_shutdown(fd->second.sslptr);
+			SSL_free(fd->second.sslptr);
+		}
+		close(fd->first);
+	}
+	SSL_CTX_free(serv->sslctx);
+	delete serv;
+}
+
 void	RunServer(IRCserv *serv)
 {
 	bool	die = false;
+	bool	rehash = false;
 //	timeval timeout = {TIMEOUTSEC, 0};
 	int     lastfd;
 
@@ -35,6 +55,8 @@ void	RunServer(IRCserv *serv)
 	{
 		if (g_server_die)
 			die = true;
+		if (g_rehash)
+			rehash = true;
 		lastfd = 0;
 		FD_ZERO(&(serv->fdset_read));
 		FD_ZERO(&(serv->fdset_write));
@@ -103,5 +125,10 @@ void	RunServer(IRCserv *serv)
 		}
 		if (die)
 			exit(0);
+		if (rehash)
+		{
+			ircserv_free(serv);
+			return ;
+		}
 	}
 }

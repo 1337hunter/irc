@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/25 14:26:41 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/25 15:13:26 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_ison.cpp cmds/cmd_users.cpp cmds/cmd_topic.cpp \
 			cmds/cmd_kick.cpp cmds/cmd_trace.cpp cmds/cmd_service.cpp \
 			cmds/cmd_die.cpp cmds/cmd_list.cpp cmds/cmd_servlist.cpp \
-			cmds/cmd_wallops.cpp
+			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp
 
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/

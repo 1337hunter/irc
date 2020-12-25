@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/25 14:24:43 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 15:13:58 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ void	cmd_die(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_list(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_wallops(int fd, t_strvect const &split, IRCserv *serv);
+void	cmd_rehash(int fd, t_strvect const &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, Client *client);
 std::string		reply_motd(IRCserv *serv, std::string const &it);
