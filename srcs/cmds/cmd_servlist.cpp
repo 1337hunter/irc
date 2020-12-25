@@ -25,6 +25,8 @@ void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv)
 				service->distribution + " " + service->type + " " +
 				get_hopcount_by_token(service->token, serv) + " " + service->info, "");
 			}
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_SERVLISTEND, client, "",
+				"End of service listing");
 	}
 	else if (split.size() == 2)
 	{
@@ -40,6 +42,8 @@ void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv)
 
 			}
 		}
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_SERVLISTEND, client, split[1],
+				"End of service listing");
 	}
 	else if (split.size() == 3)
 	{
@@ -56,7 +60,7 @@ void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv)
 
 			}
 		}
+		serv->fds[fd].wrbuf += get_reply(serv, RPL_SERVLISTEND, client, split[1] + " " +
+				split[2], "End of service listing");
 	}
-	serv->fds[fd].wrbuf += get_reply(serv, RPL_SERVLISTEND, client, "",
-			"End of service listing");
 }
