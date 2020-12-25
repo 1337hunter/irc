@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 15:19:56 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 17:36:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,9 +97,10 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	fdref.sock = -1;
 	fdref.linkname = serv->servername + "[" + inet_ntoa(sockin.sin_addr) +
 		":" + std::to_string(_listen.port) + "]";
-
+#if DEBUG_MODE
 	std::cout << "tlsserver created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
+#endif
 }
 
 void	DoHandshakeTLS(int fd, IRCserv *serv)
