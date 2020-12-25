@@ -116,8 +116,8 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	if (isTLS)
 		std::cout << "tls";
 	std::cout << "client " << fd << " accepted:\t" <<
-#endif
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
+#endif
 
 	t_fd	&fdref = serv->fds[fd];		// this will create t_fd and return ref
 	fdref.type = FD_UNREGISTRED;
