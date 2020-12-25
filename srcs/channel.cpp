@@ -146,6 +146,8 @@ Channel::Channel(std::string const &name, std::string const &key, Client *client
 		_safe_postfix = get_safe_postfix();
 		_clients[client] = client_flags(1, 1, 0);
 	}
+	else if (name.size() > 0 && name[0] == '&')
+		_clients[client] = client_flags(1, 1, 0);
 }
 
 Channel	&Channel::operator=(Channel const &o)
@@ -505,4 +507,9 @@ bool		Channel::block_if(void)
 			return false;
 	this->block();
 	return true;
+}
+
+std::string	Channel::size(void)
+{
+	return std::to_string(_clients.size());
 }

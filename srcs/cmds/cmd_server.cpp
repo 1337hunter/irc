@@ -63,6 +63,8 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	channel = serv->channels.begin();
 	for (; channel != serv->channels.end(); channel++)
 	{
+		if (channel->getname()[0] == '&')
+			continue ;
 		client_chan = channel->getclients().begin();
 		for (; client_chan != channel->getclients().end(); client_chan++)
 		{
@@ -82,6 +84,8 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 			enjoy.erase();
 			serv->fds[fd].wrbuf += channel_forward;
 		}
+		if (channel->getname()[0] == '+')
+			continue ;
 		serv->fds[fd].wrbuf += ":" + serv->servername + " MODE " + channel->getname() +
 			" " + channel->getMode() + CRLF;
 		if (!channel->getflags()._key.empty())

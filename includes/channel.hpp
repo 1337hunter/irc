@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 21:50:00 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 10:46:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ public:
 	std::string const	&getCreator(void);
 	std::string			getCreationTime(void);
 	std::string			getMode(void);
+	std::string			size(void);
 	channel_flags const	&getflags(void);
 	Channel				*getptr(void);
 	char				gettype(void);
