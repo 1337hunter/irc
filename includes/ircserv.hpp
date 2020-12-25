@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/24 14:42:02 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 12:48:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,7 @@ typedef struct		s_service
 	std::string		type;
 	std::string		info;
 	std::string		hostmask;
+	std::string		token;
 }					t_service;
 
 typedef struct		s_whowas

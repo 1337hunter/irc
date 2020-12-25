@@ -185,6 +185,43 @@ std::string	get_servername_by_mask(std::string	const &mask, IRCserv *serv)
 	return "";
 }
 
+std::string	get_servername_by_token(std::string const &token, IRCserv *serv)
+{
+	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server_intro>::iterator routing;
+	std::string	servername;
+
+	for (; net != serv->network.end(); net++)
+	{
+		if (net->token == token)
+			return net->servername;
+		for (routing = net->routing.begin(); routing != net->routing.end(); ++routing)
+			if (routing->token == token)
+				return routing->servername;
+	}
+	return "";
+
+}
+
+std::string	get_hopcount_by_token(std::string const &token, IRCserv *serv)
+{
+	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server_intro>::iterator routing;
+	std::string	servername;
+
+	for (; net != serv->network.end(); net++)
+	{
+		if (net->token == token)
+			return std::to_string(net->hopcount);
+		for (routing = net->routing.begin(); routing != net->routing.end(); ++routing)
+			if (routing->token == token)
+				return std::to_string(routing->hopcount);
+	}
+	return "";
+
+}
+
+
 t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 {
 	std::vector<t_server>::iterator net = serv->network.begin();

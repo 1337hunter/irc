@@ -191,7 +191,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	temp.info = split.size() < 5 ? split[3] : split[4];
-	msg_forward(fd, ":" + split[1] + " SERVER " + serv->servername + " 2 " +
+	msg_forward(fd, ":" + serv->servername + " SERVER " + split[1] + " 2 " +
 			temp.token + " " + temp.info , serv);
 	std::vector<t_server>::iterator begin = serv->network.begin();
 	std::vector<t_server>::iterator end = serv->network.end();
