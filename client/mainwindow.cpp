@@ -81,5 +81,9 @@ void MainWindow::on_connect_clicked()
     chat = new ChatWindow(_ip, _port, _pass, _nick, _user, _real);
     this->hide();
     chat->show();
+    if (ui->tls->isChecked())
+        chat->do_connect(true);
+    else
+        chat->do_connect(false);
     chat->chatloop();
 }

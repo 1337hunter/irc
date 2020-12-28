@@ -11,6 +11,7 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
@@ -39,6 +40,7 @@ public:
     QLabel *label_4;
     QLabel *label_5;
     QLabel *label_6;
+    QCheckBox *tls;
     QMenuBar *menubar;
     QStatusBar *statusbar;
     QToolBar *toolBar;
@@ -47,9 +49,9 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(385, 200);
-        MainWindow->setMinimumSize(QSize(385, 200));
-        MainWindow->setMaximumSize(QSize(385, 200));
+        MainWindow->resize(385, 240);
+        MainWindow->setMinimumSize(QSize(385, 240));
+        MainWindow->setMaximumSize(QSize(385, 240));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         connect = new QPushButton(centralwidget);
@@ -93,6 +95,9 @@ public:
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
         label_6->setGeometry(QRect(20, 140, 91, 21));
+        tls = new QCheckBox(centralwidget);
+        tls->setObjectName(QString::fromUtf8("tls"));
+        tls->setGeometry(QRect(110, 170, 61, 21));
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
@@ -129,6 +134,7 @@ public:
         label_4->setText(QApplication::translate("MainWindow", "nickname", nullptr));
         label_5->setText(QApplication::translate("MainWindow", "username", nullptr));
         label_6->setText(QApplication::translate("MainWindow", "realname", nullptr));
+        tls->setText(QApplication::translate("MainWindow", "tls", nullptr));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 
