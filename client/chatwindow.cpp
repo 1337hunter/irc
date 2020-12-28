@@ -2,7 +2,6 @@
 #include "ui_chatwindow.h"
 #include <string>
 #include <iostream>
-
 #include <QMessageBox>
 
 typedef struct addrinfo     t_addrinfo;
@@ -23,7 +22,14 @@ ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickn
     ui(new Ui::ChatWindow)
 {
     ui->setupUi(this);
-    ui->mainchat->append("Connecting to " + ip + ":" + port);
+
+}
+
+void delay()
+{
+    QTime dieTime= QTime::currentTime().addSecs(10);
+    while (QTime::currentTime() < dieTime)
+        QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 }
 
 void    ChatWindow::do_connect(bool tls)
@@ -38,7 +44,7 @@ void    ChatWindow::do_connect(bool tls)
     hints.ai_protocol = IPPROTO_TCP;
     if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
-        messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!(socket)");
+        messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(socket)");
         messageBox.setFixedSize(200,100);
         return ;
     }
@@ -55,21 +61,19 @@ void    ChatWindow::do_connect(bool tls)
         messageBox.setFixedSize(200,100);
         return ;
     }
-    int res = ::connect(sock, addr->ai_addr, addr->ai_addrlen);
+    int res = -1;
+    while (res != 0)
+    {
+        ui->mainchat->append("Connecting to " + ip + ":" + port + " ...");
+        res = ::connect(sock, addr->ai_addr, addr->ai_addrlen);
+        if (res == 0)
+            break ;
+        else
+            ui->mainchat->append("Connection faild. Next try in 10 seconds ...");
+        delay();
+    }
+    ui->mainchat->append("Connected!");
     freeaddrinfo(addr);
-    if (res == -1 && errno == EINPROGRESS)
-    {
-        messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(EINPROGRESS)");
-        messageBox.setFixedSize(200,100);
-        return ;
-    }
-    else if (res != -1 && res < 0)
-    {
-        std::cout << res << " - res\n\n";
-        messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(connect)");
-        messageBox.setFixedSize(200,100);
-        return ;
-    }
 }
 
 void    ChatWindow::chatloop(void)
