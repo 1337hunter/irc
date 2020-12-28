@@ -1,6 +1,5 @@
 #include "chatwindow.h"
 #include "ui_chatwindow.h"
-#include <iostream>
 #include <string>
 
 ChatWindow::ChatWindow()

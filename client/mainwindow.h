@@ -17,8 +17,6 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    QString ip;
-    QString port;
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 

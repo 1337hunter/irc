@@ -47,12 +47,16 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(401, 228);
+        MainWindow->resize(385, 200);
+        MainWindow->setMinimumSize(QSize(385, 200));
+        MainWindow->setMaximumSize(QSize(385, 200));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         connect = new QPushButton(centralwidget);
         connect->setObjectName(QString::fromUtf8("connect"));
-        connect->setGeometry(QRect(230, 80, 141, 81));
+        connect->setGeometry(QRect(240, 80, 141, 81));
+        connect->setMinimumSize(QSize(0, 0));
+        connect->setMaximumSize(QSize(999, 999));
         label = new QLabel(centralwidget);
         label->setObjectName(QString::fromUtf8("label"));
         label->setGeometry(QRect(50, 50, 41, 21));
@@ -67,7 +71,7 @@ public:
         label_2->setGeometry(QRect(170, 50, 51, 17));
         password = new QLineEdit(centralwidget);
         password->setObjectName(QString::fromUtf8("password"));
-        password->setGeometry(QRect(240, 30, 131, 21));
+        password->setGeometry(QRect(240, 30, 141, 21));
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
         label_3->setGeometry(QRect(260, 50, 91, 21));
@@ -92,7 +96,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 401, 22));
+        menubar->setGeometry(QRect(0, 0, 385, 22));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
