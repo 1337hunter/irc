@@ -47,7 +47,7 @@ void	RunServer(IRCserv *serv)
 {
 	bool	die = false;
 	bool	rehash = false;
-//	timeval timeout = {TIMEOUTSEC, 0};
+	timeval timeout = {TIMEOUTSEC, 0};
 	int     lastfd;
 
 	do_socket(serv);
@@ -80,7 +80,7 @@ void	RunServer(IRCserv *serv)
 		}
 		int readyfds = select(lastfd + 1,
 			&(serv->fdset_read), &(serv->fdset_write),
-			&(serv->fdset_error), 0); // &timeout);
+			&(serv->fdset_error), &timeout);
 //		if (DEBUG_MODE && readyfds == 0)
 //			std::cout << "Server select tick (" << TIMEOUTSEC << "s)" << std::endl;
 		if (readyfds < 0)

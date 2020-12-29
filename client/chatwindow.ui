@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>ChatWindow</class>
  <widget class="QMainWindow" name="ChatWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -44,7 +47,7 @@
       <x>150</x>
       <y>0</y>
       <width>561</width>
-      <height>361</height>
+      <height>381</height>
      </rect>
     </property>
    </widget>
@@ -52,7 +55,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>360</y>
+      <y>380</y>
       <width>461</width>
       <height>51</height>
      </rect>
@@ -62,7 +65,7 @@
     <property name="geometry">
      <rect>
       <x>610</x>
-      <y>360</y>
+      <y>380</y>
       <width>91</width>
       <height>51</height>
      </rect>
@@ -77,7 +80,7 @@
       <x>0</x>
       <y>0</y>
       <width>151</width>
-      <height>411</height>
+      <height>431</height>
      </rect>
     </property>
     <column>
@@ -97,7 +100,6 @@
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
    <property name="windowTitle">
     <string>toolBar</string>

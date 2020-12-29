@@ -16,7 +16,6 @@
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QTreeWidget>
@@ -33,13 +32,13 @@ public:
     QPushButton *send;
     QTreeWidget *treeWidget;
     QMenuBar *menubar;
-    QStatusBar *statusbar;
     QToolBar *toolBar;
 
     void setupUi(QMainWindow *ChatWindow)
     {
         if (ChatWindow->objectName().isEmpty())
             ChatWindow->setObjectName(QString::fromUtf8("ChatWindow"));
+        ChatWindow->setEnabled(true);
         ChatWindow->resize(700, 470);
         ChatWindow->setMinimumSize(QSize(700, 470));
         ChatWindow->setMaximumSize(QSize(700, 470));
@@ -51,27 +50,24 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         mainchat = new QTextBrowser(centralwidget);
         mainchat->setObjectName(QString::fromUtf8("mainchat"));
-        mainchat->setGeometry(QRect(150, 0, 561, 361));
+        mainchat->setGeometry(QRect(150, 0, 561, 381));
         lineEdit = new QLineEdit(centralwidget);
         lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
-        lineEdit->setGeometry(QRect(150, 360, 461, 51));
+        lineEdit->setGeometry(QRect(150, 380, 461, 51));
         send = new QPushButton(centralwidget);
         send->setObjectName(QString::fromUtf8("send"));
-        send->setGeometry(QRect(610, 360, 91, 51));
+        send->setGeometry(QRect(610, 380, 91, 51));
         treeWidget = new QTreeWidget(centralwidget);
         QTreeWidgetItem *__qtreewidgetitem = new QTreeWidgetItem();
         __qtreewidgetitem->setText(0, QString::fromUtf8("1"));
         treeWidget->setHeaderItem(__qtreewidgetitem);
         treeWidget->setObjectName(QString::fromUtf8("treeWidget"));
-        treeWidget->setGeometry(QRect(0, 0, 151, 411));
+        treeWidget->setGeometry(QRect(0, 0, 151, 431));
         ChatWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(ChatWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
         menubar->setGeometry(QRect(0, 0, 700, 22));
         ChatWindow->setMenuBar(menubar);
-        statusbar = new QStatusBar(ChatWindow);
-        statusbar->setObjectName(QString::fromUtf8("statusbar"));
-        ChatWindow->setStatusBar(statusbar);
         toolBar = new QToolBar(ChatWindow);
         toolBar->setObjectName(QString::fromUtf8("toolBar"));
         ChatWindow->addToolBar(Qt::TopToolBarArea, toolBar);

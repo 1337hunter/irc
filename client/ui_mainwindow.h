@@ -15,10 +15,7 @@
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QToolBar>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -41,74 +38,61 @@ public:
     QLabel *label_5;
     QLabel *label_6;
     QCheckBox *tls;
-    QMenuBar *menubar;
-    QStatusBar *statusbar;
-    QToolBar *toolBar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(385, 240);
-        MainWindow->setMinimumSize(QSize(385, 240));
-        MainWindow->setMaximumSize(QSize(385, 240));
+        MainWindow->resize(216, 265);
+        MainWindow->setMinimumSize(QSize(0, 0));
+        MainWindow->setMaximumSize(QSize(999, 999));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         connect = new QPushButton(centralwidget);
         connect->setObjectName(QString::fromUtf8("connect"));
-        connect->setGeometry(QRect(240, 80, 141, 81));
+        connect->setGeometry(QRect(80, 220, 101, 31));
         connect->setMinimumSize(QSize(0, 0));
         connect->setMaximumSize(QSize(999, 999));
         label = new QLabel(centralwidget);
         label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(50, 50, 41, 21));
+        label->setGeometry(QRect(10, 10, 41, 21));
         ip = new QLineEdit(centralwidget);
         ip->setObjectName(QString::fromUtf8("ip"));
-        ip->setGeometry(QRect(10, 30, 131, 21));
+        ip->setGeometry(QRect(70, 10, 111, 21));
         port = new QLineEdit(centralwidget);
         port->setObjectName(QString::fromUtf8("port"));
-        port->setGeometry(QRect(150, 30, 81, 21));
+        port->setGeometry(QRect(70, 40, 111, 21));
         label_2 = new QLabel(centralwidget);
         label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(170, 50, 51, 17));
+        label_2->setGeometry(QRect(10, 40, 51, 17));
         password = new QLineEdit(centralwidget);
         password->setObjectName(QString::fromUtf8("password"));
-        password->setGeometry(QRect(240, 30, 141, 21));
+        password->setGeometry(QRect(70, 70, 111, 21));
         label_3 = new QLabel(centralwidget);
         label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(260, 50, 91, 21));
+        label_3->setGeometry(QRect(10, 70, 51, 21));
         nickname = new QLineEdit(centralwidget);
         nickname->setObjectName(QString::fromUtf8("nickname"));
-        nickname->setGeometry(QRect(110, 80, 81, 21));
+        nickname->setGeometry(QRect(100, 130, 81, 21));
         username = new QLineEdit(centralwidget);
         username->setObjectName(QString::fromUtf8("username"));
-        username->setGeometry(QRect(110, 110, 81, 21));
+        username->setGeometry(QRect(100, 160, 81, 21));
         realname = new QLineEdit(centralwidget);
         realname->setObjectName(QString::fromUtf8("realname"));
-        realname->setGeometry(QRect(110, 140, 81, 21));
+        realname->setGeometry(QRect(100, 190, 81, 21));
         label_4 = new QLabel(centralwidget);
         label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(20, 80, 91, 21));
+        label_4->setGeometry(QRect(20, 130, 71, 21));
         label_5 = new QLabel(centralwidget);
         label_5->setObjectName(QString::fromUtf8("label_5"));
-        label_5->setGeometry(QRect(20, 110, 91, 21));
+        label_5->setGeometry(QRect(20, 160, 71, 21));
         label_6 = new QLabel(centralwidget);
         label_6->setObjectName(QString::fromUtf8("label_6"));
-        label_6->setGeometry(QRect(20, 140, 91, 21));
+        label_6->setGeometry(QRect(20, 190, 71, 21));
         tls = new QCheckBox(centralwidget);
         tls->setObjectName(QString::fromUtf8("tls"));
-        tls->setGeometry(QRect(110, 170, 61, 21));
+        tls->setGeometry(QRect(70, 100, 61, 21));
         MainWindow->setCentralWidget(centralwidget);
-        menubar = new QMenuBar(MainWindow);
-        menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 385, 22));
-        MainWindow->setMenuBar(menubar);
-        statusbar = new QStatusBar(MainWindow);
-        statusbar->setObjectName(QString::fromUtf8("statusbar"));
-        MainWindow->setStatusBar(statusbar);
-        toolBar = new QToolBar(MainWindow);
-        toolBar->setObjectName(QString::fromUtf8("toolBar"));
-        MainWindow->addToolBar(Qt::TopToolBarArea, toolBar);
 
         retranslateUi(MainWindow);
 
@@ -127,7 +111,7 @@ public:
         port->setText(QString());
         label_2->setText(QApplication::translate("MainWindow", "port", nullptr));
         password->setText(QString());
-        label_3->setText(QApplication::translate("MainWindow", "password", nullptr));
+        label_3->setText(QApplication::translate("MainWindow", "pass", nullptr));
         nickname->setText(QString());
         username->setText(QString());
         realname->setText(QString());
@@ -135,7 +119,6 @@ public:
         label_5->setText(QApplication::translate("MainWindow", "username", nullptr));
         label_6->setText(QApplication::translate("MainWindow", "realname", nullptr));
         tls->setText(QApplication::translate("MainWindow", "tls", nullptr));
-        toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", nullptr));
     } // retranslateUi
 
 };

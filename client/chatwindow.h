@@ -24,23 +24,38 @@ class ChatWindow : public QMainWindow
 {
     Q_OBJECT
 private:
+
+
+
+public:
     QString ip;
     QString port;
     QString password;
     QString nickname;
     QString username;
     QString realname;
+    bool    tls;
+    bool    connected;
     Ui::ChatWindow *ui;
 
-
-public:
-    ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname, QWidget *parent = nullptr);
+    SSL_CTX *sslctx;
+    SSL     *sslptr;
+    int     sock;
+    fd_set  fdset_read;
+    fd_set  fdset_write;
+    fd_set  fdset_error;
+    std::string wrbuf;
+    std::string rdbuf;
+    ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname,
+               bool tls, bool connected, QWidget *parent = nullptr);
     ChatWindow();
     ~ChatWindow();
-    void    do_connect(bool tls);
-    void    chatloop(void);
 
-    int sock;
+    void    do_connect(void);
+    void    chatloop(void);
+    void    ReceiveMessage(void);
+    void    SendMessage(void);
+    //void    DoHandshakeTLS(void);
 };
 
 #endif // CHATWINDOW_H
