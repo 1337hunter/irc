@@ -47,12 +47,13 @@ void	RunServer(IRCserv *serv)
 {
 	bool	die = false;
 	bool	rehash = false;
-	timeval timeout = {TIMEOUTSEC, 0};
+	timeval timeout;
 	int     lastfd;
 
 	do_socket(serv);
 	while (1)
 	{
+		timeout = {TIMEOUTSEC, 0};
 		if (g_server_die)
 			die = true;
 		if (g_rehash)
