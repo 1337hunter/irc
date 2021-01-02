@@ -1,9 +1,10 @@
-#include "chatwindow.h"
+﻿#include "chatwindow.h"
 #include "ui_chatwindow.h"
 #include <string>
 #include <iostream>
 #include <QMessageBox>
 #include <thread>
+#include <ctime>
 
 typedef struct addrinfo     t_addrinfo;
 
@@ -101,7 +102,6 @@ void    ChatWindow::do_connect()
         if (handshake != 1)
         {
             int err = SSL_get_error(sslptr, handshake);
-            // SSL_ERROR_WANT_READ/WRITE in case handshake needs another round
             if (err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE)
                 exit(0);
         }
@@ -116,6 +116,7 @@ void    ChatWindow::do_connect()
     wrbuf += "NICK " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
     wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
     freeaddrinfo(addr);
+    this->run();
 }
 
 void    ChatWindow::SendMessage(void)
@@ -123,13 +124,17 @@ void    ChatWindow::SendMessage(void)
     QMessageBox     messageBox;
     ssize_t     r = 0;
 
-   if (tls && sslptr)
-       r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
-   else
-       r = send(sock, wrbuf.c_str(), wrbuf.length(), 0);
-   if (r <= 0)
+    wrbuf += "\r\n";
+    if (tls && sslptr)
+        r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
+    else
+    {
+        std::cout  << wrbuf << " " << wrbuf.size() <<  '\n';
+        r = write(sock, wrbuf.c_str(), wrbuf.size());
+    }
+    if (r <= 0)
         messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
-   wrbuf.erase();
+    wrbuf.erase();
 }
 
 void    ChatWindow::ReceiveMessage(void)
@@ -148,24 +153,24 @@ void    ChatWindow::ReceiveMessage(void)
     {
         ui->mainchat->append(buf_read);
     }
-    else if (r <= 0)
+    else if (r < 0)
         messageBox.critical(0, "Error", "ReceiveMessage.\nPlease restart you client!");
 }
 
-void    ChatWindow::chatloop(void)
+void    ChatWindow::run(void)
 {
     int readyfds;
+    timeval timeout;
 
     while (1)
     {
+        timeout = {0, 500};
         FD_ZERO(&fdset_read);
         FD_ZERO(&fdset_write);
-        FD_ZERO(&fdset_error);
         FD_SET(sock, &fdset_read);
         if (wrbuf.size() > 0)
             FD_SET(sock, &fdset_write);
-        FD_SET(sock, &fdset_error);
-        readyfds = select(sock + 1, &fdset_read, &fdset_write, &fdset_error, 0);
+        readyfds = select(sock + 1, &fdset_read, &fdset_write, 0, &timeout);
         if (readyfds < 0)
         {
             exit(0);
@@ -177,5 +182,14 @@ void    ChatWindow::chatloop(void)
             ReceiveMessage();
         if (iswrite)
             SendMessage();
+        QApplication::processEvents();
     }
+}
+
+void ChatWindow::on_send_clicked()
+{
+    wrbuf = std::string(ui->lineEdit->text().toLocal8Bit().constData());
+    if (!wrbuf.empty())
+        ui->mainchat->append(ui->lineEdit->text());
+    ui->lineEdit->clear();
 }

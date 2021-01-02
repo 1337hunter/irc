@@ -5,6 +5,7 @@
 #include <QString>
 #include <fcntl.h>
 #include <QTime>
+#include <QThread>
 #include <sys/types.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -23,9 +24,6 @@ QT_END_NAMESPACE
 class ChatWindow : public QMainWindow
 {
     Q_OBJECT
-private:
-
-
 
 public:
     QString ip;
@@ -43,7 +41,6 @@ public:
     int     sock;
     fd_set  fdset_read;
     fd_set  fdset_write;
-    fd_set  fdset_error;
     std::string wrbuf;
     std::string rdbuf;
     ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname,
@@ -52,10 +49,12 @@ public:
     ~ChatWindow();
 
     void    do_connect(void);
-    void    chatloop(void);
+
+    void    run(void);
     void    ReceiveMessage(void);
     void    SendMessage(void);
-    //void    DoHandshakeTLS(void);
+private slots:
+    void on_send_clicked();
 };
 
 #endif // CHATWINDOW_H
