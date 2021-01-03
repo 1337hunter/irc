@@ -194,12 +194,7 @@ void    ChatWindow::ReceiveMessage(void)
     {
         split = splitstringbyany(std::string(buf_read), "\r\n");
         for (size_t i = 0; i < split.size(); ++i)
-        {
             ui->mainchat->append(split[i].c_str());
-            //ui->mainchat->moveCursor(QTextCursor::End);
-            //ui->mainchat->insertPlainText(split[i].c_str());
-            //ui->mainchat->moveCursor(QTextCursor::End);
-        }
     }
     else if (r < 0)
         messageBox.critical(0, "Error", "ReceiveMessage.\nPlease restart you client!");
@@ -212,7 +207,7 @@ void    ChatWindow::run(void)
 
     while (1)
     {
-        timeout = {0, 500};
+        timeout = {0, 50000};
         FD_ZERO(&fdset_read);
         FD_ZERO(&fdset_write);
         FD_SET(sock, &fdset_read);
