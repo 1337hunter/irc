@@ -34,7 +34,6 @@ bool    is_valid_port(std::string port)
         return false;
     if (stoi(port) < 1 || stoi(port) > 65535)
         return false;
-
     return true;
 }
 
@@ -82,4 +81,12 @@ void MainWindow::on_connect_clicked()
     this->hide();
     chat->show();
     chat->do_connect();
+}
+
+void    MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    QKeyEvent* key = static_cast<QKeyEvent*>(event);
+
+    if (key->key() == Qt::Key_Enter || key->key()==Qt::Key_Return)
+        on_connect_clicked();
 }

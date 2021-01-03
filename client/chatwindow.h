@@ -5,7 +5,6 @@
 #include <QString>
 #include <fcntl.h>
 #include <QTime>
-#include <QThread>
 #include <sys/types.h>
 #include <sys/select.h>
 #include <sys/socket.h>
@@ -15,6 +14,10 @@
 #include <unistd.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <QKeyEvent>
+#include <QCloseEvent>
+#include <vector>
+#include <string>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChatWindow; }
@@ -49,12 +52,15 @@ public:
     ~ChatWindow();
 
     void    do_connect(void);
-
     void    run(void);
     void    ReceiveMessage(void);
     void    SendMessage(void);
-private slots:
-    void on_send_clicked();
+    void    keyPressEvent(QKeyEvent* event);
+    void    closeEvent(QCloseEvent* event);
+    std::vector<std::string>   splitstring(std::string str, char delim);
+    std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
+
+
 };
 
 #endif // CHATWINDOW_H

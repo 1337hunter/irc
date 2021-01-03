@@ -21,6 +21,7 @@ public:
     ~MainWindow();
 
     ChatWindow *chat;
+    void    keyPressEvent(QKeyEvent *event);
 
 private slots:
 

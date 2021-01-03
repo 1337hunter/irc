@@ -1,10 +1,9 @@
 ﻿#include "chatwindow.h"
 #include "ui_chatwindow.h"
-#include <string>
 #include <iostream>
 #include <QMessageBox>
-#include <thread>
 #include <ctime>
+
 
 typedef struct addrinfo     t_addrinfo;
 
@@ -57,19 +56,28 @@ void    ChatWindow::do_connect()
         messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(getaddrinfo)");
         return ;
     }
-    int res = ::connect(sock, addr->ai_addr, addr->ai_addrlen);
-    if (res == 0)
+    while (true)
     {
-        if (!tls)
+        int res = ::connect(sock, addr->ai_addr, addr->ai_addrlen);
+         ui->mainchat->append("Connecting ...");
+        if (res == 0)
         {
-            connected = true;
-            ui->mainchat->append("Connected!");
+            if (!tls)
+            {
+                connected = true;
+                ui->mainchat->append("Connected!");
+            }
+            break ;
         }
-    }
-    else
-    {
-        ui->mainchat->append("Connection failed!");
-        return ;
+        else
+        {
+            int i = 1000;
+            while (--i > 0)
+            {
+                QApplication::processEvents();
+                usleep(10000);
+            }
+        }
     }
     if (tls)
     {
@@ -106,7 +114,7 @@ void    ChatWindow::do_connect()
                 exit(0);
         }
         connected = true;
-        ui->mainchat->append("Connected!");
+        ui->mainchat->append("Connected!\n");
     }
     if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0)
     {
@@ -122,19 +130,51 @@ void    ChatWindow::do_connect()
 void    ChatWindow::SendMessage(void)
 {
     QMessageBox     messageBox;
-    ssize_t     r = 0;
+    ssize_t         r = 0;
 
-    wrbuf += "\r\n";
     if (tls && sslptr)
         r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
     else
-    {
-        std::cout  << wrbuf << " " << wrbuf.size() <<  '\n';
         r = write(sock, wrbuf.c_str(), wrbuf.size());
-    }
     if (r <= 0)
         messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
     wrbuf.erase();
+}
+
+std::vector<std::string>   ChatWindow::splitstring(std::string str, char delim)
+{
+    std::vector<std::string>   split;
+    size_t      pos(0);
+    std::string temp;
+
+    while ((pos = str.find(delim)) != std::string::npos)
+    {
+        temp = str.substr(0, pos);
+        if (!temp.empty())
+            split.push_back(temp);
+        str.erase(0, pos + 1);
+    }
+    if (!str.empty())
+        split.push_back(str);
+    return split;
+}
+
+std::vector<std::string>   ChatWindow::splitstringbyany(std::string msg, std::string const &delim)
+{
+    std::vector<std::string>       split;
+    size_t          pos = 0;
+    std::string     tmp;
+
+    while ((pos = msg.find_first_of(delim)) != std::string::npos)
+    {
+        tmp = msg.substr(0, pos);
+        if (!tmp.empty())
+            split.push_back(tmp);
+        msg.erase(0, pos + 1);
+    }
+    if (!msg.empty())
+        split.push_back(msg);
+    return (split);
 }
 
 void    ChatWindow::ReceiveMessage(void)
@@ -142,6 +182,7 @@ void    ChatWindow::ReceiveMessage(void)
     QMessageBox     messageBox;
     ssize_t     r = 0;
     char        buf_read[1024 + 1];
+    std::vector<std::string>    split;
 
     if (tls && sslptr)
         r = SSL_read(sslptr, buf_read, 1024);
@@ -151,7 +192,14 @@ void    ChatWindow::ReceiveMessage(void)
         buf_read[r] = 0;
     if (r > 0)
     {
-        ui->mainchat->append(buf_read);
+        split = splitstringbyany(std::string(buf_read), "\r\n");
+        for (size_t i = 0; i < split.size(); ++i)
+        {
+            ui->mainchat->append(split[i].c_str());
+            //ui->mainchat->moveCursor(QTextCursor::End);
+            //ui->mainchat->insertPlainText(split[i].c_str());
+            //ui->mainchat->moveCursor(QTextCursor::End);
+        }
     }
     else if (r < 0)
         messageBox.critical(0, "Error", "ReceiveMessage.\nPlease restart you client!");
@@ -186,10 +234,23 @@ void    ChatWindow::run(void)
     }
 }
 
-void ChatWindow::on_send_clicked()
+void    ChatWindow::keyPressEvent(QKeyEvent *event)
 {
-    wrbuf = std::string(ui->lineEdit->text().toLocal8Bit().constData());
-    if (!wrbuf.empty())
-        ui->mainchat->append(ui->lineEdit->text());
-    ui->lineEdit->clear();
+    QKeyEvent* key = static_cast<QKeyEvent*>(event);
+
+    if (key->key() == Qt::Key_Enter || key->key() == Qt::Key_Return)
+    {
+        wrbuf += std::string(ui->lineEdit->text().toLocal8Bit().constData());
+        if (!wrbuf.empty())
+        {
+            ui->mainchat->append(ui->lineEdit->text());
+            wrbuf += "\r\n";
+        }
+        ui->lineEdit->clear();
+    }
+}
+
+void    ChatWindow::closeEvent(QCloseEvent* event)
+{
+    exit(0);
 }
