@@ -22,22 +22,12 @@ ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickn
     realname(realname), tls(tls), connected(connected), ui(new Ui::ChatWindow)
 {
     ui->setupUi(this);
-
 }
-
-/*void    thread_connect(ChatWindow *obj, bool tls)
-{
-
-}*/
-
 
 void    ChatWindow::do_connect()
 {
-    //std::thread t1(thread_connect, this, tls);
-    //ui->mainchat->append("Connecting every 10 seconds ...");
-    //t1.join();
-    t_addrinfo  hints;
-    t_addrinfo  *addr;
+    t_addrinfo      hints;
+    t_addrinfo      *addr;
     QMessageBox     messageBox;
 
     hints.ai_flags = 0;
@@ -246,6 +236,11 @@ void    ChatWindow::keyPressEvent(QKeyEvent *event)
 }
 
 void    ChatWindow::closeEvent(QCloseEvent* event)
+{
+    exit(0);
+}
+
+void    ChatWindow::actionExit(void)
 {
     exit(0);
 }

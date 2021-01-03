@@ -59,7 +59,8 @@ public:
     void    closeEvent(QCloseEvent* event);
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
-
+private slots:
+    void    actionExit(void);
 
 };
 
