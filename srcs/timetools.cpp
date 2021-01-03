@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/05 07:06:44 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,21 +183,21 @@ std::string		ft_timetostring(time_t rawtime)
 	{
 		if (timeinfo->tm_mday < 10)
 			res += "0";
-		res += std::to_string(timeinfo->tm_mday) + "/";
+		res += TOSTRING(timeinfo->tm_mday) + "/";
 		if (timeinfo->tm_mon + 1 < 10)
 			res += "0";
-		res += std::to_string(timeinfo->tm_mon + 1) + "/";
-		res += std::to_string(timeinfo->tm_year + 1900) + " ";
+		res += TOSTRING(timeinfo->tm_mon + 1) + "/";
+		res += TOSTRING(timeinfo->tm_year + 1900) + " ";
 
 		if (timeinfo->tm_hour < 10)
 			res += "0";
-		res += std::to_string(timeinfo->tm_hour) + ":";
+		res += TOSTRING(timeinfo->tm_hour) + ":";
 		if (timeinfo->tm_min < 10)
 			res += "0";
-		res += std::to_string(timeinfo->tm_min) + ":";
+		res += TOSTRING(timeinfo->tm_min) + ":";
 		if (timeinfo->tm_sec < 10)
 			res += "0";
-		res += std::to_string(timeinfo->tm_sec);
+		res += TOSTRING(timeinfo->tm_sec);
 
 		// tm_zone is GNU/BSD extension
 		#if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)

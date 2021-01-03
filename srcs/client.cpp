@@ -26,7 +26,7 @@ username(username), realname(realname), token(token), hopcount(0), fd(fd),
 
 Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) :
 	nickname(nick), username(user), realname(real), hostname(host),
-	token(servertoken), hopcount(stoi(hop)), fd(-1), _isConnected(true),
+	token(servertoken), hopcount(STOI(hop)), fd(-1), _isConnected(true),
 	_isRegistred(true), USER(true), NICK(true)
 {
 	setMode(umode);
@@ -37,7 +37,7 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 }
 
 Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1]),
-	username(split[3]), hostname(split[4]), token(split[5]), hopcount(stoi(split[2])),
+	username(split[3]), hostname(split[4]), token(split[5]), hopcount(STOI(split[2])),
 	fd(fd)
 {
 	setMode(split[6]);// this is bad initialization PUREFY IT!
@@ -130,7 +130,7 @@ std::string			Client::gethopcount(bool str, bool plus)
 
 	if (str)
 		hop += " ";
-	hop += std::to_string(this->hopcount + (plus ? 1 : 0));
+	hop += TOSTRING(this->hopcount + (plus ? 1 : 0));
 	if (str)
 		hop += " ";
 	return hop;

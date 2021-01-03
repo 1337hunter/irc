@@ -89,7 +89,7 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 	fdref.sentbytes = 0;
 	fdref.recvbytes = 0;
 	fdref.linkname = serv->servername +
-		"[" + inet_ntoa(sockin.sin_addr) + ":" + std::to_string(_listen.port) + "]";
+		"[" + inet_ntoa(sockin.sin_addr) + ":" + TOSTRING(_listen.port) + "]";
 #if DEBUG_MODE
 	std::cout << "server created on socket " << _listen.socket_fd <<
 		" (port " << _listen.port << ")" << std::endl;
@@ -136,7 +136,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	fdref.recvbytes = 0;
 	fdref.sock = _socket;
 	fdref.linkname = std::string("*[") +
-		inet_ntoa(csin.sin_addr) + ":" + std::to_string(ntohs(csin.sin_port)) + "]";
+		inet_ntoa(csin.sin_addr) + ":" + TOSTRING(ntohs(csin.sin_port)) + "]";
 
 	if (isTLS)
 	{

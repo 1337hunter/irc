@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2020/12/25 15:13:26 by gbright          ###   ########.fr        #
+#    Updated: 2020/12/25 21:19:49 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -89,7 +89,7 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re
+.PHONY: all all98 bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re
 
 all: $(NAME)
 
@@ -106,6 +106,11 @@ $(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
 
 $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
+
+# c++98 compatibility
+all98: CFLAGS += -std=c++98 -DSTD_CPP98
+all98: OSNAME += (C++98 release)
+all98: $(NAME)
 
 # debugging rules
 debugmsg:

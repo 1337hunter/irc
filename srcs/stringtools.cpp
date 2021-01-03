@@ -6,11 +6,12 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:44:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
+#include <sstream>
 
 t_strvect	ft_splitstring(std::string msg, std::string const &delim)
 {
@@ -253,4 +254,72 @@ bool	is_valid_serv_host_mask(std::string mask)
 	while (rit != mask.rbegin() && *rit != '*') rit--;
 	if (*rit == '*') return false;
 	return true;
+}
+
+std::string		ft_tostring(int val)
+{
+	std::ostringstream	oss;
+	oss << val;
+	return (oss.str());
+}
+
+std::string 	ft_tostring(long val)
+{
+	std::ostringstream	oss;
+	oss << val;
+	return (oss.str());
+}
+
+std::string 	ft_tostring(uint val)
+{
+	std::ostringstream	oss;
+	oss << val;
+	return (oss.str());
+}
+
+std::string 	ft_tostring(ulong val)
+{
+	std::ostringstream	oss;
+	oss << val;
+	return (oss.str());
+}
+
+int				ft_stoi(std::string const &str)
+{
+	std::istringstream	iss(str);
+	int					val = 0;
+
+	if (!(iss >> val))
+		return (0);
+	return (val);
+}
+
+long			ft_stol(std::string const &str)
+{
+	std::istringstream	iss(str);
+	long				val = 0;
+
+	if (!(iss >> val))
+		return (0L);
+	return (val);
+}
+
+uint			ft_stou(std::string const &str)
+{
+	std::istringstream	iss(str);
+	unsigned int		val = 0;
+
+	if (!(iss >> val))
+		return (0U);
+	return (val);
+}
+
+ulong			ft_stoul(std::string const &str)
+{
+	std::istringstream	iss(str);
+	unsigned long		val = 0;
+
+	if (!(iss >> val))
+		return (0UL);
+	return (val);
 }

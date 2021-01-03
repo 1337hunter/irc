@@ -6,21 +6,26 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 12:48:41 by gbright          ###   ########.fr       */
+/*   Updated: 2020/12/25 20:11:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef IRCSERV_HPP
 # define IRCSERV_HPP
 
+# include "common_defines.hpp"
 # include <iostream>
 # include <exception>
 # include <string>
 # include <vector>
 # include <list>
-//# include <map>
-# include <unordered_map>
 # include <algorithm>
+# ifndef STD_CPP98
+#  include <unordered_map>
+# else
+#  include <map>
+# endif
+
 // time_t
 # include <ctime>
 // fcntl, select, socket, inet structs, inet
@@ -39,7 +44,6 @@
 # include <openssl/err.h>
 
 # include "error_handle.hpp"
-# include "common_defines.hpp"
 # include "reply_codes.hpp"
 # include "error_codes.hpp"
 # include "client.hpp"
@@ -178,8 +182,8 @@ struct				blocked
 
 struct				IRCserv
 {
-	typedef std::unordered_map<std::string, Command>	t_cmdmap;
-	typedef std::unordered_map<int, t_fd>				t_fdsmap;
+	typedef std::MAP<std::string, Command>	t_cmdmap;
+	typedef std::MAP<int, t_fd>				t_fdsmap;
 	std::string					servername;	// me server name
 	std::string					token;		// me server token
 	std::string					info;		// me server info

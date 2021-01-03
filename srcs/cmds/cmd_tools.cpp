@@ -33,7 +33,7 @@ std::string		reply_welcome(IRCserv *serv, Client *cli)
 std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 {
 	std::string	reply;
-	std::unordered_map<Client*, client_flags>::iterator c_map;
+	std::MAP<Client*, client_flags>::iterator c_map;
 
 	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " +
 		client->getnick() + " ";
@@ -53,7 +53,7 @@ std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 			reply += c_map->first->getnick() + " ";
 		}
 	}
-	reply.pop_back();
+	reply = reply.substr(0, reply.size() - 1);
 	reply += CRLF;
 	reply += ":" + serv->servername + " 366 " + client->getnick() + " " +
 		chan->getname() + " " + ":End of /NAMES list." + CRLF;
@@ -115,7 +115,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 		reply = "";
 	else
 	{
-		reply.pop_back();
+		reply = reply.substr(0, reply.size() - 1);
 		reply += CRLF;
 		reply += ":" + serv->servername + " 366 " + client->getnick() + " " +
 			"*" + " " + ":End of /NAMES list." + CRLF;
@@ -129,7 +129,7 @@ bool	is_server_registred(const std::string &name, std::string const token, IRCse
 	std::vector<t_server>::iterator nearest = serv->network.begin();
 	std::list<t_server_intro>::iterator server_intro;
 	std::vector<t_server>::iterator end = serv->network.end();
-	std::string	except = std::to_string(NPOS);
+	std::string	except = TOSTRING(NPOS);
 
 	while (nearest != end)
 	{

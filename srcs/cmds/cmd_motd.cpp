@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/21 17:32:05 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 18:34:11 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:34:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ std::string		reply_motd(IRCserv *serv, std::string const &nick)
 {
 	std::string		reply;
 	std::string		motdstr;
-	std::ifstream	motd(serv->motd_path);
+	std::ifstream	motd(serv->motd_path.c_str());
 
 	if (motd.is_open())
 	{

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/21 18:32:44 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ std::string	getserverupstr(IRCserv *serv)
 {
 	time_t		elapsed = ft_getcurrenttime() - serv->dtstarted;
 	time_t		sec, min, hrs;
-	std::string	res = "Server Up " + std::to_string(elapsed / 86400) + " days ";
+	std::string	res = "Server Up " + TOSTRING(elapsed / 86400) + " days ";
 	elapsed %= 86400;
 
 	sec = elapsed % 60;
@@ -65,18 +65,18 @@ std::string	getserverupstr(IRCserv *serv)
 	elapsed	/= 60;
 	hrs = elapsed % 24;
 
-	res += std::to_string(hrs) + ":";
+	res += TOSTRING(hrs) + ":";
 	if (min < 10)
 		res += "0";
-	res += std::to_string(min) + ":";
+	res += TOSTRING(min) + ":";
 	if (sec < 10)
 		res += "0";
-	res += std::to_string(sec);
+	res += TOSTRING(sec);
 	return (res);
 }
 
-typedef	std::unordered_map<std::string, Command>::iterator	t_cmdit;
-typedef	std::unordered_map<int, t_fd>::iterator				t_fdrit;
+typedef	std::MAP<std::string, Command>::iterator	t_cmdit;
+typedef	std::MAP<int, t_fd>::iterator				t_fdrit;
 typedef	std::vector<t_oper>::iterator						t_opit;
 
 std::string	reply_stats(IRCserv *serv, std::string const &target,
@@ -93,12 +93,12 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 		for (t_fdrit it = serv->fds.begin(); it != serv->fds.end(); it++)
 			reply += ft_buildmsg(serv->servername, RPL_STATSLINKINFO, target,
 				it->second.linkname + " " +
-				std::to_string(it->second.wrbuf.size()) + " " +
-				std::to_string(it->second.sentmsgs) + " " +
-				std::to_string(it->second.sentbytes/* / 1024*/) + " " +
-				std::to_string(it->second.recvmsgs) + " " +
-				std::to_string(it->second.recvbytes/* / 1024*/) + " " +
-				std::to_string(ft_getcurrenttime() - it->second.dtopened), "");
+				TOSTRING(it->second.wrbuf.size()) + " " +
+				TOSTRING(it->second.sentmsgs) + " " +
+				TOSTRING(it->second.sentbytes/* / 1024*/) + " " +
+				TOSTRING(it->second.recvmsgs) + " " +
+				TOSTRING(it->second.recvbytes/* / 1024*/) + " " +
+				TOSTRING(ft_getcurrenttime() - it->second.dtopened), "");
 	}
 	else if (mode == "m")
 	{
@@ -106,9 +106,9 @@ std::string	reply_stats(IRCserv *serv, std::string const &target,
 			if (it->second.used())
 				reply += ft_buildmsg(serv->servername, RPL_STATSCOMMANDS,
 					target, it->first + " " +
-					std::to_string(it->second.getcount()) + " " +
-					std::to_string(it->second.getbytes()) + " " +
-					std::to_string(it->second.getrcount()), "");
+					TOSTRING(it->second.getcount()) + " " +
+					TOSTRING(it->second.getbytes()) + " " +
+					TOSTRING(it->second.getrcount()), "");
 	}
 	else if (mode == "o")
 	{

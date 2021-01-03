@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/22 22:33:27 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,12 @@ std::string	reply_links(IRCserv *serv, std::string const &target,
 
 	if (match(serv->servername, mask))
 		reply += ft_buildmsg(serv->servername, RPL_LINKS, target,
-			mask + " " + serv->servername, std::to_string(0) + " " + serv->info);
+			mask + " " + serv->servername, TOSTRING(0) + " " + serv->info);
 	for (t_netit it = serv->network.begin(); it != serv->network.end(); it++)
 		if (match(it->servername, mask))
 			reply += ft_buildmsg(serv->servername, RPL_LINKS, target,
 				mask + " " + it->servername,
-				std::to_string(it->hopcount) + " " + it->info);
+				TOSTRING(it->hopcount) + " " + it->info);
 	reply += ft_buildmsg(serv->servername, RPL_ENDOFLINKS, target, mask,
 		"End of LINKS list");
 	return (reply);

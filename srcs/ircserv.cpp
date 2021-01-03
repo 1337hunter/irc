@@ -27,7 +27,7 @@ void	do_socket(IRCserv *serv)
 
 void	ircserv_free(IRCserv *serv)
 {
-	std::unordered_map<int, t_fd>::iterator	fd;
+	std::MAP<int, t_fd>::iterator	fd;
 
 	fd = serv->fds.begin();
 	for (; fd != serv->fds.end(); fd++)
@@ -65,7 +65,7 @@ void	RunServer(IRCserv *serv)
 		clear_kill_list(serv);
 		clear_block_list(serv);
 		clear_empty_channels(serv);
-		for (std::unordered_map<int, t_fd>::iterator it = serv->fds.begin();
+		for (std::MAP<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)
 		{
 			if (!it->second.blocked)

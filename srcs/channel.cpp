@@ -163,7 +163,7 @@ Channel	&Channel::operator=(Channel const &o)
 	return *this;
 }
 
-std::unordered_map<Client*, client_flags> &Channel::getclients(void)
+std::MAP<Client*, client_flags> &Channel::getclients(void)
 {
 	return _clients;
 }
@@ -181,7 +181,7 @@ std::string	const &Channel::getkey(void)
 
 std::string		Channel::getCreationTime(void)
 {
-	return std::to_string(_creation_time);
+	return TOSTRING(_creation_time);
 }
 
 std::string const &Channel::getCreator(void)
@@ -243,7 +243,7 @@ int	Channel::setMode(std::string const &mode)
 	else
 		return true;
 	pos = 0;
-	while (++pos < mode.size()) // unordered_map is better but I did it already
+	while (++pos < mode.size()) // MAP is better but I did it already
 	{
 		if (mode[pos] == 'a')
 			_flags._anonymous = set;
@@ -281,7 +281,7 @@ int	Channel::setMode(t_strvect const &args)
 	std::vector<std::string>	arg;
 	std::string					strmode;
 	std::list<std::string>::iterator	it;
-	std::unordered_map<Client*, client_flags>::iterator client;
+	std::MAP<Client*, client_flags>::iterator client;
 
 	i = 0;
 	while (i < args.size())
@@ -477,7 +477,7 @@ time_t		Channel::getBlockedTime(void)
 
 bool		Channel::isOnChan(Client *client)
 {
-	std::unordered_map<Client*, client_flags>::iterator	it;
+	std::MAP<Client*, client_flags>::iterator	it;
 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 		if (it->first == client)
@@ -497,7 +497,7 @@ bool		Channel::isBanned(Client *client)
 
 bool		Channel::block_if(void)
 {
-	std::unordered_map<Client*, client_flags>::iterator	client;
+	std::MAP<Client*, client_flags>::iterator	client;
 
 	if (_blocked)
 		return false;
@@ -511,5 +511,5 @@ bool		Channel::block_if(void)
 
 std::string	Channel::size(void)
 {
-	return std::to_string(_clients.size());
+	return TOSTRING(_clients.size());
 }

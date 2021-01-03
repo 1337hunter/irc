@@ -15,7 +15,7 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	t_server	*routing;
 	Channel		*channel;
 	Client		*client_msg;
-	std::unordered_map<Client*, client_flags>::const_iterator   client_it;
+	std::MAP<Client*, client_flags>::const_iterator   client_it;
 
 	if (split.size() < 4)
 		return ;

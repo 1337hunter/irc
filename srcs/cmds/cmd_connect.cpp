@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/19 21:16:13 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 		msg_error("Socket error while server link", serv); return socket_fd; }
 	else if (fcntl(socket_fd, F_SETFL, O_NONBLOCK) < 0) {
 		msg_error("fcntl error", serv); return -1; }
-	if (getaddrinfo(link.hostname.c_str(), (std::to_string(link.port)).c_str(), &hints, &addr)) {
+	if (getaddrinfo(link.hostname.c_str(), (TOSTRING(link.port)).c_str(), &hints, &addr)) {
 		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
 	int	res = connect(socket_fd, addr->ai_addr, addr->ai_addrlen);
 	serv->fds[socket_fd].dtopened = ft_getcurrenttime();
@@ -42,7 +42,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	serv->fds[socket_fd].recvbytes = 0;
 	serv->fds[socket_fd].sock = -1;
 	serv->fds[socket_fd].linkname = link.servername + "[" +
-		link.hostname + ":" + std::to_string(link.port) + "]";
+		link.hostname + ":" + TOSTRING(link.port) + "]";
 
 	// this is temporary
 	freeaddrinfo(addr);

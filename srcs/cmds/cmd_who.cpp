@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:53:32 by salec             #+#    #+#             */
-/*   Updated: 2020/12/24 19:30:04 by salec            ###   ########.fr       */
+/*   Updated: 2020/12/25 20:07:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@
 typedef std::list<Client>::iterator		t_cit;
 typedef std::list<Channel>::iterator	t_chit;
 typedef std::vector<t_server>::iterator	t_netit;
-typedef std::unordered_map<Client*, client_flags>::iterator	t_cpit;
+typedef std::MAP<Client*, client_flags>::iterator	t_cpit;
 
 std::string	getservernamebytoken(IRCserv *serv, std::string const &token)
 {
