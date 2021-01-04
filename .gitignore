@@ -9,3 +9,4 @@ openssl/
 conf/ircserv.key
 conf/ircserv.crt
 objs/
+client/client
