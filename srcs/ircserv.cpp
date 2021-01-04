@@ -34,31 +34,29 @@ void	ircserv_free(IRCserv *serv)
 	{
 		if (fd->second.tls)
 		{
-		//	SSL_shutdown(fd->second.sslptr);
+			SSL_shutdown(fd->second.sslptr);
 			SSL_free(fd->second.sslptr);
 		}
 		close(fd->first);
 	}
 	SSL_CTX_free(serv->sslctx);
-	delete serv;
+	delete (serv);
 }
 
 void	RunServer(IRCserv *serv)
 {
 	bool	die = false;
 	bool	rehash = false;
-	timeval timeout;
-	int     lastfd;
 
 	do_socket(serv);
 	while (1)
 	{
-		timeout = {TIMEOUTSEC, 0};
+		int		lastfd = 0;
+		timeval	timeout = {TIMEOUTSEC, 0};	// timeout needed only in this scope
 		if (g_server_die)
 			die = true;
 		if (g_rehash)
 			rehash = true;
-		lastfd = 0;
 		FD_ZERO(&(serv->fdset_read));
 		FD_ZERO(&(serv->fdset_write));
 		FD_ZERO(&(serv->fdset_error));
@@ -82,8 +80,6 @@ void	RunServer(IRCserv *serv)
 		int readyfds = select(lastfd + 1,
 			&(serv->fdset_read), &(serv->fdset_write),
 			&(serv->fdset_error), &timeout);
-//		if (DEBUG_MODE && readyfds == 0)
-//			std::cout << "Server select tick (" << TIMEOUTSEC << "s)" << std::endl;
 		if (readyfds < 0)
 			error_exit(SELECT);
 		for (int fd = 0; readyfds > 0 && fd <= lastfd; fd++)
