@@ -104,6 +104,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			if (client->getUSER())
 			{
 				nick_forward(serv, client);
+				serv->fds[fd].type = FD_CLIENT;
 				serv->fds[fd].wrbuf += reply_welcome(serv, client);
 				serv->fds[fd].linkname = client->getnick() + "[" +
 					client->getusername() + "@" + client->gethostname() + "]";
