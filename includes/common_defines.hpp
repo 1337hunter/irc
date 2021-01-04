@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2021/01/04 21:41:33 by marvin           ###   ########.fr       */
+/*   Updated: 2021/01/04 21:51:10 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ typedef struct sockaddr		t_sockaddr;
 typedef struct sockaddr_in	t_sockaddr_in;
 typedef struct protoent		t_protoent;
 
-typedef unsigned int		uint;
-typedef unsigned long		ulong;
+typedef unsigned long		ulong;	// not defined on Darwin 18.7
 
 #endif
