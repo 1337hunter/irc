@@ -193,7 +193,7 @@ std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv)
 	size_t		i = 0;
 	std::string	nick = "";
 	t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it != serv->clients.end())
+	if (it != serv->clients.end() && it->isRegistred())
 		nick = it->getnick();
 	else if (split[0][0] == ':')
 	{
