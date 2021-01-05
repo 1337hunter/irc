@@ -54,13 +54,17 @@ OBJECTS_DIR   = ./
 
 SOURCES       = chatwindow.cpp \
 		main.cpp \
-		mainwindow.cpp moc_chatwindow.cpp \
-		moc_mainwindow.cpp
+		mainwindow.cpp \
+		sendfile.cpp moc_chatwindow.cpp \
+		moc_mainwindow.cpp \
+		moc_sendfile.cpp
 OBJECTS       = chatwindow.o \
 		main.o \
 		mainwindow.o \
+		sendfile.o \
 		moc_chatwindow.o \
-		moc_mainwindow.o
+		moc_mainwindow.o \
+		moc_sendfile.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -137,9 +141,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		client.pro chatwindow.h \
-		mainwindow.h chatwindow.cpp \
+		mainwindow.h \
+		sendfile.h chatwindow.cpp \
 		main.cpp \
-		mainwindow.cpp
+		mainwindow.cpp \
+		sendfile.cpp
 QMAKE_TARGET  = client
 DESTDIR       = 
 TARGET        = client
@@ -319,8 +325,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents chatwindow.h mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents chatwindow.cpp main.cpp mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents chatwindow.h mainwindow.h sendfile.h $(DISTDIR)/
+	$(COPY_FILE) --parents chatwindow.cpp main.cpp mainwindow.cpp sendfile.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents chatwindow.ui mainwindow.ui $(DISTDIR)/
 	$(COPY_FILE) --parents client_en_US.ts $(DISTDIR)/
 
@@ -354,9 +360,9 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -std=gnu++11 -Wall -W -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_chatwindow.cpp moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_chatwindow.cpp moc_mainwindow.cpp moc_sendfile.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_chatwindow.cpp moc_mainwindow.cpp
+	-$(DEL_FILE) moc_chatwindow.cpp moc_mainwindow.cpp moc_sendfile.cpp
 moc_chatwindow.cpp: chatwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
@@ -367,6 +373,11 @@ moc_mainwindow.cpp: mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/se/irc/client/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/se/irc/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include mainwindow.h -o moc_mainwindow.cpp
+
+moc_sendfile.cpp: sendfile.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /home/se/irc/client/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/home/se/irc/client -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/x86_64-linux-gnu/c++/9 -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-linux-gnu/9/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include sendfile.h -o moc_sendfile.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -394,7 +405,8 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 ####### Compile
 
 chatwindow.o: chatwindow.cpp chatwindow.h \
-		ui_chatwindow.h
+		ui_chatwindow.h \
+		sendfile.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o chatwindow.o chatwindow.cpp
 
 main.o: main.cpp mainwindow.h \
@@ -406,11 +418,17 @@ mainwindow.o: mainwindow.cpp mainwindow.h \
 		ui_mainwindow.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o mainwindow.cpp
 
+sendfile.o: sendfile.cpp sendfile.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sendfile.o sendfile.cpp
+
 moc_chatwindow.o: moc_chatwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_chatwindow.o moc_chatwindow.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_sendfile.o: moc_sendfile.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sendfile.o moc_sendfile.cpp
 
 ####### Install
 

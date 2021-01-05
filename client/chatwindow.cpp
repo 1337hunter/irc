@@ -3,7 +3,8 @@
 #include <iostream>
 #include <QMessageBox>
 #include <ctime>
-
+#include "sendfile.h"
+#include <QLabel>
 
 typedef struct addrinfo     t_addrinfo;
 
@@ -117,19 +118,7 @@ void    ChatWindow::do_connect()
     this->run();
 }
 
-void    ChatWindow::SendMessage(void)
-{
-    QMessageBox     messageBox;
-    ssize_t         r = 0;
 
-    if (tls && sslptr)
-        r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
-    else
-        r = write(sock, wrbuf.c_str(), wrbuf.size());
-    if (r <= 0)
-        messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
-    wrbuf.erase();
-}
 
 std::vector<std::string>   ChatWindow::splitstring(std::string str, char delim)
 {
@@ -165,6 +154,30 @@ std::vector<std::string>   ChatWindow::splitstringbyany(std::string msg, std::st
     if (!msg.empty())
         split.push_back(msg);
     return (split);
+}
+
+void    ChatWindow::SendMessage(void)
+{
+    QMessageBox     messageBox;
+    ssize_t         r = 0;
+
+    if (tls && sslptr)
+        r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
+    else
+        r = write(sock, wrbuf.c_str(), wrbuf.size());
+    if (r <= 0)
+        messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
+    if (file_buf.size() != 0)
+    {
+        if (tls && sslptr)
+            r = SSL_write(sslptr, file_buf.data(), file_buf.size());
+        else
+            r = write(sock, file_buf.data(), file_buf.size());
+        if (r <= 0)
+            messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
+        file_buf.clear();
+    }
+    wrbuf.erase();
 }
 
 void    ChatWindow::ReceiveMessage(void)
@@ -237,10 +250,52 @@ void    ChatWindow::keyPressEvent(QKeyEvent *event)
 
 void    ChatWindow::closeEvent(QCloseEvent* event)
 {
+    (void)event;
     exit(0);
 }
 
 void    ChatWindow::actionExit(void)
 {
     exit(0);
+}
+
+void ChatWindow::on_actionExit_triggered()
+{
+    exit(0);
+}
+
+std::string ChatWindow::get_filename_from_path(std::string path)
+{
+    std::vector<std::string> split = splitstring(path, '/');
+    return split.back();
+}
+
+void ChatWindow::on_actionSend_file_triggered()
+{
+    QLabel          lbl;
+    std::string     nick;
+    std::string     path;
+    std::string     filename;
+    QMessageBox     messageBox;
+    int             fd;
+    int             red;
+    unsigned char   buf[1024];
+    SendFile        *sf = new SendFile(&lbl);
+    lbl.show();
+
+    if (sf->exec())
+    {
+        nick = sf->getNick();
+        path = sf->getPath();
+    }
+    if ((fd = open(path.c_str(), O_RDONLY)) < 0)
+    {
+        messageBox.critical(0, "Error", "No such file or directory");
+        return ;
+    }
+    filename = get_filename_from_path(path);
+    wrbuf += "FILE " + filename + " " + nick + " ";
+    while ((red = read(fd, buf, 1024)))
+        copy(buf, buf + red, back_inserter(file_buf));
+    wrbuf += std::to_string(file_buf.size()) + " ";
 }

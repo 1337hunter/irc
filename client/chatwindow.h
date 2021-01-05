@@ -46,6 +46,7 @@ public:
     fd_set  fdset_write;
     std::string wrbuf;
     std::string rdbuf;
+    std::vector<unsigned char>  file_buf;
     ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname,
                bool tls, bool connected, QWidget *parent = nullptr);
     ChatWindow();
@@ -59,9 +60,12 @@ public:
     void    closeEvent(QCloseEvent* event);
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
+    std::string get_filename_from_path(std::string path);
 private slots:
     void    actionExit(void);
-
+    void    on_actionExit_triggered();
+    //void    on_actionExit_toggled(bool arg1); dont know yet how to delit it from moc_chatwindow.h
+    void    on_actionSend_file_triggered();
 };
 
 #endif // CHATWINDOW_H

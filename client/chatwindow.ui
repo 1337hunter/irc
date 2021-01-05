@@ -81,6 +81,8 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionSend_file"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -91,6 +93,11 @@
    </property>
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionSend_file">
+   <property name="text">
+    <string>Send file</string>
    </property>
   </action>
  </widget>

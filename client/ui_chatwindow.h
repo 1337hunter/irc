@@ -25,6 +25,7 @@ class Ui_ChatWindow
 {
 public:
     QAction *actionExit;
+    QAction *actionSend_file;
     QWidget *centralwidget;
     QTextBrowser *mainchat;
     QLineEdit *lineEdit;
@@ -47,6 +48,8 @@ public:
         actionExit = new QAction(ChatWindow);
         actionExit->setObjectName(QString::fromUtf8("actionExit"));
         actionExit->setCheckable(false);
+        actionSend_file = new QAction(ChatWindow);
+        actionSend_file->setObjectName(QString::fromUtf8("actionSend_file"));
         centralwidget = new QWidget(ChatWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         mainchat = new QTextBrowser(centralwidget);
@@ -65,6 +68,8 @@ public:
         ChatWindow->setMenuBar(menubar);
 
         menubar->addAction(menuFile->menuAction());
+        menuFile->addAction(actionSend_file);
+        menuFile->addSeparator();
         menuFile->addAction(actionExit);
 
         retranslateUi(ChatWindow);
@@ -76,6 +81,7 @@ public:
     {
         ChatWindow->setWindowTitle(QApplication::translate("ChatWindow", "IRC chat", nullptr));
         actionExit->setText(QApplication::translate("ChatWindow", "Exit", nullptr));
+        actionSend_file->setText(QApplication::translate("ChatWindow", "Send file", nullptr));
         menuFile->setTitle(QApplication::translate("ChatWindow", "File", nullptr));
     } // retranslateUi
 

@@ -18,11 +18,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     chatwindow.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    sendfile.cpp
 
 HEADERS += \
     chatwindow.h \
-    mainwindow.h
+    mainwindow.h \
+    sendfile.h
 
 FORMS += \
     chatwindow.ui \
