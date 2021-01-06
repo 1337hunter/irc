@@ -227,13 +227,11 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	size_t		pos = 5;
 	size_t		i;
 
-	std::cout << "\n1\n\n";
 	if (split.size() < 4)
 	{
 		serv->fds[fd].wrbuf += "ERROR :FILE command requires more parameters!";
 		return r;
 	}
-	std::cout << "\n2\n\n";
 	serv->fds[fd].file_name = split[1];
 	if (!(client = find_client_by_nick(split[2], serv)))
 	{
@@ -283,7 +281,6 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	while (pos < r)
 		buf[i++] = buf[pos++];
 	buf[i] = 0;
-	std::cout << "\n3\n\n";
 	return i;
 }
 
@@ -308,22 +305,18 @@ int	append_to_file_buf(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 				client->getnick() + " " + serv->fds[fd].file_from_nick +
 				" " + serv->fds[fd].file_to_nick + " " +
 				ft_tostring(serv->fds[fd].file_size) + " :";
-			std::cout << "\nappend_to_file_buf 1\n\n";
-			std::cout << serv->fds[fd].file_buf.size() << " - size\n\n";
 			for (; begin != serv->fds[fd].file_buf.end(); begin++)
 			{
 				std::cout << "c" << std::endl;
 				std::cout << *begin;
 				serv->fds[client->getFD()].wrbuf += (char)(*begin);
 			}
-			std::cout << "\nappend_to_file_buf 2\n\n";
 		}
 		serv->fds[fd].file_bytes_received = 0;
 		serv->fds[fd].file_size = 0;
 		serv->fds[fd].file_buf.clear();
 		serv->fds[fd].file_name.erase();
 	}
-	std::cout << "\nappend_to_file_buf 3\n\n";
 	while (pos < r)
 		buf[i++] = buf[pos++];
 	buf[i] = 0;
