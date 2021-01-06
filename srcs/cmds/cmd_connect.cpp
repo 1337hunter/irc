@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/06 17:50:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,8 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	}
 	serv->fds[socket_fd].type = FD_SERVER;
 	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION + " IRC| \r\n";
+		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION + " IRC|" +
+		   (DEBUG_MODE ? "DEBUG" : "") +  " \r\n";
 	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
 		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
 	serv->fds[socket_fd].tls = true;

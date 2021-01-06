@@ -5,6 +5,7 @@
 #include <ctime>
 #include "sendfile.h"
 #include <QLabel>
+#include <unistd.h>
 
 typedef struct addrinfo     t_addrinfo;
 
@@ -19,8 +20,8 @@ ChatWindow::~ChatWindow()
 }
 
 ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname,
-    bool tls, bool connected, QWidget *parent) : QMainWindow(parent), ip(ip), port(port), password(password), nickname(nickname), username(username),
-    realname(realname), tls(tls), connected(connected), ui(new Ui::ChatWindow)
+    bool tls, bool connected, size_t file_size, QWidget *parent) : QMainWindow(parent), ip(ip), port(port), password(password), nickname(nickname), username(username),
+    realname(realname), tls(tls), connected(connected), file_size(file_size), ui(new Ui::ChatWindow)
 {
     ui->setupUi(this);
 }
@@ -165,7 +166,7 @@ void    ChatWindow::SendMessage(void)
         r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
     else
         r = write(sock, wrbuf.c_str(), wrbuf.size());
-    if (r <= 0)
+    if (r <= 0 && file_buf.empty())
         messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
     if (file_buf.size() != 0)
     {
@@ -180,11 +181,114 @@ void    ChatWindow::SendMessage(void)
     wrbuf.erase();
 }
 
+int ChatWindow::receive_file(unsigned char *buf, size_t r)
+{
+    size_t  pos = 0;
+    std::vector<std::string>   split = splitstring(std::string((char*)buf), ' ');
+    if (split.size() < 6)
+        return r;
+    file_name = split[1];
+    file_from = split[3];
+    file_size = stoi(split[4]);
+
+    while (pos < r && buf[pos] != ':')
+        pos++;
+    if (pos == r)
+        return r;
+    pos++;
+    file_bytes_received = 0;
+    while (pos < r && file_bytes_received < file_size)
+    {
+        receive_file_buf.push_back(buf[pos]);
+        file_bytes_received++;
+        pos++;
+    }
+    if (file_bytes_received == file_size)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "File transfer", std::string(std::string("Receive file from ") + file_from + "?").c_str(),
+                                                                         QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
+            std::fstream   file;
+            std::ifstream  test_file(std::string(std::string("./") + file_name).c_str());
+            test_file.open(std::string(std::string("./") + file_name).c_str());
+            if (test_file.good())
+            {
+                QMessageBox         messageBox;
+                test_file.close();
+                messageBox.critical(0, "Error", "File already exist!");
+            }
+            else
+            {
+                file.open(std::string(std::string("./") + file_name).c_str(), std::ios::out);
+                std::vector<unsigned char>::iterator b = receive_file_buf.begin();
+                for (; b != receive_file_buf.end(); b++)
+                    file << *b;
+            }
+        }
+        receive_file_buf.clear();
+        file_name.erase();
+        file_from.erase();
+        file_size = 0;
+    }
+    size_t i = 0;
+    while (pos < r)
+        buf[i++] = buf[pos++];
+    buf[i] = 0;
+    return i;
+}
+
+int     ChatWindow::append_to_file_buf(unsigned char *buf, size_t r)
+{
+    size_t  pos = 0;
+    size_t  i   = 0;
+
+    while (pos < r && file_bytes_received < file_size)
+    {
+        receive_file_buf.push_back(buf[pos]);
+        file_bytes_received++;
+        pos++;
+    }
+    if (file_bytes_received == file_size)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "File transfer", std::string(std::string("Receive file from ") + file_from + "?").c_str(),
+                                                                         QMessageBox::Yes|QMessageBox::No);
+        if (reply == QMessageBox::Yes)
+        {
+            std::fstream   file;
+            std::ifstream  test_file(std::string(std::string("./") + file_name).c_str());
+            file.open(std::string(std::string("./") + file_name).c_str());
+            if (test_file.good())
+            {
+                QMessageBox     messageBox;
+                messageBox.critical(0, "Error", "File already exist!");
+            }
+            else
+            {
+                file.open(std::string(std::string("./") + file_name).c_str(), std::ios::out);
+                std::vector<unsigned char>::iterator b = receive_file_buf.begin();
+                for (; b != receive_file_buf.end(); b++)
+                    std::cout << *b;
+            }
+        }
+        receive_file_buf.clear();
+        file_name.erase();
+        file_from.erase();
+        file_size = 0;
+    }
+    while (pos < r)
+       buf[i++] = buf[pos++];
+    buf[i] = 0;
+    return i;
+}
+
 void    ChatWindow::ReceiveMessage(void)
 {
     QMessageBox     messageBox;
     ssize_t     r = 0;
-    char        buf_read[1024 + 1];
+    unsigned char        buf_read[1024 + 1];
     std::vector<std::string>    split;
 
     if (tls && sslptr)
@@ -193,9 +297,13 @@ void    ChatWindow::ReceiveMessage(void)
         r = recv(sock, buf_read, 1024, 0);
     if (r >= 0)
         buf_read[r] = 0;
+    if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
+        r = receive_file(buf_read, r);
+    else if (file_bytes_received < file_size)
+        r = append_to_file_buf(buf_read,  r);
     if (r > 0)
     {
-        split = splitstringbyany(std::string(buf_read), "\r\n");
+        split = splitstringbyany(std::string((char*)buf_read), "\r\n");
         for (size_t i = 0; i < split.size(); ++i)
             ui->mainchat->append(split[i].c_str());
     }
@@ -214,7 +322,7 @@ void    ChatWindow::run(void)
         FD_ZERO(&fdset_read);
         FD_ZERO(&fdset_write);
         FD_SET(sock, &fdset_read);
-        if (wrbuf.size() > 0)
+        if (wrbuf.size() > 0 || file_buf.size() > 0)
             FD_SET(sock, &fdset_write);
         readyfds = select(sock + 1, &fdset_read, &fdset_write, 0, &timeout);
         if (readyfds < 0)
@@ -277,6 +385,8 @@ void ChatWindow::on_actionSend_file_triggered()
     std::string     path;
     std::string     filename;
     QMessageBox     messageBox;
+    std::string     temp;
+    std::vector<unsigned char>    temp_array;
     int             fd;
     int             red;
     unsigned char   buf[1024];
@@ -288,14 +398,27 @@ void ChatWindow::on_actionSend_file_triggered()
         nick = sf->getNick();
         path = sf->getPath();
     }
-    if ((fd = open(path.c_str(), O_RDONLY)) < 0)
+    if ((fd = ::open(path.c_str(), O_RDONLY)) < 0)
     {
         messageBox.critical(0, "Error", "No such file or directory");
         return ;
     }
     filename = get_filename_from_path(path);
-    wrbuf += "FILE " + filename + " " + nick + " ";
+    temp = "FILE " + filename + " " + nick + " " + std::string(nickname.toLocal8Bit().constData()) + " ";
     while ((red = read(fd, buf, 1024)))
+    {
         copy(buf, buf + red, back_inserter(file_buf));
-    wrbuf += std::to_string(file_buf.size()) + " ";
+        if (file_buf.size() > 524288000)
+        {
+            messageBox.critical(0, "Error", "Can't send more then 1 Gb");
+            ::close(fd);
+            file_buf.clear();
+            return ;
+        }
+    }
+    ::close(fd);
+    temp += std::to_string(file_buf.size()) + " :";
+    std::copy(temp.c_str(), temp.c_str() + temp.size(), std::back_inserter(temp_array));
+    std::copy(file_buf.data(), file_buf.data() + file_buf.size(), back_inserter(temp_array));
+    file_buf = temp_array;
 }

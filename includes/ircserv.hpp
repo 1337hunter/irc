@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:11:59 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/06 21:06:01 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,12 @@ typedef struct		s_fd
 	size_t			sentbytes;
 	size_t			recvbytes;
 	time_t			dtopened;
+	size_t          file_size;
+	size_t			file_bytes_received;
+	std::string		file_name;
+	std::string		file_to_nick;
+	std::string		file_from_nick;
+	std::vector<unsigned char>	file_buf;
 }					t_fd;
 
 struct				t_server_intro

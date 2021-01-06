@@ -44,8 +44,8 @@ public:
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(216, 265);
-        MainWindow->setMinimumSize(QSize(0, 0));
-        MainWindow->setMaximumSize(QSize(999, 999));
+        MainWindow->setMinimumSize(QSize(216, 265));
+        MainWindow->setMaximumSize(QSize(216, 265));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         connect = new QPushButton(centralwidget);

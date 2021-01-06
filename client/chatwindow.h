@@ -18,6 +18,7 @@
 #include <QCloseEvent>
 #include <vector>
 #include <string>
+#include <fstream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChatWindow; }
@@ -37,6 +38,7 @@ public:
     QString realname;
     bool    tls;
     bool    connected;
+    size_t  file_size;
     Ui::ChatWindow *ui;
 
     SSL_CTX *sslctx;
@@ -47,8 +49,14 @@ public:
     std::string wrbuf;
     std::string rdbuf;
     std::vector<unsigned char>  file_buf;
+    std::vector<unsigned char>  receive_file_buf;
+    size_t                      file_bytes_received;
+    std::string                 file_name;
+    std::string                 file_from;
+
+
     ChatWindow(QString ip, QString port, QString password, QString nickname, QString username, QString realname,
-               bool tls, bool connected, QWidget *parent = nullptr);
+               bool tls, bool connected, size_t file_size, QWidget *parent = nullptr);
     ChatWindow();
     ~ChatWindow();
 
@@ -60,6 +68,8 @@ public:
     void    closeEvent(QCloseEvent* event);
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
+    int     receive_file(unsigned char *buf, size_t r);
+    int     append_to_file_buf(unsigned char *buf, size_t r);
     std::string get_filename_from_path(std::string path);
 private slots:
     void    actionExit(void);

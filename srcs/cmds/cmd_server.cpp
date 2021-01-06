@@ -166,7 +166,8 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	//backward message to introduce us to enother server
 	if (serv->fds[fd].type != FD_SERVER)
 	{
-		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + VERSION + " " + "IRC|\r\n";
+		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + VERSION + " " + "IRC|" +
+			(DEBUG_MODE ? "DEBUG" : "") +  " \r\n";
 		serv->fds[fd].wrbuf += "SERVER " + serv->servername + " 1 " + serv->token +
 		" :" + serv->info + CRLF;
 	}

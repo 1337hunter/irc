@@ -77,7 +77,7 @@ void MainWindow::on_connect_clicked()
         messageBox.setFixedSize(200, 100);
         return ;
     }
-    chat = new ChatWindow(_ip, _port, _pass, _nick, _user, _real, ui->tls->isChecked(), false);
+    chat = new ChatWindow(_ip, _port, _pass, _nick, _user, _real, ui->tls->isChecked(), false, 0);
     this->hide();
     chat->show();
     chat->do_connect();
