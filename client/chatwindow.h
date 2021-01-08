@@ -44,10 +44,13 @@ public:
     SSL_CTX *sslctx;
     SSL     *sslptr;
     int     sock;
+
     fd_set  fdset_read;
     fd_set  fdset_write;
     std::string wrbuf;
     std::string rdbuf;
+    SSL                         *file_sslptr;
+    int                         file_sock;
     std::vector<unsigned char>  file_buf;
     std::vector<unsigned char>  receive_file_buf;
     size_t                      file_bytes_received;
@@ -60,7 +63,7 @@ public:
     ChatWindow();
     ~ChatWindow();
 
-    void    do_connect(void);
+    void    do_connect(bool file = false);
     void    run(void);
     void    ReceiveMessage(void);
     void    SendMessage(void);

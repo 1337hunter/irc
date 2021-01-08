@@ -226,16 +226,24 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	size_t		pos = 0;
 	size_t		i;
 
+	if (!serv->pass.empty() && serv->fds[fd].pass != serv->pass)
+	{
+		serv->fds[fd].wrbuf += "ERROR :FILE - server password incorrect\r\n";
+		serv->fds[fd].status = false;
+		return r;
+	}
 	if (split.size() < 4)
 	{
-		serv->fds[fd].wrbuf += "ERROR :FILE command requires more parameters!";
+		serv->fds[fd].wrbuf += "ERROR :FILE command requires more parameters!\r\n";
+		serv->fds[fd].status = false;
 		return r;
 	}
 	try { serv->fds[fd].file_size = ft_stoi(split[4]); }
 	catch (...)
 	{
 		serv->fds[fd].file_size = 0;
-		serv->fds[fd].wrbuf += "ERROR :FILE has errorneous amount of bytes";
+		serv->fds[fd].wrbuf += "ERROR :FILE has errorneous amount of bytes\r\n";
+		serv->fds[fd].status = false;
 		return r;
 	}
 	serv->fds[fd].file_name = split[1];
@@ -243,12 +251,13 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, "401", client, split[1],
 				"No such nick/channel");
+		serv->fds[fd].status = false;
 		return r;
 	}
-	if (!(client_from = find_client_by_fd(fd, serv)) || !client->isRegistred())
+	if (!(client_from = find_client_by_nick(split[3], serv)))
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, "451", -1, "",
-				"You have not registered"); return r;
+				"You have not registered"); serv->fds[fd].status = false; return r;
 	}
 	serv->fds[fd].file_to_nick = client->getnick();
 	serv->fds[fd].file_from_nick = client_from->getnick();
@@ -267,12 +276,7 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 		serv->fds[client->getFD()].file_bytes_received = serv->fds[fd].file_bytes_received;
 		serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
 		serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
-		serv->fds[fd].file_bytes_received = 0;
-		serv->fds[fd].file_size = 0;
-		serv->fds[fd].file_buf.clear();
-		serv->fds[fd].file_name.erase();
-		serv->fds[fd].file_to_nick.erase();
-		serv->fds[fd].file_from_nick.erase();
+		serv->fds[fd].status = false;
 	}
 	i = 0;
 	while (pos < r)
@@ -302,12 +306,7 @@ int	append_to_file_buf(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 			serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
 			serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
 		}
-		serv->fds[fd].file_bytes_received = 0;
-		serv->fds[fd].file_size = 0;
-		serv->fds[fd].file_buf.clear();
-		serv->fds[fd].file_name.erase();
-		serv->fds[fd].file_to_nick.erase();
-		serv->fds[fd].file_from_nick.erase();
+		serv->fds[fd].status = false;
 	}
 	while (pos < r)
 		buf[i++] = buf[pos++];

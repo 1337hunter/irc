@@ -27,23 +27,24 @@ ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickn
     ui->setupUi(this);
 }
 
-void    ChatWindow::do_connect()
+void    ChatWindow::do_connect(bool file)
 {
     t_addrinfo      hints;
     t_addrinfo      *addr;
     QMessageBox     messageBox;
+    int             temp_socket;
+    SSL             *temp_sslptr = 0;
 
     hints.ai_flags = 0;
     messageBox.setFixedSize(200,100);
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
-    if ((sock = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    if ((temp_socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
         messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(socket)");
         return ;
     }
-
     if (::getaddrinfo(std::string(ip.toLocal8Bit().constData()).c_str(), std::string(port.toLocal8Bit().constData()).c_str(), &hints, &addr))
     {
         messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(getaddrinfo)");
@@ -51,14 +52,16 @@ void    ChatWindow::do_connect()
     }
     while (true)
     {
-        int res = ::connect(sock, addr->ai_addr, addr->ai_addrlen);
-         ui->mainchat->append("Connecting ...");
+        int res = ::connect(temp_socket, addr->ai_addr, addr->ai_addrlen);
+        if (!file)
+            ui->mainchat->append("Connecting ...");
         if (res == 0)
         {
             if (!tls)
             {
                 connected = true;
-                ui->mainchat->append("Connected!");
+                if (!file)
+                    ui->mainchat->append("Connected!");
             }
             break ;
         }
@@ -76,48 +79,63 @@ void    ChatWindow::do_connect()
     {
         SSL_library_init();
         SSL_load_error_strings();
-        if (!(sslctx = SSL_CTX_new(TLS_method())))
+        if (!file)
         {
-            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
-            return ;
+            if (!(sslctx = SSL_CTX_new(TLS_method())))
+            {
+                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+                return ;
+            }
+            if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
+            {
+                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+                return ;
+            }
+            if ((temp_sslptr = SSL_new(sslctx)) == 0)
+            {
+                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+                return ;
+            }
         }
-        if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
-        {
-            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
-            return ;
-        }
-        if ((sslptr = SSL_new(sslctx)) == 0)
-        {
-            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
-            return ;
-        }
-        if (!(SSL_set_fd(sslptr, sock)))
+        if (!(SSL_set_fd(temp_sslptr, temp_socket)))
         {
             messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
             return ;
         }
 
         int     handshake = 0;
-        handshake = SSL_connect(sslptr);
+        handshake = SSL_connect(temp_sslptr);
 
         if (handshake != 1)
         {
-            int err = SSL_get_error(sslptr, handshake);
+            int err = SSL_get_error(temp_sslptr, handshake);
             if (err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE)
                 exit(0);
         }
         connected = true;
         ui->mainchat->append("Connected!\n");
     }
-    if (fcntl(sock, F_SETFL, O_NONBLOCK) < 0)
+    if (fcntl(temp_socket, F_SETFL, O_NONBLOCK) < 0)
     {
         messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(fcntl)");
         return ;
     }
-    wrbuf += "NICK " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
-    wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
+    wrbuf += "PASS " + std::string(password.toLocal8Bit().constData()) + "\r\n";
+    if (!file)
+    {
+        sslptr = temp_sslptr;
+        sock = temp_socket;
+        wrbuf += "NICK " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
+        wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
+    }
+    else
+    {
+        file_sslptr = temp_sslptr;
+        file_sock = temp_socket;
+    }
     freeaddrinfo(addr);
-    this->run();
+    if (!file)
+        this->run();
 }
 
 
@@ -171,13 +189,19 @@ void    ChatWindow::SendMessage(void)
         messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
     if (file_buf.size() != 0)
     {
-        if (tls && sslptr)
-            r = SSL_write(sslptr, file_buf.data(), file_buf.size());
+        if (tls && file_sslptr)
+            r = SSL_write(file_sslptr, file_buf.data(), file_buf.size());
         else
-            r = write(sock, file_buf.data(), file_buf.size());
+            r = write(file_sock, file_buf.data(), file_buf.size());
         if (r <= 0)
             messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
         file_buf.clear();
+        if (tls)
+        {
+            SSL_shutdown(file_sslptr);
+            SSL_free(file_sslptr);
+        }
+        ::close(file_sock);
     }
     wrbuf.erase();
 }
@@ -202,51 +226,6 @@ int ChatWindow::receive_file(unsigned char *buf, size_t r)
 
     file_bytes_received = 0;
     return append_to_file_buf(pos, buf, r);
-    /*
-    while (pos < r && file_bytes_received < file_size)
-    {
-        receive_file_buf.push_back(buf[pos]);
-        file_bytes_received++;
-        pos++;
-    }
-    if (file_bytes_received == file_size)
-    {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "File transfer", std::string(std::string("Receive file from ") + file_from + "?").c_str(),
-                                                                         QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes)
-        {
-            fd = ::open((std::string("./") + file_name).c_str(), O_RDONLY);
-            if (fd > 0)
-            {
-                ::close(fd);
-                messageBox.critical(0, "Error", "File already exist!");
-            }
-            else
-            {
-                fd = ::open((std::string("./") + file_name).c_str(),  O_WRONLY | O_APPEND | O_CREAT, 0644);
-                if (fd < 0)
-                    messageBox.critical(0, "Error", "Cann't create file");
-                else
-                {
-                    if (::write(fd, receive_file_buf.data(), receive_file_buf.size()) < 0)
-                        messageBox.critical(0, "Error", "Write error ;(");
-                    ::close(fd);
-                }
-            }
-            std::cout << "fd: " << fd << "\n";
-        }
-        receive_file_buf.clear();
-        file_name.erase();
-        file_from.erase();
-        file_size = 0;
-        file_bytes_received = 0;
-    }
-    size_t i = 0;
-    while (pos < r)
-        buf[i++] = buf[pos++];
-    buf[i] = 0;
-    return i;*/
 }
 
 int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
@@ -422,9 +401,9 @@ void ChatWindow::on_actionSend_file_triggered()
     while ((red = read(fd, buf, 1024)))
     {
         copy(buf, buf + red, back_inserter(file_buf));
-        if (file_buf.size() > 524288000)
+        if (file_buf.size() > 209715200)
         {
-            messageBox.critical(0, "Error", "Can't send more then 1 Gb");
+            messageBox.critical(0, "Error", "Cann't send file. File size limit is 200 Mb.");
             ::close(fd);
             file_buf.clear();
             return ;
@@ -435,4 +414,5 @@ void ChatWindow::on_actionSend_file_triggered()
     std::copy(temp.c_str(), temp.c_str() + temp.size(), std::back_inserter(temp_array));
     std::copy(file_buf.data(), file_buf.data() + file_buf.size(), back_inserter(temp_array));
     file_buf = temp_array;
+    do_connect(true);
 }
