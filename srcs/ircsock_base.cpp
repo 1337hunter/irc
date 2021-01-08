@@ -1,7 +1,6 @@
 #include "ircserv.hpp"
 #include "message.hpp"
 #include "tools.hpp"
-#include <cstring>
 
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
@@ -224,12 +223,19 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	t_strvect	split = ft_splitstring(std::string((char*)buf), ' ');
 	Client		*client;
 	Client		*client_from;
-	size_t		pos = 5;
+	size_t		pos = 0;
 	size_t		i;
 
 	if (split.size() < 4)
 	{
 		serv->fds[fd].wrbuf += "ERROR :FILE command requires more parameters!";
+		return r;
+	}
+	try { serv->fds[fd].file_size = ft_stoi(split[4]); }
+	catch (...)
+	{
+		serv->fds[fd].file_size = 0;
+		serv->fds[fd].wrbuf += "ERROR :FILE has errorneous amount of bytes";
 		return r;
 	}
 	serv->fds[fd].file_name = split[1];
@@ -246,36 +252,27 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	}
 	serv->fds[fd].file_to_nick = client->getnick();
 	serv->fds[fd].file_from_nick = client_from->getnick();
-	try { serv->fds[fd].file_size = ft_stoi(split[4]); }
-	catch (...)
-	{
-		serv->fds[fd].file_size = 0;
-		serv->fds[fd].wrbuf += "ERROR :FILE has errorneous amount of bytes";
-		return r;
-	}
 	while (pos < r && buf[pos] != ':')
-		pos++;
+		serv->fds[fd].file_buf.push_back(buf[pos++]);
 	if (pos == r)
 		return r;
-	pos++;
+	serv->fds[fd].file_buf.push_back(buf[pos++]);
 	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
 	{
-		serv->fds[fd].file_buf.push_back(buf[pos]);
 		serv->fds[fd].file_bytes_received++;
-		pos++;
+		serv->fds[fd].file_buf.push_back(buf[pos++]);
 	}
 	if (serv->fds[fd].file_bytes_received == serv->fds[fd].file_size)
 	{
-		std::vector<unsigned char>::iterator	begin = serv->fds[fd].file_buf.begin();
-		serv->fds[client->getFD()].wrbuf += "FILE " + split[1] + " " + 
-			serv->fds[fd].file_to_nick + " " + serv->fds[fd].file_from_nick + " " +
-			ft_tostring(serv->fds[fd].file_size) + " :";
-		for (; begin != serv->fds[fd].file_buf.end(); begin++)
-			serv->fds[client->getFD()].wrbuf += (char)(*begin);
+		serv->fds[client->getFD()].file_bytes_received = serv->fds[fd].file_bytes_received;
+		serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
+		serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
 		serv->fds[fd].file_bytes_received = 0;
 		serv->fds[fd].file_size = 0;
 		serv->fds[fd].file_buf.clear();
 		serv->fds[fd].file_name.erase();
+		serv->fds[fd].file_to_nick.erase();
+		serv->fds[fd].file_from_nick.erase();
 	}
 	i = 0;
 	while (pos < r)
@@ -289,7 +286,6 @@ int	append_to_file_buf(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	size_t	pos = 0;
 	size_t	i	= 0;
 	Client	*client;
-	std::vector<unsigned char>::iterator    begin = serv->fds[fd].file_buf.begin();
 
 	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
 	{
@@ -301,21 +297,17 @@ int	append_to_file_buf(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	{
 		if ((client = find_client_by_nick(serv->fds[fd].file_to_nick, serv)))
 		{
-			serv->fds[client->getFD()].wrbuf += "FILE " +
-				client->getnick() + " " + serv->fds[fd].file_from_nick +
-				" " + serv->fds[fd].file_to_nick + " " +
-				ft_tostring(serv->fds[fd].file_size) + " :";
-			for (; begin != serv->fds[fd].file_buf.end(); begin++)
-			{
-				std::cout << "c" << std::endl;
-				std::cout << *begin;
-				serv->fds[client->getFD()].wrbuf += (char)(*begin);
-			}
+			serv->fds[client->getFD()].file_bytes_received =
+				serv->fds[fd].file_bytes_received;
+			serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
+			serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
 		}
 		serv->fds[fd].file_bytes_received = 0;
 		serv->fds[fd].file_size = 0;
 		serv->fds[fd].file_buf.clear();
 		serv->fds[fd].file_name.erase();
+		serv->fds[fd].file_to_nick.erase();
+		serv->fds[fd].file_from_nick.erase();
 	}
 	while (pos < r)
 		buf[i++] = buf[pos++];
@@ -374,12 +366,15 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		read_error(fd, fdref, r, serv);
 }
 
+
 void	SendMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
 	std::string	reply;
 	t_fd		&fdref = serv->fds[fd];
+	bool		just_msg;
 
+	just_msg = !fdref.wrbuf.empty();
 	if (fdref.wrbuf.length() > BUF_SIZE)
 	{
 		reply = fdref.wrbuf.substr(0, BUF_SIZE);
@@ -401,15 +396,25 @@ void	SendMessage(int fd, IRCserv *serv)
 
 #if DEBUG_MODE
 	if (fdref.tls)
-		std::cout << "tls";
+		std::cout << "tls ";
 	std::cout << "sending client " << fd << "\t" << reply;
 #endif
 
-	if (fdref.tls && fdref.sslptr)
-		r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
+	if (just_msg)
+	{
+		if (fdref.tls && fdref.sslptr)
+			r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
+		else
+			r = send(fd, reply.c_str(), reply.length(), 0);
+	}
 	else
-		r = send(fd, reply.c_str(), reply.length(), 0);
-
+	{
+		if (fdref.tls && fdref.sslptr)
+			r = SSL_write(fdref.sslptr, fdref.file_buf.data(), fdref.file_buf.size());
+		else
+			r = send(fd, fdref.file_buf.data(), fdref.file_buf.size(), 0);
+		fdref.file_buf.clear();
+	}
 	fdref.sentbytes += r;
 	if (fdref.sock > 0)
 		serv->fds[fdref.sock].sentbytes += r;

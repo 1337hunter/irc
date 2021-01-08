@@ -69,7 +69,7 @@ public:
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
     int     receive_file(unsigned char *buf, size_t r);
-    int     append_to_file_buf(unsigned char *buf, size_t r);
+    int     append_to_file_buf(size_t pos, unsigned char *buf, size_t r);
     std::string get_filename_from_path(std::string path);
 private slots:
     void    actionExit(void);
