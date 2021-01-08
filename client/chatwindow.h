@@ -66,7 +66,7 @@ public:
     void    do_connect(bool file = false);
     void    run(void);
     void    ReceiveMessage(void);
-    void    SendMessage(void);
+    void    SendMessage(bool file_ready);
     void    keyPressEvent(QKeyEvent* event);
     void    closeEvent(QCloseEvent* event);
     std::vector<std::string>   splitstring(std::string str, char delim);

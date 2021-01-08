@@ -58,11 +58,7 @@ void    ChatWindow::do_connect(bool file)
         if (res == 0)
         {
             if (!tls)
-            {
                 connected = true;
-                if (!file)
-                    ui->mainchat->append("Connected!");
-            }
             break ;
         }
         else
@@ -77,10 +73,10 @@ void    ChatWindow::do_connect(bool file)
     }
     if (tls)
     {
-        SSL_library_init();
-        SSL_load_error_strings();
         if (!file)
         {
+            SSL_library_init();
+            SSL_load_error_strings();
             if (!(sslctx = SSL_CTX_new(TLS_method())))
             {
                 messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
@@ -91,21 +87,19 @@ void    ChatWindow::do_connect(bool file)
                 messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
                 return ;
             }
-            if ((temp_sslptr = SSL_new(sslctx)) == 0)
-            {
-                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
-                return ;
-            }
+        }
+        if ((temp_sslptr = SSL_new(sslctx)) == 0)
+        {
+            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+            return ;
         }
         if (!(SSL_set_fd(temp_sslptr, temp_socket)))
         {
             messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
             return ;
         }
-
         int     handshake = 0;
         handshake = SSL_connect(temp_sslptr);
-
         if (handshake != 1)
         {
             int err = SSL_get_error(temp_sslptr, handshake);
@@ -113,14 +107,14 @@ void    ChatWindow::do_connect(bool file)
                 exit(0);
         }
         connected = true;
-        ui->mainchat->append("Connected!\n");
     }
     if (fcntl(temp_socket, F_SETFL, O_NONBLOCK) < 0)
     {
         messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(fcntl)");
         return ;
     }
-    wrbuf += "PASS " + std::string(password.toLocal8Bit().constData()) + "\r\n";
+    if (!password.isEmpty())
+        wrbuf += "PASS " + std::string(password.toLocal8Bit().constData()) + "\r\n";
     if (!file)
     {
         sslptr = temp_sslptr;
@@ -176,34 +170,41 @@ std::vector<std::string>   ChatWindow::splitstringbyany(std::string msg, std::st
     return (split);
 }
 
-void    ChatWindow::SendMessage(void)
+void    ChatWindow::SendMessage(bool file_ready)
 {
     QMessageBox     messageBox;
     ssize_t         r = 0;
 
-    if (tls && sslptr)
-        r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
-    else
-        r = write(sock, wrbuf.c_str(), wrbuf.size());
-    if (r <= 0 && file_buf.empty())
-        messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
-    if (file_buf.size() != 0)
+    if (!file_ready)
+    {
+        if (tls && sslptr)
+            r = SSL_write(sslptr, wrbuf.c_str(), wrbuf.length());
+        else
+            r = write(sock, wrbuf.c_str(), wrbuf.size());
+        if (r < 0 && file_buf.empty())
+            messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
+        wrbuf.erase();
+    }
+    if (file_ready)
     {
         if (tls && file_sslptr)
-            r = SSL_write(file_sslptr, file_buf.data(), file_buf.size());
+            r = SSL_write(file_sslptr, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
         else
-            r = write(file_sock, file_buf.data(), file_buf.size());
-        if (r <= 0)
+            r = write(file_sock, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
+        if (r < 0)
             messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
-        file_buf.clear();
-        if (tls)
+        if (r > 0)
+            file_buf.erase(file_buf.begin(), file_buf.begin() + r);
+        if (file_buf.empty())
         {
-            SSL_shutdown(file_sslptr);
-            SSL_free(file_sslptr);
+            if (tls)
+            {
+                SSL_shutdown(file_sslptr);
+                SSL_free(file_sslptr);
+            }
+            ::close(file_sock);
         }
-        ::close(file_sock);
     }
-    wrbuf.erase();
 }
 
 int ChatWindow::receive_file(unsigned char *buf, size_t r)
@@ -300,8 +301,6 @@ void    ChatWindow::ReceiveMessage(void)
         for (size_t i = 0; i < split.size(); ++i)
             ui->mainchat->append(split[i].c_str());
     }
-    else if (r < 0)
-        messageBox.critical(0, "Error", "ReceiveMessage.\nPlease restart you client!");
 }
 
 void    ChatWindow::run(void)
@@ -315,20 +314,18 @@ void    ChatWindow::run(void)
         FD_ZERO(&fdset_read);
         FD_ZERO(&fdset_write);
         FD_SET(sock, &fdset_read);
-        if (wrbuf.size() > 0 || file_buf.size() > 0)
+        if (file_buf.size() > 0)
+            FD_SET(file_sock, &fdset_write);
+        if (wrbuf.size() > 0)
             FD_SET(sock, &fdset_write);
-        readyfds = select(sock + 1, &fdset_read, &fdset_write, 0, &timeout);
-        if (readyfds < 0)
-        {
+        if ((readyfds = select(std::max(sock, file_sock) + 1, &fdset_read, &fdset_write, 0, &timeout)) < 0)
             exit(0);
-            return ;
-        }
-        bool    isread = FD_ISSET(sock, &fdset_read);
-        bool    iswrite = FD_ISSET(sock, &fdset_write);
-        if (isread)
+        if (FD_ISSET(sock, &fdset_read))
             ReceiveMessage();
-        if (iswrite)
-            SendMessage();
+        if (FD_ISSET(sock, &fdset_write))
+            SendMessage(false);
+        if (FD_ISSET(file_sock, &fdset_write))
+            SendMessage(true);
         QApplication::processEvents();
     }
 }
