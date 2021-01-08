@@ -53,6 +53,7 @@ public:
     int                         file_sock;
     std::vector<unsigned char>  file_buf;
     std::vector<unsigned char>  receive_file_buf;
+    std::vector<unsigned char>  file_header;
     size_t                      file_bytes_received;
     std::string                 file_name;
     std::string                 file_from;

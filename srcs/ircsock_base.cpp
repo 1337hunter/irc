@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ircsock_base.cpp                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
+/*   Updated: 2021/01/09 00:41:10 by gbright          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ircserv.hpp"
 #include "message.hpp"
 #include "tools.hpp"
@@ -218,13 +230,43 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	}
 }
 
+int	append_to_file_buf(size_t pos, int fd, unsigned char *buf, IRCserv *serv, size_t r)
+{
+	size_t	i	= 0;
+	Client	*client;
+
+	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
+	{
+		serv->fds[fd].file_buf.push_back(buf[pos]);
+		serv->fds[fd].file_bytes_received++;
+		pos++;
+	}
+	std::cout << "received: " << serv->fds[fd].file_bytes_received;
+	std::cout << " full size: " << serv->fds[fd].file_size << "\n";
+	if (serv->fds[fd].file_bytes_received == serv->fds[fd].file_size)
+	{
+		if ((client = find_client_by_nick(serv->fds[fd].file_to_nick, serv)))
+		{
+			std::cout << "\nCOPY BUFF!\n";
+			serv->fds[client->getFD()].file_bytes_received =
+				serv->fds[fd].file_bytes_received;
+			serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
+			serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
+		}
+		serv->fds[fd].status = false;
+	}
+	while (pos < r)
+		buf[i++] = buf[pos++];
+	buf[i] = 0;
+	return i;
+}
+
 int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 {
 	t_strvect	split = ft_splitstring(std::string((char*)buf), ' ');
 	Client		*client;
 	Client		*client_from;
 	size_t		pos = 0;
-	size_t		i;
 
 	if (!serv->pass.empty() && serv->fds[fd].pass != serv->pass)
 	{
@@ -264,55 +306,14 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	while (pos < r && buf[pos] != ':')
 		serv->fds[fd].file_buf.push_back(buf[pos++]);
 	if (pos == r)
-		return r;
+	{
+		buf[0] = 0;
+		return 0;
+	}
 	serv->fds[fd].file_buf.push_back(buf[pos++]);
-	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
-	{
-		serv->fds[fd].file_bytes_received++;
-		serv->fds[fd].file_buf.push_back(buf[pos++]);
-	}
-	if (serv->fds[fd].file_bytes_received == serv->fds[fd].file_size)
-	{
-		serv->fds[client->getFD()].file_bytes_received = serv->fds[fd].file_bytes_received;
-		serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
-		serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
-		serv->fds[fd].status = false;
-	}
-	i = 0;
-	while (pos < r)
-		buf[i++] = buf[pos++];
-	buf[i] = 0;
-	return i;
+	return append_to_file_buf(pos, fd, buf, serv, r);
 }
 
-int	append_to_file_buf(int fd, unsigned char *buf, IRCserv *serv, size_t r)
-{
-	size_t	pos = 0;
-	size_t	i	= 0;
-	Client	*client;
-
-	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
-	{
-		serv->fds[fd].file_buf.push_back(buf[pos]);
-		serv->fds[fd].file_bytes_received++;
-		pos++;
-	}
-	if (serv->fds[fd].file_bytes_received == serv->fds[fd].file_size)
-	{
-		if ((client = find_client_by_nick(serv->fds[fd].file_to_nick, serv)))
-		{
-			serv->fds[client->getFD()].file_bytes_received =
-				serv->fds[fd].file_bytes_received;
-			serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
-			serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
-		}
-		serv->fds[fd].status = false;
-	}
-	while (pos < r)
-		buf[i++] = buf[pos++];
-	buf[i] = 0;
-	return i;
-}
 
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
@@ -321,7 +322,11 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	t_fd			&fdref = serv->fds[fd];	// this will decrease amount of search
 
 	if (fdref.tls && fdref.sslptr)
+	{
 		r = SSL_read(fdref.sslptr, buf_read, BUF_SIZE);
+		if (r != 0)
+			std::cout << "SSL read: " << r << "\n";
+	}
 	else
 		r = recv(fd, buf_read, BUF_SIZE, 0);
 
@@ -336,7 +341,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
 			r = file_transfer(fd, buf_read, serv, r);
 		else if (fdref.file_bytes_received < fdref.file_size)
-			r = append_to_file_buf(fd, buf_read, serv, r);
+			r = append_to_file_buf(0, fd, buf_read, serv, r);
 		fdref.rdbuf += (char*)buf_read;
 		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
 			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())

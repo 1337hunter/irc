@@ -79,23 +79,23 @@ void    ChatWindow::do_connect(bool file)
             SSL_load_error_strings();
             if (!(sslctx = SSL_CTX_new(TLS_method())))
             {
-                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+                messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_new)");
                 return ;
             }
             if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
             {
-                messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+                messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_set_ecdh_auto)");
                 return ;
             }
         }
         if ((temp_sslptr = SSL_new(sslctx)) == 0)
         {
-            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+            messageBox.critical(0, "Error", "SSL error.\n(SSL_new)");
             return ;
         }
         if (!(SSL_set_fd(temp_sslptr, temp_socket)))
         {
-            messageBox.critical(0, "Error", "SSL error.\nPlease restart you client!\n(getaddrinfo)");
+            messageBox.critical(0, "Error", "SSL error.\n(SSL_set_fd)");
             return ;
         }
         int     handshake = 0;
@@ -110,7 +110,7 @@ void    ChatWindow::do_connect(bool file)
     }
     if (fcntl(temp_socket, F_SETFL, O_NONBLOCK) < 0)
     {
-        messageBox.critical(0, "Error", "Somethig went wrong.\nPlease restart you client!\n(fcntl)");
+        messageBox.critical(0, "Error", "Somethig went wrong.(fcntl)");
         return ;
     }
     if (!password.isEmpty())
@@ -182,7 +182,7 @@ void    ChatWindow::SendMessage(bool file_ready)
         else
             r = write(sock, wrbuf.c_str(), wrbuf.size());
         if (r < 0 && file_buf.empty())
-            messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
+            messageBox.critical(0, "Error", "SendMessage.");
         wrbuf.erase();
     }
     if (file_ready)
@@ -192,9 +192,10 @@ void    ChatWindow::SendMessage(bool file_ready)
         else
             r = write(file_sock, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
         if (r < 0)
-            messageBox.critical(0, "Error", "SendMessage.\nPlease restart you client!");
+            messageBox.critical(0, "Error", "SendMessage.");
         if (r > 0)
             file_buf.erase(file_buf.begin(), file_buf.begin() + r);
+        std::cout << file_buf.size() << "\n";
         if (file_buf.empty())
         {
             if (tls)
