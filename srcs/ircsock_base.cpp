@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 15:05:46 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/09 20:28:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,13 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	else
 		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
 
-	if (fd < 0)
+	if (fd < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		error_exit("accept error");
+	else if (fd < 0)
+	{
+		errno = 0;
+		return ;
+	}
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 #if DEBUG_MODE
@@ -195,6 +200,11 @@ void	self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv)
 
 void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 {
+	if (errno == EAGAIN && errno == EWOULDBLOCK)
+	{
+		errno = 0;
+		return ;
+	}
 	if (fdref.tls)
 	{
 		/* for tls may be recoverable */
