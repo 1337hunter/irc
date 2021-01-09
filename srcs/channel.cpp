@@ -276,7 +276,7 @@ int	Channel::setMode(t_strvect const &args)
 	size_t	pos;
 	size_t	i;
 	size_t	n;
-	std::vector<Client*>	clients;
+	std::vector<Client*>		clients;
 	std::vector<std::string>	mode;
 	std::vector<std::string>	arg;
 	std::string					strmode;
@@ -304,7 +304,7 @@ int	Channel::setMode(t_strvect const &args)
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];
-				std::cout << "\n\nstrmode: " << strmode << "\n\n";
+//				std::cout << "\n\nstrmode: " << strmode << "\n\n";
 				if (args[i][pos] == 'o' || args[i][pos] == 'O' || args[i][pos] == 'v')
 				{
 					for (client = _clients.begin(); client != _clients.end(); client++)

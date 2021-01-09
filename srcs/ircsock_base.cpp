@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ircsock_base.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 00:41:10 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/09 15:05:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,11 +322,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	t_fd			&fdref = serv->fds[fd];	// this will decrease amount of search
 
 	if (fdref.tls && fdref.sslptr)
-	{
 		r = SSL_read(fdref.sslptr, buf_read, BUF_SIZE);
-		if (r != 0)
-			std::cout << "SSL read: " << r << "\n";
-	}
 	else
 		r = recv(fd, buf_read, BUF_SIZE, 0);
 
