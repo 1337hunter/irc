@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   error_handle.hpp                                   :+:      :+:    :+:   */
+/*   ircbot.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/18 17:48:42 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 18:52:58 by salec            ###   ########.fr       */
+/*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
+/*   Updated: 2021/01/09 19:20:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ERROR_HANDLE_HPP
-# define ERROR_HANDLE_HPP
+#include "ircbot.hpp"
 
-# include <iostream>
-# define SELECT 0
+int		main(int argc, char **argv)
+{
+	std::string	res;
+	if (argc > 1)
+		res = getweather(argv[1]);
+	else
+		res = getweather("Moscow");
 
-void	usage_exit(std::string const &exename);
-void	error_exit(std::string const &s1);
-void	error_exit(std::string const &s1, std::string const &line,
-	size_t line_number);
-void	error_exit(int code);
+	std::cout << "\ngot response:\n" << res << std::endl;
 
-// put a std::string pointer to u if needed
-int		SSLErrorCallback(const char *str, size_t len, void *u);
-
-#endif
+	return (0);
+}
