@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 11:52:16 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/11 16:01:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,7 +230,7 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	}
 }
 
-int	append_to_file_buf(size_t pos, int fd, unsigned char *buf, IRCserv *serv, size_t r)
+/*int	append_to_file_buf(size_t pos, int fd, unsigned char *buf, IRCserv *serv, size_t r)
 {
 	size_t	i	= 0;
 	Client	*client;
@@ -315,7 +315,7 @@ int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
 	serv->fds[fd].file_buf.push_back(buf[pos++]);
 	return append_to_file_buf(pos, fd, buf, serv, r);
 }
-
+*/
 
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
@@ -336,14 +336,14 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		if (fdref.sock > 0)
 			serv->fds[fdref.sock].recvbytes += r;
 		// ^ which sock recieved from fd
-		if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
+	/*	if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
 		{
 			if ((r = file_transfer(fd, buf_read, serv, r)) == 0)
 				return ;
 		}
 		else if (fdref.file_bytes_received < fdref.file_size)
 			if ((r = append_to_file_buf(0, fd, buf_read, serv, r)) == 0)
-				return ;
+				return ;*/
 		fdref.rdbuf += (char*)buf_read;
 		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
 			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())
