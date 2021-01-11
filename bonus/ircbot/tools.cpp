@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/09 19:20:16 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/11 18:53:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sstream>
 
 typedef struct sockaddr_in	t_sockaddr_in;
 typedef struct protoent		t_protoent;
@@ -81,4 +82,14 @@ std::string	getweather(std::string query)
 	}
 
 	return (res);
+}
+
+int				ft_stoi(std::string const &str)
+{
+	std::istringstream	iss(str);
+	int					val = 0;
+
+	if (!(iss >> val))
+		return (0);
+	return (val);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:38 by salec             #+#    #+#             */
-/*   Updated: 2021/01/09 21:33:50 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/11 19:12:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ typedef struct	s_weather
 {
 	std::string	location;
 	std::string	country;
-	std::string	weather;
+	std::string	type;
+	std::string	descr;
 	int			temp_c;
 	int			feels_c;
 	int			mintemp_c;
@@ -37,6 +38,7 @@ typedef struct	s_weather
 }				t_weather;
 
 void			error_exit(std::string const &s1);
+int				ft_stoi(std::string const &str);
 
 std::string		getweather(std::string query = "Moscow");
 
