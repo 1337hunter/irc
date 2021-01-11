@@ -6,15 +6,15 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/09 19:03:40 by salec            ###   ########.fr        #
+#    Updated: 2021/01/11 17:37:33 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ircbot
-SRC = ircbot.cpp tools.cpp
+SRC = ircbot.cpp tools.cpp jsonparser.cpp
 OBJ = $(SRC:.cpp=.o)
 INCLUDEDIR = ./
-HEADERS = $(INCLUDEDIR)ircbot.hpp
+HEADERS = $(INCLUDEDIR)ircbot.hpp $(INCLUDEDIR)jsonparser.hpp
 CC = clang++
 CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR) -std=c++98 -g
 EXECFLAGS = $(CFLAGS)
