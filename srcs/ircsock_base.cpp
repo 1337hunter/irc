@@ -6,7 +6,7 @@
 /*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 00:41:10 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/09 11:52:16 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,6 +235,8 @@ int	append_to_file_buf(size_t pos, int fd, unsigned char *buf, IRCserv *serv, si
 	size_t	i	= 0;
 	Client	*client;
 
+	if (r == 0)
+		serv->fds[fd].status = false;
 	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
 	{
 		serv->fds[fd].file_buf.push_back(buf[pos]);
@@ -322,11 +324,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 	t_fd			&fdref = serv->fds[fd];	// this will decrease amount of search
 
 	if (fdref.tls && fdref.sslptr)
-	{
 		r = SSL_read(fdref.sslptr, buf_read, BUF_SIZE);
-		if (r != 0)
-			std::cout << "SSL read: " << r << "\n";
-	}
 	else
 		r = recv(fd, buf_read, BUF_SIZE, 0);
 
@@ -339,9 +337,13 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			serv->fds[fdref.sock].recvbytes += r;
 		// ^ which sock recieved from fd
 		if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
-			r = file_transfer(fd, buf_read, serv, r);
+		{
+			if ((r = file_transfer(fd, buf_read, serv, r)) == 0)
+				return ;
+		}
 		else if (fdref.file_bytes_received < fdref.file_size)
-			r = append_to_file_buf(0, fd, buf_read, serv, r);
+			if ((r = append_to_file_buf(0, fd, buf_read, serv, r)) == 0)
+				return ;
 		fdref.rdbuf += (char*)buf_read;
 		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
 			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())
