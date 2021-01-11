@@ -51,11 +51,13 @@ public:
 
     std::string                 external_ip;
     int                         file_fd;
-    SSL                         *file_sslptr;
     int                         file_sock;
     int                         file_port;
+    bool                        file_sock_status;
+    int                         dcc_sock;
+    bool						dcc_sock_status;
+	SSL                         *dcc_sslptr;
     std::vector<unsigned char>  file_buf;
-    std::vector<unsigned char>  file_header;
     size_t                      file_bytes_received;
     std::string                 file_name;
     std::string                 file_from;
@@ -69,27 +71,33 @@ public:
     void    do_connect(void);
     void    run(void);
     void    ReceiveMessage(void);
-    void    SendMessage(bool file_ready);
+    void    SendMessage(void);
+    void    Accept(void);
     void    ProcessMessage(std::string msg);
+    void    TransferFile(void);
     void    ProcessReply(std::vector<std::string> &split);
     void    keyPressEvent(QKeyEvent* event);
     void    closeEvent(QCloseEvent* event);
+
     //funny tools
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
     std::vector<std::string>   splitcmdbyspace(std::string msg);
+    std::string get_nick_from_info(std::string const &info);
     std::string strtoupper(std::string const &str);
     std::string strtolower(std::string const &str);
     void        error_exit(std::string msg);
+    void        closeDCC(void);
+    void        receive_file(std::vector<std::string> &split);
+
+
+    void        cmd_privmsg(std::vector<std::string> &split);
     //ft
     void    reply_who_I_am(std::vector<std::string> &split);
-    //int     receive_file(unsigned char *buf, size_t r);
-    //int     append_to_file_buf(size_t pos, unsigned char *buf, size_t r);
     std::string get_filename_from_path(std::string path);
 private slots:
     void    actionExit(void);
     void    on_actionExit_triggered();
-    //void    on_actionExit_toggled(bool arg1); dont know yet how to delit it from moc_chatwindow.h
     void    on_actionSend_file_triggered();
 };
 
