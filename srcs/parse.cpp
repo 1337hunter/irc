@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/25 20:43:19 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/09 18:53:36 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -861,7 +861,6 @@ block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 
 }
 
-
 void	server_init(IRCserv *serv, int ac, char **av)
 {
 	bool	flag_for_serv_connection;
@@ -952,11 +951,7 @@ void	server_init(IRCserv *serv, int ac, char **av)
 		}
 	}
 	else
-	{
-		std::cerr << "Usage: " << av[0] << " [host:port_network:" <<
-			"password_network] <port> <password>" << std::endl;
-		exit(1);
-	}
+		usage_exit(av[0]);
 	if (flag_for_serv_connection)
 	{
 		std::vector<t_link>::iterator	b = serv->link.begin();

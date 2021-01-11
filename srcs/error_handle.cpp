@@ -6,12 +6,19 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 20:20:10 by salec             #+#    #+#             */
-/*   Updated: 2020/11/18 20:24:30 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/09 18:52:38 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "error_handle.hpp"
 #include "tools.hpp"
+
+void	usage_exit(std::string const &exename)
+{
+	std::cerr << "Usage: " << exename << " [host:port_network:" <<
+		"password_network] <port> <password>" << std::endl;
+	exit(1);
+}
 
 void	error_exit(std::string const &s1)
 {

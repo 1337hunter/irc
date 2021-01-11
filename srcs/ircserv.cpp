@@ -87,6 +87,7 @@ void	RunServer(IRCserv *serv)
 			error_exit(SELECT);
 		for (int fd = 0; readyfds > 0 && fd <= lastfd; fd++)
 		{
+			errno = 0;	// better reset errno each fd
 			bool	isread = FD_ISSET(fd, &(serv->fdset_read));
 			bool	iswrite = FD_ISSET(fd, &(serv->fdset_write));
 			bool	iserror = FD_ISSET(fd, &(serv->fdset_error));

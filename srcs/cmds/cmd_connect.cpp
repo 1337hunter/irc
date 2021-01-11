@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/06 17:50:08 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/09 20:26:00 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,18 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	// gotta figure out how to check all addresses
 	if (res == 0)
 		serv->fds[socket_fd].status = true;
-	else if (res == -1 && errno == EINPROGRESS)
-	{
-		serv->fds[socket_fd].status = false;
-		errno = 0;
-	}
-	else
+	else if (res == -1 && errno != EAGAIN && errno != EINPROGRESS)
 	{
 		msg_error("Connection error while server link", serv);
 		serv->fds.erase(socket_fd);
 		close(socket_fd);
 		errno = 0;
 		return (-1);
+	}
+	else if (res == -1)
+	{
+		serv->fds[socket_fd].status = false;
+		errno = 0;
 	}
 	if (tls)
 		return (socket_fd);

@@ -18,7 +18,6 @@
 #include <QCloseEvent>
 #include <vector>
 #include <string>
-#include <fstream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ChatWindow; }
@@ -49,10 +48,13 @@ public:
     fd_set  fdset_write;
     std::string wrbuf;
     std::string rdbuf;
+
+    std::string                 external_ip;
+    int                         file_fd;
     SSL                         *file_sslptr;
     int                         file_sock;
+    int                         file_port;
     std::vector<unsigned char>  file_buf;
-    std::vector<unsigned char>  receive_file_buf;
     std::vector<unsigned char>  file_header;
     size_t                      file_bytes_received;
     std::string                 file_name;
@@ -64,16 +66,25 @@ public:
     ChatWindow();
     ~ChatWindow();
 
-    void    do_connect(bool file = false);
+    void    do_connect(void);
     void    run(void);
     void    ReceiveMessage(void);
     void    SendMessage(bool file_ready);
+    void    ProcessMessage(std::string msg);
+    void    ProcessReply(std::vector<std::string> &split);
     void    keyPressEvent(QKeyEvent* event);
     void    closeEvent(QCloseEvent* event);
+    //funny tools
     std::vector<std::string>   splitstring(std::string str, char delim);
     std::vector<std::string>   splitstringbyany(std::string msg, std::string const &delim);
-    int     receive_file(unsigned char *buf, size_t r);
-    int     append_to_file_buf(size_t pos, unsigned char *buf, size_t r);
+    std::vector<std::string>   splitcmdbyspace(std::string msg);
+    std::string strtoupper(std::string const &str);
+    std::string strtolower(std::string const &str);
+    void        error_exit(std::string msg);
+    //ft
+    void    reply_who_I_am(std::vector<std::string> &split);
+    //int     receive_file(unsigned char *buf, size_t r);
+    //int     append_to_file_buf(size_t pos, unsigned char *buf, size_t r);
     std::string get_filename_from_path(std::string path);
 private slots:
     void    actionExit(void);

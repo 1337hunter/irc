@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/18 17:48:42 by gbright           #+#    #+#             */
-/*   Updated: 2020/11/18 19:21:37 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/09 18:52:58 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <iostream>
 # define SELECT 0
 
+void	usage_exit(std::string const &exename);
 void	error_exit(std::string const &s1);
 void	error_exit(std::string const &s1, std::string const &line,
 	size_t line_number);

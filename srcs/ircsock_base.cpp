@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ircsock_base.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gbright <gbright@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/11 16:01:45 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/11 19:36:30 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,8 +120,13 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	else
 		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
 
-	if (fd < 0)
+	if (fd < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		error_exit("accept error");
+	else if (fd < 0)
+	{
+		errno = 0;
+		return ;
+	}
 	if (fcntl(fd, F_SETFL, O_NONBLOCK) < 0)
 		error_exit("fcntl error: failed to set nonblock fd");
 #if DEBUG_MODE
@@ -195,6 +200,11 @@ void	self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv)
 
 void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 {
+	if (errno == EAGAIN && errno == EWOULDBLOCK)
+	{
+		errno = 0;
+		return ;
+	}
 	if (fdref.tls)
 	{
 		/* for tls may be recoverable */
@@ -230,93 +240,6 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	}
 }
 
-/*int	append_to_file_buf(size_t pos, int fd, unsigned char *buf, IRCserv *serv, size_t r)
-{
-	size_t	i	= 0;
-	Client	*client;
-
-	if (r == 0)
-		serv->fds[fd].status = false;
-	while (pos < r && serv->fds[fd].file_bytes_received < serv->fds[fd].file_size)
-	{
-		serv->fds[fd].file_buf.push_back(buf[pos]);
-		serv->fds[fd].file_bytes_received++;
-		pos++;
-	}
-	std::cout << "received: " << serv->fds[fd].file_bytes_received;
-	std::cout << " full size: " << serv->fds[fd].file_size << "\n";
-	if (serv->fds[fd].file_bytes_received == serv->fds[fd].file_size)
-	{
-		if ((client = find_client_by_nick(serv->fds[fd].file_to_nick, serv)))
-		{
-			std::cout << "\nCOPY BUFF!\n";
-			serv->fds[client->getFD()].file_bytes_received =
-				serv->fds[fd].file_bytes_received;
-			serv->fds[client->getFD()].file_size = serv->fds[fd].file_size;
-			serv->fds[client->getFD()].file_buf = serv->fds[fd].file_buf;
-		}
-		serv->fds[fd].status = false;
-	}
-	while (pos < r)
-		buf[i++] = buf[pos++];
-	buf[i] = 0;
-	return i;
-}
-
-int	file_transfer(int fd, unsigned char *buf, IRCserv *serv, size_t r)
-{
-	t_strvect	split = ft_splitstring(std::string((char*)buf), ' ');
-	Client		*client;
-	Client		*client_from;
-	size_t		pos = 0;
-
-	if (!serv->pass.empty() && serv->fds[fd].pass != serv->pass)
-	{
-		serv->fds[fd].wrbuf += "ERROR :FILE - server password incorrect\r\n";
-		serv->fds[fd].status = false;
-		return r;
-	}
-	if (split.size() < 4)
-	{
-		serv->fds[fd].wrbuf += "ERROR :FILE command requires more parameters!\r\n";
-		serv->fds[fd].status = false;
-		return r;
-	}
-	try { serv->fds[fd].file_size = ft_stoi(split[4]); }
-	catch (...)
-	{
-		serv->fds[fd].file_size = 0;
-		serv->fds[fd].wrbuf += "ERROR :FILE has errorneous amount of bytes\r\n";
-		serv->fds[fd].status = false;
-		return r;
-	}
-	serv->fds[fd].file_name = split[1];
-	if (!(client = find_client_by_nick(split[2], serv)))
-	{
-		serv->fds[fd].wrbuf += get_reply(serv, "401", client, split[1],
-				"No such nick/channel");
-		serv->fds[fd].status = false;
-		return r;
-	}
-	if (!(client_from = find_client_by_nick(split[3], serv)))
-	{
-		serv->fds[fd].wrbuf += get_reply(serv, "451", -1, "",
-				"You have not registered"); serv->fds[fd].status = false; return r;
-	}
-	serv->fds[fd].file_to_nick = client->getnick();
-	serv->fds[fd].file_from_nick = client_from->getnick();
-	while (pos < r && buf[pos] != ':')
-		serv->fds[fd].file_buf.push_back(buf[pos++]);
-	if (pos == r)
-	{
-		buf[0] = 0;
-		return 0;
-	}
-	serv->fds[fd].file_buf.push_back(buf[pos++]);
-	return append_to_file_buf(pos, fd, buf, serv, r);
-}
-*/
-
 void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t			r = 0;
@@ -336,14 +259,6 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		if (fdref.sock > 0)
 			serv->fds[fdref.sock].recvbytes += r;
 		// ^ which sock recieved from fd
-	/*	if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
-		{
-			if ((r = file_transfer(fd, buf_read, serv, r)) == 0)
-				return ;
-		}
-		else if (fdref.file_bytes_received < fdref.file_size)
-			if ((r = append_to_file_buf(0, fd, buf_read, serv, r)) == 0)
-				return ;*/
 		fdref.rdbuf += (char*)buf_read;
 		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
 			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())

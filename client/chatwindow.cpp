@@ -7,6 +7,8 @@
 #include <QLabel>
 #include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
+
 
 typedef struct addrinfo     t_addrinfo;
 
@@ -27,7 +29,16 @@ ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickn
     ui->setupUi(this);
 }
 
-void    ChatWindow::do_connect(bool file)
+void    ChatWindow::error_exit(std::string msg)
+{
+    QMessageBox messageBox;
+
+    messageBox.critical(0, "Error", msg.c_str());
+    exit(1);
+}
+
+
+void    ChatWindow::do_connect(void)
 {
     t_addrinfo      hints;
     t_addrinfo      *addr;
@@ -53,8 +64,7 @@ void    ChatWindow::do_connect(bool file)
     while (true)
     {
         int res = ::connect(temp_socket, addr->ai_addr, addr->ai_addrlen);
-        if (!file)
-            ui->mainchat->append("Connecting ...");
+        ui->mainchat->append("Connecting ...");
         if (res == 0)
         {
             if (!tls)
@@ -73,20 +83,17 @@ void    ChatWindow::do_connect(bool file)
     }
     if (tls)
     {
-        if (!file)
+        SSL_library_init();
+        SSL_load_error_strings();
+        if (!(sslctx = SSL_CTX_new(TLS_method())))
         {
-            SSL_library_init();
-            SSL_load_error_strings();
-            if (!(sslctx = SSL_CTX_new(TLS_method())))
-            {
-                messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_new)");
-                return ;
-            }
-            if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
-            {
-                messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_set_ecdh_auto)");
-                return ;
-            }
+            messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_new)");
+            return ;
+        }
+        if (SSL_CTX_set_ecdh_auto(ctx, 1) <= 0)
+        {
+            messageBox.critical(0, "Error", "SSL error.\n(SSL_CTX_set_ecdh_auto)");
+            return ;
         }
         if ((temp_sslptr = SSL_new(sslctx)) == 0)
         {
@@ -115,21 +122,13 @@ void    ChatWindow::do_connect(bool file)
     }
     if (!password.isEmpty())
         wrbuf += "PASS " + std::string(password.toLocal8Bit().constData()) + "\r\n";
-    if (!file)
-    {
-        sslptr = temp_sslptr;
-        sock = temp_socket;
-        wrbuf += "NICK " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
-        wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
-    }
-    else
-    {
-        file_sslptr = temp_sslptr;
-        file_sock = temp_socket;
-    }
+    sslptr = temp_sslptr;
+    sock = temp_socket;
+    wrbuf += "NICK " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
+    wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
+    wrbuf += "WHO " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
     freeaddrinfo(addr);
-    if (!file)
-        this->run();
+    this->run();
 }
 
 
@@ -195,7 +194,6 @@ void    ChatWindow::SendMessage(bool file_ready)
             messageBox.critical(0, "Error", "SendMessage.");
         if (r > 0)
             file_buf.erase(file_buf.begin(), file_buf.begin() + r);
-        std::cout << file_buf.size() << "\n";
         if (file_buf.empty())
         {
             if (tls)
@@ -208,7 +206,7 @@ void    ChatWindow::SendMessage(bool file_ready)
     }
 }
 
-int ChatWindow::receive_file(unsigned char *buf, size_t r)
+/*int ChatWindow::receive_file(unsigned char *buf, size_t r)
 {
     size_t  pos = 0;
     QMessageBox         messageBox;
@@ -228,9 +226,9 @@ int ChatWindow::receive_file(unsigned char *buf, size_t r)
 
     file_bytes_received = 0;
     return append_to_file_buf(pos, buf, r);
-}
+}*/
 
-int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
+/*int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
 {
     size_t  i;
     int     fd;
@@ -238,6 +236,7 @@ int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
 
     while (pos < r && file_bytes_received < file_size)
     {
+
         receive_file_buf.push_back(buf[pos]);
         file_bytes_received++;
         pos++;
@@ -277,6 +276,97 @@ int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
        buf[i++] = buf[pos++];
     buf[i] = 0;
     return i;
+}*/
+
+std::string ChatWindow::strtolower(std::string const &str)
+{
+    std::string res = str;
+
+    for (int i = 0; res[i] != '\0'; i++)
+    {
+        if (res[i] >= 'A' && res[i] <= 'Z')
+            res[i] = std::tolower(res[i]);
+    }
+    return (res);
+}
+
+std::string ChatWindow::strtoupper(std::string const &str)
+{
+    std::string res = str;
+
+    for (int i = 0; res[i] != '\0'; i++)
+    {
+        if (res[i] >= 'a' && res[i] <= 'z')
+            res[i] = std::toupper(res[i]);
+    }
+    return (res);
+}
+
+std::vector<std::string>   ChatWindow::splitcmdbyspace(std::string msg)
+{
+    std::vector<std::string>       split;
+    size_t          pos = 0;
+    std::string     tmp;
+
+    while ((pos = msg.find_first_of(" ")) != std::string::npos)
+    {
+        tmp = msg.substr(0, pos);
+        if (!tmp.empty())
+            split.push_back(tmp);
+        msg.erase(0, pos + 1);
+        if (!msg.empty() && msg[0] == ':')
+            break ;
+    }
+    if (!msg.empty())
+        split.push_back(msg);
+    size_t  i = 0;
+    if (split.size() > 0 && split[0][0] == ':')
+        i = 1;
+    if (split.back().size() > 0 && split.back()[0] == ':' &&
+        (strtoupper(split[i]) != "PRIVMSG"))
+        split.back() = split.back().substr(1);
+    return split;
+}
+
+void    ChatWindow::reply_who_I_am(std::vector<std::string> &split)
+{
+    external_ip = split[5];
+}
+
+void    ChatWindow::ProcessReply(std::vector<std::string> &split)
+{
+    int reply_number;
+
+    reply_number = stoi(split[1]);
+
+    if (reply_number == 352 && split[2] == std::string(nickname.toLocal8Bit().constData()))
+        reply_who_I_am(split);
+}
+
+void    ChatWindow::ProcessMessage(std::string msg)
+{
+    std::vector<std::string>   split = splitstring(msg, ' ');
+
+    if (split.size() > 3 && split[1].size() == 3 &&
+        split[1].find_first_not_of("0123456789") == std::string::npos)
+        ProcessReply(split);
+    /*
+	size_t  i = 0;
+	if (split.size() > 0 && split[0][0] == ':')
+		i = 1;
+	if (i < split.size())
+		split[i] = ft_strtoupper(split[i]);
+	else
+		return ;    // avoiding error if someone sends only prefix
+	try
+	{
+		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
+	}
+	catch (std::out_of_range &e)
+	{
+		(void)e;
+		serv->fds[fd].wrbuf += reply_unknowncmd(fd, split, serv);
+    }*/
 }
 
 void    ChatWindow::ReceiveMessage(void)
@@ -286,19 +376,19 @@ void    ChatWindow::ReceiveMessage(void)
     unsigned char        buf_read[1024 + 1];
     std::vector<std::string>    split;
 
+
     if (tls && sslptr)
         r = SSL_read(sslptr, buf_read, 1024);
     else
         r = recv(sock, buf_read, 1024, 0);
+
     if (r >= 0)
         buf_read[r] = 0;
-    if (!(std::string((char*)buf_read).compare(0, 5, "FILE ")))
-        r = receive_file(buf_read, r);
-    else if (file_bytes_received < file_size)
-        r = append_to_file_buf(0, buf_read,  r);
     if (r > 0)
     {
         split = splitstringbyany(std::string((char*)buf_read), "\r\n");
+        for (size_t i = 0; i < split.size(); i++)
+            ProcessMessage(split[i]);
         for (size_t i = 0; i < split.size(); ++i)
             ui->mainchat->append(split[i].c_str());
     }
@@ -325,8 +415,10 @@ void    ChatWindow::run(void)
             ReceiveMessage();
         if (FD_ISSET(sock, &fdset_write))
             SendMessage(false);
-        if (FD_ISSET(file_sock, &fdset_write))
+        if (file_buf.size() > 0 && FD_ISSET(file_sock, &fdset_write))
             SendMessage(true);
+
+
         QApplication::processEvents();
     }
 }
@@ -376,41 +468,67 @@ void ChatWindow::on_actionSend_file_triggered()
     std::string     path;
     std::string     filename;
     QMessageBox     messageBox;
-    std::string     temp;
-    std::vector<unsigned char>    temp_array;
-    int             fd;
-    int             red;
-    unsigned char   buf[1024];
     SendFile        *sf = new SendFile(&lbl);
-    lbl.show();
+    struct sockaddr_in   sockin;
+    struct protoent      *pe = NULL;
+    int             port;
+    struct in_addr ip_store;
+    struct stat file_stat;
 
+    lbl.show();
     if (sf->exec())
     {
         nick = sf->getNick();
         path = sf->getPath();
     }
-    if ((fd = ::open(path.c_str(), O_RDONLY)) < 0)
+
+
+	int             optval = 1;
+	if (!(pe = getprotobyname("tcp")))
     {
-        messageBox.critical(0, "Error", "No such file or directory");
+        messageBox.critical(0, "Error", "getprotobyname.");
+        exit(0);
+    }
+    if ((file_sock = socket(PF_INET, SOCK_STREAM, pe->p_proto)) < 0)
+		error_exit("socket error");
+    if (fcntl(file_sock, F_SETFL, O_NONBLOCK) < 0)
+		error_exit("fcntl error: failed to set nonblock fd");
+	sockin.sin_family = AF_INET;
+    if (external_ip.empty())
+    {
+        messageBox.critical(0, "Error", "No ip given. Try to obtain ip with 'WHO <selfnick>' query");
         return ;
     }
-    filename = get_filename_from_path(path);
-    temp = "FILE " + filename + " " + nick + " " + std::string(nickname.toLocal8Bit().constData()) + " ";
-    while ((red = read(fd, buf, 1024)))
+	else
+        sockin.sin_addr.s_addr = inet_addr(external_ip.c_str());
+    if (setsockopt(file_sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)))
+        error_exit("set socket option returned error");
+    port = 5550;
+    sockin.sin_port = htons(port);
+    while (bind(file_sock, (struct sockaddr*)&sockin, sizeof(sockin)) < 0 && port < 6000)
+        sockin.sin_port = htons(++port);
+    if (port == 6000)
     {
-        copy(buf, buf + red, back_inserter(file_buf));
-        if (file_buf.size() > 209715200)
-        {
-            messageBox.critical(0, "Error", "Cann't send file. File size limit is 200 Mb.");
-            ::close(fd);
-            file_buf.clear();
-            return ;
-        }
+        messageBox.critical(0, "Error", "Bind error"); return ;
     }
-    ::close(fd);
-    temp += std::to_string(file_buf.size()) + " :";
-    std::copy(temp.c_str(), temp.c_str() + temp.size(), std::back_inserter(temp_array));
-    std::copy(file_buf.data(), file_buf.data() + file_buf.size(), back_inserter(temp_array));
-    file_buf = temp_array;
-    do_connect(true);
+    file_port = port;
+    if (listen(file_sock, 1) < 0)
+    {
+        messageBox.critical(0, "Error", "listen"); return ;
+    }
+    if (!inet_aton(external_ip.c_str(), &ip_store))
+    {
+        messageBox.critical(0, "Error", "inet_aton"); return ;
+    }
+    filename = get_filename_from_path(path);
+    if ((file_fd = open(path.c_str(), O_RDONLY)) < 0)
+    {
+        messageBox.critical(0, "Error", "inet_aton"); return ;
+    }
+    if (fstat(file_fd, &file_stat))
+    {
+        messageBox.critical(0, "Error", "fstat"); return ;
+    }
+    wrbuf +=  "PRIVMSG " + nick + " :" + (char)(1) + "DCC SEND \"" + filename + "\" " + std::to_string(::htonl(ip_store.s_addr)) +
+            " " + std::to_string(port) + " " + std::to_string(file_stat.st_size) + (char)(1) +  "\r\n";
 }
