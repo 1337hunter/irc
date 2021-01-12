@@ -95,6 +95,11 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			whowas.servername = serv->servername; whowas.dtloggedin = ft_getcurrenttime();
 			serv->nickhistory.push_back(whowas);
 			msg_forward(fd, ":" + client->getnick() + " NICK " + split[1], serv);
+			std::list<Client>::iterator cit = serv->clients.begin();
+			for (; cit != serv->clients.end(); ++cit)
+				if (cit->getFD() != client->getFD())
+					serv->fds[cit->getFD()].wrbuf += ":" + client->getnick() +
+					" NICK " + split[1] + CRLF;
 			client->ChangeNick(split[1]); return ;
 		}
 		else if (client && !client->isRegistred())
