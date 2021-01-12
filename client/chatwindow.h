@@ -69,12 +69,14 @@ public:
     ~ChatWindow();
 
     void    do_connect(void);
+    int     do_sock(std::string _ip, std::string _port);
     void    run(void);
     void    ReceiveMessage(void);
     void    SendMessage(void);
     void    Accept(void);
     void    ProcessMessage(std::string msg);
     void    TransferFile(void);
+    void    ReceiveFile(void);
     void    ProcessReply(std::vector<std::string> &split);
     void    keyPressEvent(QKeyEvent* event);
     void    closeEvent(QCloseEvent* event);

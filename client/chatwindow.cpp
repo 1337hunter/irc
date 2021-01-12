@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <pwd.h>
 
 
 typedef struct addrinfo     t_addrinfo;
@@ -28,6 +29,9 @@ ChatWindow::ChatWindow(QString ip, QString port, QString password, QString nickn
 {
     file_sock_status = false;
     dcc_sock_status = false;
+    sock = -1;
+    dcc_sock = -1;
+    file_sock = -1;
     ui->setupUi(this);
 }
 
@@ -39,6 +43,50 @@ void    ChatWindow::error_exit(std::string msg)
     exit(1);
 }
 
+int    ChatWindow::do_sock(std::string _ip, std::string _port)
+{
+    t_addrinfo      hints;
+    t_addrinfo      *addr;
+    QMessageBox     messageBox;
+    int             temp_socket;
+
+    hints.ai_flags = 0;
+    hints.ai_family = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
+    if ((temp_socket = ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    {
+        messageBox.critical(0, "Error", "(socket)");
+        return -1;
+    }
+    if (::getaddrinfo(_ip.c_str(), _port.c_str(), &hints, &addr))
+    {
+        messageBox.critical(0, "Error", "(getaddrinfo)");
+        return -1;
+    }
+    int tries = 6;
+    while (--tries)
+	{
+		int res = ::connect(temp_socket, addr->ai_addr, addr->ai_addrlen);
+        if (res == 0)
+			break ;
+		else
+		{
+			int i = 1000;
+			while (--i > 0)
+			{
+				QApplication::processEvents();
+				usleep(10000);
+			}
+        }
+    }
+    if (!tries)
+    {
+        messageBox.critical(0, "Error", "Conntion failed");
+        return -1;
+    }
+    return temp_socket;
+}
 
 void    ChatWindow::do_connect(void)
 {
@@ -174,6 +222,7 @@ std::vector<std::string>   ChatWindow::splitstringbyany(std::string msg, std::st
 void    ChatWindow::SendMessage(void)
 {
     QMessageBox     messageBox;
+
     ssize_t         r = 0;
 
     if (tls && sslptr)
@@ -201,7 +250,10 @@ std::string ChatWindow::get_nick_from_info(std::string const &info)
 
 void    ChatWindow::receive_file(std::vector<std::string> &split)
 {
-   // QMessageBox         messageBox;
+    QMessageBox         messageBox;
+    QMessageBox::StandardButton reply;
+    uint32_t    ip32;
+    std::string ips;
 
     file_name.erase();
     size_t i = 0;
@@ -210,59 +262,76 @@ void    ChatWindow::receive_file(std::vector<std::string> &split)
     while (i < split[5].size() && split[5][i] != '"')
         file_name += split[5][i++];
     file_from = get_nick_from_info(split[0]);
+    split[8].pop_back();
     file_size = stoi(split[8]);
+    reply = QMessageBox::question(this, "File transfer",
+                std::string(std::string("Receive file " + file_name + " (" + split[8] + ") from ") + file_from + "?").c_str(),
+                QMessageBox::Yes|QMessageBox::No);
+    if (reply == QMessageBox::No || reply == QMessageBox::Close)
+    {
+        wrbuf += "NOTICE " + file_from + " :" + (char)(1) + "DCC REJECT SEND file" + (char)(1) + "\r\n";
+        file_name.erase(); file_size = 0; file_from.erase();
+        return ;
+    }
     file_bytes_received = 0;
+    int tries = 0;
+    struct passwd *pw = getpwuid(getuid());
+    if ((file_fd = open(std::string(std::string(pw->pw_dir) + "/Downloads/" + file_name).c_str(), O_RDONLY)) >= 0)
+    {
+        ::close(file_fd);
+        tries++;
+    }
+
+    std::string dir_file;
+    while (tries)
+    {
+        dir_file = std::string(pw->pw_dir) + "/Downloads/" + file_name + "(" + std::to_string(tries) + ")";
+        if ((file_fd = open(dir_file.c_str(), O_RDONLY)) >= 0)
+        {
+            ::close(file_fd);
+            tries++;
+        }
+        else
+        {
+            ::close(file_fd);
+            break ;
+        }
+    }
+
+    dir_file = std::string(pw->pw_dir) + "/Downloads/" + file_name + (tries == 0 ? "" : "(" + std::to_string(tries) + ")");
+    if ((file_fd = open(dir_file.c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644)) < 0)
+    {
+        messageBox.critical(0, "Error", "Can not create file"); return ;
+    }
+    try { ip32 = stoul(split[6]); } catch(...) { return ;}
+    ips = std::to_string((ip32 >> 24) & 0xFF) + '.' + std::to_string((ip32 >> 16) & 0xFF) + '.' + std::to_string((ip32 >> 8) & 0xFF) + '.' +
+            std::to_string(ip32 & 0xFF);
+    dcc_sock = do_sock(ips, split[7]);
+    dcc_sock_status = true;
 }
 
-/*int     ChatWindow::append_to_file_buf(size_t pos, unsigned char *buf, size_t r)
+void    ChatWindow::ReceiveFile(void)
 {
-    size_t  i;
-    int     fd;
-    QMessageBox         messageBox;
+    QMessageBox     messageBox;
+    ssize_t         r = 0;
+    unsigned char   buf[1024];
 
-    while (pos < r && file_bytes_received < file_size)
-    {
 
-        receive_file_buf.push_back(buf[pos]);
-        file_bytes_received++;
-        pos++;
-    }
-    if (file_bytes_received == file_size)
+    //if (tls && dcc_sslptr)
+        //r = SSL_read(sslptr, buf, 1024);
+    //else
+    r = recv(dcc_sock, buf, 1024, 0);
+    if (r > 0)
+        r = write(file_fd, buf, r);
+    else if (r <= 0)
     {
-        QMessageBox::StandardButton reply;
-        reply = QMessageBox::question(this, "File transfer", std::string(std::string("Receive file from ") + file_from + "?").c_str(),
-                                                                         QMessageBox::Yes|QMessageBox::No);
-        if (reply == QMessageBox::Yes)
-        {
-            if ((fd = ::open((std::string("./") + file_name).c_str(), O_RDONLY)) > 0)
-            {
-                ::close(fd);
-                messageBox.critical(0, "Error", "File already exist!");
-            }
-            else
-            {
-                if ((fd = ::open((std::string("./") + file_name).c_str(), O_WRONLY | O_APPEND | O_CREAT, 0644)) < 0)
-                    messageBox.critical(0, "Error", "Can nor create file");
-                else
-                {
-                    if (::write(fd, receive_file_buf.data(), receive_file_buf.size()) < 0)
-                        messageBox.critical(0, "Error", "Write error ;(");
-                    ::close(fd);
-                }
-            }
-        }
-        receive_file_buf.clear();
-        file_name.erase();
-        file_from.erase();
-        file_size = 0;
-        file_bytes_received = 0;
+        if (r < 0)
+            messageBox.critical(0, "Error", "File receive error ;(");
+        closeDCC();
+        //::close(file_fd);
     }
-    i = 0;
-    while (pos < r)
-       buf[i++] = buf[pos++];
-    buf[i] = 0;
-    return i;
-}*/
+}
+
 
 std::string ChatWindow::strtolower(std::string const &str)
 {
@@ -335,13 +404,15 @@ void    ChatWindow::cmd_privmsg(std::vector<std::string> &split)
     header += (char)(1);
     header += "DCC";
 
-    if (split.size() > 7 && split[2] == header && split[3] == "SEND")
+    if (split.size() > 8 && split[3] == header && split[4] == "SEND")
         receive_file(split);
+    else if (split.size() <= 8 && split.size() > 3 && split[3] == header)
+        wrbuf += "NOTICE " + get_nick_from_info(split[0]) + " :DCC - not enouth parameters\r\n";
 }
 
-//PRIVMSG Attila :DCC SEND "file" 2130706433 5550 63
 void    ChatWindow::ProcessMessage(std::string msg)
 {
+
     std::vector<std::string>   split = splitstring(msg, ' ');
 
     if (split.empty())
@@ -349,45 +420,28 @@ void    ChatWindow::ProcessMessage(std::string msg)
     if (split.size() > 3 && split[1].size() == 3 &&
         split[1].find_first_not_of("0123456789") == std::string::npos)
         ProcessReply(split);
-    if (split[1] == "PRIVMSG")
+    if  (split.size() > 2 && split[1] == "PRIVMSG")
         cmd_privmsg(split);
-    /*
-	size_t  i = 0;
-	if (split.size() > 0 && split[0][0] == ':')
-		i = 1;
-	if (i < split.size())
-		split[i] = ft_strtoupper(split[i]);
-	else
-		return ;    // avoiding error if someone sends only prefix
-	try
-	{
-		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
-	}
-	catch (std::out_of_range &e)
-	{
-		(void)e;
-		serv->fds[fd].wrbuf += reply_unknowncmd(fd, split, serv);
-    }*/
 }
 
 void    ChatWindow::ReceiveMessage(void)
 {
     QMessageBox     messageBox;
     ssize_t         r = 0;
-    unsigned char   buf_read[1024 + 1];
+    unsigned char   buf[1024 + 1];
     std::vector<std::string>    split;
 
 
     if (tls && sslptr)
-        r = SSL_read(sslptr, buf_read, 1024);
+        r = SSL_read(sslptr, buf, 1024);
     else
-        r = recv(sock, buf_read, 1024, 0);
+        r = recv(sock, buf, 1024, 0);
 
     if (r >= 0)
-        buf_read[r] = 0;
+        buf[r] = 0;
     if (r > 0)
     {
-        split = splitstringbyany(std::string((char*)buf_read), "\r\n");
+        split = splitstringbyany(std::string((char*)buf), "\r\n");
         for (size_t i = 0; i < split.size(); i++)
             ProcessMessage(split[i]);
         for (size_t i = 0; i < split.size(); ++i)
@@ -415,7 +469,7 @@ void    ChatWindow::Accept(void)
    {
        messageBox.critical(0, "Error", "accept fcntl"); return ;
    }
-   if (tls)
+   /*if (tls)
    {
        if (!(dcc_sslptr = SSL_new(sslctx)))
        {
@@ -425,7 +479,7 @@ void    ChatWindow::Accept(void)
        {
            messageBox.critical(0, "Error", "SSL_new"); return ;
        }
-   }
+   }*/
    dcc_sock_status = true;
    file_sock_status = false;
 }
@@ -433,11 +487,11 @@ void    ChatWindow::Accept(void)
 void    ChatWindow::closeDCC(void)
 {
     dcc_sock_status = false;
-    if (tls)
-    {
-        SSL_shutdown(dcc_sslptr);
-        SSL_free(dcc_sslptr);
-    }
+   // if (tls)
+  //  {
+       // SSL_shutdown(dcc_sslptr);
+      //  SSL_free(dcc_sslptr);
+   // }
     ::close(dcc_sock);
     dcc_sock = -1;
 }
@@ -449,9 +503,9 @@ void    ChatWindow::TransferFile(void)
     ssize_t         r;
     QMessageBox     messageBox;
 
-    if (tls && dcc_sslptr)
-        r = SSL_write(dcc_sslptr, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
-    else
+  //  if (tls && dcc_sslptr)
+    //    r = SSL_write(dcc_sslptr, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
+   // else
         r = write(dcc_sock, file_buf.data(), std::min(file_buf.size(), (size_t)1024));
     if (r < 0)
     {
@@ -496,7 +550,7 @@ void    ChatWindow::run(void)
             FD_SET(dcc_sock, &fdset_write);//dcc write
         else if (dcc_sock_status)
             FD_SET(dcc_sock, &fdset_read);//dcc read
-//select
+
         if ((readyfds = select(std::max(std::max(sock, dcc_sock), file_sock) + 1, &fdset_read, &fdset_write, 0, &timeout)) < 0)
             error_exit("select error!");
 
@@ -508,8 +562,8 @@ void    ChatWindow::run(void)
             Accept();
         if (dcc_sock_status && FD_ISSET(dcc_sock, &fdset_write))
             TransferFile();
-        //else if (dcc_sock_status && FD_ISSET(dcc_sock, &fdset_read))
-            //ReceiveFile();
+       else if (dcc_sock_status && FD_ISSET(dcc_sock, &fdset_read))
+            ReceiveFile();
         QApplication::processEvents();
     }
 }
@@ -567,6 +621,7 @@ void ChatWindow::on_actionSend_file_triggered()
     struct in_addr      ip_store;
     struct stat         file_stat;
     unsigned char       buf[1024];
+    int                 optval = 1;
 
     lbl.show();
     if (sf->exec())
@@ -575,8 +630,13 @@ void ChatWindow::on_actionSend_file_triggered()
         path = sf->getPath();
     }
 
+    if (nick.empty() || path.empty())
+    {
+        messageBox.critical(0, "Warning", "No path or nick are given.");
+        return ;
+    }
 
-	int             optval = 1;
+
 	if (!(pe = getprotobyname("tcp")))
     {
         messageBox.critical(0, "Error", "getprotobyname.");
