@@ -52,6 +52,23 @@
 	servers (SERVICE message) the new service's nickname and other
 	information as supplied by the service (SERVICE message) and as the
 	server could discover (from DNS servers).
+
+   Each service is distinguished from other services by a service name
+   composed of a nickname and a server name.  The nickname has a maximum
+   length of nine (9) characters. See the protocol grammar rules
+   (section 3.3.1) for what may and may not be used in a nickname. The
+   server name used to compose the service name is the name of the
+   server to which the service is connected. In addition to this
+   service name all servers MUST know the service type.
+
+   Services differ from users by the format of their identifier, but
+   more importantly services and users don't have the same type of
+   access to the server: services can request part or all of the global
+   state information that a server maintains, but have a more restricted
+   set of commands available to them (See "IRC Client Protocol" [IRC-
+   CLIENT] for details on which) and are not allowed to join channels.
+   Finally services are not usually subject to the "Flood control"
+   mechanism described in section 5.8.
 */
 
 void	cmd_service(int fd, t_strvect const &split, IRCserv *serv)
