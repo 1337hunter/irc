@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/08 17:29:08 by gbright          ###   ########.fr        #
+#    Updated: 2021/01/12 16:30:53 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_ison.cpp cmds/cmd_users.cpp cmds/cmd_topic.cpp \
 			cmds/cmd_kick.cpp cmds/cmd_trace.cpp cmds/cmd_service.cpp \
 			cmds/cmd_die.cpp cmds/cmd_list.cpp cmds/cmd_servlist.cpp \
-			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp
+			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp cmds/cmd_squery.cpp
 
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
@@ -89,7 +89,7 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all all98 bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re
+.PHONY: all all98 bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re re98
 
 all: $(NAME)
 
@@ -178,3 +178,5 @@ fclean: clean
 	@/bin/rm -f $(NAME)
 
 re: fclean all
+
+re98: fclean all98

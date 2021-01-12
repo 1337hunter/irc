@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/09 18:53:36 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/12 16:23:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1031,4 +1031,40 @@ void	parse(int ac, char **av, IRCserv *serv)
 	}
 	config.close();
 	server_init(serv, ac, av);
+}
+
+void	defineservermodes(IRCserv *serv)
+{
+	serv->usermodes = "aoOirws";
+/*	usermodes:
+	a - user is flagged as away;
+	o - operator flag;
+	O - local operator flag;
+	i - marks a users as invisible;
+	r - restricted user connection;
+	w - user receives wallops;
+	s - marks a user for receipt of server notices.
+*/
+	serv->chanmodes = "abeiIklmnoOpqrRstv";
+/*	chanmodes:
+	a - toggle the anonymous channel flag;
+	b - set/remove ban mask to keep users out;
+	e - set/remove an exception mask to override a ban mask;
+	i - toggle the invite-only channel flag;
+	I - set/remove an invitation mask to automatically override
+		the invite-only flag;
+	k - set/remove the channel key (password);
+	l - set/remove the user limit to channel;
+	m - toggle the moderated channel;
+	n - toggle the no messages to channel from clients on the
+		outside;
+	o - give/take channel operator privilege;
+	O - give "channel creator" status;
+	p - toggle the private channel flag;
+	q - toggle the quiet channel flag;
+	r - toggle the server reop channel flag;
+	s - toggle the secret channel flag;
+	t - toggle the topic settable by channel operator only flag;
+	v - give/take the voice privilege;
+*/
 }

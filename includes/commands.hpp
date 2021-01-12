@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/08 17:28:58 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/12 16:28:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,13 @@ void	cmd_users(int fd, const t_strvect &split, IRCserv *serv);	// disabled
 void    cmd_topic(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_kick(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_trace(int fd, t_strvect const &split, IRCserv *serv);
-void	cmd_service(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_die(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_list(int fd, t_strvect const &split, IRCserv *serv);
-void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_wallops(int fd, t_strvect const &split, IRCserv *serv);
 void	cmd_rehash(int fd, t_strvect const &split, IRCserv *serv);
+void	cmd_service(int fd, t_strvect const &split, IRCserv *serv);
+void	cmd_servlist(int fd, t_strvect const &split, IRCserv *serv);
+void	cmd_squery(int fd, const t_strvect &split, IRCserv *serv);
 
 std::string		reply_welcome(IRCserv *serv, Client *client);
 std::string		reply_motd(IRCserv *serv, std::string const &it);

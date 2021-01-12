@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/09 18:53:11 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/12 16:26:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int		main(int ac, char **av)
 		InitSSLCTX(serv);
 		initcommands(serv);
 		parse(ac, av, serv);
+		defineservermodes(serv);
 		serv->dtstarted = started;
 		serv->dtcompiled = compiled;
 		RunServer(serv);

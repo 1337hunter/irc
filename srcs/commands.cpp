@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/08 17:29:20 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/12 16:28:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,20 +53,14 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["TOPIC"]		= cmd_topic;
 	serv->cmds["KICK"]		= cmd_kick;
 	serv->cmds["TRACE"]		= cmd_trace;
-	serv->cmds["SERVICE"]	= cmd_service;
 	serv->cmds["DIE"]		= cmd_die;
-	serv->cmds["SERVLIST"]	= cmd_servlist;
 	serv->cmds["WALLOPS"]	= cmd_wallops;
 	serv->cmds["WALLOPS"].settype(CMD_SERVERONLY);
 	serv->cmds["REHASH"]	= cmd_rehash;
 	serv->cmds["REHASH"].settype(CMD_CLIENTONLY);
-
-	// values below are from InspIRCd-3 (need to check what it means)
-	serv->usermodes = "iosw";
-	serv->chanmodes = "biklmnopstv";
-/*	// values below are from ircd v2.11.2p3
-	serv->usermodes = "aoOirw";
-	serv->chanmodes = "abeiIklmnoOpqrRstv"; */
+	serv->cmds["SERVICE"]	= cmd_service;
+	serv->cmds["SERVLIST"]	= cmd_servlist;
+	serv->cmds["SQUERY"]	= cmd_squery;
 }
 
 Command::Command() : cmd(NULL), type(0), count(0), bytes(0), rcount(0) {}

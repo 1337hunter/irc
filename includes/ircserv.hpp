@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/06 21:06:01 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/12 16:25:30 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,6 +220,7 @@ struct				IRCserv
 };
 
 void		parse(int ac, char **av, IRCserv *serv);
+void		defineservermodes(IRCserv *serv);
 void		clear_kill_list(IRCserv *serv);
 void		clear_block_list(IRCserv *serv, std::string const &servername = "");
 void		clear_empty_channels(IRCserv *serv);
