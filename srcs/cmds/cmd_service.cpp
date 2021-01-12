@@ -38,11 +38,20 @@
 		RPL_MYINFO
 
 	Example:
-	SERVICE dict@irc.fr 9 *.fr 0 1
-		:French Dictionary r" registered on server "9" is being announced to
-		another server.  This service will only be available on servers whose
+	SERVICE dict@irc.fr 9 *.fr 0 1 :French Dictionary r" registered
+		on server "9" is being announced to another server.
+		This service will only be available on servers whose
 		name matches "*.fr".
 
+	Upon successfully registering a new service connection, the server is
+	subject to the same kind of REQUIREMENTS as for a user.  Services
+	being somewhat different, only the following replies are sent:
+	RPL_YOURESERVICE, RPL_YOURHOST, RPL_MYINFO.
+
+	After dealing with this, the server MUST then send out to other
+	servers (SERVICE message) the new service's nickname and other
+	information as supplied by the service (SERVICE message) and as the
+	server could discover (from DNS servers).
 */
 
 void	cmd_service(int fd, t_strvect const &split, IRCserv *serv)
