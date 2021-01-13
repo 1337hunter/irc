@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 19:07:03 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 22:21:13 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 22:26:38 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-time_t			ft_getcompiletime(void)
+time_t		ft_getcompiletime(void)
 {
 	int			fd = open("./ircbot", O_RDONLY);
 	time_t		rawtime = -1;
