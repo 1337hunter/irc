@@ -1,0 +1,30 @@
+#!/bin/bash
+
+dir=/home/se/ircserv
+$temp
+
+echo -e 	"
+ _____   _____     _____
+|_   _| |  __ \   / ____|								
+  | |   | |__) | | |       ___   ____   _ __  __    __
+  | |   |  _  /  | |      / __| /  _ \ | '__| \ \  / / 
+ _| |_  | | \ \  | |____  \__ \ \  __/ | |     \ \/ /
+|_____| |_|  \_\  \_____| |___/  \___  |_|      \__/"
+
+echo -e "
+                Welcome to ircserv 2.10 configurator! ;)
+		"
+echo -e "What directory do you want to install ircserv?"
+echo -n "["$dir"] -> "
+read temp
+if [[ -z "$temp" ]]
+then
+	temp=$dir
+fi
+if [[ -z "$temp" ]]
+then
+	sed -i "3s|.*|\$dir|g" ./Config
+else
+	sed -i "3s|.*|dir=$temp|g" ./Config
+	dir=$temp
+fi
