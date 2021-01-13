@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 21:41:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 22:24:30 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 22:26:07 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int		main(int argc, char **argv)
 	if (argc > 1)
 		split.push_back(argv[1]);
 	else
-		split.push_back("!help");
+		split.push_back(bot.prefix + std::string("help"));
 
 	ProcessMessage(split, bot);
 
