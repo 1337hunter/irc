@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 21:41:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 22:26:07 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 23:00:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int		main(int argc, char **argv)
 		split.push_back(bot.prefix + std::string("help"));
 
 	ProcessMessage(split, bot);
+
+	ReceiveMessage(bot);
 
 	return (0);
 }

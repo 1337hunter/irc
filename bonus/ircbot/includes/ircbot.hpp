@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:38 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 21:42:31 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 22:59:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Command;
 typedef std::map<std::string, Command>	t_cmdmap;
 
 struct	ircbot {
+	int			sock;
 	char		prefix;
 	std::string	botname;
 	std::string	version;
@@ -36,5 +37,6 @@ struct	ircbot {
 };
 
 void	ProcessMessage(t_strvect const &split, ircbot const &bot);
+void	ReceiveMessage(ircbot const &bot);
 
 #endif

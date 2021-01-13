@@ -6,16 +6,22 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 21:55:23 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 23:12:57 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircbot.hpp"
-#include "jsonparser.hpp"
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 #include <unistd.h>
+
+#define BUF_SIZE	512
 
 ircbot::ircbot()
 {
+	sock = 1;
 	botname = BOTNAME;
 	version = VERSION;
 	prefix = PREFIX;
@@ -56,7 +62,29 @@ void	ProcessMessage(t_strvect const &split, ircbot const &bot)
 		tmp = ft_splitstringbyany(res, "\n");
 		for (size_t i = 0; i < tmp.size(); i++)
 			reply += rplcmd + " " + target + " :" + tmp[i] + CRLF;
-		write(1, reply.c_str(), reply.size());
+		write(bot.sock, reply.c_str(), reply.size());
 	}
+}
 
+void	ReceiveMessage(ircbot const &bot)
+{
+	ssize_t			r = 0;
+	std::string		rdbuf;
+	unsigned char	buf[BUF_SIZE + 1];
+
+//					temp sock
+	while ((r = read(bot.sock - 1, buf, BUF_SIZE)) > 0)
+	{
+		if (r >= 0)
+			buf[r] = 0;
+		rdbuf += (char*)buf;
+		if (rdbuf.find_last_of(CRLF) != std::string::npos &&
+			rdbuf.find_last_of(CRLF) + 1 == rdbuf.length())
+		{
+			t_strvect	split = ft_splitstringbyany(rdbuf, CRLF);
+			for (size_t i = 0; i < split.size(); i++)
+				ProcessMessage(ft_splitcmdbyspace(split[i]), bot);
+			rdbuf.erase();
+		}
+	}
 }
