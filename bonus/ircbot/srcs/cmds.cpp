@@ -6,39 +6,39 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 20:36:36 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 21:37:42 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 21:48:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cmds.hpp"
 
-Command::Command() : cmd(NULL), description("") {}
+Command::Command() : cmd(NULL), info("") {}
 
-Command::Command(t_cmd cmd) : cmd(cmd), description("") {}
+Command::Command(t_cmd cmd) : cmd(cmd), info("") {}
 
-Command::Command(t_cmd cmd, std::string const &description) :
-	cmd(cmd), description(description) {}
+Command::Command(t_cmd cmd, std::string const &info) :
+	cmd(cmd), info(info) {}
 
 Command::Command(Command const &other) :
-	cmd(other.cmd), description(other.description) {}
+	cmd(other.cmd), info(other.info) {}
 
 Command::~Command() {}
 
 Command	&Command::operator=(Command const &other)
 {
 	this->cmd = other.cmd;
-	this->description = other.description;
+	this->info = other.info;
 	return (*this);
 }
 
-std::string const	&Command::getdescription(void) const
+std::string const	&Command::getinfo(void) const
 {
-	return (this->description);
+	return (this->info);
 }
 
-void		Command::setdescription(std::string const &description)
+void		Command::setinfo(std::string const &info)
 {
-	this->description = description;
+	this->info = info;
 }
 
 std::string	Command::Execute(t_strvect const &split, ircbot const &bot) const

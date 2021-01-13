@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:39:52 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 21:37:10 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 21:48:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,19 @@ private:
 	typedef std::string (*t_cmd)(t_strvect const &split, ircbot const &bot);
 
 	t_cmd		cmd;
-	std::string	description;
+	std::string	info;
 	Command(t_cmd cmd);
 
 public:
 	Command();
-	Command(t_cmd cmd, std::string const &description);
+	Command(t_cmd cmd, std::string const &info);
 	Command(Command const &other);
 	~Command();
 	Command	&operator=(Command const &other);
 
-	std::string const	&getdescription(void) const;
+	std::string const	&getinfo(void) const;
 
-	void		setdescription(std::string const &description);
+	void		setinfo(std::string const &info);
 	std::string	Execute(t_strvect const &split, ircbot const &bot) const;
 };
 
