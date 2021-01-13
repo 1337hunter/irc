@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:34:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 17:15:50 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 17:49:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,31 +40,28 @@ std::string	getweather(std::string query = "Moscow")
 		"GET /data/2.5/weather?APPID=" + apikey + "&q=" + query +
 		" HTTP/1.1" + CRLF + "Host: " + hostname + CRLF + CRLF;
 
-	std::cout << "request:" << std::endl << request << std::endl;
+//	std::cout << "request:" << std::endl << request << std::endl;
 
-	/* Build the address. */
+
+	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+		error_exit("socket error");
+
 	t_addrinfo	*addr;
 	t_addrinfo	hints;
-
 	hints.ai_flags = 0;
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
-	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-		error_exit("socket error");
 	if (getaddrinfo(hostname.c_str(), "80", &hints, &addr))
 		error_exit("getaddrinfo error");
 
-	/* Actually connect. */
 	if (connect(sock, addr->ai_addr, addr->ai_addrlen) < 0)
 		error_exit("connect error");
 	freeaddrinfo(addr);
 
-	/* Send HTTP request. */
 	if (send(sock, request.c_str(), request.length(), 0) < 0)
 		error_exit("send error");
 
-	/* Read the response. */
 	char	buf_read[BUF_SIZE];
 	buf_read[0] = 0;
 	ssize_t	r = recv(sock, buf_read, BUF_SIZE, 0);
@@ -78,7 +75,7 @@ std::string	getweather(std::string query = "Moscow")
 	size_t		found = 0;
 	if ((found = res.find("\r\n\r\n")) != std::string::npos)
 	{
-		std::cout << "got headers:\n" << res.substr(0, found) << std::endl;
+//		std::cout << "got headers:\n" << res.substr(0, found) << std::endl;
 		if (found + 4 < res.length())
 			res = res.substr(found + 4);
 	}
@@ -97,7 +94,7 @@ std::string	cmd_weather(t_strvect const &split)
 	else
 		res = getweather("Moscow");
 
-	std::cout << "\ngot response:\n" << res << "\n";
+	std::cout << "response:\n" << res << "\n";
 
 	t_weather	w;
 	try
@@ -133,6 +130,8 @@ std::string	cmd_weather(t_strvect const &split)
 		w.type = jsontmp.at("main");
 		w.descr = jsontmp.at("description");
 
+		res = "";
+
 		std::cout << "\nparsed response:" << std::endl;
 		std::cout << "Country:\t" << w.country << std::endl;
 		std::cout << "Location:\t" << w.location << std::endl;
@@ -142,19 +141,30 @@ std::string	cmd_weather(t_strvect const &split)
 		std::cout << "Feels like:\t" << w.feels_c << "\u2103" << std::endl;
 		std::cout << "Min temp:\t" << w.mintemp_c << "\u2103" << std::endl;
 		std::cout << "Max temp:\t" << w.maxtemp_c << "\u2103" << std::endl;
-		std::cout << "Pressure (ru):\t" << w.press_mmhg << "mmhg" << std::endl;
+		std::cout << "Pressure:\t" << w.press_mmhg << "mmhg" << std::endl;
 		std::cout << "Wind speed:\t" << w.wind_speed << "m/s " << w.wind_deg << "\u00B0" << std::endl;
 		std::cout << "Humidity:\t" << w.humidity << "%" << std::endl;
+
+		res += "Weather in " + w.location + "," + w.country + ": " +
+			w.descr + " | " +
+			"temp: " + ft_tostring(w.temp_c) + "C " +
+			"(feels like " + ft_tostring(w.feels_c) + "C) " +
+			"min: " + ft_tostring(w.mintemp_c) + "C " +
+			"max: " + ft_tostring(w.maxtemp_c) + "C | " +
+			"wind: " + ft_tostring(w.wind_speed) + "m/s | " +
+			"pressure: " + ft_tostring(w.press_mmhg) + "mmhg | " +
+			"humidity: " + ft_tostring(w.humidity) + "%";
 	}
 	catch (std::invalid_argument const &e)
 	{
+		res = e.what();
 		std::cerr << std::endl << e.what() << std::endl;
 	}
 	catch (std::out_of_range const &e)
 	{
+		res = "Weather api error";
 		std::cerr << std::endl << "server api didn't return the code in json" << std::endl;
 	}
 
-
-	return ("");
+	return (res);
 }

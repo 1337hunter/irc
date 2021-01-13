@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 17:25:56 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 17:40:10 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,13 @@ int			ft_stoi(std::string const &str)
 	if (!(iss >> val))
 		return (0);
 	return (val);
+}
+
+std::string	ft_tostring(int val)
+{
+	std::ostringstream	oss;
+	oss << val;
+	return (oss.str());
 }
 
 t_strvect	ft_splitcmdbyspace(std::string msg)
