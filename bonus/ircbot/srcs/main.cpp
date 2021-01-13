@@ -6,27 +6,29 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 21:41:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 23:00:26 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 23:37:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircbot.hpp"
 
-int		main(int argc, char **argv)
+int		initbot(int ac, char **av)
 {
-	ircbot		bot;
+	std::string	arg = "";
 
-	t_strvect	split;
-	split.push_back(":replyto");
-	split.push_back("SQUERY");
-	split.push_back("botname");
+	if (ac > 1)
+		arg = av[1];
+	if (ac == 2 && (arg == "-h" || arg == "--help"))
+		error_exit("Usage: " + std::string(av[0]) +
+			" [-h|--help] <host> <port>\nDefault: localhost:6667");
 
-	if (argc > 1)
-		split.push_back(argv[1]);
-	else
-		split.push_back(bot.prefix + std::string("help"));
+	return (1);
+}
 
-	ProcessMessage(split, bot);
+int		main(int ac, char **av)
+{
+	int		sock = initbot(ac, av);
+	ircbot	bot(sock);
 
 	ReceiveMessage(bot);
 
