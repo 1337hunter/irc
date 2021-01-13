@@ -26,7 +26,8 @@ void	cmd_invite(int fd, t_strvect const &split, IRCserv *serv)
 		invite_whom->invite_to(split[3]);
 		return ;
 	}
-	else if (split.size() == 3 && serv->fds[fd].type == FD_CLIENT)//type is just in case
+	else if (split.size() == 3 && (serv->fds[fd].type == FD_CLIENT ||
+				serv->fds[fd].type == FD_OPER))
 	{
 		invite_from = find_client_by_fd(fd, serv);
 		invite_whom = find_client_by_nick(split[1], serv);
@@ -46,7 +47,7 @@ void	cmd_invite(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHNICK, fd, "INVITE",
 				"No such nick/channel");
-		//if fd.type == FD_SERVER ned to resend error to nickname
+		//if fd.type == FD_SERVER need to resend error to nickname
 		return ;
 	}
 	client_chan = (invite_whom->getchannels()).begin();
@@ -79,7 +80,7 @@ void	cmd_invite(int fd, t_strvect const &split, IRCserv *serv)
 		"!" + invite_from->getusername() + "@" + invite_from->gethostname() +
 		" INVITE " + split[1] + " " + chan_name + CRLF;
 	//if ^^^^ hop > 1 and getFD = serv_routin || client_fd	I dont care about either
-	//client on THIS server or on the ENOTHER server
+	//client on THIS server or on the ANOTHER server
 	serv->fds[fd].wrbuf += ":" + serv->servername + " 341 " + invite_from->getnick() +
 		" " + invite_whom->getnick() + " " + chan_name + CRLF;
 }

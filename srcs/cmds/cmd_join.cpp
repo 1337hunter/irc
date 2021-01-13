@@ -176,4 +176,7 @@ void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 	}
 	else if (split[0][0] == ':' && serv->fds[fd].type == FD_SERVER)
 		join_from_network(fd, split, serv);
+	else if (serv->fds[fd].type == FD_UNREGISTRED)
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1 , "JOIN",
+				"You have not registered");
 }
