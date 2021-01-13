@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 19:59:52 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 21:41:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,37 +14,48 @@
 #include "jsonparser.hpp"
 #include <unistd.h>
 
-int		main(int argc, char **argv)
+ircbot::ircbot()
 {
-	t_strvect	split;
-	split.push_back(":replyto");
-	split.push_back("SQUERY");
-	split.push_back("botname");
+	botname = BOTNAME;
+	version = VERSION;
+	prefix = PREFIX;
+	cmds["help"]	= Command(cmd_help, "bot commands help");
+	cmds["info"]	= Command(cmd_info, "gets bot info");
+	cmds["version"]	= Command(cmd_version, "gets bot version info");
+	cmds["weather"]	= Command(cmd_weather,
+		"gets current weather info (Example: !weather London");
+}
 
-	std::string	target = split[0].substr(1);
-	if (argc > 1)
-		split.push_back(argv[1]);
-	else
-		split.push_back("!weather Moscow");
+ircbot::~ircbot() {}
 
+void	ProcessMessage(t_strvect const &split, ircbot const &bot)
+{
 	if (split.size() < 4)
-		return (1);
-
+		return ;
+	std::string	target = split[0].substr(1);
 	std::string	rplcmd = "NOTICE";
 	if (split[1] == "PRIVMSG")
 		rplcmd = split[1];
 
-	split = ft_splitstringbyany(split[3], " ");
-	std::string	res = cmd_weather(split);
+	t_strvect	tmp = ft_splitstringbyany(split[3], " ");
+
+	if (tmp.size() < 1 || tmp[0].size() < 2 || tmp[0][0] != bot.prefix)
+		return ;
+	tmp[0] = tmp[0].substr(1);
+	std::string	res = "";
+	try
+	{
+		res = bot.cmds.at(tmp[0]).Execute(tmp, bot);
+	}
+	catch (std::exception const &e) { (void)e; }
 
 	if (res.size() > 0)
 	{
 		std::string	reply;
-		split = ft_splitstringbyany(res, "\n");
-		for (size_t i = 0; i < split.size(); i++)
-			reply += rplcmd + " " + target + " :" + split[i] + CRLF;
+		tmp = ft_splitstringbyany(res, "\n");
+		for (size_t i = 0; i < tmp.size(); i++)
+			reply += rplcmd + " " + target + " :" + tmp[i] + CRLF;
 		write(1, reply.c_str(), reply.size());
 	}
 
-	return (0);
 }

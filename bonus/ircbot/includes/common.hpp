@@ -1,20 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_help.cpp                                       :+:      :+:    :+:   */
+/*   common.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/13 19:07:03 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 20:38:54 by salec            ###   ########.fr       */
+/*   Created: 2021/01/13 21:17:13 by salec             #+#    #+#             */
+/*   Updated: 2021/01/13 21:27:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cmds.hpp"
+#ifndef COMMON_HPP
+#define COMMON_HPP
 
-std::string	cmd_help(t_strvect const &split, ircbot const &bot)
-{
-	std::string	res;
-	(void)split; (void)bot;
-	return (res);
-}
+#define BOTNAME	"ircbot"
+#define VERSION	"0.1.7dev"
+#define PREFIX	'!'
+#define CRLF 	"\r\n"
+
+#endif

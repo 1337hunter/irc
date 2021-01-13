@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:34:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 19:53:35 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/13 21:25:25 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,14 +92,20 @@ std::string	getweather(std::string query = "Moscow")
 	return (res);
 }
 
-std::string	cmd_weather(t_strvect const &split)
+std::string	cmd_weather(t_strvect const &split, ircbot const &bot)
 {
+	(void)bot;
 	if (split.size() < 1)
 		return ("");
 
 	std::string	res;
 	if (split.size() > 1)
-		res = getweather(split[1]);
+	{
+		std::string	query;
+		for (size_t i = 1; i < split.size(); i++)
+			query += split[i] + " ";
+		res = getweather(query);
+	}
 	else
 		res = getweather("Moscow");
 
@@ -156,13 +162,14 @@ std::string	cmd_weather(t_strvect const &split)
 */
 		res += "Weather in " + w.location + "," + w.country + "\n" +
 			w.type + " (" + w.descr + ")\n" +
-			"temp: " + ft_tostring(w.temp_c) + "\u2103 " + // "C " +
+			"Temp: " + ft_tostring(w.temp_c) + "\u2103 " + // "C " +
 			"(feels like " + ft_tostring(w.feels_c) + "\u2103)\n" + // "C)\n" +
-			"temp min: " + ft_tostring(w.mintemp_c) + "\u2103 | " + // "C " +
-			"temp max: " + ft_tostring(w.maxtemp_c) + "\u2103\n" + // "C\n" +
-			"wind: " + ft_tostring(w.wind_speed) + "m/s\n" +
-			"pressure: " + ft_tostring(w.press_mmhg) + "mmhg\n" +
-			"humidity: " + ft_tostring(w.humidity) + "%";
+			"Temps min: " + ft_tostring(w.mintemp_c) + "\u2103 | " + // "C " +
+			"max: " + ft_tostring(w.maxtemp_c) + "\u2103\n" + // "C\n" +
+			"Wind: " + ft_tostring(w.wind_speed) + "m/s " +
+			"direction " + ft_tostring(w.wind_deg) + "\u00B0" + "\n" +
+			"Pressure: " + ft_tostring(w.press_mmhg) + "mmhg\n" +
+			"Humidity: " + ft_tostring(w.humidity) + "%";
 	}
 	catch (std::invalid_argument const &e)
 	{

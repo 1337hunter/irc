@@ -6,12 +6,13 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/13 17:08:36 by salec            ###   ########.fr        #
+#    Updated: 2021/01/13 21:42:50 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircbot
-SRC			= ircbot.cpp jsonparser.cpp tools.cpp \
+SRC			= main.cpp ircbot.cpp jsonparser.cpp tools.cpp cmds.cpp \
+			cmds/cmd_help.cpp cmds/cmd_info.cpp cmds/cmd_version.cpp \
 			cmds/cmd_weather.cpp
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
@@ -19,7 +20,8 @@ OBJDIR		= ./objs/
 SRCFILES	= $(addprefix $(SRCDIR), $(SRC))
 OBJFILES	= $(addprefix $(OBJDIR), $(OBJ))
 INCLUDEDIR	= ./includes/
-HEADERS		= ircbot.hpp jsonparser.hpp tools.hpp cmds.hpp weather.hpp
+HEADERS		= ircbot.hpp common.hpp tools.hpp cmds.hpp \
+			jsonparser.hpp weather.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
 CC = clang++
