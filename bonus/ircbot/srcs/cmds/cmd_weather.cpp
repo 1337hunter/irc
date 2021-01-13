@@ -1,19 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ircbot.cpp                                         :+:      :+:    :+:   */
+/*   cmd_weather.cpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/11 19:14:28 by salec            ###   ########.fr       */
+/*   Created: 2021/01/13 16:34:53 by salec             #+#    #+#             */
+/*   Updated: 2021/01/13 17:15:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircbot.hpp"
-#include "jsonparser.hpp"
+#include "cmds.hpp"
+#include "tools.hpp"
+#include "weather.hpp"
 
-void	weatherapiexception(jsonarray const &jsonweather)
+#define MAX_REQUEST_LEN	1024
+#define BUF_SIZE		8192
+
+typedef struct sockaddr_in	t_sockaddr_in;
+typedef struct protoent		t_protoent;
+typedef struct addrinfo		t_addrinfo;
+
+void		weatherapiexception(jsonarray const &jsonweather)
 {
 	std::string	err = "server returned code ";
 	err += jsonweather.at("cod").c_str();
@@ -22,11 +31,69 @@ void	weatherapiexception(jsonarray const &jsonweather)
 	throw (std::invalid_argument(err.c_str()));
 }
 
-int		main(int argc, char **argv)
+std::string	getweather(std::string query = "Moscow")
 {
+	int			sock = 0;
+	std::string	hostname = "api.openweathermap.org";
+	std::string	apikey = "081bf5c1866dd8f8eff826e30485f8fd";
+	std::string	request =
+		"GET /data/2.5/weather?APPID=" + apikey + "&q=" + query +
+		" HTTP/1.1" + CRLF + "Host: " + hostname + CRLF + CRLF;
+
+	std::cout << "request:" << std::endl << request << std::endl;
+
+	/* Build the address. */
+	t_addrinfo	*addr;
+	t_addrinfo	hints;
+
+	hints.ai_flags = 0;
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+		error_exit("socket error");
+	if (getaddrinfo(hostname.c_str(), "80", &hints, &addr))
+		error_exit("getaddrinfo error");
+
+	/* Actually connect. */
+	if (connect(sock, addr->ai_addr, addr->ai_addrlen) < 0)
+		error_exit("connect error");
+	freeaddrinfo(addr);
+
+	/* Send HTTP request. */
+	if (send(sock, request.c_str(), request.length(), 0) < 0)
+		error_exit("send error");
+
+	/* Read the response. */
+	char	buf_read[BUF_SIZE];
+	buf_read[0] = 0;
+	ssize_t	r = recv(sock, buf_read, BUF_SIZE, 0);
+	if (r < 0)
+		error_exit("recv error");
+	else
+		buf_read[r] = 0;
+	close(sock);
+
+	std::string	res = buf_read;
+	size_t		found = 0;
+	if ((found = res.find("\r\n\r\n")) != std::string::npos)
+	{
+		std::cout << "got headers:\n" << res.substr(0, found) << std::endl;
+		if (found + 4 < res.length())
+			res = res.substr(found + 4);
+	}
+
+	return (res);
+}
+
+std::string	cmd_weather(t_strvect const &split)
+{
+	if (split.size() < 1)
+		return ("");
+
 	std::string	res;
-	if (argc > 1)
-		res = getweather(argv[1]);
+	if (split.size() > 1)
+		res = getweather(split[1]);
 	else
 		res = getweather("Moscow");
 
@@ -51,8 +118,7 @@ int		main(int argc, char **argv)
 		w.mintemp_c = ft_stoi(jsontmp.at("temp_min")) - 273;
 		w.maxtemp_c = ft_stoi(jsontmp.at("temp_max")) - 273;
 		w.humidity = ft_stoi(jsontmp.at("humidity"));
-		w.press_mb = ft_stoi(jsontmp.at("pressure"));
-		w.press_mmhg = w.press_mb * 1000 / 1333;
+		w.press_mmhg = ft_stoi(jsontmp.at("pressure")) * 1000 / 1333;
 
 		// getting wind info
 		jsontmp = jsonparse(jsonweather.at("wind"));
@@ -76,7 +142,6 @@ int		main(int argc, char **argv)
 		std::cout << "Feels like:\t" << w.feels_c << "\u2103" << std::endl;
 		std::cout << "Min temp:\t" << w.mintemp_c << "\u2103" << std::endl;
 		std::cout << "Max temp:\t" << w.maxtemp_c << "\u2103" << std::endl;
-		std::cout << "Pressure:\t" << w.press_mb << "mb" << std::endl;
 		std::cout << "Pressure (ru):\t" << w.press_mmhg << "mmhg" << std::endl;
 		std::cout << "Wind speed:\t" << w.wind_speed << "m/s " << w.wind_deg << "\u00B0" << std::endl;
 		std::cout << "Humidity:\t" << w.humidity << "%" << std::endl;
@@ -91,5 +156,5 @@ int		main(int argc, char **argv)
 	}
 
 
-	return (0);
+	return ("");
 }
