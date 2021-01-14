@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/14 17:18:54 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 18:48:27 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 19:50:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,12 @@ int		initsock(std::string const &host, std::string const &port)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_protocol = IPPROTO_TCP;
 	if (getaddrinfo(host.c_str(), port.c_str(), &hints, &addr))
-	{
-		close(sock);
-		error_exit("getaddrinfo error (" + host + ":" + port + ")");
-	}
+		ioerror(sock, "getaddrinfo error (" + host + ":" + port + ")");
 
 	if (connect(sock, addr->ai_addr, addr->ai_addrlen) < 0)
 	{
 		freeaddrinfo(addr);
-		close(sock);
-		error_exit("connect error (" + host + ":" + port + ")");
+		ioerror(sock, "connect error (" + host + ":" + port + ")");
 	}
 	freeaddrinfo(addr);
 
@@ -64,7 +60,7 @@ void	registerbot(int sock, std::string const &pass = "")
 	regmsg += "USER " + nick + " 0 * :" + nick + " " + VERSION + CRLF;
 
 	if (send(sock, regmsg.c_str(), regmsg.size(), 0) < 0)
-		ioerror(sock, "send error on registration");
+		ioerror(sock, "send error on register");
 }
 
 int		initbot(int ac, char **av)
@@ -85,6 +81,7 @@ int		initbot(int ac, char **av)
 		pass = av[3];
 
 	int	sock = initsock(host, port);
+	std::cout << "Connected to " << host << ":" << port << std::endl;
 	registerbot(sock, pass);
 	return (sock);
 }

@@ -6,14 +6,15 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/14 17:37:13 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 19:00:15 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircbot
-SRC			= main.cpp init.cpp ircbot.cpp jsonparser.cpp tools.cpp \
+SRC			= main.cpp init.cpp ircbot.cpp msgtools.cpp tools.cpp \
 			cmds.cpp cmds/cmd_help.cpp cmds/cmd_info.cpp \
-			cmds/cmd_version.cpp cmds/cmd_weather.cpp
+			cmds/cmd_version.cpp cmds/cmd_weather.cpp \
+			jsonparser.cpp
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/

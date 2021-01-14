@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 18:35:59 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 18:57:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,36 +34,6 @@ ircbot::ircbot(int sock) : sock(sock)
 }
 
 ircbot::~ircbot() {}
-
-void	ioerror(int sock, std::string const &msg)
-{
-	close(sock);
-	error_exit(msg);
-}
-
-bool	checkmsg(t_strvect const &split, ircbot const &bot)
-{
-	if (split.size() < 2)
-		return (false);
-
-	size_t	i = 0;
-	if (split[0][0] == ':')
-		i = 1;
-	std::string	tmp = ft_strtoupper(split[i]);
-	if (split.size() > i + 1 && tmp == "PING")
-	{
-		std::string	reply = "PONG :" + split[i + 1] + CRLF;
-		if (send(bot.sock, reply.c_str(), reply.size(), 0) < 0)
-			ioerror(bot.sock, "send error");
-		return (false);
-	}
-
-	if (split.size() < 4 ||
-		(tmp != "SQUERY" && tmp != "PRIVMSG" && tmp != "NOTICE"))
-		return (false);
-
-	return (true);
-}
 
 void	ProcessMessage(t_strvect const &split, ircbot const &bot)
 {

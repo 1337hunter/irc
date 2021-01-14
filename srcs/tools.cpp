@@ -95,7 +95,6 @@ Client		*find_client_by_user_or_nick_and_host(std::string const &str, IRCserv *s
 	std::list<Client>::iterator		client = serv->clients.begin();
 	std::vector<t_server>::iterator	net = serv->network.begin();
 
-	std::cout << str << "\n\n";
 	if (str.find_first_of("!") != NPOS)
 		return find_client_by_info(str, serv);
 	user_and_host = ft_splitstring(str, "%");
@@ -283,7 +282,7 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 	entry.dtloggedin = ft_getcurrenttime();	// it's time disconnected in ircd
 	entry.servername = serv->servername;
 	serv->nickhistory.push_back(entry);
-	if (DEBUG_MODE)
+#if DEBUG_MODE
 		std::cout << serv->nickhistory.back().nickname << " " <<
 			serv->nickhistory.back().username << "@" <<
 			serv->nickhistory.back().hostname << " (" <<
@@ -291,6 +290,7 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 			serv->nickhistory.back().servername << " (last login " <<
 			ft_timetostring(serv->nickhistory.back().dtloggedin) <<
 			") has been added to whowas history" << std::endl;
+#endif
 }
 
 int			nick_forward(IRCserv *serv, Client *client)

@@ -6,18 +6,25 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 18:27:46 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 18:57:56 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
 #include <stdlib.h>
+#include <unistd.h>
 #include <sstream>
 
 void		error_exit(std::string const &s1)
 {
 	std::cerr << s1 << std::endl;
 	exit(1);
+}
+
+void	ioerror(int sock, std::string const &msg)
+{
+	close(sock);
+	error_exit(msg);
 }
 
 int			ft_stoi(std::string const &str)
