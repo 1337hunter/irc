@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/14 20:23:00 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 21:17:15 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -96,6 +96,7 @@ ULINEF		= \e[24m
 all: $(NAME)
 
 bonus: $(NAME)
+	@make -C bonus/ircbot
 
 -include $(DEPFILES)
 
