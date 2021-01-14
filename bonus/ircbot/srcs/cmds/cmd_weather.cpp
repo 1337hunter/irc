@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:34:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 22:40:59 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 21:15:50 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,8 +164,8 @@ std::string	cmd_weather(t_strvect const &split, ircbot const &bot)
 			w.type + " (" + w.descr + ")\n" +
 			"Temp: " + ft_tostring(w.temp_c) + "\u2103 " + // "C " +
 			"(feels like " + ft_tostring(w.feels_c) + "\u2103)\n" + // "C)\n" +
-			"Temps min: " + ft_tostring(w.mintemp_c) + "\u2103 | " + // "C " +
-			"max: " + ft_tostring(w.maxtemp_c) + "\u2103\n" + // "C\n" +
+			"Min: " + ft_tostring(w.mintemp_c) + "\u2103 | " + // "C " +
+			"Max: " + ft_tostring(w.maxtemp_c) + "\u2103\n" + // "C\n" +
 			"Wind: " + ft_tostring(w.wind_speed) + "m/s " +
 			"direction " + ft_tostring(w.wind_deg) + "\u00B0" + "\n" +
 			"Pressure: " + ft_tostring(w.press_mmhg) + "mmhg\n" +

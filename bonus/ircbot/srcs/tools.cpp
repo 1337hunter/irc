@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 18:57:56 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 20:49:31 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void		error_exit(std::string const &s1)
 	exit(1);
 }
 
-void	ioerror(int sock, std::string const &msg)
+void		ioerror(int sock, std::string const &msg)
 {
 	close(sock);
 	error_exit(msg);
