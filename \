@@ -2,8 +2,8 @@
 
 dir=/home/se/ircserv
 FD_MAX=1024
-BUFFER_SIZE=512
-DEBUG_MODE=1
+$BUFFER_SIZE
+DEBUG_MODE="0"
 
 clear
 
@@ -97,13 +97,13 @@ do
 	break
 done
 
-echo -e "\nDo you want compile with debug mode? (Y/n)"
+echo -e "\nDo you want compile with debug mdoe?"
 while true
 do
 	if [[ $DEBUG_MODE == 0 ]] ; then
-   		echo -n "[No] -> "
+   		echo -n "Yes/No [n] -> "
 	else
-		echo -n "[Yes] -> "
+		echo -n "No/Yes[y] -> "
 	fi
     read red
     if [[ -z "$red" ]]
@@ -117,10 +117,7 @@ do
 			;;
 		[Nn]*)
 			DEBUG_MODE="0"
-			sed -i "6s|.*|DEBUG_MODE="0"|g" ./Config
-			;;
-		""*)
-			break
+			sed -i "5s|.*|DEBUG_MODE="0"|g" ./Config
 			;;
 		*)
 			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
