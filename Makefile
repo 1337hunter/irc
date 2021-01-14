@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/12 16:30:53 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 17:40:56 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,6 +36,7 @@ SRCDIR		= ./srcs/
 OBJDIR		= ./objs/
 SRCFILES	= $(addprefix $(SRCDIR), $(SRC))
 OBJFILES	= $(addprefix $(OBJDIR), $(OBJ))
+DEPFILES	= $(OBJFILES:.o=.d)
 INCLUDEDIR	= ./includes/
 HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \
 			reply_codes.hpp error_codes.hpp common_defines.hpp \
@@ -53,7 +54,7 @@ SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl no-shared
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
-CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE)
+CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -95,12 +96,14 @@ all: $(NAME)
 
 bonus: $(NAME)
 
+-include $(DEPFILES)
+
 $(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
 	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
 	@$(CC) -o $@ $(OBJFILES) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
 
-$(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
+$(OBJDIR)%.o: $(SRCDIR)%.cpp
 	@echo "compiling $(ULINE)$<$(ULINEF)"
 	@$(CC) $(CFLAGS) -c $< -o $@
 
