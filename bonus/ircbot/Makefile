@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/14 19:00:15 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 20:50:29 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ HEADERS		= ircbot.hpp common.hpp init.hpp tools.hpp cmds.hpp \
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
 CC = clang++
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR) -std=c++98 -MMD -g
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR) -std=c++98 -MMD
 EXECFLAGS = $(CFLAGS)
 
 .PHONY: all bonus clean fclean re
