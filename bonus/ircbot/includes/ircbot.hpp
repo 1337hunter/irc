@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:38 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 23:17:30 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 17:31:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ struct	ircbot {
 	~ircbot();
 };
 
-void	ProcessMessage(t_strvect const &split, ircbot const &bot);
-void	ReceiveMessage(ircbot const &bot);
+void	ReceiveMessages(ircbot const &bot);
 
 #endif

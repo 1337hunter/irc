@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 23:17:19 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 17:18:24 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	ProcessMessage(t_strvect const &split, ircbot const &bot)
 	}
 }
 
-void	ReceiveMessage(ircbot const &bot)
+void	ReceiveMessages(ircbot const &bot)
 {
 	ssize_t			r = 0;
 	std::string		rdbuf;

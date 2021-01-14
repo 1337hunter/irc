@@ -6,36 +6,39 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/13 21:42:50 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 17:37:13 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		= ircbot
-SRC			= main.cpp ircbot.cpp jsonparser.cpp tools.cpp cmds.cpp \
-			cmds/cmd_help.cpp cmds/cmd_info.cpp cmds/cmd_version.cpp \
-			cmds/cmd_weather.cpp
+SRC			= main.cpp init.cpp ircbot.cpp jsonparser.cpp tools.cpp \
+			cmds.cpp cmds/cmd_help.cpp cmds/cmd_info.cpp \
+			cmds/cmd_version.cpp cmds/cmd_weather.cpp
 OBJ			= $(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/
 SRCFILES	= $(addprefix $(SRCDIR), $(SRC))
 OBJFILES	= $(addprefix $(OBJDIR), $(OBJ))
+DEPFILES	= $(OBJFILES:.o=.d)
 INCLUDEDIR	= ./includes/
-HEADERS		= ircbot.hpp common.hpp tools.hpp cmds.hpp \
+HEADERS		= ircbot.hpp common.hpp init.hpp tools.hpp cmds.hpp \
 			jsonparser.hpp weather.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 
 CC = clang++
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR) -std=c++98 -g
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDEDIR) -std=c++98 -MMD -g
 EXECFLAGS = $(CFLAGS)
 
 .PHONY: all bonus clean fclean re
 
 all: $(NAME)
 
+-include $(DEPFILES)
+
 $(NAME): $(OBJDIR) $(OBJFILES)
 	$(CC) -o $@ $(OBJFILES) $(EXECFLAGS)
 
-$(OBJDIR)%.o: $(SRCDIR)%.cpp $(HEADERS)
+$(OBJDIR)%.o: $(SRCDIR)%.cpp
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJDIR):
