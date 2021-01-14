@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/14 17:40:56 by salec            ###   ########.fr        #
+#    Updated: 2021/01/14 20:23:00 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -50,13 +50,14 @@ SSLINCLUDE	= $(SSLDIR)include/
 SSLLIBDIR	= $(SSLDIR)lib/
 SSLLIBS		= $(SSLLIBDIR)libssl.a $(SSLLIBDIR)libcrypto.a
 # openssl config flags to compile static only: no-shared
-SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl no-shared
+SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl \
+			no-shared no-threads
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 # linux openssl requires libdl and libpthread (for static lib)
-LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
+LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl	# -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
 DEBUGFLAGS	= -g -DDEBUG_MODE=1
 ASANFLAGS	= -fsanitize=address
