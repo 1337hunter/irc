@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/13 19:13:26 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/14 18:27:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,30 @@ std::string	ft_tostring(int val)
 	std::ostringstream	oss;
 	oss << val;
 	return (oss.str());
+}
+
+std::string	ft_strtoupper(std::string const &str)
+{
+	std::string	res = str;
+
+	for (int i = 0; res[i] != '\0'; i++)
+	{
+		if (res[i] >= 'a' && res[i] <= 'z')
+			res[i] = std::toupper(res[i]);
+	}
+	return (res);
+}
+
+std::string	ft_strtolower(std::string const &str)
+{
+	std::string	res = str;
+
+	for (int i = 0; res[i] != '\0'; i++)
+	{
+		if (res[i] >= 'A' && res[i] <= 'Z')
+			res[i] = std::tolower(res[i]);
+	}
+	return (res);
 }
 
 t_strvect	ft_splitcmdbyspace(std::string msg)
