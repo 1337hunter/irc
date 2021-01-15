@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 18:57:32 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/15 18:47:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ ircbot::ircbot(int sock) : sock(sock)
 	cmds["info"]	= Command(cmd_info, "get bot info");
 	cmds["version"]	= Command(cmd_version, "get bot version");
 	cmds["weather"]	= Command(cmd_weather,
-		std::string("get current weather. Default location: Moscow,RU. ") +
+		std::string("get current weather.\nDefault location: Moscow,RU. ") +
 		"Example: " + prefix + "weather London");
 }
 
