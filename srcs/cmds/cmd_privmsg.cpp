@@ -91,6 +91,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 			serv->fds[fd].wrbuf += get_reply(serv, "451", -1, "", "You have not registered");
 		return ;
 	}
+	client->updatelastactive();
 	if (split.size() < 2)
 	{
 		if (!isNOTICE)
@@ -245,7 +246,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 void	cmd_privmsg(int fd, t_strvect const &split, IRCserv *serv)
 {
 	bool	isNOTICE = (split[0] == "NOTICE" ||
-		(split.size() > 1 && split[1] != "NOTICE"));
+		(split.size() > 1 && split[1] == "NOTICE"));
 	if (serv->fds[fd].type == FD_SERVER)
 		privmsg_from_network(fd, split, serv, isNOTICE);
 	else
