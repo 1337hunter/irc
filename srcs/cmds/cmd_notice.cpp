@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:32:14 by salec             #+#    #+#             */
-/*   Updated: 2020/12/18 18:29:54 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/15 15:57:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,6 @@
 
 void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv)
 {
-	(void)fd;	// check if fd is other server
-	(void)serv;
-	if (split.size() != 3)
-		return ;
-
-	// so basically it just sends somebody notice without any replies
-	// need to find where to send it
-	// if there's noone to send just silently forget it
+	// privmsg modified so it never replies to NOTICE
+	cmd_privmsg(fd, split, serv);
 }
