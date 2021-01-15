@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2021/01/15 12:29:35 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/15 23:15:34 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define COMMON_DEFINES_HPP
 
 # define CRLF			"\r\n"
-# define FD_MAX			1024
+//# define FD_MAX			1024
 # define FD_FREE		0
 # define FD_CLIENT		1
 # define FD_SERVER		2
@@ -23,19 +23,19 @@
 # define FD_SERVICE		5
 # define FD_UNREGISTRED	6
 
-# define BUF_SIZE		1024
-# define WHOWAS_MAX		2000
+//# define BUF_SIZE		1024
+//# define WHOWAS_MAX		2000
 # define KILLTIME		60
 # define BLOCKTIME		20
 
 # define VERSION		"0210000000"
 # define VERSIONSTRING	"IRCserv-0.2.1"
 
-# ifdef DEBUG_MODE
-#  define DEBUG_MODE	1
-# else
-#  define DEBUG_MODE	0
-# endif
+//# ifdef DEBUG_MODE
+//#  define DEBUG_MODE	1
+//# else
+//#  define DEBUG_MODE	0
+//# endif
 
 # define NPOS			std::string::npos
 

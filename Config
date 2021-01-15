@@ -1,14 +1,14 @@
 #!/bin/bash
 
-dir=/home/se/ircserv
-FD_MAX=2048
-BUFFER_SIZE=1024
-DEBUG_MODE=0
+dir=$HOME/ircserv
+FD_MAX=1024
+BUF_SIZE=512
 DEBUG_MODE=1
+TLSCERT=1
 WHOWAS_MAX=2000
 
-clear
 
+CHANGE_MODE=0
 RED="\e[31m"
 GREEN="\e[32m"
 YELLOW="\e[93m"
@@ -18,6 +18,7 @@ CEND="\e[0m"
 nums='^[0-9]+$'
 $red
 
+clear
 echo -e 	"
  _____   _____     _____
 |_   _| |  __ \   / ____|								
@@ -75,11 +76,11 @@ done
 echo -e "\nWhat buffer size do you want?"
 while true
 do
-	echo -n "["$BUFFER_SIZE"] -> "
+	echo -n "["$BUF_SIZE"] -> "
 	read red
 	if [[ -z "$red" ]]
 	then
-		red=$BUFFER_SIZE
+		red=$BUF_SIZE
 	elif [[ ${red:0:1} == "0" ]]
 	then
 		echo -e $RED"\nValue must not start with zero\n"$CEND
@@ -91,10 +92,10 @@ do
 	fi
 	if [[ -z "$red" ]]
 	then
-		sed -i "5s|.*|\$BUFFER_SIZE|g" ./Config
+		sed -i "5s|.*|\$BUF_SIZE|g" ./Config
 	else
-		sed -i "5s|.*|BUFFER_SIZE=$red|g" ./Config
-		BUFFER_SIZE=$red
+		sed -i "5s|.*|BUF_SIZE=$red|g" ./Config
+		BUF_SIZE=$red
 	fi
 	break
 done
@@ -114,10 +115,16 @@ do
 	fi
 	case "$red" in
 		[Yy]*)
+			if [[ $DEBUG_MODE == 0 ]] ; then
+				CHANGE_MODE=1
+			fi
 			DEBUG_MODE="1"
 			sed -i "6s|.*|DEBUG_MODE="1"|g" ./Config
 			;;
 		[Nn]*)
+			if [[ $DEBUG_MODE == 1 ]] ; then
+				CHANGE_MODE=1
+			fi
 			DEBUG_MODE="0"
 			sed -i "6s|.*|DEBUG_MODE="0"|g" ./Config
 			;;
@@ -135,23 +142,23 @@ done
 echo -e "\nDo you want to generate SSL certificate? (Y/n)"
 while true
 do
-	if [[ $SSL_CERT == 0 ]] ; then
+	if [[ $TLSCERT == 0 ]] ; then
    		echo -n "[No] -> "
 	else
 		echo -n "[Yes] -> "
 	fi
     read red
     if [[ -z "$red" ]]
-    then
-        red=$SSL_CERT
+	then
+		red=$TLSCERT
 	fi
 	case "$red" in
 		[Yy]*)
-			SSL_CERT="1"
+			TLSCERT="1"
 			sed -i "7s|.*|DEBUG_MODE="1"|g" ./Config
 			;;
 		[Nn]*)
-			SSL_CERT="0"
+			TLSCERT="0"
 			sed -i "7s|.*|DEBUG_MODE="0"|g" ./Config
 			;;
 		""*)
@@ -162,7 +169,7 @@ do
 			continue
 			;;
 	esac
-    break
+	break
 done
 
 echo -e "\nHow far back do you want to keep the nickname history?"
@@ -187,21 +194,226 @@ do
 	break
 done
 
-export IRCSERV_DIR=$dir
-export IRCSERV_FD_MAX=$FD_MAX
-export IRCSERV_BUFFER_SIZE=$BUFFER_SIZE
-export IRCSERV_DEBUG_MODE=$DEBUG_MODE
-export IRCSERV_SSL_CERT=$SSL_CERT
-export IRCSERV_WHOWAS_MAX=$WHOWAS_MAX
-exec "$@"
+echo -e "NAME		= ircserv
+SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
+			tools.cpp stringtools.cpp timetools.cpp error_handle.cpp \\
+			message.cpp parse.cpp commands.cpp cmds/cmd_tools.cpp \\
+			client.cpp channel.cpp \\
+			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \\
+			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \\
+			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \\
+			cmds/cmd_error.cpp cmds/cmd_admin.cpp \\
+			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_version.cpp \\
+			cmds/cmd_info.cpp cmds/cmd_time.cpp cmds/cmd_names.cpp \\
+			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp cmds/cmd_invite.cpp \\
+			cmds/cmd_who.cpp cmds/cmd_whois.cpp cmds/cmd_whowas.cpp \\
+			cmds/cmd_part.cpp cmds/cmd_mode.cpp cmds/cmd_notice.cpp \\
+			cmds/cmd_away.cpp cmds/cmd_kill.cpp cmds/cmd_njoin.cpp \\
+			cmds/cmd_lusers.cpp cmds/cmd_links.cpp cmds/cmd_stats.cpp \\
+			cmds/cmd_ison.cpp cmds/cmd_users.cpp cmds/cmd_topic.cpp \\
+			cmds/cmd_kick.cpp cmds/cmd_trace.cpp cmds/cmd_service.cpp \\
+			cmds/cmd_die.cpp cmds/cmd_list.cpp cmds/cmd_servlist.cpp \\
+			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp cmds/cmd_squery.cpp" > Makefile
+echo "" >> Makefile
+
+echo -e "OBJ			= \$(SRC:.cpp=.o)
+SRCDIR		= ./srcs/
+OBJDIR		= ./objs/
+SRCFILES	= \$(addprefix \$(SRCDIR), \$(SRC))
+OBJFILES	= \$(addprefix \$(OBJDIR), \$(OBJ))
+DEPFILES	= \$(OBJFILES:.o=.d)
+INCLUDEDIR	= ./includes/
+HEADERS		= ircserv.hpp tools.hpp error_handle.hpp \\
+			reply_codes.hpp error_codes.hpp common_defines.hpp \\
+			client.hpp channel.hpp message.hpp commands.hpp
+HEADERS		:= \$(addprefix \$(INCLUDEDIR), \$(HEADERS))
+PWD			:= \$(shell pwd)
+
+SSLSRCDIR	= ./openssl-1.1.1h/
+SSLDIR		= ./openssl/
+SSLINCLUDE	= \$(SSLDIR)include/
+SSLLIBDIR	= \$(SSLDIR)lib/
+SSLLIBS		= \$(SSLLIBDIR)libssl.a \$(SSLLIBDIR)libcrypto.a
+# openssl config flags to compile static only: no-shared
+SSLFLAG		= --prefix=\$(PWD)/openssl --openssldir=\$(PWD)/openssl \\
+			no-shared no-threads
+TLSCERT		= ./conf/\$(NAME).crt ./conf/\$(NAME).key
+
+CC			= clang++
+CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD
+CFLAGS		+= -g -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX
+CFLAGS		+= -DDEBUG_MODE=$DEBUG_MODE
+# linux openssl requires libdl and libpthread (for static lib)
+LIBFLAGS	= -L\$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
+EXECFLAGS	= \$(CFLAGS) \$(LIBFLAGS)
+SHELL		= /bin/zsh
+
+UNAME		:= \$(shell uname)
+ifeq (\$(UNAME), Darwin)
+OSNAME		= Darwin" >> Makefile
+
+if [[$DEBUG_MODE == 1]] ; then
+	echo -e "OSNAME += \$(YELLOW)(debug mode)\$(NC) " >> Makefile
+fi
+
+echo -e "
+SSLFLAG		+= darwin64-x86_64-cc
+else
+	ifeq (\$(UNAME), Linux)
+	OSNAME	= Linux
+	SSLFLAG	+= linux-x86_64-clang
+	else
+	OSNAME	= Unknown OS
+	endif
+endif
+
+# just in case openssl is not installed on system somehow
+ifeq (, \$(shell which openssl))
+	OPENSSL = \$(SSLDIR)bin/openssl
+else
+	OPENSSL	= openssl
+endif
+
+RED			= "'\\'"e[31m""
+GREEN		= "'\\'"e[32m""
+YELLOW		= "'\\'"e[93m""
+CYAN		= "'\\'"e[36m""
+NC			= "'\\'"e[0m""
+ULINE		= "'\\'"e[4m""
+ULINEF		= "'\\'"e[24m""
+
+.PHONY: all all98 bonus debugmsg openssl delssl gencert delcert clean fclean re re98
+" >> Makefile
+
+
+if [[ $DEBUG_MODE == 1 ]] ; then
+	if [[ $CHANGE_MODE == 1 ]] ; then
+		echo -e "\nall: fclean debugmsg \$(NAME)" >> Makefile
+	else
+		echo -e "\nall: debugmsg \$(NAME)" >> Makefile
+	fi
+else
+	if [[ $CHANGE_MODE == 1 ]] ; then
+		echo -e "\nall: fclean \$(NAME)" >> Makefile
+	else
+		echo -e "\nall: \$(NAME)" >> Makefile
+	fi
+fi
+
+if [[ $CHANGE_MODE == 1 ]] ; then
+	if [[ $DEBUG_MODE == 1 ]] ; then
+		echo -e "	@sed -i '86s|.*|all: debugmsg \\\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+	else
+		echo -e "	@sed -i '86s|.*|all: \\\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+	fi
+fi
+
+
+
+echo -e "
+bonus: \$(NAME)
+	@make -C bonus/ircbot
+
+-include \$(DEPFILES)
+
+\$(NAME): \$(SSLLIBS) \$(OBJDIR) \$(OBJFILES)
+	@echo \"linking \$(GREEN)\$@\$(NC) for \$(OSNAME)\"
+	@\$(CC) -o \$@ \$(OBJFILES) \$(EXECFLAGS)
+	@echo \"\$(CYAN)executable is ready\$(NC)\"" >> Makefile
+
+echo -e "
+\$(OBJDIR)%.o: \$(SRCDIR)%.cpp
+	@echo \"compiling \$(ULINE)\$<\$(ULINEF)\"
+	@\$(CC) \$(CFLAGS) -c $< -o \$@
+
+\$(OBJDIR):
+	@mkdir -p \$(OBJDIR) \$(OBJDIR)cmds/
+
+# c++98 compatibility
+all98: CFLAGS += -std=c++98 -DSTD_CPP98
+all98: OSNAME += (C++98 release)
+all98: \$(NAME)
+
+# debugging rules
+debugmsg:
+	@echo \"\$(YELLOW)compiling \$(NAME) in debug mode\$(NC)\"
+	" >> Makefile
+
+echo -e "" >> Makefile
+echo -e "
+openssl: \$(SSLLIBS)
+
+delssl:
+	@echo \"\$(RED)Deleting \$(SSLSRCDIR)\$(NC)\"
+	@/bin/rm -rf \$(SSLSRCDIR)
+	@echo \"\$(RED)Deleting \$(SSLDIR)\$(NC)\"
+	@/bin/rm -rf \$(SSLDIR)
+
+\$(SSLLIBS):
+	@echo \"building \$(ULINE)OpenSSL library v1.1.1h\$(ULINEF) (this will take a while)\"
+	@echo -n \"extracting archive...\"
+	@tar -xf ./openssl-1.1.1h.tar.gz
+	@echo \""'\\'"t"'\\'"tdone\"
+	@echo -n \"configuring makefile...\"
+	@cd \$(SSLSRCDIR) && ./Configure \$(SSLFLAG) > /dev/null && cd ..
+	@echo \""'\\'"t"'\\'"tdone\"
+	@echo \"configured with \$(SSLFLAG) params\"
+	@echo -n \"building libraries...\"
+	@make -C \$(SSLSRCDIR) > /dev/null 2> /dev/null
+	@echo \""'\\'"t"'\\'"tdone\"
+	@echo -n \"installing to ./openssl/...\"
+	@make -C \$(SSLSRCDIR) install > /dev/null 2> /dev/null
+	@echo \""'\\'"tdone\"
+
+gencert: \$(TLSCERT)
+
+delcert:
+	@echo \"\$(RED)Deleting certificates \$(TLSCERT)\$(NC)\"
+	@/bin/rm -f \$(TLSCERT)
+
+\$(TLSCERT):
+	@echo \"generating tls certificate...\"
+	@\$(OPENSSL) req \\
+		-x509 -nodes -days 365 -newkey rsa:4096 \\
+		-keyout \$(word 2,\$(TLSCERT)) \\
+		-out \$(word 1,\$(TLSCERT)) \\
+		-subj \"/C=RU/ST=Moscow/L=Moscow/O=42/OU=21/CN=ircserv\"
+	@echo \"certificate file"'\\'"t\$(word 1,\$(TLSCERT))\"
+	@echo \"certificate key"'\\'"t"'\\'"t\$(word 2,\$(TLSCERT))\"
+
+clean:
+	@echo \"\$(RED)Cleaning object files\$(NC)\"
+	@/bin/rm -rf \$(OBJDIR)
+	@echo \"\$(RED)Deleting \$(SSLSRCDIR)\$(NC)\"
+	@/bin/rm -rf \$(SSLSRCDIR)
+
+fclean: clean
+	@echo \"\$(RED)Deleting \$(NAME) executable\$(NC)\"
+	@/bin/rm -f \$(NAME)
+
+re: fclean all
+
+re98: fclean all98" >> Makefile
+
+echo "" >> Makefile
+if [[ $TLSCERT == 1 ]] ; then
+	echo -e "install: gencert" >> Makefile
+else
+	echo -e "install:" >> Makefile
+fi
+echo -e "	@mkdir -p $dir
+	@mkdir -p $dir/conf
+	@cp \$(NAME) $dir/\$(NAME)
+	@cp ./conf/* $dir/conf" >> Makefile
 
 clear
 echo ""
-echo -e $GREEN
-echo -e "****************************************************************
+echo -e $GREEN"****************************************************************
 *                                                              *
 *                                                              *
-*           Now you can type make to install ircserv           *
+*           Now you can type make to compile ircserv           *
 *                   with configured parameters                 *
 *                                                              *
 ****************************************************************

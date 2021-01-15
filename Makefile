@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/15 12:37:56 by gbright          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			tools.cpp stringtools.cpp timetools.cpp error_handle.cpp \
@@ -56,16 +44,17 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
-# linux openssl requires libdl and libpthread (for static lib)
+CFLAGS		+= -g -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
+CFLAGS		+= -DDEBUG_MODE=1
+# linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
-DEBUGFLAGS	= -g -DDEBUG_MODE=1
-ASANFLAGS	= -fsanitize=address
 SHELL		= /bin/zsh
 
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
 OSNAME		= Darwin
+
 SSLFLAG		+= darwin64-x86_64-cc
 else
 	ifeq ($(UNAME), Linux)
@@ -91,9 +80,10 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all all98 bonus debugmsg debug asan openssl delssl gencert delcert clean fclean re re98
+.PHONY: all all98 bonus debugmsg openssl delssl gencert delcert clean fclean re re98
 
-all: $(NAME)
+
+all: debugmsg ircserv
 
 bonus: $(NAME)
 	@make -C bonus/ircbot
@@ -119,18 +109,9 @@ all98: $(NAME)
 
 # debugging rules
 debugmsg:
-	@echo "$(YELLOW)compiling $(NAME) in debug mode with $(DEBUGFLAGS)"
-	@echo "make sure to run 'fclean' if you compiled 'all'$(DBGINFO) before$(NC)"
+	@echo "$(YELLOW)compiling $(NAME) in debug mode$(NC)"
+	
 
-debug: CFLAGS += $(DEBUGFLAGS)
-debug: DBGINFO = " or \'asan\'"
-debug: OSNAME += $(YELLOW)(debug mode)$(NC)
-debug: debugmsg $(NAME)
-
-asan: DEBUGFLAGS += $(ASANFLAGS)
-asan: CFLAGS += $(DEBUGFLAGS)
-asan: OSNAME += $(YELLOW)(debug mode with $(ASANFLAGS))$(NC)
-asan: debugmsg $(NAME)
 
 openssl: $(SSLLIBS)
 
@@ -185,3 +166,9 @@ fclean: clean
 re: fclean all
 
 re98: fclean all98
+
+install: gencert
+	@mkdir -p /home/se/ircserv
+	@mkdir -p /home/se/ircserv/conf
+	@cp $(NAME) /home/se/ircserv/$(NAME)
+	@cp ./conf/* /home/se/ircserv/conf
