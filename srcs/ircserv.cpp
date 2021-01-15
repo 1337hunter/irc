@@ -63,6 +63,7 @@ void	RunServer(IRCserv *serv)
 		clear_kill_list(serv);
 		clear_block_list(serv);
 		clear_empty_channels(serv);
+		clear_whowas(serv);
 		for (std::MAP<int, t_fd>::iterator it = serv->fds.begin();
 			it != serv->fds.end(); it++)
 		{

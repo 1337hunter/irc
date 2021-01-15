@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/14 21:17:15 by salec            ###   ########.fr        #
+#    Updated: 2021/01/15 12:37:56 by gbright          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 # linux openssl requires libdl and libpthread (for static lib)
-LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl	# -lpthread
+LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
 DEBUGFLAGS	= -g -DDEBUG_MODE=1
 ASANFLAGS	= -fsanitize=address

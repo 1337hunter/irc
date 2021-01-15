@@ -1,9 +1,11 @@
 #!/bin/bash
 
 dir=/home/se/ircserv
-FD_MAX=1024
-BUFFER_SIZE=512
+FD_MAX=2048
+BUFFER_SIZE=1024
+DEBUG_MODE=0
 DEBUG_MODE=1
+WHOWAS_MAX=2000
 
 clear
 
@@ -97,7 +99,7 @@ do
 	break
 done
 
-echo -e "\nDo you want compile with debug mode? (Y/n)"
+echo -e "\nDo you want to compile with debug mode? (Y/n)"
 while true
 do
 	if [[ $DEBUG_MODE == 0 ]] ; then
@@ -129,3 +131,87 @@ do
 	esac
     break
 done
+
+echo -e "\nDo you want to generate SSL certificate? (Y/n)"
+while true
+do
+	if [[ $SSL_CERT == 0 ]] ; then
+   		echo -n "[No] -> "
+	else
+		echo -n "[Yes] -> "
+	fi
+    read red
+    if [[ -z "$red" ]]
+    then
+        red=$SSL_CERT
+	fi
+	case "$red" in
+		[Yy]*)
+			SSL_CERT="1"
+			sed -i "7s|.*|DEBUG_MODE="1"|g" ./Config
+			;;
+		[Nn]*)
+			SSL_CERT="0"
+			sed -i "7s|.*|DEBUG_MODE="0"|g" ./Config
+			;;
+		""*)
+			break
+			;;
+		*)
+			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
+			continue
+			;;
+	esac
+    break
+done
+
+echo -e "\nHow far back do you want to keep the nickname history?"
+while true
+do
+	echo -n "["$WHOWAS_MAX"] -> "
+	read red
+	if [[ -z "$red" ]]
+	then
+		break
+	elif [[ ${red:0:1} == "0" ]]
+	then
+		echo -e $RED"\nValue must not start with zero\n"$CEND
+		continue
+	elif ! [[ $red =~ $nums ]]
+	then
+		echo -e $RED"\nValue must be an integer\n"$CEND
+		continue
+	fi
+	sed -i "8s|.*|WHOWAS_MAX=$red|g" ./Config
+	WHOWAS_MAX=$red
+	break
+done
+
+export IRCSERV_DIR=$dir
+export IRCSERV_FD_MAX=$FD_MAX
+export IRCSERV_BUFFER_SIZE=$BUFFER_SIZE
+export IRCSERV_DEBUG_MODE=$DEBUG_MODE
+export IRCSERV_SSL_CERT=$SSL_CERT
+export IRCSERV_WHOWAS_MAX=$WHOWAS_MAX
+exec "$@"
+
+clear
+echo ""
+echo -e $GREEN
+echo -e "****************************************************************
+*                                                              *
+*                                                              *
+*           Now you can type make to install ircserv           *
+*                   with configured parameters                 *
+*                                                              *
+****************************************************************
+*                                                              *
+****************************************************************
+*                                                              *
+*  The project was developed as part of the task of school 42  *
+*                               by                             *
+*                                                              *
+*       salec           https://github.com/thefullarcticfox    *
+*       gbrihgt         https://github.com/Antip003            *
+*                                                              *
+****************************************************************"$CEND

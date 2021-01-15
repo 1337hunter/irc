@@ -448,3 +448,15 @@ void	clear_empty_channels(IRCserv *serv)
 		else
 			chan++;
 }
+
+void	clear_whowas(IRCserv *serv)
+{
+	size_t	n;
+
+	if (serv->nickhistory.size() >= WHOWAS_MAX)
+	{
+		n = serv->nickhistory.size() - WHOWAS_MAX + WHOWAS_MAX * 0.05;
+		while (n-- && serv->nickhistory.size() > 0)
+			serv->nickhistory.pop_front();
+	}
+}

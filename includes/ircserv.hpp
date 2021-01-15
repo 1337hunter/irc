@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/12 16:25:30 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/15 12:38:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,7 +213,7 @@ struct				IRCserv
 	std::string					chanmodes;
 	time_t						dtstarted;
 	time_t						dtcompiled;
-	std::vector<t_whowas>		nickhistory;
+	std::list<t_whowas>			nickhistory;
 	std::list<t_kill>			kills;
 	std::list<blocked>			unavailable;
 	std::list<t_service>		services;
@@ -224,6 +224,7 @@ void		defineservermodes(IRCserv *serv);
 void		clear_kill_list(IRCserv *serv);
 void		clear_block_list(IRCserv *serv, std::string const &servername = "");
 void		clear_empty_channels(IRCserv *serv);
+void		clear_whowas(IRCserv *serv);
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
 
 void		RunServer(IRCserv *serv);

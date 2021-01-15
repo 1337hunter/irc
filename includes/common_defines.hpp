@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2021/01/08 23:44:43 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/15 12:29:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define FD_UNREGISTRED	6
 
 # define BUF_SIZE		1024
+# define WHOWAS_MAX		2000
 # define KILLTIME		60
 # define BLOCKTIME		20
 
