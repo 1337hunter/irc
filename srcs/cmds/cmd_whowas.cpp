@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 16:43:19 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:41:26 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/15 18:23:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 								from the first server to match "*.edu".
 */
 
-typedef std::vector<t_whowas>::iterator	t_whowasit;
+typedef std::list<t_whowas>::iterator	t_whowasit;
 typedef t_strvect::iterator				t_strvectit;
 
 std::string	reply_whowas(IRCserv *serv, std::string const &target,
