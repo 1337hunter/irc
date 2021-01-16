@@ -157,11 +157,11 @@ do
 	case "$red" in
 		[Yy]*)
 			TLSCERT="1"
-			sed -i "7s|.*|DEBUG_MODE="1"|g" ./Config
+			sed -i "7s|.*|TLSCERT="1"|g" ./Config
 			;;
 		[Nn]*)
 			TLSCERT="0"
-			sed -i "7s|.*|DEBUG_MODE="0"|g" ./Config
+			sed -i "7s|.*|TLSCERT="0"|g" ./Config
 			;;
 		""*)
 			break
