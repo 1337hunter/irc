@@ -3,7 +3,7 @@
 dir=/home/se/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=1
+DEBUG_MODE=0
 TLSCERT=1
 WHOWAS_MAX=2000
 CPP98=1
@@ -23,9 +23,9 @@ $red
 clear
 echo -e 	"
  _____   _____     _____
-|_   _| |  __ \   / ____|								
+|_   _| |  __ \   / ____|
   | |   | |__) | | |       ___   ____   _ __  __    __
-  | |   |  _  /  | |      / __| /  _ \ | '__| \ \  / / 
+  | |   |  _  /  | |      / __| /  _ \ | '__| \ \  / /
  _| |_  | | \ \  | |____  \__ \ \  __/ | |     \ \/ /
 |_____| |_|  \_\  \_____| |___/  \___  |_|      \__/"
 
@@ -157,11 +157,11 @@ do
 	case "$red" in
 		[Yy]*)
 			TLSCERT="1"
-			sed -i "7s|.*|DEBUG_MODE="1"|g" ./Config
+			sed -i "7s|.*|TLSCERT="1"|g" ./Config
 			;;
 		[Nn]*)
 			TLSCERT="0"
-			sed -i "7s|.*|DEBUG_MODE="0"|g" ./Config
+			sed -i "7s|.*|TLSCERT="0"|g" ./Config
 			;;
 		""*)
 			break
@@ -502,6 +502,6 @@ echo -e $GREEN"*****************************************************************
 *                                by                              *
 *                                                                *
 *        salec           https://github.com/thefullarcticfox     *
-*        gbrihgt         https://github.com/Antip003             *
+*        gbright         https://github.com/Antip003             *
 *                                                                *
 ******************************************************************"$CEND
