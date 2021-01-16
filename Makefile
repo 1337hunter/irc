@@ -83,7 +83,7 @@ ULINEF		= \e[24m
 .PHONY: all all98 bonus debugmsg openssl delssl gencert delcert clean fclean re re98
 
 
-all: debugmsg ircserv
+all: debugmsg $(NAME)
 
 bonus: $(NAME)
 	@make -C bonus/ircbot
@@ -103,9 +103,8 @@ $(OBJDIR):
 	@mkdir -p $(OBJDIR) $(OBJDIR)cmds/
 
 # c++98 compatibility
-all98: CFLAGS += -std=c++98 -DSTD_CPP98
-all98: OSNAME += (C++98 release)
-all98: $(NAME)
+CFLAGS += -std=c++98 -DSTD_CPP98
+OSNAME += (C++98 release)
 
 # debugging rules
 debugmsg:

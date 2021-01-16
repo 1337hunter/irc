@@ -1,11 +1,13 @@
 #!/bin/bash
 
-dir=$HOME/ircserv
+dir=/home/se/ircserv
 FD_MAX=1024
 BUF_SIZE=512
 DEBUG_MODE=1
 TLSCERT=1
 WHOWAS_MAX=2000
+CPP98=1
+ASAN=0
 
 
 CHANGE_MODE=0
@@ -194,6 +196,74 @@ do
 	break
 done
 
+echo -e "\nDo you want to compile like c++98 standard? (Y/n)"
+while true
+do
+	if [[ $CPP98 == 0 ]] ; then
+   		echo -n "[No] -> "
+	else
+		echo -n "[Yes] -> "
+	fi
+    read red
+    if [[ -z "$red" ]]
+	then
+		break
+	fi
+	case "$red" in
+		[Yy]*)
+			CPP98=1
+			sed -i "9s|.*|CPP98=1|g" ./Config
+			;;
+		[Nn]*)
+			CPP98=0
+			sed -i "9s|.*|CPP98=0|g" ./Config
+			;;
+		*)
+			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
+			continue
+			;;
+	esac
+	break
+done
+
+echo -e "\nDo you want to compile with flag -fsanitize=address (Y/n)"
+while true
+do
+	if [[ $ASAN == 0 ]] ; then
+   		echo -n "[No] -> "
+	else
+		echo -n "[Yes] -> "
+	fi
+    read red
+    if [[ -z "$red" ]]
+	then
+		break
+	fi
+	case "$red" in
+		[Yy]*)
+			if [[ $ASAN == 0 ]] ; then
+				CHANGE_MODE=1
+			fi
+			ASAN=1
+			sed -i "10s|.*|ASAN=1|g" ./Config
+			;;
+		[Nn]*)
+			if [[ $ASAN == 1 ]] ; then
+				CHANGE_MODE=1
+			fi
+			ASAN=0
+			CHANGE_MODE=1
+			sed -i "10s|.*|ASAN=0|g" ./Config
+			;;
+		*)
+			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
+			continue
+			;;
+	esac
+	break
+done
+
+
 echo -e "NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
 			tools.cpp stringtools.cpp timetools.cpp error_handle.cpp \\
@@ -216,7 +286,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
 			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp cmds/cmd_squery.cpp" > Makefile
 echo "" >> Makefile
 
-echo -e "OBJ			= \$(SRC:.cpp=.o)
+echo -e -n "OBJ			= \$(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/
 SRCFILES	= \$(addprefix \$(SRCDIR), \$(SRC))
@@ -242,7 +312,11 @@ TLSCERT		= ./conf/\$(NAME).crt ./conf/\$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD
 CFLAGS		+= -g -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX
-CFLAGS		+= -DDEBUG_MODE=$DEBUG_MODE
+CFLAGS		+= -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
+if [[ $ASAN == 1 ]] ; then
+	echo -e " -fsanitize=address" >> Makefile
+fi
+echo -e "
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L\$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= \$(CFLAGS) \$(LIBFLAGS)
@@ -331,12 +405,14 @@ echo -e "
 \$(OBJDIR):
 	@mkdir -p \$(OBJDIR) \$(OBJDIR)cmds/
 
-# c++98 compatibility
-all98: CFLAGS += -std=c++98 -DSTD_CPP98
-all98: OSNAME += (C++98 release)
-all98: \$(NAME)
+# c++98 compatibility" >> Makefile
+if [[ $CPP98 == 1 ]] ; then
+	echo -e "CFLAGS += -std=c++98 -DSTD_CPP98
+OSNAME += (C++98 release)\n" >> Makefile
+fi
 
-# debugging rules
+
+echo -e "# debugging rules
 debugmsg:
 	@echo \"\$(YELLOW)compiling \$(NAME) in debug mode\$(NC)\"
 	" >> Makefile
