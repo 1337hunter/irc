@@ -84,6 +84,9 @@ ULINEF		= \e[24m
 
 
 all: debugmsg $(NAME)
+	@echo "-------------------------------------------------"
+	@echo "Now you can run 'make install' to install ircserv"
+	@echo "-------------------------------------------------"
 
 bonus: $(NAME)
 	@make -C bonus/ircbot

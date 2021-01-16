@@ -383,8 +383,9 @@ if [[ $CHANGE_MODE == 1 ]] ; then
 		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
 	fi
 fi
-
-
+echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
+echo -e "	@echo \"Now you can run 'make install' to install ircserv\"" >> Makefile
+echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
 
 echo -e "
 bonus: \$(NAME)
@@ -486,20 +487,21 @@ echo -e "	@mkdir -p $dir
 
 clear
 echo ""
-echo -e $GREEN"****************************************************************
-*                                                              *
-*                                                              *
-*           Now you can type make to compile ircserv           *
-*                   with configured parameters                 *
-*                                                              *
-****************************************************************
-*                                                              *
-****************************************************************
-*                                                              *
-*  The project was developed as part of the task of school 42  *
-*                               by                             *
-*                                                              *
-*       salec           https://github.com/thefullarcticfox    *
-*       gbrihgt         https://github.com/Antip003            *
-*                                                              *
-****************************************************************"$CEND
+echo -e $GREEN"******************************************************************
+*                                                                *
+*                                                                *
+*            Now you can type make to compile ircserv            *
+*                    with configured parameters                  *
+*                                                                *
+******************************************************************
+*                                                                *
+******************************************************************
+*                                                                *
+* The project was developed as part of the task of the school 42 *
+*                                                                *
+*                                by                              *
+*                                                                *
+*        salec           https://github.com/thefullarcticfox     *
+*        gbrihgt         https://github.com/Antip003             *
+*                                                                *
+******************************************************************"$CEND
