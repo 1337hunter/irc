@@ -44,8 +44,8 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
-CFLAGS		+= -g -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -DDEBUG_MODE=1 -fsanitize=address
+CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
+CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
 
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
@@ -83,10 +83,7 @@ ULINEF		= \e[24m
 
 .PHONY: all all98 bonus debugmsg openssl delssl gencert delcert clean fclean re re98
 
-
-all: fclean debugmsg $(NAME)
-	@sed -i '86s|.*|all: debugmsg \$(NAME)|g' ./Makefile
-	@sed -i '87d;88d' ./Makefile
+all: debugmsg $(NAME)
 	@echo "-------------------------------------------------"
 	@echo "Now you can run 'make install' to install ircserv"
 	@echo "-------------------------------------------------"

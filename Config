@@ -1,9 +1,9 @@
 #!/bin/bash
 
-dir=/home/se/ircserv
+dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=0
+DEBUG_MODE=1
 TLSCERT=1
 WHOWAS_MAX=2000
 CPP98=1
@@ -196,7 +196,7 @@ do
 	break
 done
 
-echo -e "\nDo you want to compile like c++98 standard? (Y/n)"
+echo -e "\nDo you want to compile in c++98 standard? (Y/n)"
 while true
 do
 	if [[ $CPP98 == 0 ]] ; then
@@ -286,7 +286,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
 			cmds/cmd_wallops.cpp cmds/cmd_rehash.cpp cmds/cmd_squery.cpp" > Makefile
 echo "" >> Makefile
 
-echo -e -n "OBJ			= \$(SRC:.cpp=.o)
+echo -e "OBJ			= \$(SRC:.cpp=.o)
 SRCDIR		= ./srcs/
 OBJDIR		= ./objs/
 SRCFILES	= \$(addprefix \$(SRCDIR), \$(SRC))
@@ -310,12 +310,20 @@ SSLFLAG		= --prefix=\$(PWD)/openssl --openssldir=\$(PWD)/openssl \\
 TLSCERT		= ./conf/\$(NAME).crt ./conf/\$(NAME).key
 
 CC			= clang++
-CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD
-CFLAGS		+= -g -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX
-CFLAGS		+= -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
+CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD" >> Makefile
+
+echo -e "CFLAGS		+= -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX" >> Makefile
+
+if [[ $DEBUG_MODE == 1 || $ASAN == 1 ]] ; then
+    echo -e -n "CFLAGS		+= -g -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
+else
+	echo -e -n "CFLAGS		+= -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
+fi
+
 if [[ $ASAN == 1 ]] ; then
 	echo -e " -fsanitize=address" >> Makefile
 fi
+
 echo -e "
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L\$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
@@ -330,7 +338,7 @@ if [[$DEBUG_MODE == 1]] ; then
 	echo -e "OSNAME += \$(YELLOW)(debug mode)\$(NC) " >> Makefile
 fi
 
-echo -e "
+echo -e -n "
 SSLFLAG		+= darwin64-x86_64-cc
 else
 	ifeq (\$(UNAME), Linux)
