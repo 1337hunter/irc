@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/14 18:56:51 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 19:46:34 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 16:50:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,10 @@ bool	checkreplycode(t_strvect const &split, ircbot const &bot)
 			std::cout << "Please enter new bot nickname (up to 9 symbols): ";
 			std::string	reply = "";
 			std::getline(std::cin, reply);
-			reply = "NICK " + reply + CRLF;
+			if (bot.asService)
+				reply = "SERVICE " + reply + " * * 0 0 :ircbot v" + VERSION + CRLF;
+			else
+				reply = "NICK " + reply + CRLF;
 			if (send(bot.sock, reply.c_str(), reply.size(), 0) < 0)
 				ioerror(bot.sock, "send error");
 		}
@@ -59,6 +62,13 @@ bool	checkmsg(t_strvect const &split, ircbot const &bot)
 		std::string	reply = "PONG :" + split[i + 1] + CRLF;
 		if (send(bot.sock, reply.c_str(), reply.size(), 0) < 0)
 			ioerror(bot.sock, "send error");
+		return (false);
+	}
+
+	// got an error message
+	if (split.size() > i + 1 && tmp == "ERROR")
+	{
+		std::cout << "ERROR message: " << split[i + 1] << std::endl;
 		return (false);
 	}
 

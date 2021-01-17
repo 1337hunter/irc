@@ -3,8 +3,8 @@
 dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=1
-TLSCERT=1
+DEBUG_MODE=0
+TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
 ASAN=0
@@ -383,16 +383,13 @@ fi
 
 if [[ $CHANGE_MODE == 1 ]] ; then
 	if [[ $DEBUG_MODE == 1 ]] ; then
-		echo -e "	@sed -i '86s|.*|all: debugmsg \\\$(NAME)|g' ./Makefile" >> Makefile
-		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+		echo -e "	@sed -i '85s|.*|all: debugmsg \$\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '86d;87d' ./Makefile" >> Makefile
 	else
-		echo -e "	@sed -i '86s|.*|all: \\\$(NAME)|g' ./Makefile" >> Makefile
-		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+		echo -e "	@sed -i '85s|.*|all: \$\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '86d;87d' ./Makefile" >> Makefile
 	fi
 fi
-echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
-echo -e "	@echo \"Now you can run 'make install' to install ircserv\"" >> Makefile
-echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
 
 echo -e "
 bonus: \$(NAME)
@@ -404,6 +401,9 @@ bonus: \$(NAME)
 	@echo \"linking \$(GREEN)\$@\$(NC) for \$(OSNAME)\"
 	@\$(CC) -o \$@ \$(OBJFILES) \$(EXECFLAGS)
 	@echo \"\$(CYAN)executable is ready\$(NC)\"" >> Makefile
+echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
+echo -e "	@echo \"Now you can run 'make install' to install ircserv\"" >> Makefile
+echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
 
 echo -e "
 \$(OBJDIR)%.o: \$(SRCDIR)%.cpp
