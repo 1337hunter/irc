@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/17 19:46:48 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 19:51:49 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 21:00:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,18 @@
 
 void		cmd_pong(int fd, const t_strvect &split, IRCserv *serv)
 {
+	t_fd	&fdref = serv->fds[fd];
+
 	if (split.size() < 2)
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOORIGIN, "", "", "No origin specified");
-	else
+	if (split.size() == 2 && split[1] == serv->servername)
 	{
-		serv->fds[fd].status = true;
+		fdref.awaitingpong = false;
+		fdref.lastactive = ft_getcurrenttime();
+	}
+	if (split.size() >= 3)
+	{
+		// then forward to split[2]
 	}
 }

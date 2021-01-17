@@ -45,7 +45,7 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -DPING_TIMEOUT=180 -DPING_FREQUENCY=180
+CFLAGS		+= -DPING_TIMEOUT=60 -DPING_FREQUENCY=60
 CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 13:13:46 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 20:51:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ typedef struct		s_fd
 	std::string		options;	// register attempt
 	std::string		hostname;
 	SSL				*sslptr;
+	time_t			lastactive;
+	bool			awaitingpong;
 //	STATS l related statistics
 	std::string		linkname;
 	int				sock;
@@ -220,6 +222,7 @@ void		clear_kill_list(IRCserv *serv);
 void		clear_block_list(IRCserv *serv, std::string const &servername = "");
 void		clear_empty_channels(IRCserv *serv);
 void		clear_whowas(IRCserv *serv);
+void		check_liveness(IRCserv *serv);
 void		ProcessMessage(int fd, std::string const &msg, IRCserv *serv);
 
 void		RunServer(IRCserv *serv);

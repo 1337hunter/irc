@@ -483,3 +483,37 @@ void	clear_whowas(IRCserv *serv)
 			serv->nickhistory.pop_front();
 	}
 }
+
+void	check_liveness(IRCserv *serv)
+{
+	std::MAP<int, t_fd>::iterator	fdit = serv->fds.begin();
+	time_t	pingfreq = PING_FREQUENCY;
+	time_t	timeout = PING_TIMEOUT;
+
+	// just in case something really stupid configured
+	if (pingfreq < 10 || pingfreq > 100000)
+		pingfreq = 60;
+	if (timeout < 10 || timeout > 100000)
+		timeout = 60;
+
+	while (fdit != serv->fds.end())
+	{
+		if (fdit->second.type != FD_ME && fdit->second.type != FD_UNREGISTRED &&
+			!(fdit->second.fatal) && (fdit->second.status))
+		{
+			if (fdit->second.awaitingpong && fdit->second.lastactive <
+				ft_getcurrenttime() - pingfreq - timeout)
+			{
+				fdit->second.wrbuf += "PING " + serv->servername + CRLF;
+				fdit->second.status = false;
+			}
+			if (!(fdit->second.awaitingpong) && fdit->second.lastactive <
+				ft_getcurrenttime() - pingfreq)
+			{
+				fdit->second.wrbuf += "PING " + serv->servername + CRLF;
+				fdit->second.awaitingpong = true;
+			}
+		}
+		fdit++;
+	}
+}

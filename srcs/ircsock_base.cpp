@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/17 17:26:26 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 20:55:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,6 +282,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			std::cout << "client " << fd << " sent:\t" <<
 				(fdref.tls ? "" : "\t") << fdref.rdbuf;
 #endif
+			fdref.lastactive = ft_getcurrenttime();
 			t_strvect	split = ft_splitstringbyany(fdref.rdbuf, CRLF);
 			fdref.recvmsgs += split.size();
 			if (fdref.sock > 0)
