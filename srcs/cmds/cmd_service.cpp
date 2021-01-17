@@ -2,10 +2,11 @@
 #include "tools.hpp"
 #include "message.hpp"
 
-void	service_from_network(int fd, t_strvect const &split, IRCserv *serv)
+void	service_from_network(int fd, IRCserv *serv)
 {
 	serv->fds[fd].wrbuf += "ERROR :servers cann't introduce services because standard";
-	serv->fds[fd].wrbuf += " 2.10 is not finished\r\n";
+	serv->fds[fd].wrbuf += " 2.10 is not finished. You can only directly connect";
+	serv->fds[fd].wrbuf += " to server\r\n";
 }
 
 void	service_from_service(int fd, t_strvect const &split, IRCserv *serv)
@@ -66,7 +67,7 @@ void	cmd_service(int fd, t_strvect const &split, IRCserv *serv)
 		return ;
 	}
 	if (serv->fds[fd].type == FD_SERVER)
-		service_from_network(fd, split, serv);
+		service_from_network(fd, serv);
 	else
 		service_from_service(fd, split, serv);
 }
