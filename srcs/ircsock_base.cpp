@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/17 13:55:28 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 15:03:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,19 @@ void	self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv)
 	fdref.fatal = true;
 }
 
+void	self_service_quit(int fd, t_fd &fdref, IRCserv *serv)
+{
+	t_service	*service;
+
+	fdref.status = false;
+	if (!(service = find_service_by_fd(fd, serv)))
+		return ;
+	service->fd = -1;
+#if DEBUG_MODE
+	std::cout << "service " << service->name << " went out" << std::endl;
+#endif
+}
+
 void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 {
 	if (errno == EAGAIN && errno == EWOULDBLOCK)
@@ -215,6 +228,8 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 		self_cmd_squit(fd, fdref, serv);
 	else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
 		self_cmd_quit(fd, fdref, serv);
+	else if (fdref.type == FD_SERVICE && fdref.status)
+		self_service_quit(fd, fdref, serv);
 	if (!fdref.blocked && !fdref.status)
 	{
 		if (fdref.status)

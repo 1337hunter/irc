@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:58 by salec             #+#    #+#             */
-/*   Updated: 2021/01/06 18:00:23 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 15:04:34 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
+#include "message.hpp"
 
 void		cmd_pass(int fd, const t_strvect &split, IRCserv *serv)
 {
@@ -22,6 +23,11 @@ void		cmd_pass(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NEEDMOREPARAMS, "", split[0], "Not enough parameters");
 		return ;
+	}
+	if (serv->fds[fd].type != FD_UNREGISTRED)
+	{
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, fd, "",
+				"Unauthorized command (already registered)"); return ;
 	}
 	serv->fds[fd].pass = split[1];
 	if (split.size() == 2)
