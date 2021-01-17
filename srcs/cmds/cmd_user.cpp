@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 16:59:48 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 18:06:12 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 	t_citer			it;
 	std::string		_realname;
 
-	if (serv->fds[fd].pass != serv->pass)
+	if (serv->pass != "" && serv->fds[fd].pass != serv->pass)
     {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_PASSWDMISMATCH, -1, "",
 			"Password incorrect"); serv->fds[fd].status = false; return ;

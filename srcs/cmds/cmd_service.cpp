@@ -54,7 +54,7 @@ void	service_from_service(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " + split[1] +
 			" :Erroneous nickname\r\n"; serv->fds[fd].status = false; return ;
 	}
-	if (serv->fds[fd].pass != service->pass)
+	if (!service->pass.empty() && serv->fds[fd].pass != service->pass)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_PASSWDMISMATCH, -1, "",
 			"Password incorrect"); serv->fds[fd].status = false; return ;

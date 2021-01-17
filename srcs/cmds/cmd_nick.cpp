@@ -45,7 +45,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NONICKNAMEGIVEN, -1, "",
 				"No nickname given"); return ;
 	}
-	if (serv->fds[fd].pass != serv->pass)
+	if (serv->pass != "" && serv->fds[fd].pass != serv->pass)
     {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_PASSWDMISMATCH, -1, "",
 				"Password incorrect"); serv->fds[fd].status = false; return ;
