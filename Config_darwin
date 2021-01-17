@@ -1,9 +1,9 @@
-#!/bin/bash
+#!/bin/zsh
 
 dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=1
+DEBUG_MODE=0
 TLSCERT=1
 WHOWAS_MAX=2000
 CPP98=1
@@ -41,9 +41,9 @@ then
 fi
 if [[ -z "$red" ]]
 then
-	sed -i "3s|.*|\$dir|g" ./Config
+	sed -i '' "3s|.*|\$dir|g" ./Config_darwin
 else
-	sed -i "3s|.*|dir=$red|g" ./Config
+	sed -i '' "3s|.*|dir=$red|g" ./Config_darwin
 	dir=$red
 fi
 
@@ -66,9 +66,9 @@ do
 	fi
 	if [[ -z "$red" ]]
 	then
-		sed -i "4s|.*|\$FD_MAX|g" ./Config
+		sed -i '' "4s|.*|\$FD_MAX|g" ./Config_darwin
 	else
-		sed -i "4s|.*|FD_MAX=$red|g" ./Config
+		sed -i '' "4s|.*|FD_MAX=$red|g" ./Config_darwin
 		FD_MAX=$red
 	fi
 	break
@@ -93,9 +93,9 @@ do
 	fi
 	if [[ -z "$red" ]]
 	then
-		sed -i "5s|.*|\$BUF_SIZE|g" ./Config
+		sed -i '' "5s|.*|\$BUF_SIZE|g" ./Config_darwin
 	else
-		sed -i "5s|.*|BUF_SIZE=$red|g" ./Config
+		sed -i '' "5s|.*|BUF_SIZE=$red|g" ./Config_darwin
 		BUF_SIZE=$red
 	fi
 	break
@@ -120,14 +120,14 @@ do
 				CHANGE_MODE=1
 			fi
 			DEBUG_MODE="1"
-			sed -i "6s|.*|DEBUG_MODE="1"|g" ./Config
+			sed -i '' "6s|.*|DEBUG_MODE="1"|g" ./Config_darwin
 			;;
 		[Nn]*)
 			if [[ $DEBUG_MODE == 1 ]] ; then
 				CHANGE_MODE=1
 			fi
 			DEBUG_MODE="0"
-			sed -i "6s|.*|DEBUG_MODE="0"|g" ./Config
+			sed -i '' "6s|.*|DEBUG_MODE="0"|g" ./Config_darwin
 			;;
 		""*)
 			break
@@ -156,11 +156,11 @@ do
 	case "$red" in
 		[Yy]*)
 			TLSCERT="1"
-			sed -i "7s|.*|TLSCERT="1"|g" ./Config
+			sed -i '' "7s|.*|TLSCERT="1"|g" ./Config_darwin
 			;;
 		[Nn]*)
 			TLSCERT="0"
-			sed -i "7s|.*|TLSCERT="0"|g" ./Config
+			sed -i '' "7s|.*|TLSCERT="0"|g" ./Config_darwin
 			;;
 		""*)
 			break
@@ -190,7 +190,7 @@ do
 		echo -e $RED"\nValue must be an integer\n"$CEND
 		continue
 	fi
-	sed -i "8s|.*|WHOWAS_MAX=$red|g" ./Config
+	sed -i '' "8s|.*|WHOWAS_MAX=$red|g" ./Config_darwin
 	WHOWAS_MAX=$red
 	break
 done
@@ -211,11 +211,11 @@ do
 	case "$red" in
 		[Yy]*)
 			CPP98=1
-			sed -i "9s|.*|CPP98=1|g" ./Config
+			sed -i '' "9s|.*|CPP98=1|g" ./Config_darwin
 			;;
 		[Nn]*)
 			CPP98=0
-			sed -i "9s|.*|CPP98=0|g" ./Config
+			sed -i '' "9s|.*|CPP98=0|g" ./Config_darwin
 			;;
 		*)
 			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
@@ -244,7 +244,7 @@ do
 				CHANGE_MODE=1
 			fi
 			ASAN=1
-			sed -i "10s|.*|ASAN=1|g" ./Config
+			sed -i '' "10s|.*|ASAN=1|g" ./Config_darwin
 			;;
 		[Nn]*)
 			if [[ $ASAN == 1 ]] ; then
@@ -252,7 +252,7 @@ do
 			fi
 			ASAN=0
 			CHANGE_MODE=1
-			sed -i "10s|.*|ASAN=0|g" ./Config
+			sed -i '' "10s|.*|ASAN=0|g" ./Config_darwin
 			;;
 		*)
 			echo -e $RED"\nYour reply must be 'Yes' ot 'No'\n"$CEND
@@ -383,11 +383,11 @@ fi
 
 if [[ $CHANGE_MODE == 1 ]] ; then
 	if [[ $DEBUG_MODE == 1 ]] ; then
-		echo -e "	@sed -i '86s|.*|all: debugmsg \\\$(NAME)|g' ./Makefile" >> Makefile
-		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '86s|.*|all: debugmsg \\\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '87d;88d' ./Makefile" >> Makefile
 	else
-		echo -e "	@sed -i '86s|.*|all: \\\$(NAME)|g' ./Makefile" >> Makefile
-		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '86s|.*|all: \\\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '87d;88d' ./Makefile" >> Makefile
 	fi
 fi
 echo -e "	@echo \"-------------------------------------------------\"" >> Makefile
