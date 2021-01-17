@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:07:17 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 17:34:33 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ std::vector<Client*>	get_clients_for_quit_msg(Client *client)
 
 int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 {
-	Client	*client;
+	Client		*client;
+	std::string	nick;
 	std::vector<Client*>            msg_for;
 	std::vector<Client*>::iterator  msg_for_it;
 
@@ -44,16 +45,17 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		return 1;
 	if (!(client = find_client_by_nick(get_nick_from_info(split[0]), serv)))
 		return 1;
+	nick = client->getnick();
 	msg_for = get_clients_for_quit_msg(client);
 	msg_for_it = msg_for.begin();
 	for (; msg_for_it != msg_for.end(); msg_for_it++)
 		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
-		strvect_to_string(split, ' ', 1) + CRLF;;
+		strvect_to_string(split, ' ', 1) + CRLF;
 	client->partAllChan();
 	remove_client_by_ptr(client, serv);
 	msg_forward(fd, strvect_to_string(split), serv);
 #if DEBUG_MODE
-    std::cout << "nick " << client->getnick() << "\t\tdisconnected" << std::endl;
+    std::cout << "nick " << nick << "\t\tdisconnected" << std::endl;
 #endif
 	return 0;
 }
