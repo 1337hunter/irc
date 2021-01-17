@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:05 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 22:57:09 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 00:27:35 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void		cmd_ping(int fd, const t_strvect &split, IRCserv *serv)
 			ERR_NOORIGIN, "", "", "No origin specified");
 	else if (split.size() == 2)
 		fdref.wrbuf += ft_buildmsg(serv->servername, "PONG",
-			serv->servername, "", "");
+			serv->servername, "", split[1]);
 	else if (split.size() >= 3)
 	{
 		// then forward to split[2]

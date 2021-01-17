@@ -504,13 +504,14 @@ void	check_liveness(IRCserv *serv)
 			if (fdit->second.awaitingpong && fdit->second.lastactive <
 				ft_getcurrenttime() - pingfreq - timeout)
 			{
-				fdit->second.wrbuf += "PING " + serv->servername + CRLF;
+				fdit->second.wrbuf += "ERROR :Closing Link: " +
+					fdit->second.linkname + " (Ping timeout)" + CRLF;
 				fdit->second.status = false;
 			}
 			if (!(fdit->second.awaitingpong) && fdit->second.lastactive <
 				ft_getcurrenttime() - pingfreq)
 			{
-				fdit->second.wrbuf += "PING " + serv->servername + CRLF;
+				fdit->second.wrbuf += "PING :" + serv->servername + CRLF;
 				fdit->second.awaitingpong = true;
 			}
 		}

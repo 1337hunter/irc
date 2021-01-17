@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/09 20:26:00 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 00:00:57 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
 	int	res = connect(socket_fd, addr->ai_addr, addr->ai_addrlen);
 	serv->fds[socket_fd].dtopened = ft_getcurrenttime();
+	serv->fds[socket_fd].lastactive = ft_getcurrenttime();
 	serv->fds[socket_fd].sentmsgs = 0;
 	serv->fds[socket_fd].recvmsgs = 0;
 	serv->fds[socket_fd].sentbytes = 0;
