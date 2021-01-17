@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:32:14 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 17:50:38 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 19:22:44 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,6 @@
 void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_fd		&fdref = serv->fds[fd];
-	t_service	*sptr = NULL;
-	std::string	from = "";
-	if (fdref.type == FD_SERVER && split[0].size() > 1 && split[0][0] == ':')
-		from = split[0].substr(1);
 
 	if (fdref.type == FD_SERVICE)
 	{
@@ -56,11 +52,6 @@ void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv)
 			" NOTICE " + client_msg->getnick() + " " +
 			strvect_to_string(split, ' ', 2) + CRLF;
 		return ;
-	}
-	else if (fdref.type == FD_SERVER &&
-		(sptr = find_service_by_name(from, serv)))
-	{
-		// send notice from service from another server
 	}
 	else
 		cmd_privmsg(fd, split, serv);	// privmsg never replies to NOTICE
