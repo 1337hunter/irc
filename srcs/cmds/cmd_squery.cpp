@@ -5,15 +5,7 @@
 
 void	squery_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_service	*service;
-
-	if (split.size() < 4)
-		return ;
-	if (!(service = find_service_by_name(split[2], serv)) || service->fd < 0)
-		return ;
-	serv->fds[service->fd].wrbuf += split[0] + " " + split[1] + " " + split[2] + " :" +
-		strvect_to_string(split, ' ', 3) + CRLF;
-	fd = 0;
+	fd = 0; (void)split; serv = 0;
 }
 
 void	squery_from_client(int fd, const t_strvect &split, IRCserv *serv)

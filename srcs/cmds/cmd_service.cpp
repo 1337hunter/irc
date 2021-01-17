@@ -4,45 +4,13 @@
 
 void	service_from_network(int fd, t_strvect const &split, IRCserv *serv)
 {
-	t_service	*service;
-	t_service	temp;
-	t_strvect   cmd;
-
-	if (split.size() < 8)
-		return ;
-	if (!match(serv->servername, split[4]))
-			return ;
-	cmd = split;
-	if (!(service = find_service_by_name(split[2], serv)))
-	{
-		temp.fd = fd;
-		try { temp.hopcount = STOI(split[6]); } catch(...) { return ; }
-		temp.name = split[2];
-		temp.distribution = split[4];
-		temp.type = split[5];
-		temp.info = split[7];
-		temp.token = split[3];
-		cmd[6] = TOSTRING(temp.hopcount + 1);
-		serv->services.push_back(temp);
-	}
-	else
-	{
-		try { service->hopcount = STOI(split[6]); } catch(...) { return ; }
-		service->distribution = split[4];
-		service->type = split[5];
-		service->info = split[7];
-		service->token = split[3];
-		service->fd = fd;
-		cmd[6] = TOSTRING(service->hopcount + 1);
-	}
-	cmd[7] = ":" + cmd[7];
-	msg_forward(fd, strvect_to_string(cmd), serv);
+	serv->fds[fd].wrbuf += "ERROR :servers cann't introduce services because standard";
+	serv->fds[fd].wrbuf += " 2.10 is not finished\r\n";
 }
 
 void	service_from_service(int fd, t_strvect const &split, IRCserv *serv)
 {
 	t_service	*service;
-	std::string	forward;
 
 	if (split.size() < 7)
 	{
@@ -80,10 +48,6 @@ void	service_from_service(int fd, t_strvect const &split, IRCserv *serv)
 	serv->fds[fd].wrbuf += get_reply(serv, RPL_MYINFO, -1, "",
 		serv->servername + " " + std::string(VERSION) + " " + serv->usermodes + " " +
 		serv->chanmodes);
-	forward = ":" + serv->servername + " SERVICE " + service->name + " " + serv->token +
-		" " + service->distribution + " " + service->type + " 1 :" +
-		strvect_to_string(split, ' ', 6);
-	msg_forward(fd, forward, serv);
 }
 
 void	cmd_service(int fd, t_strvect const &split, IRCserv *serv)

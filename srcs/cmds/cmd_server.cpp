@@ -38,7 +38,6 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	std::list<Client>::iterator		client;
 	std::vector<t_server>::iterator	net;
 	std::list<Channel>::iterator	channel;
-	std::list<t_service>::iterator	service;
 	std::string						enjoy;
 	std::string						channel_forward;
 	std::list<std::string>::const_iterator				Musk;
@@ -114,15 +113,6 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 				channel->getname() + " +I " + *Musk + CRLF;
 		}
 	}
-	service = serv->services.begin();
-	for (; service != serv->services.end(); service++)
-		if (service->fd > -1)
-		{
-			serv->fds[fd].wrbuf += ":" + serv->servername + " SERVICE " +
-				service->name + " " + service->token + " " + service->distribution +
-				" " + service->type + " " + TOSTRING(service->hopcount + 1) +
-				" :" + service->info + CRLF;
-		}
 	return false;
 }
 
