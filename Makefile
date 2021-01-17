@@ -43,7 +43,7 @@ SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl \
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
-CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
+CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD -DPING_TIMEOUT=180 -DPING_FREQUENCY=180
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
 CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
 
@@ -81,6 +81,8 @@ CYAN		= \e[36m
 NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
+
+.PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
 all: debugmsg $(NAME)
 

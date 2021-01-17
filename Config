@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir=$HOME/ircserv
+dir=/home/se/ircserv
 FD_MAX=1024
 BUF_SIZE=512
 DEBUG_MODE=1
@@ -8,6 +8,8 @@ TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
 ASAN=1
+PING_TIMEOUT=180
+PING_FREQUENCY=180
 
 CHANGE_MODE=0
 RED="\e[31m"
@@ -262,6 +264,49 @@ do
 	break
 done
 
+echo -e "\nHow fast do you want to close connections after ping no response?"
+while true
+do
+	echo -n "["$PING_TIMEOUT"] -> "
+	read red
+	if [[ -z "$red" ]]
+	then
+		break
+	elif [[ ${red:0:1} == "0" ]]
+	then
+		echo -e $RED"\nValue must not start with zero\n"$CEND
+		continue
+	elif ! [[ $red =~ $nums ]]
+	then
+		echo -e $RED"\nValue must be an integer\n"$CEND
+		continue
+	fi
+	sed -i "11s|.*|PING_TIMEOUT=$red|g" ./Config
+	PING_TIMEOUT=$red
+	break
+done
+
+echo -e "\nHow often do you want to ping connections?"
+while true
+do
+	echo -n "["$PING_FREQUENCY"] -> "
+	read red
+	if [[ -z "$red" ]]
+	then
+		break
+	elif [[ ${red:0:1} == "0" ]]
+	then
+		echo -e $RED"\nValue must not start with zero\n"$CEND
+		continue
+	elif ! [[ $red =~ $nums ]]
+	then
+		echo -e $RED"\nValue must be an integer\n"$CEND
+		continue
+	fi
+	sed -i "12s|.*|PING_FREQUENCY=$red|g" ./Config
+	PING_FREQUENCY=$red
+	break
+done
 
 echo -e "NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
@@ -309,9 +354,9 @@ SSLFLAG		= --prefix=\$(PWD)/openssl --openssldir=\$(PWD)/openssl \\
 TLSCERT		= ./conf/\$(NAME).crt ./conf/\$(NAME).key
 
 CC			= clang++
-CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD" >> Makefile
+CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD -DPING_TIMEOUT=$PING_TIMEOUT -DPING_FREQUENCY=$PING_FREQUENCY" >> Makefile
 
-echo -e "CFLAGS		+= -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX" >> Makefile
+echo -e "CFLAGS		+= -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX"  >> Makefile
 
 if [[ $DEBUG_MODE == 1 || $ASAN == 1 ]] ; then
     echo -e -n "CFLAGS		+= -g -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
