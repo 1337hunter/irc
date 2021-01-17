@@ -393,7 +393,7 @@ fi
 
 echo -e "
 bonus: \$(NAME)
-	@make -C bonus/ircbot
+	@make -C ./bot
 
 -include \$(DEPFILES)
 

@@ -45,8 +45,7 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
-
+CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -55,7 +54,6 @@ SHELL		= /bin/zsh
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
 OSNAME		= Darwin
-OSNAME += $(YELLOW)(debug mode)$(NC) 
 
 SSLFLAG		+= darwin64-x86_64-cc
 else
@@ -82,10 +80,12 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-all: debugmsg $(NAME)
+.PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
+
+all: $(NAME)
 
 bonus: $(NAME)
-	@make -C bonus/ircbot
+	@make -C ./bot
 
 -include $(DEPFILES)
 
@@ -165,7 +165,7 @@ fclean: clean
 re: fclean all
 
 install:
-	@mkdir -p /home/se/ircserv
-	@mkdir -p /home/se/ircserv/conf
-	@cp $(NAME) /home/se/ircserv/$(NAME)
-	@cp ./conf/* /home/se/ircserv/conf
+	@mkdir -p /home/arcticfox/ircserv
+	@mkdir -p /home/arcticfox/ircserv/conf
+	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
+	@cp ./conf/* /home/arcticfox/ircserv/conf

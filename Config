@@ -1,13 +1,13 @@
 #!/bin/bash
 
-dir=/home/se/ircserv
+dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=1
+DEBUG_MODE=0
 TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
-ASAN=1
+ASAN=0
 
 CHANGE_MODE=0
 RED="\e[31m"
@@ -393,7 +393,7 @@ fi
 
 echo -e "
 bonus: \$(NAME)
-	@make -C bonus/ircbot
+	@make -C ./bot
 
 -include \$(DEPFILES)
 

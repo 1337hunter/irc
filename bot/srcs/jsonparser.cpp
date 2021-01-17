@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/11 14:09:18 by salec             #+#    #+#             */
-/*   Updated: 2021/01/11 18:32:33 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 18:19:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,6 +226,7 @@ jsonarray	jsonparse(std::string const &input)
 		if (*it == ',')
 			it++;
 		res.insert(entry);
+		skipspace(&it, end);
 	}
 	if (it == end || *it != '}')
 		throw (JSON_PARSE_EXCEPTION);

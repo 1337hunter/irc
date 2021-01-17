@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:34:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 21:15:50 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 17:59:21 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,10 @@ std::string	getweather(std::string query = "Moscow")
 {
 	int			sock = 0;
 	std::string	hostname = "api.openweathermap.org";
-	std::string	apikey = "081bf5c1866dd8f8eff826e30485f8fd";
+	std::string	apikey = WEATHERAPIKEY;
 	std::string	request =
 		"GET /data/2.5/weather?APPID=" + apikey + "&q=" + query +
 		" HTTP/1.1" + CRLF + "Host: " + hostname + CRLF + CRLF;
-//	std::cout << "request:" << std::endl << request << std::endl;
 
 	if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 		return("api connection error (socket)");
@@ -84,7 +83,6 @@ std::string	getweather(std::string query = "Moscow")
 	size_t		found = 0;
 	if ((found = res.find("\r\n\r\n")) != std::string::npos)
 	{
-//		std::cout << "got headers:\n" << res.substr(0, found) << std::endl;
 		if (found + 4 < res.length())
 			res = res.substr(found + 4);
 	}
@@ -108,8 +106,6 @@ std::string	cmd_weather(t_strvect const &split, ircbot const &bot)
 	}
 	else
 		res = getweather("Moscow");
-
-//	std::cout << "response:\n" << res << "\n";
 
 	t_weather	w;
 	try
@@ -145,22 +141,7 @@ std::string	cmd_weather(t_strvect const &split, ircbot const &bot)
 		w.type = jsontmp.at("main");
 		w.descr = jsontmp.at("description");
 
-		res = "";
-/*
-		std::cout << "parsed response:" << std::endl;
-		std::cout << "Country:\t" << w.country << std::endl;
-		std::cout << "Location:\t" << w.location << std::endl;
-		std::cout << "Weather:\t" << w.type << std::endl;
-		std::cout << "Description:\t" << w.descr << std::endl;
-		std::cout << "Current:\t" << w.temp_c << "\u2103" << std::endl;
-		std::cout << "Feels like:\t" << w.feels_c << "\u2103" << std::endl;
-		std::cout << "Min temp:\t" << w.mintemp_c << "\u2103" << std::endl;
-		std::cout << "Max temp:\t" << w.maxtemp_c << "\u2103" << std::endl;
-		std::cout << "Pressure:\t" << w.press_mmhg << "mmhg" << std::endl;
-		std::cout << "Wind speed:\t" << w.wind_speed << "m/s " << w.wind_deg << "\u00B0" << std::endl;
-		std::cout << "Humidity:\t" << w.humidity << "%" << std::endl;
-*/
-		res += "Weather in " + w.location + "," + w.country + "\n" +
+		res = "Weather in " + w.location + "," + w.country + "\n" +
 			w.type + " (" + w.descr + ")\n" +
 			"Temp: " + ft_tostring(w.temp_c) + "\u2103 " + // "C " +
 			"(feels like " + ft_tostring(w.feels_c) + "\u2103)\n" + // "C)\n" +
@@ -174,17 +155,14 @@ std::string	cmd_weather(t_strvect const &split, ircbot const &bot)
 	catch (std::invalid_argument const &e)
 	{
 		res = e.what();
-//		std::cerr << std::endl << e.what() << std::endl;
 	}
 	catch (std::out_of_range const &e)
 	{
 		res = "Weather api json error";
-//		std::cerr << std::endl << "server api didn't return the code in json" << std::endl;
 	}
 	catch (std::exception const &e)
 	{
 		res = "Undefined api error";
-//		std::cerr << std::endl << "server api didn't return the code in json" << std::endl;
 	}
 
 	return (res);
