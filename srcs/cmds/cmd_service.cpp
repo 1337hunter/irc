@@ -16,9 +16,9 @@ void	service_from_service(int fd, t_strvect const &split, IRCserv *serv)
 	if (split.size() < 7)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, -1, "SERVICE",
-				"Not enough parameters"); return ;
+			"Not enough parameters"); return ;
 	}
-	if (!(service = find_service_by_name(split[1], serv)))
+	if (!(service = find_service_by_name(split[1], serv)) || service->fd > 0)
 	{
 		serv->fds[fd].wrbuf += ":" + serv->servername + " 432 " + split[1] +
 			" :Erroneous nickname\r\n"; serv->fds[fd].status = false; return ;
