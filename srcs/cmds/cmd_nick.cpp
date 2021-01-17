@@ -45,6 +45,11 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NONICKNAMEGIVEN, -1, "",
 				"No nickname given"); return ;
 	}
+	if (serv->fds[fd].pass != serv->pass)
+    {
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_PASSWDMISMATCH, -1, "",
+				"Password incorrect"); serv->fds[fd].status = false; return ;
+    }
 	if (split[1] == "anonymous" || split[1].size() > 9 ||
 			split[1].find_first_of("\b\r\n\a!@#$%^&*+-?:\"\',") != NPOS ||
 			split[1] == "admin" || split[1] == "oper" ||
