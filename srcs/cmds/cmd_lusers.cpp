@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 17:23:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 //	unkncount -= serv->clients.size();
 //	unkncount -= std::count_if(serv->network.begin(), serv->network.end(), notblocked);
 bool		fdunreg(std::pair<int, t_fd> const &fd) { return (fd.second.type == FD_UNREGISTRED); }
+bool		botonline(t_service const &s) { return (s.fd > 0); }
 
 size_t		getunknownconnectscount(IRCserv *serv)
 {
@@ -83,7 +84,8 @@ std::string	reply_lusers(IRCserv *serv, std::string const &target, std::string c
 {
 	std::string	reply = "";
 	size_t	usercount = getusercount(serv, mask);
-	size_t	botscount = 0;		// services
+	size_t	botscount =
+		std::count_if(serv->services.begin(), serv->services.end(), botonline);		// services
 	size_t	servcount = getservcount(serv, mask);
 	size_t	opercount = getusercount(serv, mask, true);
 	size_t	unkncount = getunknownconnectscount(serv);

@@ -6,12 +6,13 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/14 18:56:51 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 16:50:03 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 17:03:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircbot.hpp"
 #include <sys/socket.h>
+#include <stdlib.h>
 
 bool	checkreplycode(t_strvect const &split, ircbot const &bot)
 {
@@ -26,13 +27,15 @@ bool	checkreplycode(t_strvect const &split, ircbot const &bot)
 
 		if (split[1] ==  "431" || split[1] == "432" || split[1] == "433")
 		{
+			if (bot.asService)
+			{
+				std::cerr << "Registration as service failed" << std::endl;
+				exit(1);
+			}
 			std::cout << "Please enter new bot nickname (up to 9 symbols): ";
 			std::string	reply = "";
 			std::getline(std::cin, reply);
-			if (bot.asService)
-				reply = "SERVICE " + reply + " * * 0 0 :ircbot v" + VERSION + CRLF;
-			else
-				reply = "NICK " + reply + CRLF;
+			reply = "NICK " + reply + CRLF;
 			if (send(bot.sock, reply.c_str(), reply.size(), 0) < 0)
 				ioerror(bot.sock, "send error");
 		}
