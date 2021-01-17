@@ -4,7 +4,7 @@
 
 void	service_from_network(int fd, IRCserv *serv)
 {
-	serv->fds[fd].wrbuf += "ERROR :servers cann't introduce services because";
+	serv->fds[fd].wrbuf += "ERROR :servers can't introduce services because";
 	serv->fds[fd].wrbuf += " command 'SERVICE' in standard 2.10 is not finished\r\n";
 }
 

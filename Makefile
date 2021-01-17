@@ -45,8 +45,7 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
-
+CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -81,12 +80,9 @@ NC			= \e[0m
 ULINE		= \e[4m
 ULINEF		= \e[24m
 
-.PHONY: all all98 bonus debugmsg openssl delssl gencert delcert clean fclean re re98
+.PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
-all: debugmsg $(NAME)
-	@echo "-------------------------------------------------"
-	@echo "Now you can run 'make install' to install ircserv"
-	@echo "-------------------------------------------------"
+all: $(NAME)
 
 bonus: $(NAME)
 	@make -C bonus/ircbot
@@ -97,6 +93,9 @@ $(NAME): $(SSLLIBS) $(OBJDIR) $(OBJFILES)
 	@echo "linking $(GREEN)$@$(NC) for $(OSNAME)"
 	@$(CC) -o $@ $(OBJFILES) $(EXECFLAGS)
 	@echo "$(CYAN)executable is ready$(NC)"
+	@echo "-------------------------------------------------"
+	@echo "Now you can run 'make install' to install ircserv"
+	@echo "-------------------------------------------------"
 
 $(OBJDIR)%.o: $(SRCDIR)%.cpp
 	@echo "compiling $(ULINE)$<$(ULINEF)"
@@ -112,8 +111,6 @@ OSNAME += (C++98 release)
 # debugging rules
 debugmsg:
 	@echo "$(YELLOW)compiling $(NAME) in debug mode$(NC)"
-	
-
 
 openssl: $(SSLLIBS)
 
@@ -167,10 +164,8 @@ fclean: clean
 
 re: fclean all
 
-re98: fclean all98
-
-install: gencert
-	@mkdir -p /home/se/ircserv
-	@mkdir -p /home/se/ircserv/conf
-	@cp $(NAME) /home/se/ircserv/$(NAME)
-	@cp ./conf/* /home/se/ircserv/conf
+install:
+	@mkdir -p /home/arcticfox/ircserv
+	@mkdir -p /home/arcticfox/ircserv/conf
+	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
+	@cp ./conf/* /home/arcticfox/ircserv/conf

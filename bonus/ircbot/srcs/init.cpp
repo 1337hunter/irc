@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/14 17:18:54 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 19:50:22 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 16:50:51 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,40 +48,46 @@ int		initsock(std::string const &host, std::string const &port)
 	return (sock);
 }
 
-void	registerbot(int sock, std::string const &pass = "")
+void	registerbot(int sock, std::string const &pass, bool asService)
 {
 	std::string	regmsg = "";
 	std::string	nick = BOTNAME;
 
-	// not a SERVICE command for now
 	if (pass != "")
 		regmsg += "PASS " + pass + CRLF;
-	regmsg += "NICK " + nick + CRLF;
-	regmsg += "USER " + nick + " 0 * :" + nick + " " + VERSION + CRLF;
+	if (!asService)
+	{
+		regmsg += "NICK " + nick + CRLF;
+		regmsg += "USER " + nick + " 0 * :ircbot " + VERSION + CRLF;
+	}
+	else
+		regmsg += "SERVICE " + nick + " * * 0 0 :ircbot v" + VERSION + CRLF;
 
 	if (send(sock, regmsg.c_str(), regmsg.size(), 0) < 0)
 		ioerror(sock, "send error on register");
 }
 
-int		initbot(int ac, char **av)
+int		initbot(t_strvect const &args, char **av, bool asService)
 {
 	std::string	host = "localhost";
 	std::string	port = "6667";
 	std::string	pass = "";
 
-	if (ac > 1)
-		host = av[1];
-	if (host == "-h" || host == "--help")
-		error_exit(USAGESTRING);
-	if (ac > 2 &&
-		((port = av[2]).find_first_not_of("0123456789") != std::string::npos ||
+	if (args.size() >= 1)
+		host = args[0];
+
+	if (args.size() >= 2 &&
+		((port = args[1]).find_first_not_of("0123456789") != std::string::npos ||
 		ft_stoi(port) <= 0 || ft_stoi(port) > 65535))
 		error_exit("Invalid port specified\n" + USAGESTRING);
-	if (ac > 3)
-		pass = av[3];
+
+	if (args.size() >= 3)
+		pass = args[2];
 
 	int	sock = initsock(host, port);
 	std::cout << "Connected to " << host << ":" << port << std::endl;
-	registerbot(sock, pass);
+
+	registerbot(sock, pass, asService);
+
 	return (sock);
 }

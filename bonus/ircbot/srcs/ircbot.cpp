@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 16:37:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/15 18:47:35 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 16:47:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 
 #define BUF_SIZE	512
 
-ircbot::ircbot(int sock) : sock(sock)
+ircbot::ircbot(int sock, bool asService) : sock(sock), asService(asService)
 {
 	botname = BOTNAME;
 	version = VERSION;

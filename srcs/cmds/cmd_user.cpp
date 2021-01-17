@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:30:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 15:13:21 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 16:12:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircserv.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
+#include "message.hpp"
 
 void		cmd_user(int fd, const t_strvect &split, IRCserv *serv)
 {
