@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:58 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 15:04:34 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 16:43:41 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void		cmd_pass(int fd, const t_strvect &split, IRCserv *serv)
 			ERR_NEEDMOREPARAMS, "", split[0], "Not enough parameters");
 		return ;
 	}
-	if (serv->fds[fd].type != FD_UNREGISTRED)
+	if (serv->fds[fd].type != FD_UNREGISTRED && serv->fds[fd].type != FD_SERVER)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, fd, "",
 				"Unauthorized command (already registered)"); return ;
