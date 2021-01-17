@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:05 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 19:51:56 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 22:57:09 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,16 @@
 
 void		cmd_ping(int fd, const t_strvect &split, IRCserv *serv)
 {
+	t_fd	&fdref = serv->fds[fd];
+
 	if (split.size() < 2)
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
+		fdref.wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOORIGIN, "", "", "No origin specified");
-	else
+	else if (split.size() == 2)
+		fdref.wrbuf += ft_buildmsg(serv->servername, "PONG",
+			serv->servername, "", "");
+	else if (split.size() >= 3)
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, "PONG",
-		serv->servername, "", split[1]);
+		// then forward to split[2]
 	}
-	/*	:<hostname> PONG <hostname> :<second ping parameter>	*/
 }
