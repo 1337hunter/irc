@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/09 16:32:14 by salec             #+#    #+#             */
-/*   Updated: 2021/01/15 15:57:40 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 17:47:22 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,28 @@
 
 void	cmd_notice(int fd, const t_strvect &split, IRCserv *serv)
 {
-	// privmsg modified so it never replies to NOTICE
-	cmd_privmsg(fd, split, serv);
+	t_fd		&fdref = serv->fds[fd];
+	t_service	*sptr = NULL;
+
+	if (fdref.type == FD_SERVICE)
+	{
+		Client		*client_msg;
+		t_service	*service = find_service_by_fd(fd, serv);
+		if (split[1].find_first_of("%!@") == NPOS)
+			client_msg = find_client_by_nick(split[1], serv);
+		else
+			client_msg = find_client_by_user_or_nick_and_host(split[1], serv);
+
+		serv->fds[client_msg->getFD()].wrbuf += ":" + service->name +
+			" NOTICE " + client_msg->getnick() + " " +
+			strvect_to_string(split, ' ', 2) + CRLF;
+		return ;
+	}
+	else if (fdref.type == FD_SERVER &&
+		(sptr = find_service_by_name(split[0].substr(1), serv)))
+	{
+		// send notice from service from another server
+	}
+	else	// privmsg modified so it never replies to NOTICE
+		cmd_privmsg(fd, split, serv);
 }
