@@ -4,7 +4,6 @@
 
 void	service_from_network(int fd, IRCserv *serv)
 {
-	(void)split;
 	serv->fds[fd].wrbuf += "ERROR :servers cann't introduce services because standard";
 	serv->fds[fd].wrbuf += " 2.10 is not finished. You can only directly connect";
 	serv->fds[fd].wrbuf += " to server\r\n";

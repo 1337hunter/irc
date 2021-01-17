@@ -83,8 +83,6 @@ ULINE		= \e[4m
 ULINEF		= \e[24m
 
 all: debugmsg $(NAME)
-	@sed -i '85s|.*|all: debugmsg $$(NAME)|g' ./Makefile
-	@sed -i '86d;87d' ./Makefile
 
 bonus: $(NAME)
 	@make -C ./bot
