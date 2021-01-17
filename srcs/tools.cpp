@@ -43,6 +43,17 @@ Client		*find_client_by_nick(std::string const &nick, IRCserv *serv)
 	return 0;
 }
 
+t_service	*find_service_by_name(std::string const &name, IRCserv *serv)
+{
+	std::list<t_service>::iterator	service;
+
+	service = serv->services.begin();
+	for (; service != serv->services.end(); service++)
+		if (service->name == name)
+			return &(*service);
+	return 0;
+}
+
 Client		*find_client_by_fd(int	fd, IRCserv *serv)
 {
 	std::list<Client>::iterator	client;

@@ -72,9 +72,6 @@ void	RunServer(IRCserv *serv)
 				FD_SET(it->first, &(serv->fdset_read));
 				if (!(it->second.wrbuf.empty()))
 					FD_SET(it->first, &(serv->fdset_write));
-				if (!it->second.file_buf.empty() && it->second.status &&
-						it->second.file_bytes_received == it->second.file_size)
-					FD_SET(it->first, &(serv->fdset_write));
 				FD_SET(it->first, &(serv->fdset_error));
 				lastfd = std::max(lastfd, it->first);
 			}

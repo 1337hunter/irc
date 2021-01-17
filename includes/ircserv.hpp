@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/15 12:38:33 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/17 13:13:46 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,12 +76,6 @@ typedef struct		s_fd
 	size_t			sentbytes;
 	size_t			recvbytes;
 	time_t			dtopened;
-	size_t          file_size;
-	size_t			file_bytes_received;
-	std::string		file_name;
-	std::string		file_to_nick;
-	std::string		file_from_nick;
-	std::vector<unsigned char>	file_buf;
 }					t_fd;
 
 struct				t_server_intro
@@ -150,6 +144,7 @@ typedef struct		s_oper
 typedef struct		s_service
 {
 	int				fd;
+	int				hopcount;
 	std::string		name;
 	std::string		pass;
 	std::string		distribution;

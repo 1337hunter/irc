@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 15:56:53 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/12 16:23:56 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 12:47:57 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -787,6 +787,7 @@ block_service(std::ifstream &config, std::string &line, IRCserv *serv, size_t &l
 			return -1;
 	}
 	temp.fd = -1;
+	temp.hopcount = -1;
 	serv->services.push_back(temp);
 #if DEBUG_MODE
 	std::cout << "service: name '" << temp.name <<

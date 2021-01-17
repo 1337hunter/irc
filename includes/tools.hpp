@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 17:42:39 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 12:50:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ t_server    *find_server_by_name(std::string const &name, IRCserv *serv);
 Client      *find_client_by_user_or_nick_and_host(std::string const &str, IRCserv *serv);
 Client      *find_client_by_info(std::string const &info, IRCserv *serv);
 t_server    *find_server_by_token(std::string const &token, IRCserv *serv);
+t_service	*find_service_by_name(std::string const &name, IRCserv *serv);
 std::string	get_servername_by_mask(std::string const &mask, IRCserv *serv);
 std::string get_servername_by_token(std::string const &token, IRCserv *serv);
 std::string get_hopcount_by_token(std::string const &token, IRCserv *serv);

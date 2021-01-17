@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/13 22:37:02 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 13:55:28 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,8 +151,6 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	fdref.recvmsgs = 0;
 	fdref.sentbytes = 0;
 	fdref.recvbytes = 0;
-	fdref.file_size = 0;
-	fdref.file_bytes_received = 0;
 	fdref.sock = _socket;
 	fdref.linkname = std::string("*[") +
 		inet_ntoa(csin.sin_addr) + ":" + TOSTRING(ntohs(csin.sin_port)) + "]";
@@ -292,9 +290,7 @@ void	SendMessage(int fd, IRCserv *serv)
 	ssize_t		r = 0;
 	std::string	reply;
 	t_fd		&fdref = serv->fds[fd];
-	bool		just_msg;
 
-	just_msg = !fdref.wrbuf.empty();
 	if (fdref.wrbuf.length() > BUF_SIZE)
 	{
 		reply = fdref.wrbuf.substr(0, BUF_SIZE);
@@ -320,21 +316,10 @@ void	SendMessage(int fd, IRCserv *serv)
 	std::cout << "sending client " << fd << "\t" << reply;
 #endif
 
-	if (just_msg)
-	{
-		if (fdref.tls && fdref.sslptr)
-			r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
-		else
-			r = send(fd, reply.c_str(), reply.length(), 0);
-	}
+	if (fdref.tls && fdref.sslptr)
+		r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
 	else
-	{
-		if (fdref.tls && fdref.sslptr)
-			r = SSL_write(fdref.sslptr, fdref.file_buf.data(), fdref.file_buf.size());
-		else
-			r = send(fd, fdref.file_buf.data(), fdref.file_buf.size(), 0);
-		fdref.file_buf.clear();
-	}
+		r = send(fd, reply.c_str(), reply.length(), 0);
 	fdref.sentbytes += r;
 	if (fdref.sock > 0)
 		serv->fds[fdref.sock].sentbytes += r;
