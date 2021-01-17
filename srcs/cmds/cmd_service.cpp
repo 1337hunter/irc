@@ -4,6 +4,7 @@
 
 void	service_from_network(int fd, t_strvect const &split, IRCserv *serv)
 {
+	(void)split;
 	serv->fds[fd].wrbuf += "ERROR :servers cann't introduce services because standard";
 	serv->fds[fd].wrbuf += " 2.10 is not finished\r\n";
 }
