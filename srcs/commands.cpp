@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/12 16:28:31 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 20:21:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["USER"]		= cmd_user;
 	serv->cmds["NICK"]		= cmd_nick;
 	serv->cmds["PING"]		= cmd_ping;
+	serv->cmds["PONG"]		= cmd_pong;
 	serv->cmds["QUIT"]		= cmd_quit;
 	serv->cmds["PASS"]		= cmd_pass;
 	serv->cmds["SERVER"]	= cmd_server;
