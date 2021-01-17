@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cmd_ping.cpp                                       :+:      :+:    :+:   */
+/*   cmd_pong.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/04 16:35:05 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 19:51:56 by salec            ###   ########.fr       */
+/*   Created: 2021/01/17 19:46:48 by salec             #+#    #+#             */
+/*   Updated: 2021/01/17 19:51:49 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,13 @@
 #include "commands.hpp"
 #include "tools.hpp"
 
-void		cmd_ping(int fd, const t_strvect &split, IRCserv *serv)
+void		cmd_pong(int fd, const t_strvect &split, IRCserv *serv)
 {
 	if (split.size() < 2)
 		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername,
 			ERR_NOORIGIN, "", "", "No origin specified");
 	else
 	{
-		serv->fds[fd].wrbuf += ft_buildmsg(serv->servername, "PONG",
-		serv->servername, "", split[1]);
+		serv->fds[fd].status = true;
 	}
-	/*	:<hostname> PONG <hostname> :<second ping parameter>	*/
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/27 15:41:07 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/12 16:28:59 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 19:47:42 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	initcommands(IRCserv *serv);
 void	cmd_nick(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_user(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_ping(int fd, const t_strvect &split, IRCserv *serv);
+void	cmd_pong(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_quit(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_oper(int fd, const t_strvect &split, IRCserv *serv);
 void	cmd_server(int fd, const t_strvect &split, IRCserv *serv);

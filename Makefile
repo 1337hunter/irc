@@ -6,7 +6,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \
-			cmds/cmd_error.cpp cmds/cmd_admin.cpp \
+			cmds/cmd_error.cpp cmds/cmd_admin.cpp cmds/cmd_pong.cpp \
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_version.cpp \
 			cmds/cmd_info.cpp cmds/cmd_time.cpp cmds/cmd_names.cpp \
 			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp cmds/cmd_invite.cpp \
@@ -43,10 +43,10 @@ SSLFLAG		= --prefix=$(PWD)/openssl --openssldir=$(PWD)/openssl \
 TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 
 CC			= clang++
-CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD -DPING_TIMEOUT=180 -DPING_FREQUENCY=180
+CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
-
+CFLAGS		+= -DPING_TIMEOUT=180 -DPING_FREQUENCY=180
+CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -55,8 +55,6 @@ SHELL		= /bin/zsh
 UNAME		:= $(shell uname)
 ifeq ($(UNAME), Darwin)
 OSNAME		= Darwin
-OSNAME += $(YELLOW)(debug mode)$(NC) 
-
 SSLFLAG		+= darwin64-x86_64-cc
 else
 	ifeq ($(UNAME), Linux)
@@ -84,7 +82,7 @@ ULINEF		= \e[24m
 
 .PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
-all: debugmsg $(NAME)
+all: $(NAME)
 
 bonus: $(NAME)
 	@make -C ./bot
@@ -167,7 +165,7 @@ fclean: clean
 re: fclean all
 
 install:
-	@mkdir -p /home/se/ircserv
-	@mkdir -p /home/se/ircserv/conf
-	@cp $(NAME) /home/se/ircserv/$(NAME)
-	@cp ./conf/* /home/se/ircserv/conf
+	@mkdir -p /home/arcticfox/ircserv
+	@mkdir -p /home/arcticfox/ircserv/conf
+	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
+	@cp ./conf/* /home/arcticfox/ircserv/conf

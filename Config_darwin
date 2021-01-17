@@ -4,10 +4,12 @@ dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
 DEBUG_MODE=0
-TLSCERT=1
+TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
 ASAN=0
+PING_TIMEOUT=180
+PING_FREQUENCY=180
 
 CHANGE_MODE=0
 RED="\e[31m"
@@ -262,6 +264,49 @@ do
 	break
 done
 
+echo -e "\nHow fast do you want to close connections after ping no response?"
+while true
+do
+	echo -n "["$PING_TIMEOUT"] -> "
+	read red
+	if [[ -z "$red" ]]
+	then
+		break
+	elif [[ ${red:0:1} == "0" ]]
+	then
+		echo -e $RED"\nValue must not start with zero\n"$CEND
+		continue
+	elif ! [[ $red =~ $nums ]]
+	then
+		echo -e $RED"\nValue must be an integer\n"$CEND
+		continue
+	fi
+	sed -i '' "11s|.*|PING_TIMEOUT=$red|g" ./Config_darwin
+	PING_TIMEOUT=$red
+	break
+done
+
+echo -e "\nHow often do you want to ping connections?"
+while true
+do
+	echo -n "["$PING_FREQUENCY"] -> "
+	read red
+	if [[ -z "$red" ]]
+	then
+		break
+	elif [[ ${red:0:1} == "0" ]]
+	then
+		echo -e $RED"\nValue must not start with zero\n"$CEND
+		continue
+	elif ! [[ $red =~ $nums ]]
+	then
+		echo -e $RED"\nValue must be an integer\n"$CEND
+		continue
+	fi
+	sed -i '' "12s|.*|PING_FREQUENCY=$red|g" ./Config_darwin
+	PING_FREQUENCY=$red
+	break
+done
 
 echo -e "NAME		= ircserv
 SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
@@ -271,7 +316,7 @@ SRC			= main.cpp ircserv.cpp ircsock_base.cpp ircsock_tls.cpp \\
 			cmds/cmd_connect.cpp cmds/cmd_nick.cpp cmds/cmd_pass.cpp \\
 			cmds/cmd_user.cpp cmds/cmd_ping.cpp cmds/cmd_quit.cpp \\
 			cmds/cmd_server.cpp cmds/cmd_squit.cpp cmds/cmd_oper.cpp \\
-			cmds/cmd_error.cpp cmds/cmd_admin.cpp \\
+			cmds/cmd_error.cpp cmds/cmd_admin.cpp cmds/cmd_pong.cpp \\
 			cmds/cmd_motd.cpp cmds/cmd_userhost.cpp cmds/cmd_version.cpp \\
 			cmds/cmd_info.cpp cmds/cmd_time.cpp cmds/cmd_names.cpp \\
 			cmds/cmd_join.cpp cmds/cmd_privmsg.cpp cmds/cmd_invite.cpp \\
@@ -311,7 +356,8 @@ TLSCERT		= ./conf/\$(NAME).crt ./conf/\$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I\$(INCLUDEDIR) -I\$(SSLINCLUDE) -MMD" >> Makefile
 
-echo -e "CFLAGS		+= -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX" >> Makefile
+echo -e "CFLAGS		+= -DFD_MAX=$FD_MAX -DBUF_SIZE=$BUF_SIZE -DWHOWAS_MAX=$WHOWAS_MAX"  >> Makefile
+echo -e "CFLAGS		+= -DPING_TIMEOUT=$PING_TIMEOUT -DPING_FREQUENCY=$PING_FREQUENCY" >> Makefile
 
 if [[ $DEBUG_MODE == 1 || $ASAN == 1 ]] ; then
     echo -e -n "CFLAGS		+= -g -DDEBUG_MODE=$DEBUG_MODE" >> Makefile
@@ -320,7 +366,7 @@ else
 fi
 
 if [[ $ASAN == 1 ]] ; then
-	echo -e " -fsanitize=address" >> Makefile
+	echo -ne " -fsanitize=address" >> Makefile
 fi
 
 echo -e "
@@ -331,13 +377,7 @@ SHELL		= /bin/zsh
 
 UNAME		:= \$(shell uname)
 ifeq (\$(UNAME), Darwin)
-OSNAME		= Darwin" >> Makefile
-
-if [[ $DEBUG_MODE == 1 ]] ; then
-	echo -e "OSNAME += \$(YELLOW)(debug mode)\$(NC) " >> Makefile
-fi
-
-echo -e -n "
+OSNAME		= Darwin
 SSLFLAG		+= darwin64-x86_64-cc
 else
 	ifeq (\$(UNAME), Linux)
@@ -346,8 +386,13 @@ else
 	else
 	OSNAME	= Unknown OS
 	endif
-endif
+endif" >> Makefile
 
+if [[ $DEBUG_MODE == 1 ]] ; then
+	echo -e "OSNAME += \$(YELLOW)(debug mode)\$(NC)" >> Makefile
+fi
+
+echo -e "
 # just in case openssl is not installed on system somehow
 ifeq (, \$(shell which openssl))
 	OPENSSL = \$(SSLDIR)bin/openssl
@@ -363,9 +408,7 @@ NC			= "'\\'"e[0m""
 ULINE		= "'\\'"e[4m""
 ULINEF		= "'\\'"e[24m""
 
-.PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
-" >> Makefile
-
+.PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re" >> Makefile
 
 if [[ $DEBUG_MODE == 1 ]] ; then
 	if [[ $CHANGE_MODE == 1 ]] ; then
@@ -383,8 +426,8 @@ fi
 
 if [[ $CHANGE_MODE == 1 ]] ; then
 	if [[ $DEBUG_MODE == 1 ]] ; then
-		echo -e "	@sed -i '' '85s|.*|all: debugmsg \$\$(NAME)|g' ./Makefile" >> Makefile
-		echo -e "	@sed -i '' '86d;87d' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '86s|.*|all: debugmsg \$\$(NAME)|g' ./Makefile" >> Makefile
+		echo -e "	@sed -i '' '87d;88d' ./Makefile" >> Makefile
 	else
 		echo -e "	@sed -i '' '85s|.*|all: \$\$(NAME)|g' ./Makefile" >> Makefile
 		echo -e "	@sed -i '' '86d;87d' ./Makefile" >> Makefile
