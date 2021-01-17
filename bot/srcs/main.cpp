@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 21:41:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 16:48:30 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/17 18:56:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ int		main(int ac, char **av)
 			asService = true;
 			it = args.erase(it);
 		}
+		else if ((*it).size() > 0 && (*it)[0] == '-')
+			error_exit("ircbot: invalid option: " + *it + "\n" + USAGESTRING);
 		else
 			it++;
 	}
