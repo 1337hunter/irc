@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/18 00:00:57 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 22:50:49 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 {
 	size_t	i;
+	t_server    *temp;
 
 	if (fd != FD_ME)
 	{
@@ -149,6 +150,9 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 	if (i == serv->link.size()) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, split[1],
 				"No such server"); return ; }
+	if ((temp = find_server_by_name(serv->link[i].servername, serv))) {
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, fd, "",
+				"Unauthorized command (already registered)"); return ; }
 	if (!(serv->link[i].tls))
 		do_connect(serv->link[i], serv);
 	else
