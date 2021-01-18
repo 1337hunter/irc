@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/12 16:26:43 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 15:19:37 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ int		main(int ac, char **av)
 	time_t	started = ft_getcurrenttime();
 	std::cout << "Compiled:\t" << ft_timetostring(compiled) << std::endl;
 	std::cout << "Started:\t" << ft_timetostring(started) << std::endl;
+	std::cout << "PING_TIMEOUT=" << PING_TIMEOUT << "\n";
+	std::cout << "PING_FREQUENCY=" << PING_FREQUENCY << "\n";
 
 	g_server_die = false;
 	while (true)

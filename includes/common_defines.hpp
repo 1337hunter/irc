@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/25 18:46:30 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 21:32:37 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 15:24:35 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,28 @@
 # ifndef PING_FREQUENCY
 #  define PING_FREQUENCY	60
 # endif
+
+# if PING_TIMEOUT < 10
+#  undef PING_TIMEOUT
+#  define PING_TIMEOUT		60
+# endif
+
+# if PING_FREQUENCY < 10
+#  undef PING_FREQUENCY
+#  define PING_FREQUENCY	60
+# endif
+
+# if PING_FREQUENCY > 100000
+#  undef PING_FREQUENCY
+#  define PING_FREQUENCY	60
+# endif
+
+# if PING_TIMEOUT > 100000
+#  undef PING_TIMEOUT
+#  define PING_TIMEOUT		60
+# endif
+
+
 
 # define KILLTIME		60
 # define BLOCKTIME		20

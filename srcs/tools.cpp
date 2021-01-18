@@ -487,14 +487,6 @@ void	clear_whowas(IRCserv *serv)
 void	check_liveness(IRCserv *serv)
 {
 	std::MAP<int, t_fd>::iterator	fdit = serv->fds.begin();
-	time_t	pingfreq = PING_FREQUENCY;
-	time_t	timeout = PING_TIMEOUT;
-
-	// just in case something really stupid configured
-	if (pingfreq < 10 || pingfreq > 100000)
-		pingfreq = 60;
-	if (timeout < 10 || timeout > 100000)
-		timeout = 60;
 
 	while (fdit != serv->fds.end())
 	{
@@ -502,14 +494,14 @@ void	check_liveness(IRCserv *serv)
 			!(fdit->second.fatal) && (fdit->second.status))
 		{
 			if (fdit->second.awaitingpong && fdit->second.lastactive <
-				ft_getcurrenttime() - pingfreq - timeout)
+				ft_getcurrenttime() - PING_FREQUENCY - PING_TIMEOUT)
 			{
 				fdit->second.wrbuf += "ERROR :Closing Link: " +
 					fdit->second.linkname + " (Ping timeout)" + CRLF;
 				fdit->second.status = false;
 			}
 			if (!(fdit->second.awaitingpong) && fdit->second.lastactive <
-				ft_getcurrenttime() - pingfreq)
+				ft_getcurrenttime() - PING_FREQUENCY)
 			{
 				fdit->second.wrbuf += "PING :" + serv->servername + CRLF;
 				fdit->second.awaitingpong = true;
