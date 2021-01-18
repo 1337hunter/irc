@@ -491,7 +491,7 @@ void	check_liveness(IRCserv *serv)
 	while (fdit != serv->fds.end())
 	{
 		if (fdit->second.type != FD_ME && fdit->second.type != FD_UNREGISTRED &&
-			!(fdit->second.fatal) && (fdit->second.status))
+			!(fdit->second.fatal) && (fdit->second.status) && !(fdit->second.blocked))
 		{
 			if (fdit->second.awaitingpong && fdit->second.lastactive <
 				ft_getcurrenttime() - PING_FREQUENCY - PING_TIMEOUT)
