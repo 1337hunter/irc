@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/18 02:11:16 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/18 20:15:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -367,7 +367,7 @@ bool	didSockFail(int fd, IRCserv *serv)
 			}
 			return (true);
 		}
-		else if (fdref.wrbuf.find(fdref.linkname + " (Ping timeout)") == NPOS)
+		else if (!(fdref.awaitingpong))
 			fdref.status = true;
 	}
 	return (false);
