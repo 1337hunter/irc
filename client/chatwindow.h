@@ -92,7 +92,7 @@ public:
     void        closeDCC(void);
     void        receive_file(std::vector<std::string> &split);
 
-
+    void        cmd_ping(std::vector<std::string> split);
     void        cmd_privmsg(std::vector<std::string> &split);
     //ft
     void    reply_who_I_am(std::vector<std::string> &split);

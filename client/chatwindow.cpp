@@ -410,6 +410,14 @@ void    ChatWindow::cmd_privmsg(std::vector<std::string> &split)
         wrbuf += "NOTICE " + get_nick_from_info(split[0]) + " :DCC - not enouth parameters\r\n";
 }
 
+void    ChatWindow::cmd_ping(std::vector<std::string> split)
+{
+    if (!split[1].empty() && split[1][0] == ':')
+        wrbuf += "PONG " + std::string(split[1], 1) + "\r\n";
+    else if (!split[1].empty())
+        wrbuf += "PONG " + split[1] + "\r\n";
+}
+
 void    ChatWindow::ProcessMessage(std::string msg)
 {
 
@@ -422,6 +430,8 @@ void    ChatWindow::ProcessMessage(std::string msg)
         ProcessReply(split);
     if  (split.size() > 2 && split[1] == "PRIVMSG")
         cmd_privmsg(split);
+    if (split.size() > 1 && split[0] == "PING")
+        cmd_ping(split);
 }
 
 void    ChatWindow::ReceiveMessage(void)

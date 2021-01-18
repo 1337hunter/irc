@@ -158,9 +158,9 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].status = false;
 		return ;
 	}
-	if (!(serv->fds[fd].pass == serv->pass || serv->pass == ""))
+	if (!(serv->fds[fd].pass == link->pass || link->pass == ""))
 	{
-		serv->fds[fd].wrbuf += "ERROR :Password incorrect";
+		serv->fds[fd].wrbuf += "ERROR :Password incorrect\r\n";
 		serv->fds[fd].status = false; return ;
 	}
 	//backward message to introduce us to enother server
