@@ -135,6 +135,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		introduce_server_behind(fd, split, serv);
 		return ;
 	}
+	clear_block_list(serv, split[1]);
 	link = serv->link.begin();
 	// looking for link with servername (is SERVER servername allowd to connect to us?)
 	while (link != serv->link.end())
