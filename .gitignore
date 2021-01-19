@@ -13,3 +13,9 @@ objs/
 client/client
 bot/ircbot
 vgcore*
+client/moc_chatwindow.cpp
+client/moc_mainwindow.cpp
+client/moc_predefs.h
+client/moc_sendfile.cpp
+client/ui_chatwindow.h
+client/ui_mainwindow.h
