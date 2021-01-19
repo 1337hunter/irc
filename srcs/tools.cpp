@@ -535,8 +535,6 @@ void	check_liveness(IRCserv *serv)
 			if (fdit->second.awaitingpong && fdit->second.lastactive <
 				ft_getcurrenttime() - PING_FREQUENCY - PING_TIMEOUT)
 			{
-				fdit->second.wrbuf += "ERROR :Closing Link: " +
-					fdit->second.linkname + " (Ping timeout)" + CRLF;
 				if (fdit->second.type == FD_CLIENT || fdit->second.type == FD_OPER)
 					self_cmd_quit(fdit->first, fdit->second, serv, "Ping timeout");
 				else if (fdit->second.type == FD_SERVER)
