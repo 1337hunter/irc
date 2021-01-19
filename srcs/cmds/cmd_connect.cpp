@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/19 16:40:18 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/19 21:32:08 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,21 +138,27 @@ void		cmd_connect(int fd, const t_strvect &split, IRCserv *serv)
 		if (b == e || !b->isRegistred())
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1, "",
-					"You have not registered"); return ;
+				"You have not registered"); return ;
 		}
+	}
+	if (split.size() < 2)
+	{
+		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "CONNECT",
+			"Not enough parameters"); return ;
 	}
 	if (serv->fds[fd].type != FD_ME && serv->fds[fd].type != FD_OPER)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOPRIVILEGES, fd, "",
-				"Permission Denied- You're not an IRC operator"); return ;
+			"Permission Denied- You're not an IRC operator"); return ;
 	}
+	clear_block_list(serv, split[1]);
 	i = -1;
 	while (++i < serv->link.size())
 		if (serv->link[i].servername == split[1])
 			break ;
 	if (i == serv->link.size()) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, split[1],
-				"No such server"); return ; }
+			"No such server"); return ; }
 	if ((temp = find_server_by_name(serv->link[i].servername, serv))) {
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_ALREADYREGISTRED, fd, "",
 				"Unauthorized command (already registered)"); return ; }

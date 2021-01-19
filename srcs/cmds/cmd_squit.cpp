@@ -41,10 +41,7 @@ void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	else
 	{
 		for (net = serv->network.begin(); net != serv->network.end(); net++)
-		{
-			intro = net->routing.begin();
-			for (; intro != net->routing.end(); intro++)
-			{
+			for (intro = net->routing.begin(); intro != net->routing.end(); intro++)
 				if (intro->servername == split[2])
 				{
 					net->routing.erase(intro);
@@ -52,8 +49,6 @@ void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 						(split.size() > 3 ? " " + split[3] : ""), serv);
 					return ;
 				}
-			}
-		}
 	}
 }
 
