@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/19 16:12:29 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/19 16:28:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -322,9 +322,11 @@ bool	didSockFail(int fd, IRCserv *serv)
 			std::cerr << "Connection error to server " << fd << std::endl;
 #endif
 			msg_error("Connection error to server " + fdref.linkname, serv);
-			close(fd);
 			if (fdref.tls)
 				SSL_free(fdref.sslptr);
+			FD_CLR(fd, &(serv->fdset_read));
+			FD_CLR(fd, &(serv->fdset_write));
+			close(fd);
 			serv->fds.erase(fd);
 			return (true);
 		}
