@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir=/home/se/ircserv
+dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
 DEBUG_MODE=1
@@ -448,6 +448,7 @@ fi
 echo -e "
 bonus: \$(NAME)
 	@make -C ./bot
+	@make -C ./client
 
 -include \$(DEPFILES)
 

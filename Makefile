@@ -87,6 +87,7 @@ all: debugmsg $(NAME)
 
 bonus: $(NAME)
 	@make -C ./bot
+	@make -C ./client
 
 -include $(DEPFILES)
 
