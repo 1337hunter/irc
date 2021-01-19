@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <pwd.h>
+#include <list>
 
 
 typedef struct addrinfo     t_addrinfo;
@@ -178,7 +179,6 @@ void    ChatWindow::do_connect(void)
     wrbuf += "USER " + std::string(username.toLocal8Bit().constData()) + " 0 * :" + std::string(realname.toLocal8Bit().constData()) + "\r\n";
     wrbuf += "WHO " + std::string(nickname.toLocal8Bit().constData()) + "\r\n";
     freeaddrinfo(addr);
-    this->run();
 }
 
 
@@ -230,7 +230,10 @@ void    ChatWindow::SendMessage(void)
     else
         r = write(sock, wrbuf.c_str(), wrbuf.size());
     if (r < 0 && file_buf.empty())
-        messageBox.critical(0, "Error", "SendMessage.");
+    {
+        connected = false;
+        messageBox.critical(0, "Error", "Conenction terminated!");
+    }
     wrbuf.erase();
 }
 
@@ -254,7 +257,13 @@ void    ChatWindow::receive_file(std::vector<std::string> &split)
     QMessageBox::StandardButton reply;
     uint32_t    ip32;
     std::string ips;
+    size_t      usize;
+    int         remainder;
+    std::list<std::string>  prefix;
+    std::list<std::string>::iterator pos;
 
+
+    prefix.push_back("bytes"); prefix.push_back("KB"); prefix.push_back("MB"); prefix.push_back("TB");
     file_name.erase();
     size_t i = 0;
     if (split[5][i] == '"')
@@ -264,9 +273,20 @@ void    ChatWindow::receive_file(std::vector<std::string> &split)
     file_from = get_nick_from_info(split[0]);
     split[8].pop_back();
     file_size = stoi(split[8]);
+    usize = file_size;
+    pos = prefix.begin();
+    remainder = 0;
+    while (usize >= 1024)
+    {
+        pos++;
+        remainder = usize % 1024;
+        while (remainder > 10)
+            remainder /= 2;
+        usize /= 1024;
+    }
     reply = QMessageBox::question(this, "File transfer",
-                std::string(std::string("Receive file " + file_name + " (" + split[8] + ") from ") + file_from + "?").c_str(),
-                QMessageBox::Yes|QMessageBox::No);
+                std::string(std::string("Receive file " + file_name + " (" + std::to_string(usize) + "," + std::to_string(remainder) +
+                " " + *pos + ") from ") + file_from + "?").c_str(), QMessageBox::Yes|QMessageBox::No);
     if (reply == QMessageBox::No || reply == QMessageBox::Close)
     {
         wrbuf += "NOTICE " + file_from + " :" + (char)(1) + "DCC REJECT SEND file" + (char)(1) + "\r\n";
@@ -457,6 +477,11 @@ void    ChatWindow::ReceiveMessage(void)
         for (size_t i = 0; i < split.size(); ++i)
             ui->mainchat->append(split[i].c_str());
     }
+    else if (r <= 0)
+    {
+        connected = false;
+        messageBox.critical(0, "Error", "Conenction terminated!");
+    }
 }
 void    ChatWindow::Accept(void)
 {
@@ -548,6 +573,8 @@ void    ChatWindow::run(void)
 
     while (true)
     {
+        if (!connected)
+            break ;
         timeout = {0, 50000};
         FD_ZERO(&fdset_read);
         FD_ZERO(&fdset_write);

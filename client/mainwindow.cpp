@@ -80,7 +80,11 @@ void MainWindow::on_connect_clicked()
     chat = new ChatWindow(_ip, _port, _pass, _nick, _user, _real, ui->tls->isChecked(), false, 0);
     this->hide();
     chat->show();
-    chat->do_connect();
+    while (true)
+    {
+        chat->do_connect();
+        chat->run();
+    }
 }
 
 void    MainWindow::keyPressEvent(QKeyEvent *event)
