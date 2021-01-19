@@ -12,7 +12,7 @@ Requirements
 ------------
 - Unix-like OS (tested on Arch Linux, Ubuntu and Mac OS Mojave)
 - `clang++` to build everything
-- `tar` and `clang` to build OpenSSL
+- `tar` and `clang` to build OpenSSL library
 - `qt5` and `qmake` to build client (not tested for Mac OS)
 > Compiler support for C++11 features is also required if you want to use them by disabling C++98 compability mode
 
