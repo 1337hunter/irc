@@ -484,6 +484,45 @@ void	clear_whowas(IRCserv *serv)
 	}
 }
 
+void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
+{
+t_strvect   split;
+
+	for (size_t i = 0; i < serv->network.size(); i++)
+	if (serv->network[i].fd == fd)
+	{
+		split.push_back("SQUIT");
+		split.push_back(serv->network[i].servername);
+		split.push_back(":Read error");
+		cmd_squit(serv->listen[0].socket_fd, split, serv);
+		break ;
+	}
+	fdref.fatal = true;
+}
+
+void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &reason)
+{
+	t_strvect   split;
+
+	split.push_back("QUIT");
+	split.push_back(":" + reason);
+	cmd_quit(fd, split, serv);
+	fdref.fatal = true;
+}
+
+void	self_service_quit(int fd, t_fd &fdref, IRCserv *serv)
+{
+	t_service   *service;
+
+	fdref.status = false;
+	if (!(service = find_service_by_fd(fd, serv)))
+		return ;
+	service->fd = -1;
+#if DEBUG_MODE
+	std::cout << "service " << service->name << " went out" << std::endl;
+#endif
+}
+
 void	check_liveness(IRCserv *serv)
 {
 	std::MAP<int, t_fd>::iterator	fdit = serv->fds.begin();
@@ -498,7 +537,12 @@ void	check_liveness(IRCserv *serv)
 			{
 				fdit->second.wrbuf += "ERROR :Closing Link: " +
 					fdit->second.linkname + " (Ping timeout)" + CRLF;
-				fdit->second.status = false;
+				if (fdit->second.type == FD_CLIENT || fdit->second.type == FD_OPER)
+					self_cmd_quit(fdit->first, fdit->second, serv, "Ping timeout");
+				else if (fdit->second.type == FD_SERVER)
+					self_cmd_squit(fdit->first, fdit->second, serv);
+				else if (fdit->second.type == FD_SERVICE)
+					self_service_quit(fdit->first, fdit->second, serv);
 			}
 			if (!(fdit->second.awaitingpong) && fdit->second.lastactive <
 				ft_getcurrenttime() - PING_FREQUENCY)

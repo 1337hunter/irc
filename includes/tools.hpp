@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/26 21:09:12 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 15:02:47 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/19 13:46:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,10 @@ bool    remove_channel(Channel *channel, IRCserv *serv);
 bool    remove_client_by_ptr(Client *ptr, IRCserv *serv);
 bool    remove_client_by_nick(std::string const &nick, IRCserv *serv);
 void    remove_server_by_name(std::string const &servername, IRCserv *serv);
+
+void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv);
+void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &reason);
+void    self_service_quit(int fd, t_fd &fdref, IRCserv *serv);
 
 /****************************************************/
 /*	string manipulation functions (stringtools.cpp)	*/

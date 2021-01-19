@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/18 20:15:18 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/19 13:44:38 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,45 +170,6 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	}
 }
 
-void	self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
-{
-	t_strvect	split;
-
-	for (size_t i = 0; i < serv->network.size(); i++)
-		if (serv->network[i].fd == fd)
-		{
-			split.push_back("SQUIT");
-			split.push_back(serv->network[i].servername);
-			split.push_back(":Read error");
-			cmd_squit(serv->listen[0].socket_fd, split, serv);
-			break ;
-		}
-	fdref.fatal = true;
-}
-
-void	self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv)
-{
-	t_strvect	split;
-
-	split.push_back("QUIT");
-	split.push_back(":Read error");
-	cmd_quit(fd, split, serv);
-	fdref.fatal = true;
-}
-
-void	self_service_quit(int fd, t_fd &fdref, IRCserv *serv)
-{
-	t_service	*service;
-
-	fdref.status = false;
-	if (!(service = find_service_by_fd(fd, serv)))
-		return ;
-	service->fd = -1;
-#if DEBUG_MODE
-	std::cout << "service " << service->name << " went out" << std::endl;
-#endif
-}
-
 void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 {
 	if (errno == EAGAIN && errno == EWOULDBLOCK)
@@ -227,7 +188,7 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	if (fdref.type == FD_SERVER && !fdref.blocked && fdref.status)
 		self_cmd_squit(fd, fdref, serv);
 	else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
-		self_cmd_quit(fd, fdref, serv);
+		self_cmd_quit(fd, fdref, serv, "Read error");
 	else if (fdref.type == FD_SERVICE && fdref.status)
 		self_service_quit(fd, fdref, serv);
 	if (!fdref.blocked && !fdref.status)
