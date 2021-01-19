@@ -12,3 +12,4 @@ conf/ircserv.crt
 objs/
 client/client
 bot/ircbot
+vgcore*
