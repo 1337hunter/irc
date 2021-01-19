@@ -102,7 +102,7 @@ void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCs
 	std::string	info;
 
 	info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
-		client->getinfo() + " ";
+		":" + client->getinfo() + " ";
 	client_it = channel->getclients().begin();
 	for (; client_it != channel->getclients().end(); client_it++)
 		if (client_it->first->gethop() == 0)

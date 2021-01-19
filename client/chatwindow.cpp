@@ -475,7 +475,8 @@ void    ChatWindow::ReceiveMessage(void)
         for (size_t i = 0; i < split.size(); i++)
             ProcessMessage(split[i]);
         for (size_t i = 0; i < split.size(); ++i)
-            ui->mainchat->append(split[i].c_str());
+            if (split[i].size() > 0 && split[i].compare(0, 4, "PING"))
+                ui->mainchat->append(split[i].c_str());
     }
     else if (r <= 0)
     {

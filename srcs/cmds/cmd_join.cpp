@@ -19,13 +19,13 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	else
 		reply = ":" + client_it->getnick() + "!" + client_it->getusername() +
 		"@" + client_it->gethostname();
-	forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
+	//forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
 	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 		if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() == 0)
 			serv->fds[c_map->first->getFD()].wrbuf += reply;
-		else if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() > 0)
-			serv->fds[c_map->first->getFD()].wrbuf += forward;
+	//	else if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() > 0)
+	//		serv->fds[c_map->first->getFD()].wrbuf += forward;
 	serv->fds[client_it->getFD()].wrbuf += reply;
 	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, &(*chan), &(*client_it));
 }
@@ -37,6 +37,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 	std::vector<std::string>		keys;
 	std::string						str_chan;
 	size_t	i;
+	bool	create = true;
 
 	if (split[1][0] == ':')
 		str_chan = std::string(split[1], 1);
@@ -100,17 +101,19 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				if (args[i][0] != '&')
 					msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);
+				create = false;
 				break ;
 			}
-		if (chan == serv->channels.end())
+		if (create)
 		{
 			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
 			client_it->add_channel((serv->channels.rbegin())->getptr());
+			join_backward(serv, --serv->channels.end(), client_it);
 			if (args[i][0] != '&')
 				msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 			if (!keys[i].empty())
 				msg_forward(-1, "MODE " + args[i] + " +k " + keys[i], serv);
-			join_backward(serv, --serv->channels.end(), client_it);
+			create = true;
 		}
 	}
 }

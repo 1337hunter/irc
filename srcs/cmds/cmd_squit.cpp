@@ -7,21 +7,54 @@ void    squit_from_client(int fd, const t_strvect &split, IRCserv *serv);
 
 void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_strvect	command;
-	std::vector<t_server>::iterator	net;
+	std::vector<t_server>::iterator		net;
+	std::list<t_server_intro>::iterator	intro;
+	std::list<Client>::iterator			client_it;
+	t_strvect   command;
 
-	if (split.size() < 4)
+	if (split.size() < 3)
 		return ;
-	for (net = serv->network.begin(); net != serv->network.end(); ++net)
-		if (net->servername == split[2])
-		{
-			command.push_back("SQUIT");
-			command.push_back(split[2]);
-			command.push_back(split[3]);
-			squit_from_client(serv->listen[0].socket_fd, command, serv);
+	if (split[2] == serv->servername)
+	{
+		for (net = serv->network.begin(); net != serv->network.end(); net++)
+			if (net->fd == fd)
+				break ;
+		if (net == serv->network.end())
 			return ;
+		client_it = net->clients.begin();
+		while (client_it != net->clients.end())
+		{
+			command.push_back(":" + client_it->getnick());
+			command.push_back("QUIT");
+			command.push_back(":Server " + net->servername + " disconencted (SQUIT)");
+			cmd_quit(net->fd, command, serv);
+			command.clear();
+			client_it = net->clients.begin();
 		}
-	msg_forward(fd, strvect_to_string(split), serv);
+		serv->network.erase(net);
+		serv->fds[fd].blocked = false;
+		serv->fds[fd].status = false;
+		serv->fds[fd].fatal = false;
+		msg_forward(fd, split[0] + " " + split[1] + " " + net->servername +
+			(split.size() > 4 ? " " + split[3] : ""), serv);
+	}
+	else
+	{
+		for (net = serv->network.begin(); net != serv->network.end(); net++)
+		{
+			intro = net->routing.begin();
+			for (; intro != net->routing.end(); intro++)
+			{
+				if (intro->servername == split[2])
+				{
+					net->routing.erase(intro);
+					msg_forward(fd, split[0] + " " + split[1] + " " + split[2] +
+						(split.size() > 3 ? " " + split[3] : ""), serv);
+					return ;
+				}
+			}
+		}
+	}
 }
 
 void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
@@ -85,18 +118,19 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (!(client = find_client_by_fd(fd, serv)))
 			return ;
 		client_it = _serv->clients.begin();
-		for (; client_it != _serv->clients.end(); client_it++)
+		while (client_it != _serv->clients.end())
 		{
 			command.push_back(":" + client_it->getnick());
 			command.push_back("QUIT");
-			command.push_back(":Server " + _serv->servername + " is dead");
-			cmd_quit(_serv->fd, split, serv);
+			command.push_back(":Server " + _serv->servername + " disconencted (SQUIT)");
+			cmd_quit(_serv->fd, command, serv);
 			command.clear();
+			client_it = _serv->clients.begin(); // client is removing inside cmd_quit
 		}
 		remove_server_by_name(_serv->servername, serv);
 		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
-			strvect_to_string(split) + CRLF;
-		msg_forward(-1, ":" + client->getnick() + " " + strvect_to_string(split), serv);
+			strvect_to_string(split) + " " + squit_msg + CRLF;
+		msg_forward(-1, ":" + client->getnick() + " " + strvect_to_string(split) + " " + squit_msg, serv);
 		serv->fds[_serv->fd].blocked = false;
 		serv->fds[_serv->fd].status = false;
 		serv->fds[_serv->fd].fatal = false;
