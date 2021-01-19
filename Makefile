@@ -46,7 +46,7 @@ CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
 CFLAGS		+= -DPING_TIMEOUT=60 -DPING_FREQUENCY=60
-CFLAGS		+= -g -DDEBUG_MODE=1
+CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -82,7 +82,9 @@ ULINEF		= \e[24m
 
 .PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
-all: $(NAME)
+all: fclean $(NAME)
+	@sed -i '85s|.*|all: $$(NAME)|g' ./Makefile
+	@sed -i '86d;87d' ./Makefile
 
 bonus: $(NAME)
 	@make -C ./bot
