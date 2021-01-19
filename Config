@@ -1,6 +1,6 @@
 #!/bin/bash
 
-dir=$HOME/ircserv
+dir=/home/se/ircserv
 FD_MAX=1024
 BUF_SIZE=512
 DEBUG_MODE=1
@@ -8,10 +8,10 @@ TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
 ASAN=0
-PING_TIMEOUT=60
-PING_FREQUENCY=60
+PING_TIMEOUT=10
+PING_FREQUENCY=10
 
-CHANGE_MODE=0
+RECOMPILE=0
 RED="\e[31m"
 GREEN="\e[32m"
 YELLOW="\e[93m"
@@ -73,6 +73,7 @@ do
 		sed -i "4s|.*|FD_MAX=$red|g" ./Config
 		FD_MAX=$red
 	fi
+	RECOMPILE=1
 	break
 done
 
@@ -100,6 +101,7 @@ do
 		sed -i "5s|.*|BUF_SIZE=$red|g" ./Config
 		BUF_SIZE=$red
 	fi
+	RECOMPILE=1
 	break
 done
 
@@ -119,14 +121,14 @@ do
 	case "$red" in
 		[Yy]*)
 			if [[ $DEBUG_MODE == 0 ]] ; then
-				CHANGE_MODE=1
+				RECOMPILE=1
 			fi
 			DEBUG_MODE="1"
 			sed -i "6s|.*|DEBUG_MODE="1"|g" ./Config
 			;;
 		[Nn]*)
 			if [[ $DEBUG_MODE == 1 ]] ; then
-				CHANGE_MODE=1
+				RECOMPILE=1
 			fi
 			DEBUG_MODE="0"
 			sed -i "6s|.*|DEBUG_MODE="0"|g" ./Config
@@ -194,6 +196,7 @@ do
 	fi
 	sed -i "8s|.*|WHOWAS_MAX=$red|g" ./Config
 	WHOWAS_MAX=$red
+	RECOMPILE=1
 	break
 done
 
@@ -212,10 +215,16 @@ do
 	fi
 	case "$red" in
 		[Yy]*)
+			if [[ $CPP98 == 0 ]] ; then
+				RECOMPILE=1
+			fi
 			CPP98=1
 			sed -i "9s|.*|CPP98=1|g" ./Config
 			;;
 		[Nn]*)
+			if [[ $CPP98 == 1 ]] ; then
+				RECOMPILE=1
+			fi
 			CPP98=0
 			sed -i "9s|.*|CPP98=0|g" ./Config
 			;;
@@ -243,17 +252,17 @@ do
 	case "$red" in
 		[Yy]*)
 			if [[ $ASAN == 0 ]] ; then
-				CHANGE_MODE=1
+				RECOMPILE=1
 			fi
 			ASAN=1
 			sed -i "10s|.*|ASAN=1|g" ./Config
 			;;
 		[Nn]*)
 			if [[ $ASAN == 1 ]] ; then
-				CHANGE_MODE=1
+				RECOMPILE=1
 			fi
 			ASAN=0
-			CHANGE_MODE=1
+			RECOMPILE=1
 			sed -i "10s|.*|ASAN=0|g" ./Config
 			;;
 		*)
@@ -283,6 +292,7 @@ do
 	fi
 	sed -i "11s|.*|PING_TIMEOUT=$red|g" ./Config
 	PING_TIMEOUT=$red
+	RECOMPILE=1
 	break
 done
 
@@ -305,6 +315,7 @@ do
 	fi
 	sed -i "12s|.*|PING_FREQUENCY=$red|g" ./Config
 	PING_FREQUENCY=$red
+	RECOMPILE=1
 	break
 done
 
@@ -411,20 +422,20 @@ ULINEF		= "'\\'"e[24m""
 .PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re" >> Makefile
 
 if [[ $DEBUG_MODE == 1 ]] ; then
-	if [[ $CHANGE_MODE == 1 ]] ; then
+	if [[ $RECOMPILE == 1 ]] ; then
 		echo -e "\nall: fclean debugmsg \$(NAME)" >> Makefile
 	else
 		echo -e "\nall: debugmsg \$(NAME)" >> Makefile
 	fi
 else
-	if [[ $CHANGE_MODE == 1 ]] ; then
+	if [[ $RECOMPILE == 1 ]] ; then
 		echo -e "\nall: fclean \$(NAME)" >> Makefile
 	else
 		echo -e "\nall: \$(NAME)" >> Makefile
 	fi
 fi
 
-if [[ $CHANGE_MODE == 1 ]] ; then
+if [[ $RECOMPILE == 1 ]] ; then
 	if [[ $DEBUG_MODE == 1 ]] ; then
 		echo -e "	@sed -i '86s|.*|all: debugmsg \$\$(NAME)|g' ./Makefile" >> Makefile
 		echo -e "	@sed -i '87d;88d' ./Makefile" >> Makefile
