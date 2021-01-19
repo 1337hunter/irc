@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/18 22:50:49 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/19 16:40:18 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,9 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	{
 		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
 		msg_error("SSL_set_fd: " + sslerr, serv);
+		serv->fds.erase(socket_fd);
+		close(socket_fd);
+		errno = 0;
 		return ;
 	}
 	serv->fds[socket_fd].type = FD_SERVER;

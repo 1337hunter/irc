@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/19 13:44:38 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/19 16:28:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -318,14 +318,16 @@ bool	didSockFail(int fd, IRCserv *serv)
 			error_exit("getsockopt failure");
 		if (error)
 		{
+#if DEBUG_MODE
 			std::cerr << "Connection error to server " << fd << std::endl;
-			msg_error("Connection error to server", serv);
-			close(fd);
+#endif
+			msg_error("Connection error to server " + fdref.linkname, serv);
 			if (fdref.tls)
-			{
 				SSL_free(fdref.sslptr);
-				serv->fds.erase(fd);
-			}
+			FD_CLR(fd, &(serv->fdset_read));
+			FD_CLR(fd, &(serv->fdset_write));
+			close(fd);
+			serv->fds.erase(fd);
 			return (true);
 		}
 		else if (!(fdref.awaitingpong))

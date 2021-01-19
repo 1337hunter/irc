@@ -64,7 +64,6 @@ else
 	OSNAME	= Unknown OS
 	endif
 endif
-OSNAME += $(YELLOW)(debug mode)$(NC)
 
 # just in case openssl is not installed on system somehow
 ifeq (, $(shell which openssl))
@@ -83,7 +82,7 @@ ULINEF		= \e[24m
 
 .PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
-all: debugmsg $(NAME)
+all: $(NAME)
 
 bonus: $(NAME)
 	@make -C ./bot
@@ -166,7 +165,7 @@ fclean: clean
 re: fclean all
 
 install:
-	@mkdir -p /home/se/ircserv
-	@mkdir -p /home/se/ircserv/conf
-	@cp $(NAME) /home/se/ircserv/$(NAME)
-	@cp ./conf/* /home/se/ircserv/conf
+	@mkdir -p /home/arcticfox/ircserv
+	@mkdir -p /home/arcticfox/ircserv/conf
+	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
+	@cp ./conf/* /home/arcticfox/ircserv/conf
