@@ -1,21 +1,21 @@
 #ifndef CLIENT_HPP
-#define CLIENT_HPP
+# define CLIENT_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
+# include <iostream>
+# include <string>
+# include <vector>
 // fcntl, select, socket, inet structs, inet
-#include <fcntl.h>
-#include <sys/select.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+# include <fcntl.h>
+# include <sys/select.h>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <arpa/inet.h>
+# include <netdb.h>
 // read, write
-#include <unistd.h>
-#include "common_defines.hpp"
-#include "channel.hpp"
-#include <list>
+# include <unistd.h>
+# include "common_defines.hpp"
+# include "channel.hpp"
+# include <list>
 
 /*	A client is anything connecting to a server that is not another
 	server.  Each client is distinguished from other clients by a unique

@@ -18,7 +18,10 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	try { hop = STOI(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
+	{
 		routing->clients.push_back(Client(split, fd));
+		routing->clients.back().setMode(split[6]);
+	}
 	else
 	{
 		serv->fds[fd].wrbuf += "ERROR :NICK command from unregistred server\r\n";

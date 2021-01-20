@@ -37,18 +37,10 @@ Client::Client(std::string const &nick, std::string const hop, std::string const
 }
 
 Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1]),
-	username(split[3]), hostname(split[4]), token(split[5]), hopcount(STOI(split[2])),
-	fd(fd)
-{
-	setMode(split[6]);// this is bad initialization PUREFY IT!
-	std::string realname = std::string(split[7], 1);
-	for (size_t i = 8; i < split.size(); i++)
-		realname += " " + split[i];
-	_restricted = false;
-	_away = false;
-	_blocked = false;
-	_blocked_time = 0;
-}
+	username(split[3]), realname(split[7]), hostname(split[4]), token(split[5]),
+	hopcount(STOI(split[2])), fd(fd), _isConnected(true), _isRegistred(true),
+	USER(true), NICK(true), _isInvisible(false), _isWallOps(false),
+	_isServNotice(false), _isOperator(false), _restricted(false), _away(false), _away_message(""), _blocked(false), _blocked_time(0) {} 
 
 Client::~Client()
 {
