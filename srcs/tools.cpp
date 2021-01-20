@@ -486,23 +486,25 @@ void	clear_whowas(IRCserv *serv)
 
 void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 {
-t_strvect   split;
+	t_strvect   split;
 
+	(void)fdref;
 	for (size_t i = 0; i < serv->network.size(); i++)
-	if (serv->network[i].fd == fd)
-	{
-		split.push_back("SQUIT");
-		split.push_back(serv->network[i].servername);
-		split.push_back(":Read error");
-		cmd_squit(serv->listen[0].socket_fd, split, serv);
-		break ;
-	}
+		if (serv->network[i].fd == fd)
+		{
+			split.push_back("SQUIT");
+			split.push_back(serv->network[i].servername);
+			split.push_back(":Read error");
+			cmd_squit(serv->listen[0].socket_fd, split, serv);
+			break ;
+		}
 }
 
 void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &reason)
 {
 	t_strvect   split;
 
+	(void)fdref;
 	split.push_back("QUIT");
 	split.push_back(":" + reason);
 	cmd_quit(fd, split, serv);
