@@ -497,7 +497,6 @@ t_strvect   split;
 		cmd_squit(serv->listen[0].socket_fd, split, serv);
 		break ;
 	}
-	fdref.fatal = true;
 }
 
 void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &reason)
@@ -507,7 +506,6 @@ void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &rea
 	split.push_back("QUIT");
 	split.push_back(":" + reason);
 	cmd_quit(fd, split, serv);
-	fdref.fatal = true;
 }
 
 void	self_service_quit(int fd, t_fd &fdref, IRCserv *serv)
