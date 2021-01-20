@@ -424,8 +424,6 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 	std::list<Channel*>::iterator	chan;
 	t_strvect						split;
 
-	split.push_back("QUIT");
-	split.push_back(":Network split");
 	b = serv->unavailable.begin();
 	while (b != serv->unavailable.end())
 		if (b->_blocked_time <= ft_getcurrenttime() - BLOCKTIME ||

@@ -113,8 +113,8 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 			if (!keys[i].empty())
 				msg_forward(-1, "MODE " + args[i] + " +k " + keys[i], serv);
-			create = true;
 		}
+		create = true;
 	}
 }
 
@@ -152,8 +152,8 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 			channel->add_client(client->getptr());
 			client->add_channel(channel->getptr());
 		}
+		msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 	}
-	msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 	msg_forward(fd, strvect_to_string(split), serv);
 }
 

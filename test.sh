@@ -4,5 +4,8 @@ USER u 0 * :r
 OPER oper oper
 join #chan
 mode #chan +I chanmask
+NICK n1
+nick n2
+nick n3
 quit
 END
