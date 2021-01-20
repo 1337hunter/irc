@@ -488,8 +488,8 @@ void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 {
 	t_strvect   split;
 
-	(void)fdref;
-	for (size_t i = 0; i < serv->network.size(); i++)
+	size_t i = 0;
+	for (; i < serv->network.size(); i++)
 		if (serv->network[i].fd == fd)
 		{
 			split.push_back("SQUIT");
@@ -498,6 +498,18 @@ void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 			cmd_squit(serv->listen[0].socket_fd, split, serv);
 			break ;
 		}
+	// fix for misconfigured servers (nontls to tls connect attempt)
+	if (i >= serv->network.size())
+	{
+		std::string	msg = "Server connection error: ";
+		if (fdref.tls)
+			msg += "tls to nontls server connection attempt";
+		else
+			msg += "nontls to tls server connection attempt";
+		msg += " (check config)";
+		msg_error(msg, serv);
+		fdref.status = false;
+	}
 }
 
 void    self_cmd_quit(int fd, t_fd &fdref, IRCserv *serv, std::string const &reason)
