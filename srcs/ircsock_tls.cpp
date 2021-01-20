@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/20 17:11:07 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 19:25:20 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,9 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 {
 	t_fd	&fdref = serv->fds[fd];
 	int		handshake = 0;
-	if (fdref.type == FD_SERVER)
+	if (fdref.status == false)
+		handshake = 0;
+	else if (fdref.type == FD_SERVER)
 		handshake = SSL_connect(fdref.sslptr);
 	else
 		handshake = SSL_accept(fdref.sslptr);
@@ -120,7 +122,8 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 		// check if handshake need more actions or gone wrong by SSL_get_error
 		int	err = SSL_get_error(fdref.sslptr, handshake);
 		// SSL_ERROR_WANT_READ/WRITE in case handshake needs another round
-		if (err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE)
+		if ((err != SSL_ERROR_WANT_READ && err != SSL_ERROR_WANT_WRITE) ||
+			fdref.status == false)
 		{
 			// drop the connection if handshake gone wrong
 			std::cerr << "TLS handshake failed for client " << fd << std::endl;
@@ -134,7 +137,7 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 			if (fdref.type == FD_SERVER)
 				msg_error("SSL_connect: " + sslerr, serv);
 			// we shouldn't call SSL_shutdown because it's already fatal
-			SSL_free(serv->fds[fd].sslptr);
+			SSL_free(fdref.sslptr);
 			close(fd);
 			serv->fds.erase(fd);
 		}

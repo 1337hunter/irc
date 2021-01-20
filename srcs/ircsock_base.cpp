@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/20 17:15:04 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 19:52:47 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -307,9 +307,10 @@ void	SendMessage(int fd, IRCserv *serv)
 	// ^ which sock sent this to fd
 
 #if DEBUG_MODE
-	if (fdref.tls)
+	if (fdref.tls && !reply.empty())
 		std::cout << "tls ";
-	std::cout << "sending client " << fd << "\t" << reply;
+	if (!reply.empty())
+		std::cout << "sending client " << fd << "\t" << reply;
 #endif
 
 	if (fdref.tls && fdref.sslptr)

@@ -100,7 +100,7 @@ void	RunServer(IRCserv *serv)
 			}
 			if ((isread || iswrite) && didSockFail(fd, serv))
 				continue ;
-			if (isread)
+			if (FD_ISSET(fd, &(serv->fdset_read)))	// double check
 			{
 				if (serv->fds[fd].type == FD_ME)
 					AcceptConnect(fd, serv, serv->fds[fd].tls);
@@ -114,7 +114,7 @@ void	RunServer(IRCserv *serv)
 						DoHandshakeTLS(fd, serv);
 				}
 			}
-			if (iswrite)
+			if (FD_ISSET(fd, &(serv->fdset_write)))	// double check
 			{
 				if (!(serv->fds[fd].tls) || (serv->fds[fd].tls &&
 					SSL_is_init_finished(serv->fds[fd].sslptr)))

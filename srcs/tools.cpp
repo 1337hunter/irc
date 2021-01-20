@@ -433,7 +433,6 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 		{
 			client = b->clients.begin();
 			msg_forward(b->fd, ":" + serv->servername + " SQUIT " + b->servername, serv);
-			remove_server_by_name(b->servername, serv);
 			for (; client != b->clients.end(); client++)
 			{
 				split.push_back(":" + (*client)->getnick());
@@ -448,6 +447,7 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 			chan = b->channels.begin();
 			for (; chan != b->channels.end(); chan++)
 				remove_channel(*chan, serv);
+			remove_server_by_name(b->servername, serv);
 			serv->fds[b->fd].status = false;
 			serv->fds[b->fd].blocked = false;
 			serv->unavailable.erase(b);
@@ -503,7 +503,7 @@ void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 	{
 		std::string	msg = "Server connection error: ";
 		if (fdref.tls)
-			msg += "tls to nontls server connection attempt";
+			msg += "tls to nontls server connection attempt or server didn't answer for too long";
 		else
 			msg += "nontls to tls server connection attempt";
 		msg += " (check config)";
