@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/20 15:01:27 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 17:15:04 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,10 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 	t_fd	&fdref = serv->fds[_listen.socket_fd];	// this will create fd
 	fdref.type = FD_ME;
 	fdref.tls = false;
+	fdref.blocked = false;
+	fdref.status = true;
+	fdref.fatal = false;
+	fdref.inprogress = false;
 	fdref.dtopened = ft_getcurrenttime();
 	fdref.sentmsgs = 0;
 	fdref.recvmsgs = 0;
@@ -143,6 +147,8 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	fdref.wrbuf.erase();
 	fdref.blocked = false;
 	fdref.status = true;
+	fdref.fatal = false;
+	fdref.inprogress = false;
 	fdref.tls = isTLS;
 	fdref.hostname = inet_ntoa(csin.sin_addr);
 	fdref.sslptr = NULL;
@@ -200,6 +206,12 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 		self_service_quit(fd, fdref, serv);
 		fdref.fatal = true;
 	}
+	else if (fdref.type == FD_UNREGISTRED && fdref.status)
+	{
+		fdref.fatal = true;
+		fdref.status = false;
+	}
+
 	if (!fdref.blocked && !fdref.status)
 	{
 		if (fdref.tls)
@@ -317,7 +329,8 @@ bool	didSockFail(int fd, IRCserv *serv)
 {
 	t_fd	&fdref = serv->fds[fd];
 
-	if (fdref.status == false && fdref.type == FD_SERVER)
+	if (fdref.inprogress == true && fdref.status == false &&
+		fdref.blocked == false && fdref.type == FD_SERVER)
 	{
 		int			error;
 		socklen_t	len = sizeof(error);
@@ -335,10 +348,16 @@ bool	didSockFail(int fd, IRCserv *serv)
 			FD_CLR(fd, &(serv->fdset_write));
 			close(fd);
 			serv->fds.erase(fd);
+#if DEBUG_MODE
+			std::cout << "server " << fd << ":\t\tdisconnected" << std::endl;
+#endif
 			return (true);
 		}
-		else if (!(fdref.awaitingpong))
+		else
+		{
 			fdref.status = true;
+			fdref.inprogress = false;
+		}
 	}
 	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/20 15:35:13 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/20 17:31:08 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ typedef struct		s_fd
 	bool			status;     // for disconnect assign false
 	bool			fatal;
 	bool			blocked;
+	bool			inprogress;
 	std::string		rdbuf;
 	std::string		wrbuf;
 	std::string		pass;		// this struct parameters required for

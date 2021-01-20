@@ -27,7 +27,8 @@ username(username), realname(realname), token(token), hopcount(0), fd(fd),
 Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) :
 	nickname(nick), username(user), realname(real), hostname(host),
 	token(servertoken), hopcount(STOI(hop)), fd(-1), _isConnected(true),
-	_isRegistred(true), USER(true), NICK(true)
+	_isRegistred(true), USER(true), NICK(true),
+	_isInvisible(false), _isWallOps(false), _isServNotice(false), _isOperator(false)
 {
 	setMode(umode);
 	_restricted = false;
@@ -73,6 +74,7 @@ Client				&Client::operator=(Client const &other)
 	this->_away_message = other._away_message;
 	this->_blocked = other._blocked;
 	this->_blocked_time = other._blocked_time;
+	this->_blocked_server = other._blocked_server;
 	this->dtloggedin = other.dtloggedin;
 	this->dtlastactive = other.dtlastactive;
 	this->_channels = other._channels;

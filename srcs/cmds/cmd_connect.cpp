@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/19 21:32:08 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/20 17:07:43 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,22 +34,29 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 		msg_error("fcntl error", serv); return -1; }
 	if (getaddrinfo(link.hostname.c_str(), (TOSTRING(link.port)).c_str(), &hints, &addr)) {
 		msg_error("Can't get addres information with getaddrinfo", serv); return -1; }
+
 	int	res = connect(socket_fd, addr->ai_addr, addr->ai_addrlen);
-	serv->fds[socket_fd].dtopened = ft_getcurrenttime();
-	serv->fds[socket_fd].lastactive = ft_getcurrenttime();
-	serv->fds[socket_fd].sentmsgs = 0;
-	serv->fds[socket_fd].recvmsgs = 0;
-	serv->fds[socket_fd].sentbytes = 0;
-	serv->fds[socket_fd].recvbytes = 0;
-	serv->fds[socket_fd].sock = -1;
-	serv->fds[socket_fd].linkname = link.servername + "[" +
+
+	t_fd	&sockref = serv->fds[socket_fd];
+	sockref.type = FD_SERVER;
+	sockref.dtopened = ft_getcurrenttime();
+	sockref.lastactive = sockref.dtopened;
+	sockref.sentmsgs = 0;
+	sockref.recvmsgs = 0;
+	sockref.sentbytes = 0;
+	sockref.recvbytes = 0;
+	sockref.sock = -1;
+	sockref.sslptr = NULL;
+	sockref.fatal = false;
+	sockref.inprogress = false;
+	sockref.linkname = link.servername + "[" +
 		link.hostname + ":" + TOSTRING(link.port) + "]";
 
 	// this is temporary
 	freeaddrinfo(addr);
 	// gotta figure out how to check all addresses
 	if (res == 0)
-		serv->fds[socket_fd].status = true;
+		sockref.status = true;
 	else if (res == -1 && errno != EAGAIN && errno != EINPROGRESS)
 	{
 		msg_error("Connection error while server link", serv);
@@ -60,18 +67,21 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	}
 	else if (res == -1)
 	{
-		serv->fds[socket_fd].status = false;
+		sockref.inprogress = true;
+		sockref.status = false;
 		errno = 0;
 	}
+
+	if (link.pass.length() != 0) // I think pass is necessery.
+		sockref.wrbuf = "PASS " + link.pass + " " + VERSION + " IRC|" +
+		   (DEBUG_MODE ? "DEBUG" : "") +  " \r\n";
+	sockref.wrbuf += "SERVER " + serv->servername + " 1 " +
+		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
+
 	if (tls)
 		return (socket_fd);
-	serv->fds[socket_fd].type = FD_SERVER;
-	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION +
-		   	" " + "IRC|" + CRLF;//PZ
-	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
-		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
-	serv->fds[socket_fd].tls = false;
+
+	sockref.tls = false;
 
 	return (socket_fd);
 }
@@ -97,23 +107,20 @@ void	do_tls_connect(t_link &link, IRCserv *serv)
 	if ((socket_fd = do_connect(link, serv, true)) < 0)
 	{
 		msg_error("Socket error while server link", serv);
+		SSL_free(ssl);
 		return ;
 	}
 	if (!(SSL_set_fd(ssl, socket_fd)))
 	{
 		ERR_print_errors_cb(SSLErrorCallback, &sslerr);
 		msg_error("SSL_set_fd: " + sslerr, serv);
+		SSL_free(ssl);
 		serv->fds.erase(socket_fd);
 		close(socket_fd);
 		errno = 0;
 		return ;
 	}
-	serv->fds[socket_fd].type = FD_SERVER;
-	if (link.pass.length() != 0) // I think pass is necessery.
-		serv->fds[socket_fd].wrbuf = "PASS " + link.pass + " " + VERSION + " IRC|" +
-		   (DEBUG_MODE ? "DEBUG" : "") +  " \r\n";
-	serv->fds[socket_fd].wrbuf += "SERVER " + serv->servername + " 1 " +
-		serv->token + " " + ":" + serv->info + CRLF; //attempt to register
+
 	serv->fds[socket_fd].tls = true;
 	serv->fds[socket_fd].sslptr = ssl;
 }

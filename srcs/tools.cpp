@@ -448,10 +448,10 @@ void	clear_block_list(IRCserv *serv, std::string const &servername)
 			chan = b->channels.begin();
 			for (; chan != b->channels.end(); chan++)
 				remove_channel(*chan, serv);
-			serv->unavailable.erase(b);
-			b = serv->unavailable.begin();
 			serv->fds[b->fd].status = false;
 			serv->fds[b->fd].blocked = false;
+			serv->unavailable.erase(b);
+			b = serv->unavailable.begin();
 		}
 		else
 			b++;
@@ -530,7 +530,8 @@ void	check_liveness(IRCserv *serv)
 	while (fdit != serv->fds.end())
 	{
 		if (fdit->second.type != FD_ME && fdit->second.type != FD_UNREGISTRED &&
-			!(fdit->second.fatal) && (fdit->second.status) && !(fdit->second.blocked))
+			!(fdit->second.inprogress) && !(fdit->second.fatal) &&
+			(fdit->second.status) && !(fdit->second.blocked))
 		{
 			if (fdit->second.awaitingpong && fdit->second.lastactive <
 				ft_getcurrenttime() - PING_FREQUENCY - PING_TIMEOUT)
