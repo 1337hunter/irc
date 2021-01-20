@@ -22,6 +22,14 @@ void	do_socket(IRCserv *serv)
 	_listen.ssl = false;
 	_listen.serveronly = false;
 	CreateSock(serv, _listen);
+	_listen.ip = "*";
+	_listen.port = serv->port + 1;
+	if (_listen.port > 65535)
+		_listen.port = serv->port - 1;
+	_listen.tls = false;
+	_listen.ssl = false;
+	_listen.serveronly = false;
+	CreateSockTLS(serv, _listen);
 //	maybe insert here CreateSockTLS for default secure irc port 6697 (RFC 7194)
 }
 
