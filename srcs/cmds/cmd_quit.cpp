@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2021/01/19 14:40:01 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/20 22:01:45 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,19 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	std::vector<Client*>::iterator	msg_for_it;
 
 	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
-	if (it == serv->clients.end() || !it->isRegistred())
+	if (it == serv->clients.end())
 	{
 		serv->fds[fd].wrbuf += "ERROR :Closing Link: [" + serv->fds[fd].hostname + "]\r\n";
-		serv->fds[fd].status = false; return 1;
+		serv->fds[fd].status = false; return 0;
+	}
+	if (!it->isRegistred())
+	{
+		serv->clients.erase(it);
+		serv->fds[fd].wrbuf += "ERROR :Closing Link: [" + serv->fds[fd].hostname + "]\r\n";
+		serv->fds[fd].status = false;
+		serv->fds[fd].blocked = false;
+		serv->fds[fd].fatal = false;
+		return 0;
 	}
 	if (split.size() > 1)
 		quit_msg = strvect_to_string(split, ' ', 1);

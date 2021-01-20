@@ -8,7 +8,7 @@
 //
 //Parameters: ( <channel> *( "," <channel> ) [ <key> *( "," <key> ) ] ) / "0"
 
-void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer client_it)
+void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, Client *client)
 {
 	std::MAP<Client*, client_flags>::iterator c_map;
 	std::string		reply;
@@ -17,20 +17,17 @@ void	join_backward(IRCserv *serv, std::list<Channel>::iterator chan, t_citer cli
 	if (chan->getflags()._anonymous)
 		reply = ":anonymous!anonymous@anonymous";
 	else
-		reply = ":" + client_it->getnick() + "!" + client_it->getusername() +
-		"@" + client_it->gethostname();
-	//forward = ":" + client_it->getnick() + " JOIN :" + chan->getname() + CRLF;
+		reply = ":" + client->getnick() + "!" + client->getusername() +
+		"@" + client->gethostname();
 	reply += " JOIN :" + chan->getname() + CRLF;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
-		if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() == 0)
+		if (c_map->first->getFD() != client->getFD() && c_map->first->gethop() == 0)
 			serv->fds[c_map->first->getFD()].wrbuf += reply;
-	//	else if (c_map->first->getFD() != client_it->getFD() && c_map->first->gethop() > 0)
-	//		serv->fds[c_map->first->getFD()].wrbuf += forward;
-	serv->fds[client_it->getFD()].wrbuf += reply;
-	serv->fds[client_it->getFD()].wrbuf += reply_chan_names(serv, &(*chan), &(*client_it));
+	serv->fds[client->getFD()].wrbuf += reply;
+	serv->fds[client->getFD()].wrbuf += reply_chan_names(serv, &(*chan), client);
 }
 
-void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_it)
+void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv)
 {
 	std::list<Channel>::iterator	chan;
 	std::vector<std::string>		args;
@@ -38,7 +35,13 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 	std::string						str_chan;
 	size_t	i;
 	bool	create = true;
+	Client	*client;
 
+	if (!(client = find_client_by_fd(fd, serv)) || !client->isRegistred())
+    {
+        serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1 , "JOIN",
+                "You have not registered"); return ;
+    }
 	if (split[1][0] == ':')
 		str_chan = std::string(split[1], 1);
 	else
@@ -55,7 +58,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 			if (chan->getname() == args[i])
 			{
 				create = false;
-				if (chan->isOnChan(&(*client_it)))
+				if (chan->isOnChan(client))
 						break ;
 				if (chan->isBlocked())
 				{
@@ -70,47 +73,47 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 					break ;
 				}
 				if (chan->getflags()._quiet)
-					if (!client_it->isOperator())
+					if (!client->isOperator())
 					{
 						serv->fds[fd].wrbuf += get_reply(serv, "481", fd, args[i],
 								"Permission Denied- You're not an IRC operator");
 						break ;
 					}
 				if (chan->getflags()._invite_only)
-					if (!client_it->isInvited(&(*chan)))
+					if (!client->isInvited(&(*chan)))
 					{
 						serv->fds[fd].wrbuf += get_reply(serv, "473", fd, args[i],
 								"Cannot join channel (+i)");
 						break ;
 					}
 				if (chan->getflags()._ban_mask.size() > 0)
-					if (chan->isBanned(client_it->getptr()))
+					if (chan->isBanned(client))
 					{
 						serv->fds[fd].wrbuf += get_reply(serv, "474", fd, args[i],
 								"Cannot join channel (+b)");
 						break ;
 					}
 				if (chan->getflags()._limit_of_users <= chan->getclients().size()
-						&& !client_it->isOperator())
+						&& !client->isOperator())
 				{
 					serv->fds[fd].wrbuf += get_reply(serv, "471", fd, args[i],
 							"Cannot join channel (+l)");
 					break ;
 				}
-				chan->add_client(client_it->getptr());
-				client_it->add_channel(chan->getptr());
+				chan->add_client(client);
+				client->add_channel(chan->getptr());
 				if (args[i][0] != '&')
-					msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
-				join_backward(serv, chan, client_it);
+					msg_forward(-1, ":" + client->getnick() + " JOIN " + args[i], serv);
+				join_backward(serv, chan, client);
 				break ;
 			}
 		if (create)
 		{
-			serv->channels.push_back(Channel(args[i], keys[i], client_it->getptr()));
-			client_it->add_channel((serv->channels.rbegin())->getptr());
-			join_backward(serv, --serv->channels.end(), client_it);
+			serv->channels.push_back(Channel(args[i], keys[i], client));
+			client->add_channel((serv->channels.rbegin())->getptr());
+			join_backward(serv, --serv->channels.end(), client);
 			if (args[i][0] != '&')
-				msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
+				msg_forward(-1, ":" + client->getnick() + " JOIN " + args[i], serv);
 			if (!keys[i].empty())
 				msg_forward(-1, "MODE " + args[i] + " +k " + keys[i], serv);
 		}
@@ -159,24 +162,14 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 
 void	cmd_join(int fd, t_strvect const &split, IRCserv *serv)
 {
-	t_citer	client_it;
-
 	if (split.size() < 2)
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, fd, "JOIN",
 				"Not enough parameters");
 		return ;
 	}
-	client_it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (serv->fds[fd].type == FD_CLIENT || serv->fds[fd].type == FD_OPER)
-	{
-		if (!client_it->isRegistred())
-		{
-			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOTREGISTERED, -1 , "JOIN",
-					"You have not registered"); return ;
-		}
-		join_to_chan(fd, split, serv, client_it);
-	}
+		join_to_chan(fd, split, serv);
 	else if (split[0][0] == ':' && serv->fds[fd].type == FD_SERVER)
 		join_from_network(fd, split, serv);
 	else if (serv->fds[fd].type == FD_UNREGISTRED)
