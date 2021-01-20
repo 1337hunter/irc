@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/19 16:28:32 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 15:01:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -186,15 +186,22 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 		ERR_print_errors_cb(SSLErrorCallback, NULL);
 	}
 	if (fdref.type == FD_SERVER && !fdref.blocked && fdref.status)
+	{
 		self_cmd_squit(fd, fdref, serv);
+		fdref.fatal = true;
+	}
 	else if ((fdref.type == FD_CLIENT || fdref.type == FD_OPER) && fdref.status)
+	{
 		self_cmd_quit(fd, fdref, serv, "Read error");
+		fdref.fatal = true;
+	}
 	else if (fdref.type == FD_SERVICE && fdref.status)
+	{
 		self_service_quit(fd, fdref, serv);
+		fdref.fatal = true;
+	}
 	if (!fdref.blocked && !fdref.status)
 	{
-		if (fdref.status)
-			fdref.fatal = true;
 		if (fdref.tls)
 		{
 			if (!fdref.fatal)
