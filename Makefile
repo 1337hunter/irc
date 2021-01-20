@@ -167,7 +167,7 @@ fclean: clean
 re: fclean all
 
 install:
-	@mkdir -p /home/arcticfox/ircserv
-	@mkdir -p /home/arcticfox/ircserv/conf
-	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
-	@cp ./conf/* /home/arcticfox/ircserv/conf
+	@mkdir -p /home/se/ircserv
+	@mkdir -p /home/se/ircserv/conf
+	@cp $(NAME) /home/se/ircserv/$(NAME)
+	@cp ./conf/* /home/se/ircserv/conf
