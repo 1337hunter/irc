@@ -24,19 +24,6 @@ username(username), realname(realname), token(token), hopcount(0), fd(fd),
 {
 }
 
-Client::Client(std::string const &nick, std::string const hop, std::string const &user, std::string const &host, std::string const &servertoken, std::string const umode, std::string const &real) :
-	nickname(nick), username(user), realname(real), hostname(host),
-	token(servertoken), hopcount(STOI(hop)), fd(-1), _isConnected(true),
-	_isRegistred(true), USER(true), NICK(true),
-	_isInvisible(false), _isWallOps(false), _isServNotice(false), _isOperator(false)
-{
-	setMode(umode);
-	_restricted = false;
-	_away = false;
-	_blocked = false;
-	_blocked_time = 0;
-}
-
 Client::Client(const std::vector<std::string> &split, int fd) : nickname(split[1]),
 	username(split[3]), realname(split[7]), hostname(split[4]), token(split[5]),
 	hopcount(STOI(split[2])), fd(fd), _isConnected(true), _isRegistred(true),

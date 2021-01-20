@@ -61,9 +61,6 @@ public:
 	Client(std::string const &nickname, std::string const &token, int fd);
 	Client(std::string const &username, std::string const &realname,
 		   std::string const &token, int fd);
-	Client(std::string const &nick, std::string const hop, std::string const &user,
-		std::string const &host, std::string const &servertoken,
-		std::string const umode, std::string const &real);
 	Client(const std::vector<std::string> &split, int _fd);
 	Client(int fd, std::string const &username);
 	~Client();
