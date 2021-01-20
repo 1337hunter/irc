@@ -54,6 +54,7 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 		for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
 			if (chan->getname() == args[i])
 			{
+				create = false;
 				if (chan->isOnChan(&(*client_it)))
 						break ;
 				if (chan->isBlocked())
@@ -101,7 +102,6 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv, t_citer client_
 				if (args[i][0] != '&')
 					msg_forward(-1, ":" + client_it->getnick() + " JOIN " + args[i], serv);
 				join_backward(serv, chan, client_it);
-				create = false;
 				break ;
 			}
 		if (create)

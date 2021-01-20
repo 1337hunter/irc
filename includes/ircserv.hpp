@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 20:51:21 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 15:35:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,14 +100,14 @@ typedef struct		s_server
 	std::string		pass;
 	std::string		info;
 	std::list<t_server_intro>	routing;
-	std::list<Client>			clients; // if client is not on THIS server
-}					t_server;			 // client's fd must be setted to routong serv fd
+	std::list<Client>			clients;
+}					t_server;
 
 typedef std::vector<t_server>::iterator	t_netit;
 
 typedef struct		s_listen
 {
-	int				socket_fd;		// I don't think its necessery
+	int				socket_fd;
 	bool			serveronly;
 	bool			tls;
 	bool			ssl;
@@ -126,7 +126,7 @@ typedef struct		s_admin
 typedef struct		s_link
 {
 	std::string		servername;
-	std::string		hostname;		// ip or domain
+	std::string		hostname;
 	std::string		pass;
 	int				port;
 	bool			tls;
