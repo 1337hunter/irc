@@ -348,6 +348,8 @@ bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 	std::vector<t_server>::iterator	net;
 	std::list<Client>::iterator		client;
 
+	if (ptr == 0)
+		return true;
 	client = serv->clients.begin();
 	for (; client != serv->clients.end(); client++)
 		if (&(*client) == ptr)

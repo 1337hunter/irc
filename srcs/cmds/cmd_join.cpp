@@ -149,6 +149,7 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 			else
 				serv->channels.push_back(Channel(modes[0], client));
 			channel = &serv->channels.back();
+			client->add_channel(channel);
 		}
 		else
 		{

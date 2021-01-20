@@ -77,6 +77,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKCOLLISION, -1, split[1],
 			"Nickname collision KILL from " + client->getusername() +
 			"@" + client->gethostname());
+			remove_client_by_ptr(find_client_by_fd(fd, serv), serv);
 			serv->fds[fd].status = false;
 		}
 		return ;

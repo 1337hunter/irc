@@ -27,6 +27,7 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 			if ((client = find_client_by_nick(std::string(clients[i], 2), serv)))
 			{
 				channel->add_client(client, 1, 1, 0);
+				client->add_channel(channel);
 				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 			}
 		}
@@ -35,6 +36,7 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 			if ((client = find_client_by_nick(std::string(clients[i], 1), serv)))
 			{
 				channel->add_client(client, 0, 1, 0);
+				client->add_channel(channel);
 				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 			}
 		}
@@ -43,6 +45,7 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 			if ((client = find_client_by_nick(std::string(clients[i], 1), serv)))
 			{
 				channel->add_client(client, 0, 0, 1);
+				client->add_channel(channel);
 				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 			}
 		}
