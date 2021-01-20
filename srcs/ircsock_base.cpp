@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/20 19:52:47 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/20 22:29:54 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,8 +216,10 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	{
 		if (fdref.tls)
 		{
+		/*	temp no need to shutdown
 			if (!fdref.fatal)
 				SSL_shutdown(fdref.sslptr);
+		*/
 			SSL_free(fdref.sslptr);
 #if DEBUG_MODE
 			std::cout << "tls";

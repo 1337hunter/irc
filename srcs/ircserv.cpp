@@ -40,11 +40,9 @@ void	ircserv_free(IRCserv *serv)
 	fd = serv->fds.begin();
 	for (; fd != serv->fds.end(); fd++)
 	{
-		if (fd->second.tls)
-		{
+		if (fd->second.tls && fd->second.type != FD_ME)
 			SSL_shutdown(fd->second.sslptr);
-			SSL_free(fd->second.sslptr);
-		}
+		SSL_free(fd->second.sslptr);
 		close(fd->first);
 	}
 	SSL_CTX_free(serv->sslctx);
