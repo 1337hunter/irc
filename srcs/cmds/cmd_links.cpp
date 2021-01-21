@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 20:31:42 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 20:34:48 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,9 @@
 							as seen by the first server matching *.edu.
 */
 
+typedef std::list<t_server_intro>::iterator	t_netit2;
+
+
 std::string	reply_links(IRCserv *serv, std::string const &target,
 	std::string const &mask)
 {
@@ -46,11 +49,18 @@ std::string	reply_links(IRCserv *serv, std::string const &target,
 	if (match(serv->servername, mask))
 		reply += ft_buildmsg(serv->servername, RPL_LINKS, target,
 			mask + " " + serv->servername, TOSTRING(0) + " " + serv->info);
-	for (t_netit it = serv->network.begin(); it != serv->network.end(); it++)
-		if (match(it->servername, mask))
+	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
+	{
+		if (match(sit->servername, mask))
 			reply += ft_buildmsg(serv->servername, RPL_LINKS, target,
-				mask + " " + it->servername,
-				TOSTRING(it->hopcount) + " " + it->info);
+				mask + " " + sit->servername,
+				TOSTRING(sit->hopcount) + " " + sit->info);
+		for (t_netit2 ssit = sit->routing.begin(); ssit != sit->routing.end(); ssit++)
+			if (match(ssit->servername, mask))
+				reply += ft_buildmsg(serv->servername, RPL_LINKS, target,
+					mask + " " + ssit->servername,
+					TOSTRING(ssit->hopcount) + " " + ssit->info);
+	}
 	reply += ft_buildmsg(serv->servername, RPL_ENDOFLINKS, target, mask,
 		"End of LINKS list");
 	return (reply);

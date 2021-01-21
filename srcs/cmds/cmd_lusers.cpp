@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/19 15:04:36 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 17:23:13 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 20:11:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@
 		ERR_NOSUCHSERVER
 */
 
+typedef std::list<t_server_intro>::iterator	t_netit2;
+
 size_t		getusercount(IRCserv *serv, std::string const &mask = "*",
 	bool opersonly = false)
 {
@@ -46,10 +48,19 @@ size_t		getusercount(IRCserv *serv, std::string const &mask = "*",
 			if (!opersonly || (opersonly && cit->isOperator()))
 				count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
+	{
 		if (match(sit->servername, mask))
 			for (t_citer cit = sit->clients.begin(); cit != sit->clients.end(); cit++)
-				if (!opersonly || (opersonly && cit->isOperator()))
+				if (sit->token == cit->gettoken() && (!opersonly ||
+					(opersonly && cit->isOperator())))
 					count++;
+		for (t_netit2 ssit = sit->routing.begin(); ssit != sit->routing.end(); ssit++)
+			if (match(ssit->servername, mask))
+				for (t_citer cit = sit->clients.begin(); cit != sit->clients.end(); cit++)
+					if (ssit->token == cit->gettoken() && (!opersonly ||
+						(opersonly && cit->isOperator())))
+						count++;
+	}
 	return (count);
 }
 
@@ -61,9 +72,15 @@ size_t		getservcount(IRCserv *serv, std::string const &mask = "*",
 	if (!connectedtomeonly && match(serv->servername, mask))
 		count++;
 	for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
-		if ((!connectedtomeonly || sit->hopcount == 1) &&
-			match(sit->servername, mask))
+	{
+		if (match(sit->servername, mask))
 			count++;
+		if (connectedtomeonly)
+			continue ;
+		for (t_netit2 ssit = sit->routing.begin(); ssit != sit->routing.end(); ssit++)
+			if (match(ssit->servername, mask))
+				count++;
+	}
 	return (count);
 }
 

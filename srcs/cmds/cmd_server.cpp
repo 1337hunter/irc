@@ -20,7 +20,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	temp.servername = split[2];
 	temp.behind = behind;
 	temp.info = strvect_to_string(split, ' ', 5);
-	temp.token = split[3];
+	temp.token = split[4];
 	begin->routing.push_back(temp);
 	forward_vect = split;
 	forward_vect[3] = TOSTRING(temp.hopcount + 1);
