@@ -501,11 +501,11 @@ void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 		}
 	if (net == serv->network.end())
 	{
-		std::string	msg = "Server connection error: ";
-		if (fdref.tls)
+		std::string	msg = "Server connection error";
+/*		if (fdref.tls)
 			msg += "tls to nontls server connection attempt or server didn't answer for too long";
 		else
-			msg += "nontls to tls server connection attempt";
+			msg += "nontls to tls server connection attempt";	*/
 		msg += " (check config)";
 		msg_error(msg, serv);
 		fdref.status = false;
@@ -542,7 +542,7 @@ void	check_liveness(IRCserv *serv)
 	while (fdit != serv->fds.end())
 	{
 		if (fdit->second.type != FD_ME && fdit->second.type != FD_UNREGISTRED &&
-			!(fdit->second.inprogress) && !(fdit->second.fatal) &&
+			/* !(fdit->second.inprogress) && */ !(fdit->second.fatal) &&
 			(fdit->second.status) && !(fdit->second.blocked))
 		{
 			if (fdit->second.awaitingpong && fdit->second.lastactive <

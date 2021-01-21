@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/20 19:25:20 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 21:37:27 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	fdref.tls = true;
 	fdref.status = true;
 	fdref.fatal = false;
-	fdref.inprogress = false;
+//	fdref.inprogress = false;
 	fdref.dtopened = ft_getcurrenttime();
 	fdref.sentmsgs = 0;
 	fdref.recvmsgs = 0;
@@ -130,10 +130,7 @@ void	DoHandshakeTLS(int fd, IRCserv *serv)
 			std::string		sslerr;
 			ERR_print_errors_cb(SSLErrorCallback, &sslerr);
 			if (fdref.type == FD_SERVER && sslerr.length() == 0)
-			{
-				sslerr = "TLS handshake failed for server ";
-				sslerr += fd;
-			}
+				sslerr = "TLS handshake failed for server " + TOSTRING(fd);
 			if (fdref.type == FD_SERVER)
 				msg_error("SSL_connect: " + sslerr, serv);
 			// we shouldn't call SSL_shutdown because it's already fatal

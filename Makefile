@@ -46,7 +46,7 @@ CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
 CFLAGS		+= -DPING_TIMEOUT=10000 -DPING_FREQUENCY=10000
-CFLAGS		+= -g -DDEBUG_MODE=1 -fsanitize=address
+CFLAGS		+= -g -DDEBUG_MODE=1# -fsanitize=address
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
