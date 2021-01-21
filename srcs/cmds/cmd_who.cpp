@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/26 15:53:32 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:07:17 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 20:43:26 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@
 					if they are an operator.
 */
 
-typedef std::list<Client>::iterator		t_cit;
-typedef std::list<Channel>::iterator	t_chit;
-typedef std::list<t_server>::iterator	t_netit;
+typedef std::list<Client>::iterator			t_cit;
+typedef std::list<Channel>::iterator		t_chit;
+typedef std::list<t_server_intro>::iterator	t_netit2;
 typedef std::MAP<Client*, client_flags>::iterator	t_cpit;
 
 std::string	getservernamebytoken(IRCserv *serv, std::string const &token)
@@ -52,9 +52,15 @@ std::string	getservernamebytoken(IRCserv *serv, std::string const &token)
 	if (serv->token == token)
 		return (serv->servername);
 	else
-		for (t_netit nit = serv->network.begin(); nit != serv->network.end(); nit++)
-			if (nit->token == token)
-				return (nit->servername);
+		for (t_netit sit = serv->network.begin(); sit != serv->network.end(); sit++)
+		{
+			if (sit->token == token)
+				return (sit->servername);
+			else
+				for (t_netit2 ssit = sit->routing.begin(); ssit != sit->routing.end(); ssit++)
+					if (ssit->token == token)
+						return (ssit->servername);
+		}
 	return ("*");
 }
 
