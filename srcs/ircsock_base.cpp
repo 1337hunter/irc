@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/21 22:35:19 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 01:35:29 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -269,26 +269,19 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 void	SendMessage(int fd, IRCserv *serv)
 {
 	ssize_t		r = 0;
-	std::string	reply;
+	std::string	reply, remain;
 	t_fd		&fdref = serv->fds[fd];
 
 	if (fdref.wrbuf.length() > BUF_SIZE)
 	{
 		reply = fdref.wrbuf.substr(0, BUF_SIZE);
-		fdref.wrbuf = fdref.wrbuf.substr(BUF_SIZE);
+		remain = fdref.wrbuf.substr(BUF_SIZE);
 	}
 	else
 	{
 		reply = fdref.wrbuf;
-		fdref.wrbuf.erase();
+		remain = "";
 	}
-
-	size_t tmp = ft_splitstringbyany(reply, CRLF).size();
-	if (reply.find_last_of(CRLF) != reply.length())
-		tmp--;
-	fdref.sentmsgs += tmp;
-	if (fdref.sock > 0)
-		serv->fds[fdref.sock].sentmsgs += tmp;
 
 #if DEBUG_MODE
 	if (fdref.tls && !reply.empty())
@@ -301,12 +294,26 @@ void	SendMessage(int fd, IRCserv *serv)
 		r = SSL_write(fdref.sslptr, reply.c_str(), reply.length());
 	else
 		r = send(fd, reply.c_str(), reply.length(), 0);
-	fdref.sentbytes += r;
-	if (fdref.sock > 0)
-		serv->fds[fdref.sock].sentbytes += r;
 
 	if (r <= 0 || fdref.status == false)
 		read_error(fd, fdref, r, serv);
+	else
+	{
+		size_t msgs = ft_splitstringbyany(reply, CRLF).size();
+		if (reply.find_last_of(CRLF) != reply.length())
+			msgs--;
+
+		fdref.sentmsgs += msgs;
+		if (fdref.sock > 0)
+			serv->fds[fdref.sock].sentmsgs += msgs;
+
+		fdref.sentbytes += r;
+		if (fdref.sock > 0)
+			serv->fds[fdref.sock].sentbytes += r;
+
+		fdref.wrbuf = remain;
+	}
+
 }
 
 /*
