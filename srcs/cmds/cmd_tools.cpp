@@ -150,26 +150,20 @@ std::string		getservernamebymask(IRCserv *serv, std::string const &mask)
 
 	if (match(serv->servername, mask))
 		servername = serv->servername;
-	for (t_netit servit = serv->network.begin();
-		servit != serv->network.end() && servername.empty(); servit++)
+	else
 	{
-		if (match(servit->servername, mask))
-		{
-			servername = servit->servername;
-			break ;
-		}
+		t_server	*remote = find_server_by_mask(mask, serv);
+		if (remote)
+			servername = remote->servername;
 	}
 	return (servername);
 }
 
 int				getserverfdbymask(IRCserv *serv, std::string const &mask)
 {
-	for (t_netit servit = serv->network.begin();
-		servit != serv->network.end(); servit++)
-	{
-		if (match(servit->servername, mask))
-			return (servit->fd);
-	}
+	t_server	*remote = find_server_by_mask(mask, serv);
+	if (remote)
+		return (remote->fd);
 	return (-1);
 }
 
