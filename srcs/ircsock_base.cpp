@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/22 01:35:29 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 01:36:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,7 +236,10 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 
 	if (r >= 0)
 		buf_read[r] = 0;
-	if (r > 0)
+
+	if (r <= 0 || !fdref.status)
+		read_error(fd, fdref, r, serv);
+	else
 	{
 		fdref.recvbytes += r;
 		if (fdref.sock > 0)
@@ -262,8 +265,6 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			catch (std::out_of_range const &e) { (void)e; }
 		}
 	}
-	else if (r <= 0 || !fdref.status)
-		read_error(fd, fdref, r, serv);
 }
 
 void	SendMessage(int fd, IRCserv *serv)
