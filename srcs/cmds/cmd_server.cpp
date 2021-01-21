@@ -43,6 +43,7 @@ bool	send_clients_and_channels(int fd, IRCserv *serv)
 	std::list<std::string>::const_iterator				Musk;
 	std::MAP<Client*, client_flags>::iterator	client_chan;
 
+	enjoy = "";
 	for (client = serv->clients.begin(); client != serv->clients.end(); client++)
 	{
 		serv->fds[fd].wrbuf += "NICK " + client->getnick() + " 1 " +
@@ -201,14 +202,14 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	begin = serv->network.begin();
 	while (begin != end)
 	{
-		backward += ":" + begin->servername + " SERVER " + serv->servername +
-			" 2 " + begin->token + " " + begin->info + CRLF; //send nearest servers
+		backward += ":" + serv->servername + " SERVER " + begin->servername +
+			" 2 " + begin->token + " :" + begin->info + CRLF; //send nearest servers
 		serv_intro = begin->routing.begin();
 		while (serv_intro != begin->routing.end())
 		{
-			backward += ":" + serv_intro->behind + " SERVER " + serv_intro->servername +
+			backward += ":" + serv_intro->servername + " SERVER " + serv_intro->behind +
 				" " + TOSTRING(serv_intro->hopcount + 1) + " " +
-				serv_intro->token + " " + serv_intro->info + CRLF;
+				serv_intro->token + " :" + serv_intro->info + CRLF;
 			serv_intro++;
 		}
 		begin++;

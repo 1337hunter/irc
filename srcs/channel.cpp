@@ -421,11 +421,6 @@ std::string	Channel::getMode(void)
 {
 	std::string	mode;
 
-	if (!(_flags._anonymous || _flags._invite_only || _flags._moderated ||
-			_flags._no_messages_outside || _flags._quiet ||
-			_flags._private || _flags._secret || _flags._reop ||
-			_flags._topic_settable_by_chop)) //if master
-		return mode;
 	mode += '+';
 	if (_flags._anonymous)
 		mode += 'a';

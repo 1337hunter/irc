@@ -4,27 +4,16 @@
 # include <iostream>
 # include <string>
 # include <vector>
-// fcntl, select, socket, inet structs, inet
 # include <fcntl.h>
 # include <sys/select.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <arpa/inet.h>
 # include <netdb.h>
-// read, write
 # include <unistd.h>
 # include "common_defines.hpp"
 # include "channel.hpp"
 # include <list>
-
-/*	A client is anything connecting to a server that is not another
-	server.  Each client is distinguished from other clients by a unique
-	nickname having a maximum length of nine (9) characters.
-	See the protocol grammar rules for what may and may not be used in a
-	nickname.  In addition to the nickname, all servers must have the
-	following information about all clients: the real name of the host
-	that the client is running on, the username of the client on that
-	host, and the server to which the client is connected.	*/
 
 class Channel;
 
@@ -41,10 +30,10 @@ private:
 	bool			_isRegistred;
 	bool			USER;
 	bool			NICK;
-	bool			_isInvisible; // User modes
+	bool			_isInvisible;
 	bool			_isWallOps;
 	bool			_isServNotice;
-	bool			_isOperator; // User modes
+	bool			_isOperator;
 	bool			_restricted;
 	bool			_away;
 	std::string		_away_message;
@@ -53,9 +42,8 @@ private:
 	std::string		_blocked_server;
 	time_t			dtloggedin;
 	time_t			dtlastactive;
-	std::list<Channel*>	_channels; //unordered map is better channame->Channel*
+	std::list<Channel*>	_channels;
 	std::list<std::string>	invited;
-	// Maybe server class object reference or pointer here
 	Client(void);
 public:
 	Client(std::string const &nickname, std::string const &token, int fd);

@@ -54,6 +54,7 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 			if ((client = find_client_by_nick(clients[i], serv)))
 			{
 				channel->add_client(client);
+				client->add_channel(channel);
 				msg_to_channel_this(channel, client, "JOIN :" + channel->getname(), serv);
 			}
 		}

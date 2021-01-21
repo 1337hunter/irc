@@ -48,7 +48,6 @@ void	names_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	t_strvect	chan_args;
 	std::list<Channel>::iterator    chan;
 	std::list<Client>::iterator		client_it;
-	std::list<Channel*>::iterator	client_chan;
 	Client  *client;
 	Channel	*channel;
 
@@ -61,13 +60,8 @@ void	names_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	{
 		for (chan = serv->channels.begin(); chan != serv->channels.end(); chan++)
 		{
-			client_chan = client->getchannels().begin();
-			for (;client_chan != client->getchannels().end(); client_chan++)
-				if ((*client_chan) == &(*chan))
-					break ;
-			if ((chan->getflags()._private || chan->getflags()._secret ||
-					chan->getflags()._anonymous) &&
-					(client->isOperator() || (*client_chan) != &(*chan)))
+			if (((chan->getflags()._private || chan->getflags()._secret) &&
+						!chan->isOnChan(client)) || chan->getflags()._anonymous)
 				continue ;
 			else
 				serv->fds[fd].wrbuf += reply_chan_names(serv, &(*chan), client);

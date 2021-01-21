@@ -28,7 +28,7 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 		return ;
 	}
 	forward = "NICK " + split[1] + " " + TOSTRING(hop + 1) + " " + split[3] +
-		" " + split[4] + " " + split[5] + " " + split[6] + " " + split[7];
+		" " + split[4] + " " + split[5] + " " + split[6] + " :" + split[7];
 	for (size_t i = 8; i < split.size(); i++)
 		forward += " " + split[i];
 	forward += CRLF;

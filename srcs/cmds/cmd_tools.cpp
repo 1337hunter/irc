@@ -35,7 +35,7 @@ std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 	std::string	reply;
 	std::MAP<Client*, client_flags>::iterator c_map;
 
-	reply += ":" + serv->servername + " " + RPL_NAMREPLY + " " +
+	reply = ":" + serv->servername + " " + RPL_NAMREPLY + " " +
 		client->getnick() + " ";
 	if (chan->isSecret())
 		reply += "@ ";
@@ -44,13 +44,16 @@ std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 	else
 		reply += "= ";
 	reply += chan->getname() + " :";
+	std::cout << "1" << std::endl;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 	{
+		std::cout << "c_map->first->getnick(): " << c_map->first->getnick() << std::endl;
 		if (client->isOperator() || !c_map->first->isInvisible())
 		{
 			if (c_map->second._operator)
 				reply += "@";
-			reply += c_map->first->getnick() + " ";
+			reply += c_map->first->getnick();
+			reply += ' ';
 		}
 	}
 	reply = reply.substr(0, reply.size() - 1);
