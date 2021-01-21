@@ -41,12 +41,10 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 			if (client_it->first->getFD() != fd)
 			{
 				if (client_it->first->gethop() == 0)
-					serv->fds[client_it->first->getFD()].wrbuf += ":" + client->getinfo() + " " +
-						strvect_to_string(split, ' ', 1) + CRLF;
-				else
-					serv->fds[client_it->first->getFD()].wrbuf +=
-						strvect_to_string(split) + CRLF;
+					serv->fds[client_it->first->getFD()].wrbuf += ":" +
+					client->getinfo() + " " + strvect_to_string(split, ' ', 1) + CRLF;
 			}
+		msg_forward(fd, strvect_to_string(split), serv);
 	}
 	else
 	{
@@ -201,10 +199,9 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 					"Cannot send to channel");
 			return ;
 		}
-		if (split[1][0] == '&')
-			msg_to_channel_this(channel, client, strvect_to_string(split), serv);
-		else
-			msg_to_channel(channel, client, strvect_to_string(split), serv);
+		msg_to_channel_this(channel, client, strvect_to_string(split), serv);
+		if (split[1][0] != '&')
+			msg_forward(fd, ":" + client->getnick() + " " + strvect_to_string(split), serv);
 	}
 	else //to client
 	{
