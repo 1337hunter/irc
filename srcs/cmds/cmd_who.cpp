@@ -44,7 +44,7 @@
 
 typedef std::list<Client>::iterator		t_cit;
 typedef std::list<Channel>::iterator	t_chit;
-typedef std::vector<t_server>::iterator	t_netit;
+typedef std::list<t_server>::iterator	t_netit;
 typedef std::MAP<Client*, client_flags>::iterator	t_cpit;
 
 std::string	getservernamebytoken(IRCserv *serv, std::string const &token)

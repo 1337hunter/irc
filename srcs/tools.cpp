@@ -21,7 +21,7 @@ t_citer		ft_findnick(t_citer const &begin, t_citer const &end,
 Client		*find_client_by_nick(std::string const &nick, IRCserv *serv)
 {
 	std::list<Client>::iterator		client = serv->clients.begin();
-	std::vector<t_server>::iterator	net = serv->network.begin();
+	std::list<t_server>::iterator	net = serv->network.begin();
 
 	while (client != serv->clients.end())
 	{
@@ -78,7 +78,7 @@ Client		*find_client_by_fd(int	fd, IRCserv *serv)
 
 t_server	*find_server_by_token(std::string const &token, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 
 	net = serv->network.begin();
 	for (; net != serv->network.end(); net++)
@@ -90,7 +90,7 @@ t_server	*find_server_by_token(std::string const &token, IRCserv *serv)
 Client		*find_client_by_info(std::string const &info, IRCserv *serv)
 {
 	std::list<Client>::iterator		client = serv->clients.begin();
-	std::vector<t_server>::iterator	net = serv->network.begin();
+	std::list<t_server>::iterator	net = serv->network.begin();
 
 	while (client != serv->clients.end())
 	{
@@ -116,7 +116,7 @@ Client		*find_client_by_user_or_nick_and_host(std::string const &str, IRCserv *s
 	t_strvect				user_and_host;
 	t_strvect				host_and_server;
 	std::list<Client>::iterator		client = serv->clients.begin();
-	std::vector<t_server>::iterator	net = serv->network.begin();
+	std::list<t_server>::iterator	net = serv->network.begin();
 
 	if (str.find_first_of("!") != NPOS)
 		return find_client_by_info(str, serv);
@@ -179,7 +179,7 @@ Channel		*find_channel_by_name(const std::string	&name, IRCserv *serv)
 
 t_server	*find_server_by_fd(int fd, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	net = serv->network.begin();
+	std::list<t_server>::iterator	net = serv->network.begin();
 
 	while (net != serv->network.end())
 	{
@@ -192,7 +192,7 @@ t_server	*find_server_by_fd(int fd, IRCserv *serv)
 
 std::string	get_servername_by_mask(std::string	const &mask, IRCserv *serv)
 {
-	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server>::iterator net = serv->network.begin();
 	std::list<t_server_intro>::iterator routing;
 	std::string	servername;
 
@@ -209,7 +209,7 @@ std::string	get_servername_by_mask(std::string	const &mask, IRCserv *serv)
 
 std::string	get_servername_by_token(std::string const &token, IRCserv *serv)
 {
-	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server>::iterator net = serv->network.begin();
 	std::list<t_server_intro>::iterator routing;
 	std::string	servername;
 
@@ -227,7 +227,7 @@ std::string	get_servername_by_token(std::string const &token, IRCserv *serv)
 
 std::string	get_hopcount_by_token(std::string const &token, IRCserv *serv)
 {
-	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server>::iterator net = serv->network.begin();
 	std::list<t_server_intro>::iterator routing;
 	std::string	servername;
 
@@ -244,7 +244,7 @@ std::string	get_hopcount_by_token(std::string const &token, IRCserv *serv)
 
 t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 {
-	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server>::iterator net = serv->network.begin();
 	std::list<t_server_intro>::iterator routing;
 
 	for (; net != serv->network.end(); net++)
@@ -260,7 +260,7 @@ t_server	*find_server_by_mask(std::string const &mask, IRCserv *serv)
 
 t_server	*find_server_by_name(std::string const &name, IRCserv *serv)
 {
-	std::vector<t_server>::iterator net = serv->network.begin();
+	std::list<t_server>::iterator net = serv->network.begin();
 	std::list<t_server_intro>::iterator routing;
 
 	for (; net != serv->network.end(); net++)
@@ -319,7 +319,7 @@ void		addtonickhistory(IRCserv *serv, t_citer const client)
 int			nick_forward(IRCserv *serv, Client *client)
 {
 	std::string	forward;
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 
 	forward = "NICK " + client->getnick() + " " + TOSTRING(client->gethop() + 1)
 	   	+ " " + client->getusername() + " " + client->gethostname() + " " +
@@ -345,7 +345,7 @@ bool	remove_channel(Channel *channel, IRCserv *serv)
 
 bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 	std::list<Client>::iterator		client;
 
 	if (ptr == 0)
@@ -370,7 +370,7 @@ bool	remove_client_by_ptr(Client *ptr, IRCserv *serv)
 
 bool	remove_client_by_nick(std::string const &nick, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 	std::list<Client>::iterator		client;
 
 	client = serv->clients.begin();
@@ -408,7 +408,7 @@ void	clear_kill_list(IRCserv *serv)
 
 void	remove_server_by_name(std::string const &servername, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	it;
+	std::list<t_server>::iterator	it;
 
 	it = serv->network.begin();
 	for (; it != serv->network.end(); it++)
@@ -487,19 +487,19 @@ void	clear_whowas(IRCserv *serv)
 void    self_cmd_squit(int fd, t_fd &fdref, IRCserv *serv)
 {
 	t_strvect   split;
+	std::list<t_server>::iterator net;
 
-	size_t i = 0;
-	for (; i < serv->network.size(); i++)
-		if (serv->network[i].fd == fd)
+	net = serv->network.begin();
+	for (; net != serv->network.end(); net++)
+		if (net->fd == fd)
 		{
 			split.push_back("SQUIT");
-			split.push_back(serv->network[i].servername);
+			split.push_back(net->servername);
 			split.push_back(":Read error");
 			cmd_squit(serv->listen[0].socket_fd, split, serv);
 			break ;
 		}
-	// fix for misconfigured servers (nontls to tls connect attempt)
-	if (i >= serv->network.size())
+	if (net == serv->network.end())
 	{
 		std::string	msg = "Server connection error: ";
 		if (fdref.tls)

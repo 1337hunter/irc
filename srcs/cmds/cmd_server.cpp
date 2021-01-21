@@ -6,7 +6,7 @@
 //split: :<behind> SERVER <servername> <hopcount> <token> <info>
 void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::vector<t_server>::iterator begin = serv->network.begin();
+	std::list<t_server>::iterator begin = serv->network.begin();
 	t_server_intro	temp;
 	std::string		behind(split[0], 1);
 	t_strvect		forward_vect;
@@ -14,7 +14,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 
 	while (begin != serv->network.end() && begin->fd != fd)
 		begin++;
-	if (begin == serv->network.end()) //error
+	if (begin == serv->network.end())
 		return ;
 	try { temp.hopcount = STOI(split[3]); } catch (std::exception &e) { (void)e; return; }
 	temp.servername = split[2];
@@ -22,7 +22,6 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 	temp.info = strvect_to_string(split, ' ', 5);
 	temp.token = split[3];
 	begin->routing.push_back(temp);
-	// forward broadcast
 	forward_vect = split;
 	forward_vect[3] = TOSTRING(temp.hopcount + 1);
 	forward = strvect_to_string(forward_vect);
@@ -36,7 +35,7 @@ void	introduce_server_behind(int fd, const t_strvect &split, IRCserv *serv)
 bool	send_clients_and_channels(int fd, IRCserv *serv)
 {
 	std::list<Client>::iterator		client;
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 	std::list<Channel>::iterator	channel;
 	std::string						enjoy;
 	std::string						channel_forward;
@@ -132,13 +131,12 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (split[0][0] == ':')
 	{
-		clear_block_list(serv, std::string(split[0], 1));
+//		clear_block_list(serv, std::string(split[0], 1));
 		introduce_server_behind(fd, split, serv);
 		return ;
 	}
-	clear_block_list(serv, split[1]);
+//	clear_block_list(serv, split[1]);
 	link = serv->link.begin();
-	// looking for link with servername (is SERVER servername allowd to connect to us?)
 	while (link != serv->link.end())
 	{
 		if (link->servername == split[1])
@@ -147,8 +145,7 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (link == serv->link.end())
 	{
-		serv->fds[fd].wrbuf += "ERROR :You are not allowed to connect to.";
-		serv->fds[fd].wrbuf += CRLF;
+		serv->fds[fd].wrbuf += "ERROR :You are not allowed to connect to.\r\n";
 		serv->fds[fd].status = false;
 		return ;
 	}
@@ -164,7 +161,6 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += "ERROR :Password incorrect\r\n";
 		serv->fds[fd].status = false; return ;
 	}
-	//backward message to introduce us to enother server
 	if (serv->fds[fd].type != FD_SERVER)
 	{
 		serv->fds[fd].wrbuf += "PASS " + link->pass + " " + VERSION + " " + "IRC|" +
@@ -195,15 +191,15 @@ void	cmd_server(int fd, const t_strvect &split, IRCserv *serv)
 	temp.info = split.size() < 5 ? split[3] : split[4];
 	msg_forward(fd, ":" + serv->servername + " SERVER " + split[1] + " 2 " +
 			temp.token + " " + temp.info , serv);
-	std::vector<t_server>::iterator begin = serv->network.begin();
-	std::vector<t_server>::iterator end = serv->network.end();
+	std::list<t_server>::iterator begin = serv->network.begin();
+	std::list<t_server>::iterator end = serv->network.end();
 	std::string	backward;
 	std::list<t_server_intro>::iterator	serv_intro;
 	begin = serv->network.begin();
 	while (begin != end)
 	{
 		backward += ":" + serv->servername + " SERVER " + begin->servername +
-			" 2 " + begin->token + " :" + begin->info + CRLF; //send nearest servers
+			" 2 " + begin->token + " :" + begin->info + CRLF;
 		serv_intro = begin->routing.begin();
 		while (serv_intro != begin->routing.end())
 		{

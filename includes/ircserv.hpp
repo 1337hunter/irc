@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/21 14:41:16 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/21 19:12:26 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ typedef struct		s_server
 	std::list<Client>			clients;
 }					t_server;
 
-typedef std::vector<t_server>::iterator	t_netit;
+typedef std::list<t_server>::iterator	t_netit;
 
 typedef struct		s_listen
 {
@@ -197,7 +197,7 @@ struct				IRCserv
 	t_admin						admin;		// for ADMIN command
 	std::vector<t_link>			link;		// servers allowed to connect to
 	std::vector<t_oper>			oper;		// operators thac can connect to server
-	std::vector<t_server>		network;	// nearest servers connected to network
+	std::list<t_server>			network;	// nearest servers connected to network
 	std::list<Client>			clients;
 	std::list<Channel>			channels;
 	fd_set						fdset_read;

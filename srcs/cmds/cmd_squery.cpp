@@ -3,9 +3,8 @@
 #include "tools.hpp"
 #include "message.hpp"
 
-void	squery_from_network(int fd, const t_strvect &split, IRCserv *serv)
+void	squery_from_network()
 {
-	fd = 0; (void)split; serv = 0;
 }
 
 void	squery_from_client(int fd, const t_strvect &split, IRCserv *serv)
@@ -41,7 +40,7 @@ void	squery_from_client(int fd, const t_strvect &split, IRCserv *serv)
 void	cmd_squery(int fd, const t_strvect &split, IRCserv *serv)
 {
 	if (serv->fds[fd].type == FD_SERVER)
-		squery_from_network(fd, split, serv);
+		squery_from_network();
 	else
 		squery_from_client(fd, split, serv);
 }

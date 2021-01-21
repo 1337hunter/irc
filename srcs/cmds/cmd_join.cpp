@@ -136,7 +136,7 @@ void	join_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	else
 		str_chan = split[2];
 	if ((client = find_client_by_nick(get_nick_from_info(split[0]), serv)) == 0)
-		return ;//bad command from server
+		return ;
 	chans = ft_splitstring(str_chan, ',');
 	for (size_t	i = 0; i < chans.size(); i++)
 	{

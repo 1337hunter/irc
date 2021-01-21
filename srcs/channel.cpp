@@ -198,11 +198,17 @@ void		Channel::add_client(Client *client, bool O, bool o, bool v)
 {
 	if (O)
 	{
+		std::cout << "_clients.size(): " << _clients.size() << "\n\n";
 		_clients[client] = client_flags(1, 1, v);
 		_channel_creator = client->getinfo();
+		std::cout << "_clients.size(): " << _clients.size() << "\n\n";
 	}
 	else
+	{
+		std::cout << "_clients.size(): " << _clients.size() << "\n\n";
 		_clients[client] = client_flags(0, o, v);
+		std::cout << "_clients.size(): " << _clients.size() << "\n\n";
+	}
 }
 
 bool		Channel::isSecret(void)

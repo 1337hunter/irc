@@ -12,7 +12,7 @@ void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	t_server				*routing;
 	int						hop;
 	std::string				forward;
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 
 	if (split.size() < 8)
 		return ;

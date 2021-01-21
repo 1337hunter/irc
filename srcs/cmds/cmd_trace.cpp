@@ -71,7 +71,7 @@ void	trace_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	Client		*oper;
 	t_server	*_serv = 0;
 	int		c;
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 	std::MAP<int, t_fd>::iterator	fds;
 	std::list<t_service>::iterator	service;
 

@@ -7,7 +7,7 @@ void    squit_from_client(int fd, const t_strvect &split, IRCserv *serv);
 
 void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	std::vector<t_server>::iterator		net;
+	std::list<t_server>::iterator		net;
 	std::list<t_server_intro>::iterator	intro;
 	std::list<Client>::iterator			client_it;
 	t_strvect   command;
@@ -120,7 +120,7 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			command.push_back(":Server " + _serv->servername + " disconencted (SQUIT)");
 			cmd_quit(_serv->fd, command, serv);
 			command.clear();
-			client_it = _serv->clients.begin(); // client is removing inside cmd_quit
+			client_it = _serv->clients.begin();
 		}
 		remove_server_by_name(_serv->servername, serv);
 		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +

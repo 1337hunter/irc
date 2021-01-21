@@ -76,7 +76,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 	Client		*client_msg;
 	Channel		*channel;
 	bool		good_mask = false;
-	std::vector<t_server>::iterator		net;
+	std::list<t_server>::iterator		net;
 	std::list<Client>::iterator			client_it;
 	std::list<t_server_intro>::iterator	routing;
 	t_server	*_serv = 0;

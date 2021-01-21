@@ -6,8 +6,8 @@ void	cmd_admin(int fd, const t_strvect &split, IRCserv *serv)
 {
 	t_citer		client;
 	std::string	forward_message;
-	std::vector<t_server>::iterator nb = serv->network.begin();
-	std::vector<t_server>::iterator ne = serv->network.end();
+	std::list<t_server>::iterator nb = serv->network.begin();
+	std::list<t_server>::iterator ne = serv->network.end();
 
 	client = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (client == serv->clients.end() && serv->fds[fd].type != FD_SERVER)

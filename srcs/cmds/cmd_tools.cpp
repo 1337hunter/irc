@@ -44,10 +44,8 @@ std::string	reply_chan_names(IRCserv *serv, Channel* chan, Client *client)
 	else
 		reply += "= ";
 	reply += chan->getname() + " :";
-	std::cout << "1" << std::endl;
 	for (c_map = chan->getclients().begin(); c_map != chan->getclients().end(); c_map++)
 	{
-		std::cout << "c_map->first->getnick(): " << c_map->first->getnick() << std::endl;
 		if (client->isOperator() || !c_map->first->isInvisible())
 		{
 			if (c_map->second._operator)
@@ -68,7 +66,7 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	std::string reply;
 	std::list<Client>::iterator	client_it;
 	std::list<Channel*>::iterator chan;
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 	size_t	counter;
 
 	counter = 0;
@@ -123,9 +121,9 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 
 bool	is_server_registred(const std::string &name, std::string const token, IRCserv *serv)
 {
-	std::vector<t_server>::iterator nearest = serv->network.begin();
+	std::list<t_server>::iterator nearest = serv->network.begin();
 	std::list<t_server_intro>::iterator server_intro;
-	std::vector<t_server>::iterator end = serv->network.end();
+	std::list<t_server>::iterator end = serv->network.end();
 	std::string	except = TOSTRING(NPOS);
 
 	while (nearest != end)

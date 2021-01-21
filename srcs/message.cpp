@@ -71,7 +71,7 @@ void	msg_error(std::string msg, IRCserv *serv)
 
 void	msg_forward(int fd, std::string const &msg, IRCserv *serv)
 {
-	std::vector<t_server>::iterator	net;
+	std::list<t_server>::iterator	net;
 
 	for (net = serv->network.begin(); net != serv->network.end(); net++)
 		if (fd != net->fd)
