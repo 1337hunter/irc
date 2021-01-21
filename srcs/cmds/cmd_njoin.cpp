@@ -15,7 +15,7 @@ void    cmd_njoin(int fd, const t_strvect &split, IRCserv *serv)
 	}
 	if (split.size() < 4)
 		return ;
-	clients = ft_splitstring(std::string(split[3], 1), ',');
+	clients = ft_splitstring(std::string(split[3]), ',');
 	if (!(channel = find_channel_by_name(split[2], serv)))
 	{
 		serv->channels.push_back(Channel(split[2]));
