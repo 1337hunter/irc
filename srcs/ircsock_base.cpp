@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/22 01:47:23 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 02:36:13 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,13 +108,9 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 {
 	int				fd;
 	t_sockaddr_in	csin;
-	socklen_t		csin_len;
+	socklen_t		csin_len = sizeof(csin);
 
-	csin_len = sizeof(csin);
-	if (isTLS)
-		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
-	else
-		fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
+	fd = accept(_socket, (t_sockaddr*)&csin, &csin_len);
 
 	if (fd < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
 		error_exit("accept error");
@@ -144,6 +140,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	fdref.hostname = inet_ntoa(csin.sin_addr);
 	fdref.sslptr = NULL;
 	fdref.dtopened = ft_getcurrenttime();
+	fdref.lastactive = fdref.dtopened;
 	fdref.sentmsgs = 0;
 	fdref.recvmsgs = 0;
 	fdref.sentbytes = 0;

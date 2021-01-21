@@ -105,8 +105,6 @@ void	RunServer(IRCserv *serv)
 				std::cerr << "some error happened on fd " << fd << std::endl;
 				continue ;
 			}
-//			if ((isread || iswrite) && didSockFail(fd, serv))
-//				continue ;
 			if (FD_ISSET(fd, &(serv->fdset_read)))	// double check
 			{
 				if (serv->fds[fd].type == FD_ME)
