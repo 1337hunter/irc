@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/21 22:20:13 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/21 22:25:47 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 	fdref.blocked = false;
 	fdref.status = true;
 	fdref.fatal = false;
-	fdref.inprogress = false;
+//	fdref.inprogress = false;
 	fdref.dtopened = ft_getcurrenttime();
 	fdref.sentmsgs = 0;
 	fdref.recvmsgs = 0;
@@ -138,7 +138,7 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 	fdref.blocked = false;
 	fdref.status = true;
 	fdref.fatal = false;
-	fdref.inprogress = false;
+//	fdref.inprogress = false;
 	fdref.tls = isTLS;
 	fdref.hostname = inet_ntoa(csin.sin_addr);
 	fdref.sslptr = NULL;
@@ -205,6 +205,8 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	{
 		if (fdref.tls)
 		{
+			if (!fdref.fatal)
+				SSL_shutdown(fdref.sslptr);
 			SSL_free(fdref.sslptr);
 #if DEBUG_MODE
 			std::cout << "tls";
@@ -306,6 +308,7 @@ void	SendMessage(int fd, IRCserv *serv)
 		read_error(fd, fdref, r, serv);
 }
 
+/*
 bool	didSockFail(int fd, IRCserv *serv)
 {
 	t_fd	&fdref = serv->fds[fd];
@@ -342,3 +345,4 @@ bool	didSockFail(int fd, IRCserv *serv)
 	}
 	return (false);
 }
+*/

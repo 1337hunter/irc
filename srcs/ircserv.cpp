@@ -30,7 +30,6 @@ void	do_socket(IRCserv *serv)
 	_listen.ssl = false;
 	_listen.serveronly = false;
 	CreateSockTLS(serv, _listen);
-//	maybe insert here CreateSockTLS for default secure irc port 6697 (RFC 7194)
 }
 
 void	ircserv_free(IRCserv *serv)
@@ -41,8 +40,10 @@ void	ircserv_free(IRCserv *serv)
 	for (; fd != serv->fds.end(); fd++)
 	{
 		if (fd->second.tls && fd->second.type != FD_ME)
+		{
+			SSL_shutdown(fd->second.sslptr);
 			SSL_free(fd->second.sslptr);
-		//	SSL_shutdown(fd->second.sslptr);
+		}
 		close(fd->first);
 	}
 	SSL_CTX_free(serv->sslctx);
@@ -104,8 +105,8 @@ void	RunServer(IRCserv *serv)
 				std::cerr << "some error happened on fd " << fd << std::endl;
 				continue ;
 			}
-			if ((isread || iswrite) && didSockFail(fd, serv))
-				continue ;
+//			if ((isread || iswrite) && didSockFail(fd, serv))
+//				continue ;
 			if (FD_ISSET(fd, &(serv->fdset_read)))	// double check
 			{
 				if (serv->fds[fd].type == FD_ME)

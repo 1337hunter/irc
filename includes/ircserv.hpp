@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/21 19:12:26 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/21 21:36:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct		s_fd
 	bool			status;     // for disconnect assign false
 	bool			fatal;
 	bool			blocked;
-	bool			inprogress;
+//	bool			inprogress;	// unneeded
 	std::string		rdbuf;
 	std::string		wrbuf;
 	std::string		pass;		// this struct parameters required for
@@ -233,7 +233,7 @@ void		CreateSock(IRCserv *serv, t_listen &listen);
 void		AcceptConnect(int _socket, IRCserv *serv, bool isTLS);
 void		ReceiveMessage(int fd, IRCserv *serv);
 void		SendMessage(int fd, IRCserv *serv);
-bool		didSockFail(int fd, IRCserv *serv);
+// bool		didSockFail(int fd, IRCserv *serv);
 
 //	tls connection
 void		InitSSLCTX(IRCserv *serv);

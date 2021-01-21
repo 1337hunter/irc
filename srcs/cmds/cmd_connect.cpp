@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/20 17:07:43 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 21:51:32 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,17 +47,15 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	sockref.recvbytes = 0;
 	sockref.sock = -1;
 	sockref.sslptr = NULL;
+	sockref.status = true;
 	sockref.fatal = false;
-	sockref.inprogress = false;
+//	sockref.inprogress = false;
 	sockref.linkname = link.servername + "[" +
 		link.hostname + ":" + TOSTRING(link.port) + "]";
 
-	// this is temporary
 	freeaddrinfo(addr);
-	// gotta figure out how to check all addresses
-	if (res == 0)
-		sockref.status = true;
-	else if (res == -1 && errno != EAGAIN && errno != EINPROGRESS)
+
+	if (res == -1 && errno != EAGAIN && errno != EINPROGRESS)
 	{
 		msg_error("Connection error while server link", serv);
 		serv->fds.erase(socket_fd);
@@ -67,8 +65,8 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	}
 	else if (res == -1)
 	{
-		sockref.inprogress = true;
-		sockref.status = false;
+		sockref.status = true;
+//		sockref.inprogress = true;
 		errno = 0;
 	}
 
