@@ -19,7 +19,7 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 
 	if (split.size() < 4)
 		return ;
-	if (!(client = find_client_by_nick(std::string(split[0], 1), serv)))
+	if (!(client = find_client_by_nick(get_nick_from_info(split[0]), serv)))
 		return ;
 	if (split[2][0] == '$')
 	{
@@ -34,15 +34,19 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 	}
 	else if (split[2].find_first_of("!#+") == 0)
 	{
+		std::string info;
+
 		if (!(channel = find_channel_by_name(split[2], serv)))
 			return ;
+		info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
+			":" + client->getinfo() + " ";
 		client_it = channel->getclients().begin();
 		for (; client_it != channel->getclients().end(); client_it++)
 			if (client_it->first->getFD() != fd)
 			{
 				if (client_it->first->gethop() == 0)
-					serv->fds[client_it->first->getFD()].wrbuf += ":" +
-					client->getinfo() + " " + strvect_to_string(split, ' ', 1) + CRLF;
+					serv->fds[client_it->first->getFD()].wrbuf += ":" + info +
+					strvect_to_string(split, ' ', 1) + CRLF;
 			}
 		msg_forward(fd, strvect_to_string(split), serv);
 	}
