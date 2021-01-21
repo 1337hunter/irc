@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <iostream>
 #include <signal.h>
 #include <QApplication>
 #include <QString>
