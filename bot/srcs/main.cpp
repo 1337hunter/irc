@@ -6,13 +6,14 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 21:41:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 18:56:13 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 22:30:15 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ircbot.hpp"
 #include "init.hpp"
 #include <algorithm>
+#include <signal.h>
 
 int		main(int ac, char **av)
 {
@@ -22,6 +23,9 @@ int		main(int ac, char **av)
 	if (std::find(args.begin(), args.end(), "-h") != args.end() ||
 		std::find(args.begin(), args.end(), "--help") != args.end())
 		error_exit(USAGESTRING);
+
+	if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+		error_exit("signal error");
 
 	t_strvect::iterator	it = args.begin();
 	while (it != args.end())

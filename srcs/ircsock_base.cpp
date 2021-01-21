@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/21 22:25:47 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/21 22:35:19 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
 	t_strvect	split = ft_splitcmdbyspace(msg);
+
 	if (serv->fds[fd].type == FD_SERVER &&
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
