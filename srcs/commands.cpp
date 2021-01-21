@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 18:40:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/17 20:21:40 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 22:19:04 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ void	initcommands(IRCserv *serv)
 	serv->cmds["NJOIN"].settype(CMD_SERVERONLY);
 	serv->cmds["LUSERS"]	= cmd_lusers;
 	serv->cmds["ISON"]		= cmd_ison;
-	serv->cmds["USERS"]		= cmd_users;		// disabled
+	serv->cmds["USERS"]		= cmd_users;
 	serv->cmds["TOPIC"]		= cmd_topic;
 	serv->cmds["KICK"]		= cmd_kick;
 	serv->cmds["TRACE"]		= cmd_trace;
@@ -92,11 +92,9 @@ void	Command::Execute(int fd, const t_strvect &split, IRCserv *serv,
 {
 	if (this->cmd == NULL)
 		return ;
-//	increase usage stats
 	this->bytes += bytes;
 	this->count++;
 	if (remote)
 		this->rcount++;
-//	execute
 	this->cmd(fd, split, serv);
 }

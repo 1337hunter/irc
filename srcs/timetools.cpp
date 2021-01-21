@@ -6,18 +6,17 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:32:36 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:26:09 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 22:21:09 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "tools.hpp"
-#include <sys/stat.h>		// fstat
-#include <ctime>			// time_t, struct tm, strftime
+#include <sys/stat.h>
+#include <ctime>
 #ifdef NEED_GETTIMEOFDAY
-# include <sys/time.h>		// gettimeofday
+# include <sys/time.h>
 #endif
 
-// in case we actually use ft_localtime (REPLACE_LOCALTIME in common_defines)
 #define TZ_OFFSET	3
 #define	TZ_NAME		"MSK"
 
@@ -63,12 +62,6 @@ struct tm		*ft_localtime(time_t const *rawtime)
 	int	daysinmonth[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	while (datepart > 0)
 	{
-		/*
-			if (year is not divisible by 4) then (it is a common year)
-			else if (year is not divisible by 100) then (it is a leap year)
-			else if (year is not divisible by 400) then (it is a common year)
-			else (it is a leap year)
-		*/
 		if (res->tm_year % 4 != 0)
 			daysinmonth[1] = 28;
 		else if (res->tm_year % 100 != 0)
@@ -108,7 +101,6 @@ time_t			ft_getcompiletime(void)
 		struct stat	stat;
 		if (fstat(fd, &stat) == 0)
 		{
-			// stat struct is different on darwin
 			#ifdef __DARWIN_STRUCT_STAT64
 				rawtime = stat.st_mtimespec.tv_sec;
 			#else
@@ -199,7 +191,6 @@ std::string		ft_timetostring(time_t rawtime)
 			res += "0";
 		res += TOSTRING(timeinfo->tm_sec);
 
-		// tm_zone is GNU/BSD extension
 		#if defined(__USE_MISC) || defined(__DARWIN_STRUCT_STAT64)
 			res += + " ";
 			res += (timeinfo->tm_zone);

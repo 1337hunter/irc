@@ -243,7 +243,7 @@ int	Channel::setMode(std::string const &mode)
 	else
 		return true;
 	pos = 0;
-	while (++pos < mode.size()) // MAP is better but I did it already
+	while (++pos < mode.size())
 	{
 		if (mode[pos] == 'a')
 			_flags._anonymous = set;
@@ -304,7 +304,6 @@ int	Channel::setMode(t_strvect const &args)
 					return INT_ERR_NEEDMOREPARAMS;
 				strmode += args[i][0];
 				strmode += args[i][pos];
-//				std::cout << "\n\nstrmode: " << strmode << "\n\n";
 				if (args[i][pos] == 'o' || args[i][pos] == 'O' || args[i][pos] == 'v')
 				{
 					for (client = _clients.begin(); client != _clients.end(); client++)

@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2020/12/19 21:53:29 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 22:18:15 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	std::string	temp;
 
 	if (split.size() < 4 || split[2][0] == '+')
-		return ; // error from other server (may be msg_error here)
+		return ;
 	if (split[3][0] == ':')
 		temp = std::string(split[3], 1);
 	else
 		temp = split[3];
-	temp += strvect_to_string(split, ' ', 4);
+	temp += " " + strvect_to_string(split, ' ', 4);
 	if (split[2][0] == '#' || split[2][0] == '!')
 	{
 		if ((channel_mode = find_channel_by_name(split[2], serv)) == 0)
@@ -173,7 +173,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		}
 	}
 	if (split[1][0] != '&' && split.size() > 2)
-		msg_forward(fd, ":" + client->getinfo() + " " + strvect_to_string(split), serv);
+		msg_forward(fd, ":" + client->getnick() + " " + strvect_to_string(split), serv);
 	serv->fds[fd].wrbuf += ":" + client->getsafeinfo() + " " +
 		strvect_to_string(split) + CRLF;
 }

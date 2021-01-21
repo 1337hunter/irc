@@ -360,14 +360,15 @@ bool	Client::isBanned(Channel *chan)
 	std::list<std::string>::const_iterator	exception_mask;
 
 	exception_mask = chan->getflags()._exception_mask.begin();
-
 	for (; exception_mask != chan->getflags()._exception_mask.end(); exception_mask++)
 		if (match(this->getinfo(), *exception_mask))
 			return false;
 	ban_mask = chan->getflags()._ban_mask.begin();
 	for (; ban_mask != chan->getflags()._ban_mask.end(); ban_mask++)
+	{
 		if (match(this->getinfo(), *ban_mask))
 			return true;
+	}
 	return false;
 }
 

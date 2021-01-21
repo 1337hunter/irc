@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/20 22:29:54 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 22:20:13 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,6 @@
 void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 {
 	t_strvect	split = ft_splitcmdbyspace(msg);
-//	t_strvect	split = ft_splitstring(msg, " ");
-//						^ old split just in case
-
-	/*	reply check here: reroute the reply to user or server	*/
-	//	serv->fds[fd].type = FD_ME not used because
-	//	we get only connect accept requests on read of *this* server
 	if (serv->fds[fd].type == FD_SERVER &&
 		split.size() > 3 && split[1].size() == 3 &&
 		split[1].find_first_not_of("0123456789") == std::string::npos)
@@ -37,9 +31,6 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 			try
 			{
 				serv->fds.at(found->getFD()).wrbuf += msg + CRLF;
-				//	getFD() of client from another server is the FD of that
-				//	other server we connected to (no need to do more here)
-				//	just checking for existance with at()
 			}
 			catch (std::out_of_range &e) { (void)e; }
 		}
@@ -52,7 +43,7 @@ void	ProcessMessage(int fd, std::string const &msg, IRCserv *serv)
 	if (i < split.size())
 		split[i] = ft_strtoupper(split[i]);
 	else
-		return ;	// avoiding error if someone sends only prefix
+		return ;
 	try
 	{
 		serv->cmds.at(split[i]).Execute(fd, split, serv, msg.size(), i > 0);
@@ -89,10 +80,10 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 		error_exit("set socket option returned error");
 	if (bind(_listen.socket_fd, (t_sockaddr*)&sockin, sizeof(sockin)) < 0)
 		error_exit("bind error (probably already binded)");
-	if (listen(_listen.socket_fd, 42) < 0) //42 can also be configured
+	if (listen(_listen.socket_fd, 42) < 0)
 		error_exit("listen error");
 
-	t_fd	&fdref = serv->fds[_listen.socket_fd];	// this will create fd
+	t_fd	&fdref = serv->fds[_listen.socket_fd];
 	fdref.type = FD_ME;
 	fdref.tls = false;
 	fdref.blocked = false;
@@ -140,9 +131,8 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 		inet_ntoa(csin.sin_addr) << ":" << ntohs(csin.sin_port) << std::endl;
 #endif
 
-	t_fd	&fdref = serv->fds[fd];		// this will create t_fd and return ref
+	t_fd	&fdref = serv->fds[fd];
 	fdref.type = FD_UNREGISTRED;
-	// we dont know either it's client or other server
 	fdref.rdbuf.erase();
 	fdref.wrbuf.erase();
 	fdref.blocked = false;
@@ -185,7 +175,6 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	}
 	if (fdref.tls)
 	{
-		/* for tls may be recoverable */
 		int	err = SSL_get_error(fdref.sslptr, r);
 		if (err == SSL_ERROR_WANT_READ || err == SSL_ERROR_WANT_WRITE)
 			return ;
@@ -216,10 +205,6 @@ void	read_error(int fd, t_fd &fdref, ssize_t r, IRCserv *serv)
 	{
 		if (fdref.tls)
 		{
-		/*	temp no need to shutdown
-			if (!fdref.fatal)
-				SSL_shutdown(fdref.sslptr);
-		*/
 			SSL_free(fdref.sslptr);
 #if DEBUG_MODE
 			std::cout << "tls";
@@ -239,7 +224,7 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 {
 	ssize_t			r = 0;
 	unsigned char	buf_read[BUF_SIZE + 1];
-	t_fd			&fdref = serv->fds[fd];	// this will decrease amount of search
+	t_fd			&fdref = serv->fds[fd];
 
 	if (fdref.tls && fdref.sslptr)
 		r = SSL_read(fdref.sslptr, buf_read, BUF_SIZE);
@@ -253,7 +238,6 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 		fdref.recvbytes += r;
 		if (fdref.sock > 0)
 			serv->fds[fdref.sock].recvbytes += r;
-		// ^ which sock recieved from fd
 		fdref.rdbuf += (char*)buf_read;
 		if (fdref.rdbuf.find_last_of(CRLF) != std::string::npos &&
 			fdref.rdbuf.find_last_of(CRLF) + 1 == fdref.rdbuf.length())
@@ -269,12 +253,8 @@ void	ReceiveMessage(int fd, IRCserv *serv)
 			fdref.recvmsgs += split.size();
 			if (fdref.sock > 0)
 				serv->fds[fdref.sock].recvmsgs += split.size();
-			// ^ which sock recieved msgs from fd
 			for (size_t i = 0; i < split.size(); i++)
 				ProcessMessage(fd, split[i], serv);
-			//	ignore msgs with \r\n (maybe other symbols too)
-			//	if (split[i].find_first_of(CRLF) == std::string::npos)
-			//	not much use here
 			try { serv->fds.at(fd).rdbuf.erase(); }
 			catch (std::out_of_range const &e) { (void)e; }
 		}
@@ -306,7 +286,6 @@ void	SendMessage(int fd, IRCserv *serv)
 	fdref.sentmsgs += tmp;
 	if (fdref.sock > 0)
 		serv->fds[fdref.sock].sentmsgs += tmp;
-	// ^ which sock sent this to fd
 
 #if DEBUG_MODE
 	if (fdref.tls && !reply.empty())
@@ -322,7 +301,6 @@ void	SendMessage(int fd, IRCserv *serv)
 	fdref.sentbytes += r;
 	if (fdref.sock > 0)
 		serv->fds[fdref.sock].sentbytes += r;
-	// ^ which sock sent this to fd
 
 	if (r <= 0 || fdref.status == false)
 		read_error(fd, fdref, r, serv);

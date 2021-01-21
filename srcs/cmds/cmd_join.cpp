@@ -87,12 +87,14 @@ void	join_to_chan(int fd, const t_strvect &split, IRCserv *serv)
 						break ;
 					}
 				if (chan->getflags()._ban_mask.size() > 0)
+				{
 					if (chan->isBanned(client))
 					{
 						serv->fds[fd].wrbuf += get_reply(serv, "474", fd, args[i],
 								"Cannot join channel (+b)");
 						break ;
 					}
+				}
 				if (chan->getflags()._limit_of_users <= chan->getclients().size()
 						&& !client->isOperator())
 				{
