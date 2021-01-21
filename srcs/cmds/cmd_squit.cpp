@@ -31,12 +31,12 @@ void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 			command.clear();
 			client_it = net->clients.begin();
 		}
-		serv->network.erase(net);
 		serv->fds[fd].blocked = false;
 		serv->fds[fd].status = false;
 		serv->fds[fd].fatal = false;
 		msg_forward(fd, split[0] + " " + split[1] + " " + net->servername +
 			(split.size() > 4 ? " " + split[3] : ""), serv);
+		serv->network.erase(net);
 	}
 	else
 	{
@@ -44,9 +44,9 @@ void	squit_from_network(int fd, const t_strvect &split, IRCserv *serv)
 			for (intro = net->routing.begin(); intro != net->routing.end(); intro++)
 				if (intro->servername == split[2])
 				{
-					net->routing.erase(intro);
 					msg_forward(fd, split[0] + " " + split[1] + " " + split[2] +
 						(split.size() > 3 ? " " + split[3] : ""), serv);
+					net->routing.erase(intro);
 					return ;
 				}
 	}
@@ -122,13 +122,13 @@ void	squit_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			command.clear();
 			client_it = _serv->clients.begin();
 		}
-		remove_server_by_name(_serv->servername, serv);
 		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " +
 			strvect_to_string(split) + " " + squit_msg + CRLF;
 		msg_forward(-1, ":" + client->getnick() + " " + strvect_to_string(split) + " " + squit_msg, serv);
 		serv->fds[_serv->fd].blocked = false;
 		serv->fds[_serv->fd].status = false;
 		serv->fds[_serv->fd].fatal = false;
+		remove_server_by_name(_serv->servername, serv);
 	}
 }
 
