@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/22 17:03:45 by salec             #+#    #+#             */
-/*   Updated: 2021/01/19 16:45:46 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/21 21:06:59 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "error_handle.hpp"
 #include "commands.hpp"
 #include "tools.hpp"
+#include <signal.h>
 
 bool	g_server_die;
 bool	g_rehash;
@@ -23,6 +24,9 @@ int		main(int ac, char **av)
 	IRCserv	*serv = NULL;
 	if (ac < 2 || ac > 4)
 		usage_exit(av[0]);
+
+	if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
+		error_exit("signal error");
 
 	SSL_library_init();
 	SSL_load_error_strings();
