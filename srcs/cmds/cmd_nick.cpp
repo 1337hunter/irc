@@ -9,13 +9,22 @@
 
 void	nick_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
-	t_server				*routing;
-	int						hop;
-	std::string				forward;
+	t_server	*routing;
+	int			hop;
+	Client		*client;
+	std::string	forward;
 	std::list<t_server>::iterator	net;
 
 	if (split.size() < 8)
 		return ;
+	if ((client = find_client_by_nick(split[1], serv)))
+	{
+		serv->fds[fd].wrbuf += "KILL " + split[1] + " :KILL from server " + serv->servername
+			+ " (Nickname collision)\r\n";
+		serv->fds[fd].wrbuf += ":" + split[1] + " QUIT :KILL from server " +
+			serv->servername + " (Nickname collision)\r\n";
+		return ;
+	}
 	try { hop = STOI(split[2]); } catch (std::exception &e) { (void)e; return ; }
 	if ((routing = find_server_by_fd(fd, serv)) != 0)
 	{
