@@ -74,6 +74,12 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 			"Nickname is already in use");
 		else if (client->gethop() > 0)
 		{
+			t_kill	kill;
+			kill.nick = client->getnick();
+			kill.host = client->gethostname();
+			kill.time = ft_getcurrenttime();
+			kill.cause = "Nickname collision";
+			serv->kills.push_back(kill);
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NICKCOLLISION, -1, split[1],
 			"Nickname collision KILL from " + client->getusername() +
 			"@" + client->gethostname());
@@ -130,7 +136,7 @@ void	nick_from_client(int fd, const t_strvect &split, IRCserv *serv)
 		if (kill->nick == split[1] || kill->host == serv->fds[fd].hostname)
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_RESTRICTED, -1, "",
-			"Your connection is restricted couse " + std::string(kill->cause, 1)  +
+			"Your connection is restricted couse " + kill->cause  +
 			" for " + TOSTRING(KILLTIME - ft_getcurrenttime() + kill->time) + "s");
 			serv->fds[fd].status = false; return ;
 		}
