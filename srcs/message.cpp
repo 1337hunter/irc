@@ -105,7 +105,7 @@ void	msg_to_channel_this(Channel *channel, Client *client, std::string msg, IRCs
 		":" + client->getinfo() + " ";
 	client_it = channel->getclients().begin();
 	for (; client_it != channel->getclients().end(); client_it++)
-		if (client_it->first->gethop() == 0)
+		if (client_it->first->gethop() == 0 && client_it->first->getFD() != client->getFD())
 			serv->fds[client_it->first->getFD()].wrbuf += info + msg + CRLF;
 }
 

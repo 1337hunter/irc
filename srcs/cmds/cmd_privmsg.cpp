@@ -45,7 +45,7 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 			if (client_it->first->getFD() != fd)
 			{
 				if (client_it->first->gethop() == 0)
-					serv->fds[client_it->first->getFD()].wrbuf += ":" + info +
+					serv->fds[client_it->first->getFD()].wrbuf += info +
 					strvect_to_string(split, ' ', 1) + CRLF;
 			}
 		msg_forward(fd, strvect_to_string(split), serv);
