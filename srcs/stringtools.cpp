@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/22 05:16:12 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 18:15:05 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,17 +95,7 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 	if (!msg.empty())
 		split.push_back(msg);
 
-	// V this is a part of a stupid fix for privmsg
-	size_t	i = 0;
-	if (split.size() > 0 && split[0][0] == ':')
-		i = 1;
-	// ^ this is a part of a stupid fix for privmsg
-
-	if (split.size() > i && split.back().size() > 0)
-		tmp = ft_strtoupper(split[i]);
-	if (split.size() > i && split.back().size() > 0 && split.back()[0] == ':' &&
-		tmp != "PRIVMSG" && tmp != "NOTICE" &&		// this is the stupid fix
-		tmp != "QUIT" && tmp != "KILL")
+	if (split.size() > 1 && split.back().size() > 0 && split.back()[0] == ':')
 		split.back() = split.back().substr(1);
 	return (split);
 }
