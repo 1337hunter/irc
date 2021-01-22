@@ -76,7 +76,8 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 	{
 		chan = client_it->getchannels().begin();
 		for (;chan != client_it->getchannels().end(); chan++)
-			if (!((*chan)->getflags()._secret || (*chan)->getflags()._anonymous))
+			if (!(((*chan)->getflags()._secret || (*chan)->getflags()._private)) || 
+					(*chan)->isOnChan(client))
 				break ;
 		if (chan == client_it->getchannels().end() && (!client_it->isInvisible() ||
 						client->isOperator()))
@@ -94,7 +95,8 @@ std::string	reply_nochan_visible_names(IRCserv *serv, Client *client)
 		{
 			chan = client_it->getchannels().begin();
 			for (;chan != client_it->getchannels().end(); chan++)
-				if (!((*chan)->getflags()._secret || (*chan)->getflags()._anonymous))
+				if (!((*chan)->getflags()._secret || (*chan)->getflags()._private) ||
+						(*chan)->isOnChan(client))
 					break ;
 			if (chan == client_it->getchannels().end() && (!client_it->isInvisible() ||
 							client->isOperator()))
