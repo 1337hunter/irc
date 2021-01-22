@@ -184,16 +184,18 @@ std::string		reply_unknowncmd(int fd, const t_strvect &split, IRCserv *serv)
 	t_citer	it = ft_findclientfd(serv->clients.begin(), serv->clients.end(), fd);
 	if (it != serv->clients.end() && it->isRegistred())
 		nick = it->getnick();
-	else if (split[0][0] == ':')
+	else if (serv->fds[fd].type == FD_SERVER && split[0][0] == ':')
 	{
 		i = 1;
 		nick = split[0].substr(1);
 	}
 	else
 		return ("");
-	std::string	cmd;
+	if (split[0][0] == ':')
+		i = 1;
+
 	if (i < split.size())
-		cmd = split[i];
-	return (ft_buildmsg(serv->servername, ERR_UNKNOWNCOMMAND, nick,
-		cmd, "Unknown command"));
+		return (ft_buildmsg(serv->servername, ERR_UNKNOWNCOMMAND, nick,
+			split[i], "Unknown command"));
+	return ("");
 }
