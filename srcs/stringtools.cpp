@@ -73,10 +73,10 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 	size_t			pos = 0;
 	std::string		tmp;
 
-	if ((pos = msg.find_first_not_of(" ")) == std::string::npos)
+	if ((pos = msg.find_first_not_of(" \t")) == std::string::npos)
 		return (split);
 	msg = msg.substr(pos);
-	while ((pos = msg.find_first_of(" ")) != std::string::npos)
+	while ((pos = msg.find_first_of(" \t")) != std::string::npos)
 	{
 		tmp = msg.substr(0, pos);
 		if (!tmp.empty())
@@ -85,6 +85,8 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 		if (!msg.empty() && msg[0] == ':')
 			break ;
 	}
+//      if ((pos = msg.find_last_of(" \t")) != std::string::npos)
+//              msg = msg.substr(0, pos);
 	if (!msg.empty())
 		split.push_back(msg);
 
