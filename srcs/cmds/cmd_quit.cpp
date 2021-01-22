@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2021/01/20 22:01:45 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/22 16:13:18 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,15 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	client->partAllChan();
 	remove_client_by_ptr(client, serv);
 	msg_forward(fd, strvect_to_string(split), serv);
+	if (client->gethop() == 0)
+	{
+		serv->fds[client->getFD()].wrbuf += "ERROR :Closing Link: [" +
+			serv->fds[client->getFD()].hostname + "] " + strvect_to_string(split, ' ', 2)
+		   	+ CRLF;
+		serv->fds[client->getFD()].status = false;
+        serv->fds[client->getFD()].blocked = false;
+        serv->fds[client->getFD()].fatal = false;
+	}
 #if DEBUG_MODE
     std::cout << "nick " << nick << "\t\tdisconnected" << std::endl;
 #endif
@@ -84,23 +93,23 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		return 0;
 	}
 	if (split.size() > 1)
-		quit_msg = strvect_to_string(split, ' ', 1);
+		quit_msg = " " + strvect_to_string(split, ' ', 1);
 	else
-		quit_msg = ":Default";
+		quit_msg = " :Default";
 	msg_for = get_clients_for_quit_msg(&(*it));
 	msg_for_it = msg_for.begin();
 	for (; msg_for_it != msg_for.end(); msg_for_it++)
-		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() + " QUIT " +
+		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + it->getinfo() + " QUIT" +
 		quit_msg + CRLF;
 	it->partAllChan();
 #if DEBUG_MODE
 	std::cout << "client " << fd << "\t\tdisconnected" << std::endl;
 #endif
-	msg_forward(fd, ":" + it->getnick() + " QUIT " + quit_msg, serv);
+	msg_forward(fd, ":" + it->getnick() + " QUIT" + quit_msg, serv);
 	addtonickhistory(serv, it);
 	serv->fds[it->getFD()].wrbuf += "ERROR :Closing Link: [" + serv->fds[fd].hostname +
 		"] " + it->getinfo() +
-	   	(serv->fds[it->getFD()].awaitingpong ? " (Ping timeout)" : " (Wait for me)") + CRLF;
+	   	(serv->fds[it->getFD()].awaitingpong ? " (Ping timeout)" : quit_msg) + CRLF;
 	serv->fds[it->getFD()].status = false;
 	serv->fds[it->getFD()].blocked = false;
 	serv->fds[it->getFD()].fatal = false;

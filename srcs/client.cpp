@@ -252,7 +252,7 @@ bool	Client::setMode(std::string const &modes)
 	return false;
 }
 
-bool	Client::setUMODE(std::string const &mode)
+bool	Client::setUMODE(std::string const &mode, bool network)
 {
 	size_t	i;
 	bool	set;
@@ -264,7 +264,7 @@ bool	Client::setUMODE(std::string const &mode)
 	i = 0;
 	while (++i < mode.size())
 	{
-		if (mode[i] == 'o' && set == false)
+		if (mode[i] == 'o' && (set == false || network))
 			_isOperator = set;
 		else if (mode[i] == 'i')
 			_isInvisible = set;
@@ -272,7 +272,7 @@ bool	Client::setUMODE(std::string const &mode)
 			_isWallOps = set;
 		else if (mode[i] == 'r' && set == true)
 			_restricted = set;
-		else if (mode[i] == 'O' && set == false)
+		else if (mode[i] == 'O' && (set == false || network))
 			_isOperator = set;
 		else if (mode[i] == 's')
 			_isServNotice = set;

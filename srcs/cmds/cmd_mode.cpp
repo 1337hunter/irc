@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/21 22:18:15 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/22 14:33:21 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 	{
 		if ((client_mode = find_client_by_nick(split[2], serv)) == 0)
 			return ;
-		client_mode->setUMODE((split[3][0] == ':' ? std::string(split[3], 1) : split[3]));
+		client_mode->setUMODE((split[3][0] == ':' ? std::string(split[3], 1) : split[3]), true);
 	}
 	msg_forward(fd, strvect_to_string(split), serv);
 }

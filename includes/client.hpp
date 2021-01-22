@@ -99,7 +99,7 @@ public:
 	bool				Register(std::string const &nick);
 	void				ChangeNick(std::string const &what);
 	bool				setMode(std::string const &modes);
-	bool				setUMODE(std::string const &mode);
+	bool				setUMODE(std::string const &mode, bool network = false);
 	void				setAway(std::string const &msg);
 	std::string const	&getAwayMsg(void);
 	std::string			getMode(bool str = false);

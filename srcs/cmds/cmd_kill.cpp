@@ -6,7 +6,6 @@ void	kill_from_operator(int fd, t_strvect const &split, IRCserv *serv)
 {
 	Client	*client;
 	Client	*client_from;
-	std::list<Channel*>::iterator	chan;
 	std::string						cause;
 	t_kill							kill;
 
@@ -17,23 +16,23 @@ void	kill_from_operator(int fd, t_strvect const &split, IRCserv *serv)
 	}
 	if (!(client_from = find_client_by_fd(fd, serv)))
 		return ;
-	cause = strvect_to_string(split, ' ', 2);
-	chan = client->getchannels().begin();
-	for (; chan != client->getchannels().end(); chan++)
-		msg_to_channel(*chan, client, "PART " + (*chan)->getname() + " " + cause, serv);
-	chan = client->getchannels().begin();
-	for (; chan != client->getchannels().end(); chan++)
-		(*chan)->getclients().erase(client);
-	serv->fds[client->getFD()].wrbuf += ":" + client->getinfo() + " QUIT " + cause + CRLF;
+	cause = strvect_to_string(split, ' ', 2) + " (KILL from " + client_from->getnick() + ")";
+	cause = cause.substr(1);
 	msg_forward(fd, strvect_to_string(split), serv);
-	msg_forward(fd, ":" + client->getnick() + " QUIT " + cause, serv);
-	serv->fds[client->getFD()].status = false;
+	if (client->gethop() == 0)
+		self_cmd_quit(client->getFD(), serv->fds[client->getFD()], serv, cause);
+	else
+		msg_forward(fd, ":" + client->getnick() + " QUIT " + cause, serv);
 	kill.nick = client->getnick();
 	kill.host = client->gethostname();
 	kill.time = ft_getcurrenttime();
 	kill.cause = cause;
 	serv->kills.push_back(kill);
-	remove_client_by_ptr(client, serv);
+	if (client->gethop() != 0)
+	{
+		client->partAllChan();
+		remove_client_by_ptr(client, serv);
+	}
 }
 
 void	kill_from_network(int fd, t_strvect const &split, IRCserv *serv)
@@ -49,6 +48,7 @@ void	kill_from_network(int fd, t_strvect const &split, IRCserv *serv)
 	kill.host = client->gethostname();
 	kill.time = ft_getcurrenttime();
 	kill.cause = strvect_to_string(split, ' ', 2);
+	serv->kills.push_back(kill);
 	msg_forward(fd, strvect_to_string(split), serv);
 }
 
