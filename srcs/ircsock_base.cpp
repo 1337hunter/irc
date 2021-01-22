@@ -298,7 +298,7 @@ void	SendMessage(int fd, IRCserv *serv)
 	else
 	{
 		size_t msgs = ft_splitstringbyany(reply, CRLF).size();
-		if (reply.find_last_of(CRLF) != reply.length())
+		if (reply.find_last_of(CRLF) != reply.length() - 1)
 			msgs--;
 
 		fdref.sentmsgs += msgs;
