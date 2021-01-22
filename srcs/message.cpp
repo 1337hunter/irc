@@ -116,5 +116,5 @@ void	msg_each_client(std::string const &msg, Client *client, IRCserv *serv)
 	for (client_it = serv->clients.begin(); client_it != serv->clients.end(); client_it++)
 		if (client_it->getFD() != client->getFD())
 			serv->fds[client_it->getFD()].wrbuf += ":" + client->getinfo() + " PRIVMSG " +
-			client_it->getnick() + " " + msg + CRLF;
+				client_it->getnick() + " :" + msg + CRLF;
 }

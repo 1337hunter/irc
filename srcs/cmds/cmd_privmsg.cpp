@@ -24,12 +24,13 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 	if (split[2][0] == '$')
 	{
 		if (std::string(split[2], 1) == serv->servername)
-			msg_each_client(strvect_to_string(split, ' ', 3), client, serv);
+			msg_each_client(split[3], client, serv);
 		else
 		{
 			if (!(routing = find_server_by_name(std::string(split[2], 1), serv)))
 				return ;
-			serv->fds[routing->fd].wrbuf += strvect_to_string(split) + CRLF;
+			serv->fds[routing->fd].wrbuf += split[0] + " " + split[1] + " " +
+				split[2] + " :" + split[3] + CRLF;
 		}
 	}
 	else if (split[2].find_first_of("!#+") == 0)
@@ -38,17 +39,18 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 
 		if (!(channel = find_channel_by_name(split[2], serv)))
 			return ;
-		info = channel->getflags()._anonymous ? ":anonymous!anonymous@anonymous " :
-			":" + client->getinfo() + " ";
+		info = (channel->getflags()._anonymous ?
+			(":anonymous!anonymous@anonymous ") :
+			(":" + client->getinfo() + " "));
 		client_it = channel->getclients().begin();
 		for (; client_it != channel->getclients().end(); client_it++)
 			if (client_it->first->getFD() != fd)
 			{
 				if (client_it->first->gethop() == 0)
 					serv->fds[client_it->first->getFD()].wrbuf += info +
-					strvect_to_string(split, ' ', 1) + CRLF;
+						split[1] + " " + split[2] + " :" + split[3] + CRLF;
 			}
-		msg_forward(fd, strvect_to_string(split), serv);
+		msg_forward(fd, split[0] + " " + split[1] + " " + split[2] + " :" + split[3], serv);
 	}
 	else
 	{
@@ -66,9 +68,10 @@ void	privmsg_from_network(int fd, t_strvect const &split, IRCserv *serv, bool is
 				client_msg->getnick(), client_msg->getAwayMsg());
 		else if (client_msg->gethop() == 0 && !client->isAway())
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() +
-				" " + strvect_to_string(split, ' ', 1) + CRLF;
+				" " + split[1] + " " + split[2] + " :" + split[3] + CRLF;
 		else if (client_msg->getFD() != fd)
-			serv->fds[client_msg->getFD()].wrbuf += strvect_to_string(split) + CRLF;
+			serv->fds[client_msg->getFD()].wrbuf +=
+				split[0] + " " + split[1] + " " + split[2] + " :" + split[3] + CRLF;
 	}
 }
 
@@ -135,27 +138,26 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 			{
 				if (match(net->servername, std::string(split[1], 1)))
 					serv->fds[net->fd].wrbuf += ":" + client->getnick() + " " +
-					msgtype + " $" + net->servername + " " + strvect_to_string(split, ' ', 2) + CRLF;
+						msgtype + " $" + net->servername + " :" + split[2] + CRLF;
 				routing = net->routing.begin();
 				for (; routing != net->routing.end(); routing++)
 					if (match(routing->servername, std::string(split[1], 1)))
 					{
-						serv->fds[net->fd].wrbuf += ":" + client->getnick() +
-							" " + msgtype + " $" + routing->servername + " " +
-							strvect_to_string(split, ' ', 2) + CRLF;
+						serv->fds[net->fd].wrbuf += ":" + client->getnick() + " " +
+							msgtype + " $" + routing->servername + " :" + split[2] + CRLF;
 						break ;
 					}
 			}
 			if (match(serv->servername, std::string(split[1], 1)))
-				msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
+				msg_each_client(split[2], client, serv);
 		}
 		else
 			_serv = find_server_by_name(std::string(split[1], 1), serv);
 		if (_serv)
 			serv->fds[fd].wrbuf += ":" + client->getnick() +
-				" " + strvect_to_string(split) + CRLF;
+				" " + split[0] + " " + split[1] + " :" + split[2] + CRLF;
 		else if (std::string(split[1], 1) == serv->servername)
-			msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
+			msg_each_client(split[2], client, serv);
 		else if (!_serv && !good_mask)
 		{
 			if (!isNOTICE)
@@ -174,14 +176,14 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 			return ;
 		}
 		if (match(serv->servername, std::string(split[1], 1)))
-			msg_each_client(strvect_to_string(split, ' ', 2), client, serv);
+			msg_each_client(split[2], client, serv);
 		for (net = serv->network.begin(); net != serv->network.end(); net++)
 			for (client_it = net->clients.begin(); client_it != net->clients.end();
 					client_it++)
 				if (match(client_it->gethostname(), std::string(split[1], 1)))
 					serv->fds[client_it->getFD()].wrbuf += ":" +
 						client->getnick() + " " + msgtype + " " +
-						client_it->getnick() + strvect_to_string(split, ' ', 2);
+						client_it->getnick() + " :" + split[2] + CRLF;
 	}
 	else if (split[1].find_first_of("!#&+") == 0) //to channel
 	{
@@ -203,9 +205,11 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 					"Cannot send to channel");
 			return ;
 		}
-		msg_to_channel_this(channel, client, strvect_to_string(split), serv);
+		msg_to_channel_this(channel, client,
+			split[0] + " " + split[1] + " :" + split[2], serv);
 		if (split[1][0] != '&')
-			msg_forward(fd, ":" + client->getnick() + " " + strvect_to_string(split), serv);
+			msg_forward(fd, ":" + client->getnick() + " " +
+				split[0] + " " + split[1] + " :" + split[2], serv);
 	}
 	else //to client
 	{
@@ -229,8 +233,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 		}
 		if (client_msg->gethop() == 0 && !client_msg->isAway())
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getinfo() +
-				" " + msgtype + " " + client_msg->getnick() + " " +
-				strvect_to_string(split, ' ', 2) + CRLF;
+				" " + msgtype + " " + client_msg->getnick() + " :" + split[2] + CRLF;
 		else if (client_msg->gethop() == 0 && client_msg->isAway())
 		{
 			if (!isNOTICE)
@@ -239,8 +242,7 @@ void	privmsg_from_client(int fd, t_strvect const &split, IRCserv *serv, bool isN
 		}
 		else
 			serv->fds[client_msg->getFD()].wrbuf += ":" + client->getnick() +
-				" " + msgtype + " " + client_msg->getnick() + " " +
-				strvect_to_string(split, ' ', 2) + CRLF;
+				" " + msgtype + " " + client_msg->getnick() + " :" + split[2] + CRLF;
 	}
 }
 
