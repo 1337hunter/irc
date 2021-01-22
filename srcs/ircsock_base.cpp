@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/08 23:44:09 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/22 02:36:13 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 07:20:55 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,16 +86,7 @@ void	CreateSock(IRCserv *serv, t_listen &_listen)
 
 	t_fd	&fdref = serv->fds[_listen.socket_fd];
 	fdref.type = FD_ME;
-	fdref.tls = false;
-	fdref.blocked = false;
 	fdref.status = true;
-	fdref.fatal = false;
-//	fdref.inprogress = false;
-	fdref.dtopened = ft_getcurrenttime();
-	fdref.sentmsgs = 0;
-	fdref.recvmsgs = 0;
-	fdref.sentbytes = 0;
-	fdref.recvbytes = 0;
 	fdref.linkname = serv->servername +
 		"[" + inet_ntoa(sockin.sin_addr) + ":" + TOSTRING(_listen.port) + "]";
 #if DEBUG_MODE
@@ -130,21 +121,9 @@ void	AcceptConnect(int _socket, IRCserv *serv, bool isTLS)
 
 	t_fd	&fdref = serv->fds[fd];
 	fdref.type = FD_UNREGISTRED;
-	fdref.rdbuf.erase();
-	fdref.wrbuf.erase();
-	fdref.blocked = false;
 	fdref.status = true;
-	fdref.fatal = false;
-//	fdref.inprogress = false;
 	fdref.tls = isTLS;
 	fdref.hostname = inet_ntoa(csin.sin_addr);
-	fdref.sslptr = NULL;
-	fdref.dtopened = ft_getcurrenttime();
-	fdref.lastactive = fdref.dtopened;
-	fdref.sentmsgs = 0;
-	fdref.recvmsgs = 0;
-	fdref.sentbytes = 0;
-	fdref.recvbytes = 0;
 	fdref.sock = _socket;
 	fdref.linkname = std::string("*[") +
 		inet_ntoa(csin.sin_addr) + ":" + TOSTRING(ntohs(csin.sin_port)) + "]";
@@ -312,6 +291,12 @@ void	SendMessage(int fd, IRCserv *serv)
 		fdref.wrbuf = remain;
 	}
 }
+
+t_fd::s_fd() : type(FD_FREE), tls(false),
+		status(false), fatal(false), blocked(false),
+		sslptr(NULL), lastactive(ft_getcurrenttime()),
+		awaitingpong(false), sock(-1), sentmsgs(0), recvmsgs(0),
+		sentbytes(0), recvbytes(0), dtopened(this->lastactive) {}
 
 /*
 bool	didSockFail(int fd, IRCserv *serv)

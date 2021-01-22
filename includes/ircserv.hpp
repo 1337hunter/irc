@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/06 13:14:43 by salec             #+#    #+#             */
-/*   Updated: 2021/01/21 21:36:46 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 07:21:46 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ typedef struct		s_fd
 	bool			status;     // for disconnect assign false
 	bool			fatal;
 	bool			blocked;
-//	bool			inprogress;	// unneeded
 	std::string		rdbuf;
 	std::string		wrbuf;
 	std::string		pass;		// this struct parameters required for
@@ -79,6 +78,7 @@ typedef struct		s_fd
 	size_t			sentbytes;
 	size_t			recvbytes;
 	time_t			dtopened;
+	s_fd();
 }					t_fd;
 
 struct				t_server_intro

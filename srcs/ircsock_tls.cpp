@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/14 02:03:53 by salec             #+#    #+#             */
-/*   Updated: 2021/01/21 21:37:27 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 07:18:17 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,6 @@ void	CreateSockTLS(IRCserv *serv, t_listen &_listen)
 	fdref.type = FD_ME;
 	fdref.tls = true;
 	fdref.status = true;
-	fdref.fatal = false;
-//	fdref.inprogress = false;
-	fdref.dtopened = ft_getcurrenttime();
-	fdref.sentmsgs = 0;
-	fdref.recvmsgs = 0;
-	fdref.sentbytes = 0;
-	fdref.recvbytes = 0;
-	fdref.sock = -1;
 	fdref.linkname = serv->servername + "[" + inet_ntoa(sockin.sin_addr) +
 		":" + TOSTRING(_listen.port) + "]";
 #if DEBUG_MODE

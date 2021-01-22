@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:38:28 by salec             #+#    #+#             */
-/*   Updated: 2021/01/21 21:51:32 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 07:19:03 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,7 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 
 	t_fd	&sockref = serv->fds[socket_fd];
 	sockref.type = FD_SERVER;
-	sockref.dtopened = ft_getcurrenttime();
-	sockref.lastactive = sockref.dtopened;
-	sockref.sentmsgs = 0;
-	sockref.recvmsgs = 0;
-	sockref.sentbytes = 0;
-	sockref.recvbytes = 0;
-	sockref.sock = -1;
-	sockref.sslptr = NULL;
 	sockref.status = true;
-	sockref.fatal = false;
-//	sockref.inprogress = false;
 	sockref.linkname = link.servername + "[" +
 		link.hostname + ":" + TOSTRING(link.port) + "]";
 
@@ -66,7 +56,6 @@ int		do_connect(t_link &link, IRCserv *serv, bool tls = false)
 	else if (res == -1)
 	{
 		sockref.status = true;
-//		sockref.inprogress = true;
 		errno = 0;
 	}
 
