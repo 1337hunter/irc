@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/22 03:24:18 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 05:16:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,16 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 	size_t			pos = 0;
 	std::string		tmp;
 
-	if ((pos = msg.find_first_not_of(" \t\f\v\n\r")) == std::string::npos)
+	if ((pos = msg.find_last_not_of(" \t\f\v\n\r")) != std::string::npos)
+		msg.erase(pos + 1);
+	else
 		return (split);
-	msg = msg.substr(pos);
+
+	if ((pos = msg.find_first_not_of(" \t\f\v\n\r")) != std::string::npos)
+		msg = msg.substr(pos);
+	else
+		return (split);
+
 	while ((pos = msg.find_first_of(" \t\f\v\n\r")) != std::string::npos)
 	{
 		tmp = msg.substr(0, pos);
@@ -85,10 +92,6 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 		if (!msg.empty() && msg[0] == ':')
 			break ;
 	}
-//      if ((pos = msg.find_last_not_of(" \t\f\v\n\r")) != std::string::npos)
-//              msg.erase(pos + 1);
-//      else
-//              msg.clear();
 	if (!msg.empty())
 		split.push_back(msg);
 

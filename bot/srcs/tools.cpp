@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/09 18:57:17 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 20:49:31 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/22 05:19:02 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,17 @@ t_strvect	ft_splitcmdbyspace(std::string msg)
 	size_t			pos = 0;
 	std::string		tmp;
 
-	while ((pos = msg.find_first_of(" ")) != std::string::npos)
+	if ((pos = msg.find_last_not_of(" \t\f\v\n\r")) != std::string::npos)
+		msg.erase(pos + 1);
+	else
+		return (split);
+
+	if ((pos = msg.find_first_not_of(" \t\f\v\n\r")) != std::string::npos)
+		msg = msg.substr(pos);
+	else
+		return (split);
+
+	while ((pos = msg.find_first_of(" \t\f\v\n\r")) != std::string::npos)
 	{
 		tmp = msg.substr(0, pos);
 		if (!tmp.empty())
