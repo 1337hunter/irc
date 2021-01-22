@@ -20,7 +20,7 @@ void	part_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		return ;
 	args = ft_splitstring(split[2], ',');
 	if (split.size() > 3)
-		part_msg = " " +  strvect_to_string(split, ' ', 3);
+		part_msg = " :" +  strvect_to_string(split, ' ', 3);
 	else
 		part_msg = " :Gone away";
 	for (size_t i = 0; i < args.size(); i++)
@@ -28,6 +28,9 @@ void	part_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		channel = client->eraseChannel(args[i]);
 		if (channel != 0)
 		{
+			if (client->gethop() == 0)
+        		serv->fds[client->getFD()].wrbuf += ":" + client->getinfo() +
+            		" PART " + channel->getname() + part_msg + CRLF;
 			if (channel->getclients().size() == 0)
 				remove_channel(channel, serv);
 			else
