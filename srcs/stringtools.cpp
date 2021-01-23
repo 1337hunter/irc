@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/05 00:41:06 by salec             #+#    #+#             */
-/*   Updated: 2021/01/22 18:15:05 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/23 15:01:12 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,7 +301,7 @@ int				ft_stoi(std::string const &str)
 	int					val = 0;
 
 	if (!(iss >> val))
-		return (0);
+		throw (std::out_of_range("stoi"));
 	return (val);
 }
 
@@ -311,7 +311,7 @@ long			ft_stol(std::string const &str)
 	long				val = 0;
 
 	if (!(iss >> val))
-		return (0L);
+		throw (std::out_of_range("stol"));
 	return (val);
 }
 
@@ -321,7 +321,7 @@ uint			ft_stou(std::string const &str)
 	unsigned int		val = 0;
 
 	if (!(iss >> val))
-		return (0U);
+		throw (std::out_of_range("stou"));
 	return (val);
 }
 
@@ -331,6 +331,6 @@ ulong			ft_stoul(std::string const &str)
 	unsigned long		val = 0;
 
 	if (!(iss >> val))
-		return (0UL);
+		throw (std::out_of_range("stoul"));
 	return (val);
 }
