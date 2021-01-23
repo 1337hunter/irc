@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/10 19:41:55 by gbright           #+#    #+#             */
-/*   Updated: 2021/01/22 14:33:21 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/23 11:56:07 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,15 @@
 #include "message.hpp"
 #include "tools.hpp"
 #include "commands.hpp"
+
+void	check_oper_flag(int fd, std::string const &mode, IRCserv *serv)
+{
+	size_t	i = 0;
+
+	while (++i < mode.size())
+		if ((mode[i] == 'o' || mode[i] == 'O')  && mode[0] == '-')
+			serv->fds[fd].type = FD_CLIENT;
+}
 
 void	mode_from_network(int fd, const t_strvect &split, IRCserv *serv)
 {
@@ -170,6 +179,7 @@ void	mode_from_client(int fd, const t_strvect &split, IRCserv *serv)
 						"Not enough parameters"); return ;
 			}
 			client->setUMODE(split[2]);
+			check_oper_flag(client_mode->getFD(), split[2], serv);
 		}
 	}
 	if (split[1][0] != '&' && split.size() > 2)
