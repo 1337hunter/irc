@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2021/01/23 12:14:42 by gbright          ###   ########.fr       */
+/*   Updated: 2021/01/23 14:11:11 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
 		strvect_to_string(split, ' ', 1) + CRLF;
 	client->partAllChan();
-	msg_forward(fd, ":" + strvect_to_string(split), serv);
+	msg_forward(fd, strvect_to_string(split), serv);
 	if (client->gethop() == 0)
 	{
 		serv->fds[client->getFD()].wrbuf += "ERROR :Closing Link: [" +
