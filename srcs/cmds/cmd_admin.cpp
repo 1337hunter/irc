@@ -50,15 +50,14 @@ admin_this_server:
 	}
 	else if (split.size() > 1)
 	{
+		if (match(serv->servername, split[1]))
+            goto admin_this_server;
 		if (!(_serv = find_server_by_mask(split[1], serv)))
 		{
 			serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHSERVER, fd, "",
 				split[1] + " " + ":No such server"); return ;
 		}
-		if (_serv->servername == serv->servername)
-			goto admin_this_server;
-		else
-			serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " + split[0] + " " +
+		serv->fds[_serv->fd].wrbuf += ":" + client->getnick() + " " + split[0] + " " +
 				split[1] + CRLF;
 	}
 }
