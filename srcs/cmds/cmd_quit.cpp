@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/04 16:35:26 by salec             #+#    #+#             */
-/*   Updated: 2021/01/22 18:10:51 by salec            ###   ########.fr       */
+/*   Updated: 2021/01/23 12:14:42 by gbright          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,11 +52,11 @@ int         quit_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[(*msg_for_it)->getFD()].wrbuf += ":" + client->getinfo() + " " +
 		strvect_to_string(split, ' ', 1) + CRLF;
 	client->partAllChan();
-	msg_forward(fd, strvect_to_string(split), serv);
+	msg_forward(fd, ":" + strvect_to_string(split), serv);
 	if (client->gethop() == 0)
 	{
 		serv->fds[client->getFD()].wrbuf += "ERROR :Closing Link: [" +
-			serv->fds[client->getFD()].hostname + "] " + strvect_to_string(split, ' ', 2)
+			serv->fds[client->getFD()].hostname + "] :" + strvect_to_string(split, ' ', 2)
 		   	+ CRLF;
 		serv->fds[client->getFD()].status = false;
         serv->fds[client->getFD()].blocked = false;
@@ -93,7 +93,7 @@ int			quit_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		return 0;
 	}
 	if (split.size() > 1)
-		quit_msg = " " + strvect_to_string(split, ' ', 1);
+		quit_msg = " :" + strvect_to_string(split, ' ', 1);
 	else
 		quit_msg = " :Default";
 	msg_for = get_clients_for_quit_msg(&(*it));
