@@ -13,15 +13,16 @@ void	topic_from_network(int fd, t_strvect const &split, IRCserv *serv)
 		return ;
 	if (!(channel = find_channel_by_name(split[2], serv)))
 		return ;
-	channel->settopic(std::string(split[3]));
-	msg_to_channel_this(channel, client, strvect_to_string(split, ' ', 1), serv);
-	msg_forward(fd, strvect_to_string(split), serv);
+	channel->settopic(split[3]);
+	msg_to_channel_this(channel, client, split[1] + " " + split[2] + " :" + split[3], serv);
+	msg_forward(fd, split[0] + " " + split[1] + " " + split[2] + " :" + split[3], serv);
 }
 
 void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 {
 	Channel	*channel;
 	Client	*client;
+	std::string	topic_msg;
 
 	if (!(client = find_client_by_fd(fd, serv)) || !client->isRegistred())
 	{
@@ -33,6 +34,7 @@ void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, client, "TOPIC",
 			"Not enough parameters"); return ;
 	}
+	topic_msg = " :" + split[2];
 	if (!(channel = find_channel_by_name(split[1], serv)))
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHCHANNEL, client, split[1],
@@ -62,8 +64,10 @@ void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 					split[1], "You're not channel operator"); return ;
 			}
 		channel->settopic(std::string(split[2]));
-		msg_to_channel_this(channel, client, strvect_to_string(split), serv);
-		msg_forward(fd, ":" + client->getnick() + " " + strvect_to_string(split), serv);
+		msg_to_channel_this(channel, client,
+				split[0] + " " + split[1] + topic_msg, serv);
+		msg_forward(fd, ":" + client->getnick() + " " + split[0] + " " + split[1] +
+				topic_msg, serv);
 	}
 }
 
