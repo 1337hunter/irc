@@ -34,7 +34,6 @@ void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NEEDMOREPARAMS, client, "TOPIC",
 			"Not enough parameters"); return ;
 	}
-	topic_msg = " :" + split[2];
 	if (!(channel = find_channel_by_name(split[1], serv)))
 	{
 		serv->fds[fd].wrbuf += get_reply(serv, ERR_NOSUCHCHANNEL, client, split[1],
@@ -57,6 +56,7 @@ void	topic_from_client(int fd, t_strvect const &split, IRCserv *serv)
 	}
 	else
 	{
+		topic_msg = " :" + split[2];
 		if (channel->getflags()._topic_settable_by_chop)
 			if (!channel->isOperator(client))
 			{
