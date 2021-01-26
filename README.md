@@ -1,8 +1,8 @@
 # IRC server 2.10
 
 ### Developed by
-- Antip003 aka gbright
-- thefullarcticfox aka salec
+- Antip003
+- thefullarcticfox
 
 ### Reference material
 RFC 1459, RFC 2810, RFC 2811, RFC 2812, RFC 2813, RFC 7194 and different irc implementations
