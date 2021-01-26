@@ -1,27 +1,15 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   channel.hpp                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/10/24 12:40:08 by salec             #+#    #+#             */
-/*   Updated: 2020/12/25 20:12:19 by salec            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef CHANNEL_HPP
-#define CHANNEL_HPP
+# define CHANNEL_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include "client.hpp"
-#include <list>
-#ifndef STD_CPP98
-# include <unordered_map>
-#else
-# include <map>
+# include <iostream>
+# include <string>
+# include <vector>
+# include "client.hpp"
+# include <list>
+# ifndef STD_CPP98
+#  include <unordered_map>
+# else
+#  include <map>
 #endif
 
 class Client;

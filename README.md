@@ -1,4 +1,4 @@
-# ft_irc - a School 21 (42 Network) project
+# IRC server 2.10
 
 ### Developed by
 - Antip003 aka gbright

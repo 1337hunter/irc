@@ -554,11 +554,9 @@ echo -e $GREEN"*****************************************************************
 *                                                                *
 ******************************************************************
 *                                                                *
-* The project was developed as part of the task of the school 42 *
+*                   The project was developed by                 *
 *                                                                *
-*                                by                              *
-*                                                                *
-*        salec           https://github.com/thefullarcticfox     *
-*        gbright         https://github.com/Antip003             *
+*               https://github.com/thefullarcticfox              *
+*               https://github.com/Antip003                      *
 *                                                                *
 ******************************************************************"$CEND
