@@ -20,7 +20,9 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define WEATHERAPIKEY	"081bf5c1866dd8f8eff826e30485f8fd"
+#ifndef WEATHERAPIKEY
+#define WEATHERAPIKEY	"insertapikey"
+#endif
 
 typedef struct	s_weather
 {
