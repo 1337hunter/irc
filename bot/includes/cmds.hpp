@@ -6,7 +6,7 @@
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:39:52 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 17:34:35 by salec            ###   ########.fr       */
+/*   Updated: 2021/02/04 00:14:45 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define CMDS_HPP
 
 #include "ircbot.hpp"
-#include "tools.hpp"
+#include "bottools.hpp"
 #include "common.hpp"
 
 struct	ircbot;

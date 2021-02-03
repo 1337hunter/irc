@@ -6,7 +6,7 @@
 #    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/01/17 18:01:21 by salec            ###   ########.fr        #
+#    Updated: 2021/02/04 00:15:40 by salec            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ SRCFILES	= $(addprefix $(SRCDIR), $(SRC))
 OBJFILES	= $(addprefix $(OBJDIR), $(OBJ))
 DEPFILES	= $(OBJFILES:.o=.d)
 INCLUDEDIR	= ./includes/
-HEADERS		= ircbot.hpp common.hpp init.hpp tools.hpp cmds.hpp \
+HEADERS		= ircbot.hpp common.hpp init.hpp bottools.hpp cmds.hpp \
 			jsonparser.hpp weather.hpp
 HEADERS		:= $(addprefix $(INCLUDEDIR), $(HEADERS))
 

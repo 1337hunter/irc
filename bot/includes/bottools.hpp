@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tools.hpp                                          :+:      :+:    :+:   */
+/*   bottools.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: salec <salec@student.21-school.ru>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/13 16:43:04 by salec             #+#    #+#             */
-/*   Updated: 2021/01/14 19:00:52 by salec            ###   ########.fr       */
+/*   Updated: 2021/02/04 00:14:40 by salec            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TOOLS_HPP
-#define TOOLS_HPP
+#ifndef BOTTOOLS_HPP
+#define BOTTOOLS_HPP
 
 #include <iostream>
 #include <string>
