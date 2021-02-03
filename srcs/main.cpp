@@ -7,11 +7,9 @@
 bool	g_server_die;
 bool	g_rehash;
 
-int		main(int ac, char **av)
+int		main(void)
 {
 	IRCserv	*serv = NULL;
-	if (ac < 2 || ac > 4)
-		usage_exit(av[0]);
 
 	if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
 		error_exit("signal error");
@@ -38,7 +36,7 @@ int		main(int ac, char **av)
 		serv = new IRCserv;
 		InitSSLCTX(serv);
 		initcommands(serv);
-		parse(ac, av, serv);
+		parse(serv);
 		defineservermodes(serv);
 		serv->dtstarted = started;
 		serv->dtcompiled = compiled;

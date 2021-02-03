@@ -16,20 +16,6 @@ void	do_socket(IRCserv *serv)
 		else
 			CreateSockTLS(serv, *lb);
 	}
-	_listen.ip = "*";
-	_listen.port = serv->port;
-	_listen.tls = false;
-	_listen.ssl = false;
-	_listen.serveronly = false;
-	CreateSock(serv, _listen);
-	_listen.ip = "*";
-	_listen.port = serv->port + 1;
-	if (_listen.port > 65535)
-		_listen.port = serv->port - 1;
-	_listen.tls = false;
-	_listen.ssl = false;
-	_listen.serveronly = false;
-	CreateSockTLS(serv, _listen);
 }
 
 void	ircserv_free(IRCserv *serv)

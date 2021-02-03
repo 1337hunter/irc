@@ -205,7 +205,7 @@ struct				IRCserv
 	std::list<t_service>		services;
 };
 
-void		parse(int ac, char **av, IRCserv *serv);
+void		parse(IRCserv *serv);
 void		defineservermodes(IRCserv *serv);
 void		clear_kill_list(IRCserv *serv);
 void		clear_block_list(IRCserv *serv, std::string const &servername = "");

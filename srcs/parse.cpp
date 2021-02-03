@@ -647,7 +647,6 @@ block_oper(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 			return -1;
 	}
 
-	//	default hostmask for all operators
 	serv->oper.push_back(temp);
 #if DEBUG_MODE
 	std::cout << "operator: name '" << temp.name <<
@@ -808,7 +807,7 @@ block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 	if (line[pos] != '{' || config.eof())
 		return -1;
 	pos++;
-	if (pos >= line.length() || line[pos] != '"')	// hmmmmmmm
+	if (pos >= line.length() || line[pos] != '"')
 		while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS)
 		{
 			getline(config, line);
@@ -850,121 +849,6 @@ block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 
 }
 
-void	server_init(IRCserv *serv, int ac, char **av)
-{
-	bool	flag_for_serv_connection;
-	t_link	link;
-
-	serv->port = -1;
-	flag_for_serv_connection = false;
-	if (ac == 2)
-	{
-
-		std::string port(av[1]);
-
-		if (port.find_first_not_of("0123456789") != NPOS ||
-				port.length() < 1 || port.length() > 5)
-			error_exit("Error: bad port number");
-		serv->port = STOI(port);
-		if (serv->port < 1 || serv->port > 65535)
-			error_exit("Error: bad port number");
-	}
-	else if (ac == 3)
-	{
-		std::string port(av[1]);
-		std::string pass(av[2]);
-
-		if (port.find_first_not_of("0123456789") == NPOS)
-		{
-			if (port.length() < 1 || port.length() > 5)
-				error_exit("Error: bad port number");
-			else
-			{
-				serv->pass = pass;
-				serv->port = STOI(port);
-				if (serv->port < 1 || serv->port > 65535)
-					error_exit("Error: bad port number");
-			}
-		}
-		else
-		{
-			t_strvect	temp;
-
-			flag_for_serv_connection = true;
-			temp = ft_splitstring(av[1], ":");
-			if (temp.size() < 2 || temp.size() > 3)
-				error_exit("Error: input parameters of server which you want to connect to is wrong!");
-			link.hostname = temp[0];
-			if (temp[1].find_first_not_of("0123456789") != NPOS ||
-										temp.size() < 1 || temp.size() > 5)
-								error_exit("Error: bad port number");
-			link.port = STOI(temp[1]);
-			if (temp.size() == 3)
-				link.pass = temp[2];
-			if (pass.find_first_not_of("0123456789") != NPOS ||
-					pass.length() < 1 || pass.length() > 5)
-				error_exit("Error: bad port number");
-			else
-			{
-				serv->port = STOI(pass);
-				if (serv->port < 1 || serv->port > 65535)
-					error_exit("Error: bad port number");
-			}
-		}
-	}
-	else if (ac == 4)
-	{
-		std::string port(av[2]);
-		std::string pass(av[3]);
-		t_strvect	connect_to;
-
-		flag_for_serv_connection = true;
-		connect_to = ft_splitstring(av[1], ":");
-		if (connect_to.size() < 2 || connect_to.size() > 3)
-			error_exit("Error: input parameters of server which you want to connect to is wrong!");
-		link.hostname = connect_to[0];
-		serv->pass = pass;
-		if (port.find_first_not_of("0123456789") != NPOS ||
-		connect_to[1].find_first_not_of("0123456789") != NPOS ||
-		connect_to[1].length() < 1 || connect_to[1].length() > 5 ||
-		port.length() < 1 || port.length() > 5)
-			error_exit("Error: bad port number");
-		else
-		{
-			link.port = STOI(connect_to[1]);
-			if (connect_to.size() == 3)
-				link.pass = connect_to[2];
-			serv->port = STOI(port);
-			if (serv->port < 1 || serv->port > 65535)
-				error_exit("Error: bad port number");
-		}
-	}
-	else
-		usage_exit(av[0]);
-	if (flag_for_serv_connection)
-	{
-		std::vector<t_link>::iterator	b = serv->link.begin();
-		std::vector<t_link>::iterator	e = serv->link.end();
-		int	flag;
-
-		flag = 0;
-		while (b != e)
-		{
-			if (b->hostname == link.hostname &&
-					b->port == link.port &&
-					b->pass == link.pass)
-			{
-				b->autoconnect = true;
-				flag = 1;
-				break ;
-			}
-			b++;
-		}
-		if (!flag)
-			error_exit("Error: server you are trying to connect is bad configured");
-	}
-}
-
 size_t	find_block(std::string line, size_t pos)
 {
 	if (!line.compare(pos, ft_strlen("listen"), "listen"))
@@ -984,7 +868,7 @@ size_t	find_block(std::string line, size_t pos)
 	return NPOS;
 }
 
-void	parse(int ac, char **av, IRCserv *serv)
+void	parse(IRCserv *serv)
 {
 	std::ifstream	config;
 	std::string		line;
@@ -1018,8 +902,9 @@ void	parse(int ac, char **av, IRCserv *serv)
 			if ((block[i](config, line, serv, line_number)) == -1)
 				error_exit("Error: config error at line ", line, line_number);
 	}
+	if (serv->listen.size() == 0)
+		error_exit("config error: listen block not found");
 	config.close();
-	server_init(serv, ac, av);
 }
 
 void	defineservermodes(IRCserv *serv)
