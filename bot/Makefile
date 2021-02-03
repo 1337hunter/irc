@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: salec <salec@student.21-school.ru>         +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2020/05/10 22:22:12 by salec             #+#    #+#              #
-#    Updated: 2021/02/04 00:15:40 by salec            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME		= ircbot
 SRC			= main.cpp init.cpp ircbot.cpp msgtools.cpp tools.cpp \
 			cmds.cpp cmds/cmd_help.cpp cmds/cmd_info.cpp \
