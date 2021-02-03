@@ -82,9 +82,8 @@ ulong		ft_stoul(std::string const &str);
 /****************************************************/
 /*		time related functions (timetools.cpp)		*/
 /****************************************************/
-struct tm	*ft_localtime(time_t const *rawtime);
-time_t		ft_getcurrenttime(void);
 time_t		ft_getcompiletime(void);
+time_t		ft_getcurrenttime(void);
 std::string	ft_timetostring(time_t rawtime);
 
 #endif

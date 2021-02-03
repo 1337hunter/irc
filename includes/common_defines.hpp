@@ -92,13 +92,6 @@
 
 # define NPOS				std::string::npos
 
-/*
-# define REPLACE_LOCALTIME
-# define NEED_GETTIMEOFDAY
-# define NEED_MYTIMEFORMAT
-# define STD_CPP98
-*/
-
 # ifndef STD_CPP98
 #  define MAP				unordered_map
 #  define TOSTRING			std::to_string
