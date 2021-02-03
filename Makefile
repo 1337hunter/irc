@@ -45,8 +45,8 @@ TLSCERT		= ./conf/$(NAME).crt ./conf/$(NAME).key
 CC			= clang++
 CFLAGS		= -Wall -Wextra -Werror -I$(INCLUDEDIR) -I$(SSLINCLUDE) -MMD
 CFLAGS		+= -DFD_MAX=1024 -DBUF_SIZE=512 -DWHOWAS_MAX=2000
-CFLAGS		+= -DPING_TIMEOUT=10000 -DPING_FREQUENCY=10000
-CFLAGS		+= -g -DDEBUG_MODE=1# -fsanitize=address
+CFLAGS		+= -DPING_TIMEOUT=60 -DPING_FREQUENCY=60
+CFLAGS		+= -DDEBUG_MODE=0
 # linux openssl requires libdl and libpthread (for static lib)
 LIBFLAGS	= -L$(SSLLIBDIR) -lssl -lcrypto -ldl -lpthread
 EXECFLAGS	= $(CFLAGS) $(LIBFLAGS)
@@ -64,7 +64,6 @@ else
 	OSNAME	= Unknown OS
 	endif
 endif
-OSNAME += $(YELLOW)(debug mode)$(NC)
 
 # just in case openssl is not installed on system somehow
 ifeq (, $(shell which openssl))
@@ -83,11 +82,11 @@ ULINEF		= \e[24m
 
 .PHONY: all bonus debugmsg openssl delssl gencert delcert clean fclean re
 
-all: debugmsg $(NAME)
+all: $(NAME)
 
-bonus: $(NAME)
+bonus: all
 	@make -C ./bot
-	@make -C ./client
+	@cd ./client && qmake && cd ./.. && make -C ./client
 
 -include $(DEPFILES)
 
@@ -167,7 +166,7 @@ fclean: clean
 re: fclean all
 
 install:
-	@mkdir -p /home/se/ircserv
-	@mkdir -p /home/se/ircserv/conf
-	@cp $(NAME) /home/se/ircserv/$(NAME)
-	@cp ./conf/* /home/se/ircserv/conf
+	@mkdir -p /home/arcticfox/ircserv
+	@mkdir -p /home/arcticfox/ircserv/conf
+	@cp $(NAME) /home/arcticfox/ircserv/$(NAME)
+	@cp ./conf/* /home/arcticfox/ircserv/conf

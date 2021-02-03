@@ -21,7 +21,7 @@ Build and Run
 - Run `./Config` for Linux or `./Config_darwin` for Mac OS and follow the prompts
 - Run `make` to run build
 - Run `make gencert` to generate a self-signed certificate with key if you want to enable secure connections with TLS
-- Run `./ircserv 6667`
+- Run `./ircserv`
 
 Configuration
 -------------
@@ -31,15 +31,10 @@ If you want a debug build or change defined constants - use Config scripts and f
 
 You can also configure `ircserv` to use C++11 features including `unordered_map` by choosing 'No' for C++98 support in Config scripts
 
-Server command line arguments
------------------------------
-`./ircserv [host:port_network:password_network] <port> <password>`
-- `<port>` - [required] main server port (for tls port configure listening port in `./conf/ircserv.conf`)
-- `<password>` - [optional] server password
-- `[host:port_network:password_network]` - [optional] to connect to another ircserv server on launch (must be in conf file)
-> Better use CONNECT command as a server operator instead of passing server as a command line argument
-
-> For ircbot command line arguments run `./ircbot -h`
+Command line arguments
+----------------------
+None for ircserv and client.
+For ircbot command line arguments run `./ircbot -h`
 
 Installation
 ------------
@@ -49,7 +44,7 @@ Bonus stuff
 -----------
 You can build irc bot and irc client by running `make bonus`
 
-Or just run `make` in `bot` and `client` directories
+Or just run `make` in `./bot` directory and `qmake && make` in `./client` directory
 
 Used libraries and APIs
 -----------------------

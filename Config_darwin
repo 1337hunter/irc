@@ -446,9 +446,9 @@ if [[ $RECOMPILE == 1 ]] ; then
 fi
 
 echo -e "
-bonus: \$(NAME)
+bonus: all
 	@make -C ./bot
-	@make -C ./client
+	@cd ./client && qmake && cd ./.. && make -C ./client
 
 -include \$(DEPFILES)
 

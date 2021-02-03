@@ -1,15 +1,15 @@
 #!/bin/bash
 
-dir=/home/se/ircserv
+dir=$HOME/ircserv
 FD_MAX=1024
 BUF_SIZE=512
-DEBUG_MODE=1
+DEBUG_MODE=0
 TLSCERT=0
 WHOWAS_MAX=2000
 CPP98=1
-ASAN=1
-PING_TIMEOUT=10000
-PING_FREQUENCY=10000
+ASAN=0
+PING_TIMEOUT=60
+PING_FREQUENCY=60
 
 RECOMPILE=0
 RED="\e[31m"
@@ -446,9 +446,9 @@ if [[ $RECOMPILE == 1 ]] ; then
 fi
 
 echo -e "
-bonus: \$(NAME)
+bonus: all
 	@make -C ./bot
-	@make -C ./client
+	@cd ./client && qmake && cd ./.. && make -C ./client
 
 -include \$(DEPFILES)
 
