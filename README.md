@@ -27,9 +27,9 @@ Configuration
 -------------
 Use `./conf/ircserv.conf` to configure different listening ports, server links, operators, etc
 
-If you want a debug build or change defined constants - use `Config` scripts and follow the prompts then rebuild the project
+If you want a debug build or change defined constants - use `Config` scripts and follow the prompts then run `make`
 
-You can also configure `ircserv` to use C++11 features including `unordered_map` by choosing 'No' for C++98 support in Config scripts
+You can also configure `ircserv` to use C++11 features including `unordered_map` by choosing 'No' for C++98 support in `Config` scripts
 
 Command line arguments
 ----------------------
@@ -52,4 +52,4 @@ Used libraries and APIs
 - `ircserv` uses OpenSSL library v1.1.1h
 - `client` uses OpenSSL library v1.1.1h and Qt5
 - `ircbot` uses OpenWeatherMap API for current weather info
-> you will need to change the `APIKEY` if you want weather command to work in `ircbot`
+> you will need to change the `WEATHERAPIKEY` if you want weather command to work in `ircbot`
