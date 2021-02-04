@@ -17,6 +17,7 @@
 #define ME		4
 #define MOTD	5
 #define SERVICE	6
+#define PASS	7
 #define NPOS	std::string::npos
 
 typedef	int (*t_block)(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number);
@@ -792,7 +793,6 @@ block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 {
 	size_t		pos;
 	size_t		i;
-	t_strvect	names;
 
 	pos = line.find_first_not_of(" \t");
 	pos += ft_strlen("motd");
@@ -846,7 +846,66 @@ block_motd(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line
 	std::cout << "MOTD: '" << serv->motd_path << '\'' << '\n';
 #endif
 	return 0;
+}
 
+int
+block_pass(std::ifstream &config, std::string &line, IRCserv *serv, size_t &line_number)
+{
+	size_t		pos;
+	size_t		i;
+
+	pos = line.find_first_not_of(" \t");
+	pos += ft_strlen("password");
+	while ((pos = line.find("{", pos)) == NPOS)
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line[pos] != '{' || config.eof())
+		return -1;
+	pos++;
+	if (pos >= line.length() || line[pos] != '"')
+		while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS)
+		{
+			getline(config, line);
+			line_number++;
+			if (config.eof())
+				return -1;
+			pos = 0;
+		}
+	if (line[pos] != '"')
+		return -1;
+	if ((i = line.find("\"", pos + 1)) == NPOS)
+		return -1;
+	std::string	real_deal(line, pos + 1, i - pos - 1);
+	serv->pass = real_deal;
+	pos = line.find_first_not_of(" \t\n", i + 1);
+	if (pos == NPOS || line[pos] != ';')
+		return -1;
+	pos = line.find_first_not_of(" \t\n", pos + 1);
+	if (pos != NPOS && line[pos] != '#' && line[pos] != '"' &&
+			!(line[pos] == '}'))
+		return -1;
+	while ((pos = line.find_first_not_of(" \t\n", pos)) == NPOS)
+	{
+		getline(config, line);
+		line_number++;
+		if (config.eof())
+			return -1;
+		pos = 0;
+	}
+	if (line[pos] != '}')
+		return -1;
+	pos = line.find_first_not_of(" \t\n", pos + 1);
+	if (pos != NPOS && line[pos] != '#')
+		return -1;
+#if DEBUG_MODE
+	std::cout << "PASS: '" << serv->pass << '\'' << '\n';
+#endif
+	return 0;
 }
 
 size_t	find_block(std::string line, size_t pos)
@@ -865,6 +924,8 @@ size_t	find_block(std::string line, size_t pos)
 		return MOTD;
 	if (!line.compare(pos, ft_strlen("service"), "service"))
 		return SERVICE;
+	if (!line.compare(pos, ft_strlen("password"), "password"))
+		return PASS;
 	return NPOS;
 }
 
@@ -884,6 +945,7 @@ void	parse(IRCserv *serv)
 	block[ME] = block_me;
 	block[MOTD] = block_motd;
 	block[SERVICE] = block_service;
+	block[PASS] = block_pass;
 	config.open("./conf/ircserv.conf", std::ios::in);
 	if (!config.is_open())
 		error_exit("Error: can't open file \"./config/ircserv.conf\"");

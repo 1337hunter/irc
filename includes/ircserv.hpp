@@ -193,8 +193,7 @@ struct				IRCserv
 	fd_set						fdset_error;
 	std::string					motd_path;
 	SSL_CTX						*sslctx;
-	std::string					pass;		// this is argv server (ME) password
-	int							port;		// this is argv server port
+	std::string					pass;		// this is server (ME) password
 	std::string					usermodes;
 	std::string					chanmodes;
 	time_t						dtstarted;
